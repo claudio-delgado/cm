@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Medieval colonies - alpha 1.0 - Home</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link href="v6.7.2/css/all.css" rel="stylesheet" />
+    <link href="v6.7.2/css/sharp-solid.css" rel="stylesheet" />
+    <link href="v6.7.2/css/sharp-regular.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/useful.arrays.js"></script>
+    <!--script src="https://kit.fontawesome.com/2743a5dc06.js" crossorigin="anonymous"></script-->
+    <link href="home.css" rel="stylesheet" />
+    <style>
+    </style>
+</head>
+<body class="">
+    <header class="sticky top-0 z-40">
+        <nav class="bg-white border-gray-200 dark:bg-gray-900 mb-3">
+            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 py-2">
+                <a href="./index.html" class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <img src="logo.svg" class="h-8" alt="Flowbite Logo" />
+                    <div>
+                        <p class="font-serif text-white text-lg font-semibold m-0 p-0" data-i18n>Medieval colonies</p>
+                        <p class="text-white text-xs font-thin m-0 p-0"><span data-i18n="navbar.subtitle1">Non graphical alpha version</span> <span class="font-bold">1.0</span></p>
+                    </div>
+                </a>
+                <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                    </svg>
+                </button>
+                <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+                    <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                        <li>
+                            <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"><span data-i18n="navbar.menu.language">Language</span>
+                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                </svg>
+                            </button>
+                            <!-- Dropdown menu -->
+                            <div id="dropdownNavbar" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
+                                    <li>
+                                        <a onclick="translateAll('ES'); return false;" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Español</a>
+                                    </li>
+                                    <li>
+                                        <a onclick="translateAll('EN'); return false;" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">English</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#" class="block py-2 px-3 text-white rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page" data-i18n>Quit game</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="max-w-screen-xl text-xs dark:text-white dark:bg-gray-800 border-gray-100 flex flex-wrap justify-between mx-auto p-2">
+                <div><span data-i18n>Weeks lived</span> : <span class="font-bold" id="passedWeeks">0</span></div>
+                <div class="justify-end"><span id='weekDef'><span data-i18n>Year</span> <span class="font-bold" id="currentYear">1</span></span> <span id='weekDef'><span data-i18n>Week</span> <span class="font-bold" id="currentWeek">1</span></span> <span id='dayDef'><span data-i18n>Day</span> <span class="font-bold" id="currentDay">1</span></span> <span id="currentHour">00</span></div>
+                <!--div id='daylight'><img src="tiny.night.png" alt=""></div-->
+            </div>
+        </nav>
+    </header>
+    <div id="accordion-menu" class="mx-2 mb-2 z-0" data-accordion="collapse">
+        <h2 id="accordion-menu-news">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-news-body" aria-expanded="false" aria-controls="accordion-menu-news-body">
+                <span><span id="notificationIcon" class="bg-blue-100 text-blue-800 font-medium me-2 px-1.5 py-0 rounded-sm dark:bg-blue-900 dark:text-blue-300">1</span><span data-i18n>Recent news</span></span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-news-body" class="hidden" aria-labelledby="accordion-menu-news">
+            <div class="py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <div id="accordion-news" class="mx-2" data-accordion="collapse">
+                    <h2 id="accordion-news-1" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-news-1-body" aria-expanded="false" aria-controls="accordion-news-1-body">
+                            <span><span gender="f" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Year</span> <strong>1</strong>, <span data-i18n>Week</span> <strong>1</strong>, <span data-i18n>Day</span> <strong>1</strong></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-news-1-body" class="hidden" aria-labelledby="accordion-news">
+                        <div class="p-5 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mb-2 text-gray-500 dark:text-gray-200" data-i18n gender="f">Welcome to Medieval Colonies!</p>
+                            <p class="mb-2 text-gray-500 dark:text-gray-200" data-i18n>Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><span data-i18n>Your status is this</span>:</p>
+                            <p class="text-gray-500 dark:text-gray-200"><span data-i18n>You have</span> <strong>10</strong> <span data-i18n>citizens</span>, <strong>5</strong> <span class="font-bold" data-i18n>men</span> <span data-i18n>and</span> <strong>5</strong> <span class="font-bold" data-i18n>women</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><span data-i18n>You have</span> <span class="font-bold" data-i18n>a lake</span> <span data-i18n gender="m">nearby</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><span data-i18n>You have</span> <span class="font-bold" data-i18n>3 wagons</span> <span data-i18n gender="f">full of resources and products.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><span class="font-bold" data-i18n>Each wagon</span> <span data-i18n>has the following things</span>:</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>400</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>wooden trunks</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>2800</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>nails</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>80</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>hammers</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>150</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>trowels</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>40</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>saws</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>200</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>hay</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>30</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>ropes</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>30</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>rags</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><strong>100</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>water</span>.</p>
+                            <p class="mb-2 text-gray-500 dark:text-gray-200"><strong>300</strong> <span data-i18n>units of</span> <span class="font-bold" data-i18n>food</span>.</p>
+                            <p class="text-gray-500 dark:text-gray-200"><span data-i18n>Visit sections</span>: <span class="font-bold" data-i18n>Colony</span> <span data-i18n>and</span> <span class="font-bold" data-i18n>Production</span> <span data-i18n>to know more about what's going on</span>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h2 id="accordion-menu-colony" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-colony-body" aria-expanded="false" aria-controls="accordion-menu-colony-body">
+                <span data-i18n>Colony</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-colony-body" class="hidden" aria-labelledby="accordion-menu-colony">
+            <div class="p-1 px-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="flex pb-1 text-gray-500 dark:text-gray-400">
+                    <span class="text-xs px-2 bg-gray-500 border border-gray-500 text-white flex-none py-2">
+                        <span data-i18n>Name</span>:
+                    </span>
+                    <input id="colonyName" type="text" class="text-xs grow bg-gray-600 text-white" placeholder="Type in your colony name" value="Colonia12540">
+                    <button id="registerSubmit" class="text-xs flex-none px-2 button border border-gray-400 bg-gray-800" data-i18n>Save</button>
+                </p>
+                <p class="pb-0 text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none text-xs font-bold ps-2 py-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>General statistics</span>
+                        </span>
+                        <span class="grow bg-gray-500 border border-gray-500"></span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Score</span>:
+                        </span>
+                        <strong id='score' class="flex-none text-gray-900 bg-gray-500 border border-gray-500 px-1">0</strong>
+                        <span class="grow text-gray-900 bg-gray-500 border border-gray-500" data-i18n>points</span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Population</span>:
+                        </span>
+                        <strong id='population' class="flex-none text-gray-900 bg-gray-500 border border-gray-500 px-1">10</strong>
+                        <span id='unitCitizen' class="grow text-gray-900 bg-gray-500 border border-gray-500" data-i18n>citizens</span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Life quality</span>:
+                        </span>
+                        <span class="grow text-green-400 bg-gray-500 font-medium px-1 py-0.5"><strong id='lifeQuality'>10</strong> (<span id='lifeQualityImpression' data-i18n>Satisfaction</span>) <i id='lifeQualityEmoji' class="fa fa-face-smile"></i> </span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Shelter capacity</span>:
+                        </span>
+                        <span class="grow text-green-400 bg-gray-500 font-medium px-1 py-0.5"><strong >15</strong> (<span data-i18n>Occupation</span> <strong>67%</strong>) <i class="fa fa-face-smile"></i> </span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Power</span>:
+                        </span>
+                        <strong class="grow flex-none text-gray-900 bg-gray-500 border border-gray-500 px-1">10</strong>
+                    </span>
+                </p>   
+                <p class="pb-1 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Oppression</span>:
+                        </span>
+                        <span class="grow flex-none text-gray-900 bg-gray-500 border border-gray-500 px-1"><strong>0</strong> <span class="text-green-400 font-bold">(<span data-i18n>Your colony is free</span>)</span></span>
+                    </span>
+                </p>
+                <p class="pb-0 text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none text-xs font-bold ps-2 py-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Vital resources</span>
+                        </span>
+                        <span class="grow bg-gray-500 border border-gray-500"></span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Water consumption</span>:
+                        </span>
+                        <strong class="flex-none text-gray-900 bg-gray-500 border border-gray-500 px-1">20</strong>
+                        <span class="grow text-gray-900 bg-gray-500 border border-gray-500" data-i18n>per day</span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Water income</span>:
+                        </span>
+                        <strong class="flex-none text-green-400 bg-gray-500 border border-gray-500 px-1">30</strong>
+                        <span class="grow text-green-400 bg-gray-500 border border-gray-500" data-i18n>per day</span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Water stock</span>:
+                        </span>
+                        <strong class="flex-none text-green-400 bg-gray-500 border border-gray-500 px-1">75</strong>
+                        <span class="grow text-green-400 bg-gray-500 border border-gray-500"><span data-i18n>units</span> <i class="ms-1 text-green-400 fa fa-arrow-up"></i></span> 
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Food consumption</span>:
+                        </span>
+                        <strong class="flex-none text-gray-900 bg-gray-500 border border-gray-500 px-1">10</strong>
+                        <span class="grow text-gray-900 bg-gray-500 border border-gray-500" data-i18n>per day</span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Food income</span>:
+                        </span>
+                        <strong class="flex-none text-green-400 bg-gray-500 border border-gray-500 px-1">20</strong>
+                        <span class="grow text-green-400 bg-gray-500 border border-gray-500" data-i18n>per day</span>
+                    </span>
+                </p>
+                <p class="pb-0 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="flex">
+                        <span class="flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white flex-none">
+                            <span data-i18n>Food stock</span>:
+                        </span>
+                        <strong class="flex-none text-red-900 bg-gray-500 border border-gray-500 px-1">75</strong>
+                        <span class="grow text-red-900 bg-gray-500 border border-gray-500"><span data-i18n>units</span> <i class="ms-1 fa fa-arrow-down"></i></span> 
+                    </span>
+                </p>
+            </div>
+        </div>
+        <h2 id="accordion-menu-buildings" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-buildings-body" aria-expanded="false" aria-controls="accordion-menu-buildings-body">
+                <span data-i18n>Buildings</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-buildings-body" class="hidden" aria-labelledby="accordion-menu-buildings">
+            <div class="py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <div id="accordion-buildings" class="mx-1" data-accordion="collapse">
+                    <h2 id="accordion-buildings-1" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-buildings-1-body" aria-expanded="false" aria-controls="accordion-buildings-1-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Campaign tents</span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-buildings-1-body" class="hidden" aria-labelledby="accordion-buildings-1">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 mb-2 text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Total shelter capacity</span>: <strong id="building-1-total-capacity">15</strong> <span data-i18n>citizens</span>.</p>
+                            <div id="accordion-buildings-1-1" class="" data-accordion="collapse">
+                                <h2 id="accordion-buildings-1-1-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-buildings-1-1-body" aria-expanded="false" aria-controls="accordion-buildings-1-1-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Campaign tent</span> <strong>N°1</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-buildings-1-1-body" class="hidden" aria-labelledby="accordion-buildings-1-1-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="building-1-1-status" data-i18n gender="f">Constructed</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="f">Constructed in</span>: <span data-i18n>Year</span> <strong id="building-1-1-createdYear">1</strong>, <span data-i18n>week</span> <strong id="building-1-1-createdWeek">1</strong>, <span data-i18n>day</span> <strong id="building-1-1-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Shelter capacity</span>: <strong id="building-1-1-capacity">3</strong> <span data-i18n>citizens</span>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-red-500" data-i18n>Fire hazard</span></p>
+                                    </div>
+                                </div>
+                                <h2 id="accordion-buildings-1-2-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-buildings-1-2-body" aria-expanded="false" aria-controls="accordion-buildings-1-2-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Campaign tent</span> <strong>N°2</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-buildings-1-2-body" class="hidden" aria-labelledby="accordion-buildings-1-2-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="building-1-2-status" data-i18n gender="f">Constructed</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="f">Constructed in</span>: Year <strong id="building-1-2-createdYear">1</strong>, week <strong id="building-1-2-createdWeek">1</strong>, day <strong id="building-1-2-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Shelter capacity</span>: <strong id="building-1-2-capacity">3</strong> <span data-i18n>citizens</span>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-red-500" data-i18n>Fire hazard</span></p>
+                                    </div>
+                                </div>
+                                <h2 id="accordion-buildings-1-3-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-buildings-1-3-body" aria-expanded="false" aria-controls="accordion-buildings-1-3-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Campaign tent</span> <strong>N°3</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-buildings-1-3-body" class="hidden" aria-labelledby="accordion-buildings-1-3-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="building-1-3-status" data-i18n gender="f">Constructed</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="f">Constructed in</span>: Year <strong id="building-1-2-createdYear">1</strong>, week <strong id="building-1-2-createdWeek">1</strong>, day <strong id="building-1-2-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Shelter capacity</span>: <strong id="building-1-2-capacity">3</strong> <span data-i18n>citizens</span>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-red-500" data-i18n>Fire hazard</span></p>
+                                    </div>
+                                </div>
+                                <h2 id="accordion-buildings-1-4-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-buildings-1-4-body" aria-expanded="false" aria-controls="accordion-buildings-1-4-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Campaign tent</span> <strong>N°4</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-buildings-1-4-body" class="hidden" aria-labelledby="accordion-buildings-1-4-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="building-1-3-status" data-i18n gender="f">Constructed</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="f">Constructed in</span>: Year <strong id="building-1-2-createdYear">1</strong>, week <strong id="building-1-2-createdWeek">1</strong>, day <strong id="building-1-2-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Shelter capacity</span>: <strong id="building-1-2-capacity">3</strong> <span data-i18n>citizens</span>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-red-500" data-i18n>Fire hazard</span></p>
+                                    </div>
+                                </div>
+                                <h2 id="accordion-buildings-1-5-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-buildings-1-5-body" aria-expanded="false" aria-controls="accordion-buildings-1-5-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Campaign tent</span> <strong>N°5</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-buildings-1-5-body" class="hidden" aria-labelledby="accordion-buildings-1-5-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="building-1-3-status" data-i18n gender="f">Constructed</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="f">Constructed in</span>: Year <strong id="building-1-2-createdYear">1</strong>, week <strong id="building-1-2-createdWeek">1</strong>, day <strong id="building-1-2-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Shelter capacity</span>: <strong id="building-1-2-capacity">3</strong> <span data-i18n>citizens</span>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-red-500" data-i18n>Fire hazard</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h2 id="accordion-menu-citizens" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-citizens-body" aria-expanded="false" aria-controls="accordion-menu-citizens-body">
+                <span data-i18n>Citizens</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-citizens-body" class="hidden" aria-labelledby="accordion-menu-citizens">
+            <div class="p-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <div id="accordion-citizens" class="" data-accordion="collapse">
+                    <h2 id="accordion-citizen-1" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-1-body" aria-expanded="false" aria-controls="accordion-citizen-1-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-1-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-1-body" class="hidden" aria-labelledby="accordion-citizen-1">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-1-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-1-gender" data-i18n>Femenine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-1-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-1-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-1-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-1-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-1-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-1-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-1-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-1-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-1-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-1-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-1-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span><i class="mt-0 text-base fa fa-times invisible font-bold"></i></p>
+                        </div>
+                        <div id="citizen-1-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-1" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-1" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-2" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-2-body" aria-expanded="false" aria-controls="accordion-citizen-2-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-2-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-2-body" class="hidden" aria-labelledby="accordion-citizen-2">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-2-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-2-gender" data-i18n>Femenine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-2-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-2-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-2-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-2-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-2-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-2-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-2-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-2-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-2-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-2-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-2-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-2-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-2" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-2" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-3" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-3-body" aria-expanded="false" aria-controls="accordion-citizen-3-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-3-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-3-body" class="hidden" aria-labelledby="accordion-citizen-3">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-3-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-3-gender" data-i18n>Femenine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-3-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-3-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-3-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-3-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-3-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-3-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-3-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-2-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-3-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-3-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-3-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-3-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-3" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-3" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-4" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-4-body" aria-expanded="false" aria-controls="accordion-citizen-4-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-4-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-4-body" class="hidden" aria-labelledby="accordion-citizen-4">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-4-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-4-gender" data-i18n>Femenine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-4-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-4-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-4-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-4-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-4-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-4-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-4-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-4-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-4-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-4-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-4-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-4-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-4" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-4" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-5" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-5-body" aria-expanded="false" aria-controls="accordion-citizen-5-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-5-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-5-body" class="hidden" aria-labelledby="accordion-citizen-5">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-5-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-5-gender" data-i18n>Femenine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-5-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-5-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-5-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-5-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-5-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-5-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-5-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-5-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-5-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-5-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-5-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-5-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-5" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-5" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+
+                    <h2 id="accordion-citizen-6" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-6-body" aria-expanded="false" aria-controls="accordion-citizen-6-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-6-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-6-body" class="hidden" aria-labelledby="accordion-citizen-6">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-6-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-6-gender" data-i18n>Masculine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-6-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-6-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-6-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-6-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-6-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-6-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-6-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-6-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-6-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-6-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-6-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-6-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-6" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-6" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-7" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-7-body" aria-expanded="false" aria-controls="accordion-citizen-7-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-7-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-7-body" class="hidden" aria-labelledby="accordion-citizen-7">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-7-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-7-gender" data-i18n>Masculine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-7-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-7-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-7-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-7-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-7-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-7-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-7-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-7-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-7-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-7-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-7-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-7-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-7" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-7" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-8" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-8-body" aria-expanded="false" aria-controls="accordion-citizen-8-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-8-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-8-body" class="hidden" aria-labelledby="accordion-citizen-8">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-8-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-8-gender" data-i18n>Masculine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-8-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-8-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-8-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-8-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-8-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-8-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-8-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-8-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-8-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-8-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-8-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-8-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-8" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-8" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-9" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-9-body" aria-expanded="false" aria-controls="accordion-citizen-9-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-9-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-9-body" class="hidden" aria-labelledby="accordion-citizen-9">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-9-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-9-gender" data-i18n>Masculine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-9-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-9-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-9-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-9-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-9-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-9-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-9-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-9-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-9-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-9-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-9-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-9-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-9" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-9" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-citizen-10" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-citizen-10-body" aria-expanded="false" aria-controls="accordion-citizen-10-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span id="citizen-10-name"></span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-citizen-10-body" class="hidden" aria-labelledby="accordion-citizen-10">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="ms-1 text-xs text-gray-500 dark:text-gray-200"><span id="citizen-10-description"></span>.</p>
+                        </div>
+                        <div class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Properties</span></p>
+                        </div>
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Gender</span>: <strong id="citizen-10-gender" data-i18n>Masculine</strong>.</span><span><span data-i18n>Status</span>: <strong id="citizen-10-status" data-i18n>Resting</strong></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Birth week</span>: <strong id="citizen-10-birthWeek"></strong></span><span><span data-i18n>Age</span>: <strong id="citizen-10-ageYears"></strong> <span data-i18n>years</span>, <strong id="citizen-10-ageWeeks"></strong> <span data-i18n>weeks</span></span></span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Role</span>: <strong id="citizen-10-role" data-i18n>Unassigned</strong></span><span><span data-i18n>Experience</span>: <strong id="citizen-10-xp">0</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Left hand</span>: <strong id="citizen-10-leftHand" data-i18n gender='f'>Empty</strong></span><span><span data-i18n>Right hand</span>: <strong id="citizen-10-rightHand" data-i18n gender='f'>Empty</strong> </span></p>
+                            <p class="mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200"><span><span data-i18n>Outfit</span>: <strong id="citizen-10-outfit" data-i18n>No</strong></span><span><span data-i18n>Fertility</span>: <strong id="citizen-10-fertility"></strong> </span></p>
+                        </div>
+                        <div id="citizen-10-actions-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Actions available</span></p>
+                        </div>
+                        <div id="citizen-10-actions" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400">
+                                <button id="searchCouple-10" class="text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800"><i class="fa fa-venus-mars me-2"></i><span data-i18n>Search a couple</span></button>
+                                <button id="assignRole-10" class="assignRole text-xs grow flex-initial p-2 ms-1 button border border-gray-400 bg-gray-800"><i class="fa fa-handshake-simple me-2"></i><span data-i18n>Assign a role</span></button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 id="accordion-menu-landform" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-landform-body" aria-expanded="false" aria-controls="accordion-menu-landform-body">
+                <span data-i18n>Landform</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-landform-body" class="hidden" aria-labelledby="accordion-menu-landform">
+            <div class="py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <div id="accordion-landforms" class="mx-1" data-accordion="collapse">
+                    <h2 id="accordion-landform-1-header" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-landform-1-body" aria-expanded="false" aria-controls="accordion-landform-1-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Water reservoir</span></span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-landform-1-body" class="hidden" aria-labelledby="accordion-landform-1-header">
+                        <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="text-xs flex justify-between text-gray-500 dark:text-gray-200"><span><span data-i18n>Type</span>: <strong id="landform-1-type" data-i18n>Lake</strong>.</span><span><span data-i18n gender="M">Discovered in</span>: <span data-i18n>Year</span> <strong id="landform-1-createdYear">1</strong>, <span data-i18n>week</span> <strong id="landform-1-createdWeek">1</strong>, <span data-i18n>day</span> <strong id="landform-1-createdDay">1</strong></span></p>
+                            <p class="text-xs flex justify-between text-gray-500 dark:text-gray-200"><span><span data-i18n>Status</span>: <strong id="landform-1-status" data-i18n gender="M">Inactive</strong>.</span><span><span data-i18n>Maximum capacity</span>: <strong id="landform-1-capacity" gender="F" data-i18n>Unlimited</strong>.</span></p>
+                            <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Water bearers assigned</span>: <strong id="landform-1-assigned">0</strong>.</p>
+                        </div>
+                        <div id="landform-1-assigned-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Assigned workers</span></p>
+                        </div>
+                        <div id="landform-1-assigned" class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="text-xs flex justify-between text-gray-500 dark:text-gray-200"><span><i class="fa fa-light fa-empty-set me-1"></i><span data-i18n>Sin aguateros/as asignados</span><span></p>
+                        </div>
+                        <div id="landform-1-available-title" class="border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-700"><span data-i18n>Available workers</span></p>
+                        </div>
+                        <div id="landform-1-available" class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <p class="text-xs flex justify-between text-gray-500 dark:text-gray-200"><span><i class="fa fa-light fa-empty-set me-1"></i><span data-i18n>Sin aguateros/as disponibles</span><span></p>
+                        </div>
+                    </div>
+                    <h2 id="accordion-landform-2" class="notification">
+                        <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-landform-2-body" aria-expanded="false" aria-controls="accordion-landform-2-body">
+                            <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Stone mount</span>s</span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-landform-2-body" class="hidden" aria-labelledby="accordion-landform-2">
+                        <div class="p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                            <div id="accordion-landform-2-1" class="" data-accordion="collapse">
+                                <h2 id="accordion-landform-2-1-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-landform-2-1-body" aria-expanded="false" aria-controls="accordion-landform-2-1-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Stone mount</span> <strong>N°1</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-landform-2-1-body" class="hidden" aria-labelledby="accordion-landform-2-1-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="landform-2-1-status" data-i18n gender="M">Inactive</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="M">Discovered in</span>: <span data-i18n>Year</span> <strong id="landform-2-1-createdYear">1</strong>, <span data-i18n>week</span> <strong id="landform-2-1-createdWeek">1</strong>, <span data-i18n>day</span> <strong id="landform-2-1-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Maximum capacity</span>: <strong id="landform-2-1-capacity">10</strong> <strong id="landform-2-1-roles" data-i18n>stone breakers</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Stone breakers assigned</span>: <strong id="landform-2-1-assigned">0</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-gray-900" data-i18n>No quarry built yet</span></p>
+                                    </div>
+                                </div>
+                                <h2 id="accordion-landform-2-2-header" class="notification">
+                                    <button type="button" class="flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-landform-2-2-body" aria-expanded="false" aria-controls="accordion-landform-2-2-body">
+                                        <span><span gender="m" class='new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3' data-i18n>NEW</span><span data-i18n>Stone mount</span> <strong>N°2</strong></span>
+                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                                        </svg>
+                                    </button>
+                                </h2>
+                                <div id="accordion-landform-2-2-body" class="hidden" aria-labelledby="accordion-landform-2-2-header">
+                                    <div class="p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs">
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Status</span>: <strong id="landform-2-1-status" data-i18n gender="M">Inactive</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n gender="M">Discovered in</span>: <span data-i18n>Year</span> <strong id="landform-2-2-createdYear">1</strong>, <span data-i18n>week</span> <strong id="landform-2-2-createdWeek">1</strong>, <span data-i18n>day</span> <strong id="landform-2-2-createdDay">1</strong></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Maximum capacity</span>: <strong id="landform-2-2-capacity">10</strong> <strong id="landform-2-2-roles" data-i18n>stone breakers</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span data-i18n>Stone breakers assigned</span>: <strong id="landform-2-2-assigned">0</strong>.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-200"><span class="font-bold text-gray-900" data-i18n>No quarry built yet</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--h2 id="accordion-menu-production" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-production-body" aria-expanded="false" aria-controls="accordion-menu-production-body">
+                <span>Production</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-production-body" class="hidden" aria-labelledby="accordion-menu-production">
+            <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Welcome to Medieval Colonies!</p>
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+                <p class="text-gray-500 dark:text-gray-400">Your status is this:</p>
+                <p class="text-gray-500 dark:text-gray-400">You have <strong>10</strong> citizens, 5 men and 5 women. They'll be the soul of your new colony. They will be able to do several duties to help you in enhancing your colony. Make them useful, make them strong, confident and happy, and they will die for your cause.</p>
+            </div>
+        </div>
+        
+        <h2 id="accordion-menu-expeditions" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-expeditions-body" aria-expanded="false" aria-controls="accordion-menu-expeditions-body">
+                <span>Expeditions</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-expeditions-body" class="hidden" aria-labelledby="accordion-menu-expeditions">
+            <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Welcome to Medieval Colonies!</p>
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+                <p class="text-gray-500 dark:text-gray-400">Your status is this:</p>
+                <p class="text-gray-500 dark:text-gray-400">You have <strong>10</strong> citizens, 5 men and 5 women. They'll be the soul of your new colony. They will be able to do several duties to help you in enhancing your colony. Make them useful, make them strong, confident and happy, and they will die for your cause.</p>
+            </div>
+        </div>
+        <h2 id="accordion-menu-ranking" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-7" aria-expanded="false" aria-controls="accordion-collapse-body-7">
+                <span>Ranking</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-ranking-body" class="hidden" aria-labelledby="accordion-menu-ranking">
+            <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Welcome to Medieval Colonies!</p>
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+                <p class="text-gray-500 dark:text-gray-400">Your status is this:</p>
+                <p class="text-gray-500 dark:text-gray-400">You have <strong>10</strong> citizens, 5 men and 5 women. They'll be the soul of your new colony. They will be able to do several duties to help you in enhancing your colony. Make them useful, make them strong, confident and happy, and they will die for your cause.</p>
+            </div>
+        </div>
+        <h2 id="accordion-menu-messages" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-menu-messages-body" aria-expanded="false" aria-controls="accordion-menu-messages-body">
+                <span>Messages</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-menu-messages-body" class="hidden" aria-labelledby="accordion-menu-messages">
+            <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Welcome to Medieval Colonies!</p>
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+                <p class="text-gray-500 dark:text-gray-400">Your status is this:</p>
+                <p class="text-gray-500 dark:text-gray-400">You have <strong>10</strong> citizens, 5 men and 5 women.</p>
+                <p class="text-gray-500 dark:text-gray-400">You have a <strong>lake</strong> nearby.</p>
+                <p class="text-gray-500 dark:text-gray-400">You have a <strong>wagon</strong> full of resources and products.</p>
+                <p class="text-gray-500 dark:text-gray-400">The <strong>wagon</strong> has the following things:</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>400</strong> units of <strong>wooden trunks</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>2800</strong> units of <strong>nails</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>80</strong> units of <strong>hammers</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>150</strong> units of <strong>trowels</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>40</strong> units of <strong>saws</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>200</strong> units of <strong>hay</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>30</strong> units of <strong>ropes</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>30</strong> units of <strong>rags</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>100</strong> units of <strong>water</strong>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><strong>300</strong> units of <strong>meat</strong>.</p>
+            </div>
+        </div>
+
+        <!--h2 id="accordion-collapse-heading-7" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-7" aria-expanded="false" aria-controls="accordion-collapse-body-7">
+                <span>Expeditions</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-collapse-body-7" class="hidden" aria-labelledby="accordion-collapse-heading-7">
+            <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Welcome to Medieval Colonies!</p>
+                <p class="mb-2 text-gray-500 dark:text-gray-400">Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+                <p class="text-gray-500 dark:text-gray-400">Your status is this:</p>
+                <p class="text-gray-500 dark:text-gray-400">You have <strong>10</strong> citizens, 5 men and 5 women. They'll be the soul of your new colony. They will be able to do several duties to help you in enhancing your colony. Make them useful, make them strong, confident and happy, and they will die for your cause.</p>
+            </div>
+        </div-->
+    </div>
+</body>
+<script src="js/dom.manipulation.js"></script>
+<script src="js/home.js"></script>
+<script>
+</script>
+</html>

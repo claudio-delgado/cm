@@ -1,0 +1,18 @@
+body { background-color: black; }
+#daylight {width:45px; height:25px; background-image: url(tiny.day.png);}
+.blink {
+    animation: smoothBlink 1s linear infinite;
+}
+
+@keyframes smoothBlink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.capitalize {
+    text-transform: capitalize !important;
+}
+.hidden {
+    display: none !important;
+}

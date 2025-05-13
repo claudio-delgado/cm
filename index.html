@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Medieval colonies - alpha 1.0</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="js/i18n.js"></script>
+    <style>body { background-color: black; }</style>
+</head>
+<body class="">
+    <header class="sticky top-0">
+        <nav class="bg-white border-gray-200 dark:bg-gray-900 mb-3">
+            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 py-2">
+                <a href="./index.html" class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <img src="logo.svg" class="h-8" alt="Flowbite Logo" />
+                    <div>
+                        <p class="font-serif text-white text-lg font-semibold m-0 p-0" data-i18n>Medieval colonies</p>
+                        <p class="text-white text-xs font-thin m-0 p-0"><span data-i18n>Non graphical alpha version</span> <span class="font-bold">1.0</span></p>
+                    </div>
+                </a>
+                <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                    </svg>
+                </button>
+                <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+                    <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                        <li>
+                            <a href="./home.html" class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Home</a>
+                        </li>
+                        <li>
+                            <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"><span data-i18n>Language</span>
+                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                </svg>
+                            </button>
+                            <!-- Dropdown menu -->
+                            <div id="dropdownNavbar" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
+                                    <li>
+                                        <a onclick="translateAll('ES'); return false;" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Español</a>
+                                    </li>
+                                    <li>
+                                        <a onclick="translateAll('EN'); return false;" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">English</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="accordion-collapse" class="mx-2" data-accordion="collapse">
+        <h2 id="accordion-collapse-heading-1">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
+                <span data-i18n>About the game</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+            <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400"><span data-i18n>Medieval colonies is a strategy videogame depicting the efforts of building a solid small civilization in medieval times. It is based in creating processes to train workers, soldiers, build up shelters and facilities. Time is important and so are your citizens</span>.</p>
+                <p class="text-gray-500 dark:text-gray-400"><span data-i18n>Check out this guide to learn how to</span> <a href="/docs/getting-started/introduction/" data-i18n class="text-blue-600 dark:text-blue-500 hover:underline">get started</a> <span data-i18n>and access the encyclopedia of elements in which you can solve all your doubts</span>.</p>
+            </div>
+        </div>
+        <h2 id="accordion-collapse-heading-2" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2">
+                <span data-i18n>Sign up</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
+            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400" data-i18n>Fill in the form and submit your data</p>
+                <p class="text-gray-500 dark:text-gray-400 my-2"><input type="text" class="w-full bg-gray-600 text-white" data-i18n placeholder="Type in a username"></p>
+                <p class="text-gray-500 dark:text-gray-400 my-2"><input type="password" class="w-full bg-gray-600 text-white" data-i18n placeholder="Type in a password"></p>
+                <p class="text-gray-500 dark:text-gray-400 my-2"><input type="password" class="w-full bg-gray-600 text-white" data-i18n placeholder="Retype previous password"></p>
+                <p class="text-gray-500 dark:text-gray-400 my-2"><input type="email" class="w-full bg-gray-600 text-white" data-i18n placeholder="Type in your email address"></p>
+                <p class="text-gray-500 dark:text-gray-400 my-2 mt-4">
+                    <div id="captcha" class="flex">
+                        <canvas id='first' height=25 class="text-white text-xs" data-i18n>What year is</canvas>
+                        <canvas id='second' height=25 class="text-white text-xs"></canvas>
+                        <canvas id='third' height=25 class="text-white text-xs"></canvas>
+                    </div>
+                    <div id="" class="">
+                        <p class="flex gap-4 text-gray-500 dark:text-gray-400 my-2">
+                            <input id="captchaAnswer" type="text" class="w-33 bg-gray-600 text-white" data-i18n placeholder="Type in your answer">
+                            <button id="registerSubmit" class="w-64 button border border-gray-400 bg-gray-800" data-i18n>Submit</button>
+                        </p>
+                    </div>
+                </p>
+            </div>
+        </div>
+        <h2 id="accordion-collapse-heading-3" class="mt-3">
+            <button type="button" class="flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-3" aria-expanded="false" aria-controls="accordion-collapse-body-3">
+                <span>Login</span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
+            <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700 dark:bg-gray-700">
+                <p class="mb-2 text-gray-500 dark:text-gray-400" data-i18n>Fill in your credentials</p>
+                <p class="text-gray-500 dark:text-gray-400 my-2"><input type="text" class="w-full bg-gray-600 text-white" data-i18n placeholder="Type in your username"></p>
+                <p class="text-gray-500 dark:text-gray-400 my-2"><input type="password" class="w-full bg-gray-600 text-white" data-i18n placeholder="Type in your password"></p>
+                <p class="flex justify-end w-50 text-gray-500 dark:text-gray-400 my-2">
+                    <button id="loginSubmit" class="button p-2 px-3 border border-gray-400 bg-gray-800" data-i18n>Submit</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    let randomNumber, language = "ES"
+    //Client side functionality later passed to a backend service.
+    let text2Image = (text, canvasId, hexColor) => {
+        var tCtx = document.getElementById(canvasId).getContext('2d')
+        //imageElem = document.getElementById('image');
+        
+        tCtx.canvas.width = tCtx.measureText(text).width * 1.7;
+        tCtx.font = "bold 16px helvetica";
+        tCtx.fillStyle = hexColor;
+        tCtx.fillText(text, 0, 15);
+        //imageElem.src = tCtx.canvas.toDataURL();
+        //console.log(imageElem.src);
+    }
+    
+    let romanize = (num) => {
+        var lookup = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1},roman = '',i;
+        var str = '';
+        for (var i of Object.keys(lookup)) {
+            var q = Math.floor(num / lookup[i]);
+            num -= q * lookup[i];
+            str += i.repeat(q);
+        }
+        return str;
+    }
+    
+    let captchaGen = (message) => {
+        //Get the number from roman digits.
+        randomNumber = (1000+(Math.random()*1025)).toFixed()
+        text2Image(message+" "+romanize(randomNumber)+"?", "first", "#fff")
+        /*text2Image(romanize(randomNumber), "second", "#fff")
+        text2Image("?", "third", "#a0a0a0")
+        //Make a sum or substraction with 2 random numbers.
+        let randomNumber = (Math.random()*25+1).toFixed()
+        let otherRandomNumber = (Math.random()*25+1).toFixed()
+        let randomOperator = (Math.random()*2).toFixed() == 1 ? " + " : " - "
+        document.querySelector("#captcha").innerHTML = romanize(randomNumber)+randomOperator+romanize(otherRandomNumber)+" ("+randomNumber+randomOperator+otherRandomNumber+") = ?"*/
+    }
+    //captchaGen("What year is ")
+    document.querySelector("#registerSubmit").addEventListener("click", function(){
+        let answer = document.querySelector("#captchaAnswer").value
+        alert(randomNumber == answer ? "Excellent!" : (!answer ? "Fill in the answer to the captcha please." : "Wrong answer to the captcha! "+randomNumber))
+    })
+    translateAll(language);
+</script>
+</html>

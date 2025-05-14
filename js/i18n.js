@@ -71,6 +71,7 @@ var translationObject = {
     "Daily food income":{"ES":"Ingreso diario de alimento"},
     "Day":{"ES":"Día"},
     "Decepción":{"EN":"Dissapointment"},
+    "Desconocido aún":{"EN":"Unknown yet"},
     "Descubierta":{"EN":"Discovered"}, "Descubierto":{"EN":"Discovered"},
     "De acuerdo":{"EN":"Ok"},
     "de combate":{"EN":"of combat"},
@@ -95,8 +96,8 @@ var translationObject = {
     "Estadísticas generales":{"EN":"General statistics"},
     "Estado":{"EN":"Status"},
     "Expedición para atacar otras colonias":{"EN":"Expedition to attack other colonies"},
-    "Expedición para descubrir montes de recursos":{"ES":"Expedition to discover resources mounts"},
-    "Expedición para descubrir ruinas":{"ES":"Expedition to discover ruins"},
+    "Expedición para descubrir montes de recursos":{"EN":"Expedition to discover resources mounts"},
+    "Expedición para descubrir ruinas":{"EN":"Expedition to discover ruins"},
     "Expediciones":{"EN":"Expeditions"},
     "Expediciones activas":{"EN":"Active expeditions"},
     "Expedition to attack other colonies":{"ES":"Expedición para atacar otras colonias"},
@@ -253,6 +254,7 @@ var translationObject = {
     "Recursos vitales":{"EN":"Vital resources"},
     "Reingresa la misma contraseña":{"EN":"Retype previous password"},
     "Registrarse":{"EN":"Sign up"},
+    "Required travel time":{"ES":"Tiempo de viaje requerido"},
     "Reservorio de agua":{"EN":"Water reservoir"},
     "Retype previous password":{"ES":"Reingresa la misma contraseña"},
     "Revisa esta guía para aprender cómo":{"ES":"Check out this guide to learn how to"},
@@ -306,6 +308,7 @@ var translationObject = {
     "tiene las siguientes cosas":{"EN":"has the following things"},
     "Tipo":{"EN":"Type"},
     "There are no buildings in your colony!":{"ES":"¡No hay ningún edificio en tu colonia!"},
+    "Tiempo de viaje requerido":{"EN":"Required travel time"},
     "to know more about what's going on":{"ES":"para saber más acerca de lo que está sucediendo"},
     "Total shelter capacity":{"ES":"Capacidad total de albergue"},
     "Trabajadores/as asignados":{"EN":"Assigned workers"},
@@ -340,6 +343,7 @@ var translationObject = {
     "units":{"ES":"unidades"},
     "units of":{"ES":"unidades de"},
     "units per day":{"ES":"unidades por día"},
+    "Unknown yet":{"ES":"Desconocido aún"},
     "Unlimited":{"ES":{"F":"Ilimitada", "M":"Ilimitado"}},
     "Vacía":{"EN":"Empty"}, "Vacío":{"EN":"Empty"},
     "varones":{"EN":"men"},
@@ -384,7 +388,8 @@ var translationObject = {
     "Zone researched!":{"ES":"¡Zona investigada!"},
 }
 
-const translate = function(language, phrase, gender = "", formatResult = "") {
+const translate = function(aLanguage, phrase, gender = "", formatResult = "") {
+    language = aLanguage
     try{
         //Format result = capitalized | lowercase | uppercase
         let phraseLowerDetected = typeof(translationObject[phrase.toLowerCase()]) != "undefined"
@@ -426,8 +431,9 @@ const translate = function(language, phrase, gender = "", formatResult = "") {
     }
 }
 
-const translateAll = function (language) {
-    document.title = translationObject[document.title][language]
+const translateAll = function (aLanguage) {
+    language = aLanguage
+    document.title = translationObject[document.title][aLanguage]
     let unTranslatedText = "", translatedText = ""
     document.querySelectorAll('[data-i18n]').forEach((value, key) => {
         unTranslatedText = value.hasAttribute("placeholder") ? value.placeholder : (value.innerText ? value.innerText : value.innerHTML)
@@ -440,7 +446,7 @@ const translateAll = function (language) {
                                     : ""
                                 )
                             ))
-        translatedText = translate(language, unTranslatedText, value.hasAttribute("gender") ? value.getAttribute("gender") : "", formatResult)
+        translatedText = translate(aLanguage, unTranslatedText, value.hasAttribute("gender") ? value.getAttribute("gender") : "", formatResult)
         if(value.tagName == "CANVAS"){
             captchaGen(translatedText)
         } else {

@@ -105,13 +105,15 @@ class panel{
         }
         if(this.panelName == "newExpedition"){
             //Specific New Expedition panel
-            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Type")+":")
+            //Build type of expedition options
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Type"))
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendHTML(": ")
             s = new element("span", "expeditionType grow flex", [], p.getNode()); s.create()
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-green-800", [{"key":"data-type", "value":"of resources"}], s.getNode())
+            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-green-800", [{"key":"data-type", "value":"of resources"},{"key":"data-i18n", "value":""}], s.getNode())
             b.create(); b.appendContent(translate(language, "of resources"))
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-blue-800", [{"key":"data-type", "value":"of ruins"}], s.getNode())
+            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-blue-800", [{"key":"data-type", "value":"of ruins"},{"key":"data-i18n", "value":""}], s.getNode())
             b.create(); b.appendContent(translate(language, "of ruins"))
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-red-800", [{"key":"data-type", "value":"of combat"}], s.getNode())
+            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-red-800", [{"key":"data-type", "value":"of combat"},{"key":"data-i18n", "value":""}], s.getNode())
             b.create(); b.appendContent(translate(language, "of combat"))
         }
         //Button events
@@ -123,8 +125,18 @@ class panel{
                     let background = e.target.classList.contains("bg-blue-800") ? "blue" : (e.target.classList.contains("bg-green-800") ? "green" : "red")
                     document.querySelectorAll(".expeditionType button").forEach((button) => button.classList.add("hidden"))
                     let typeText = "Expedition to "+(e.target.getAttribute("data-type") == "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") == "of ruins" ? "discover ruins" : "attack other colonies"))
-                    s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [], s.getNode())
+                    s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""}], s.getNode())
                     s1.create(); s1.appendContent(translate(language, typeText))
+                    
+                    //Build needed time text
+                    let p1 = new element("p", "w-100 items-center flex-wrap pb-2 px-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p1.create()
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Required travel time"))
+                    s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
+                    s = new element("span", "ms-1 font-bold", [], p1.getNode(), "expeditionRequiredTime"); s.create()
+                    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML("(")
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode(), "newExpeditionTime"); s1.create(); s1.appendContent(translate(language, "Unknown yet"))
+                    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML(")")
+
                     //Build workers/army assigned title
                     let assignedType = type == "of combat" ? "army" : "workers"
                     d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType+"-title")

@@ -60,6 +60,16 @@ class panel{
         //Build close icon to the right
         i = new element("i", "mt-0 text-base fa fa-times font-bold", [], p.getNode()); i.create()
         i.getNode().addEventListener("click", (e) => {
+            if(this.panelName == "newExpedition"){
+                //Make assigned expeditionaries or army available restoring status of all of them.
+                document.querySelectorAll(".assignedWorkers h2").forEach((citizen) => {
+                    let citizenIndex = citizen.id.split("-")[2]
+                    document.querySelectorAll("#citizen-"+citizenIndex+"-status").forEach((status) => {
+                        status.setAttribute("data-status", "idle")
+                        status.innerText = translate(language, "idle")
+                    })
+                })
+            }
             this.removePanel()
             this.showPreviousOptions()
         })
@@ -97,8 +107,8 @@ class panel{
             //Specific New Expedition panel
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Type")+":")
             s = new element("span", "expeditionType grow flex", [], p.getNode()); s.create()
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-green-800", [{"key":"data-type", "value":"of mounts"}], s.getNode())
-            b.create(); b.appendContent(translate(language, "of mounts"))
+            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-green-800", [{"key":"data-type", "value":"of resources"}], s.getNode())
+            b.create(); b.appendContent(translate(language, "of resources"))
             b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-blue-800", [{"key":"data-type", "value":"of ruins"}], s.getNode())
             b.create(); b.appendContent(translate(language, "of ruins"))
             b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-red-800", [{"key":"data-type", "value":"of combat"}], s.getNode())
@@ -112,8 +122,8 @@ class panel{
                     let type = e.target.getAttribute("data-type")
                     let background = e.target.classList.contains("bg-blue-800") ? "blue" : (e.target.classList.contains("bg-green-800") ? "green" : "red")
                     document.querySelectorAll(".expeditionType button").forEach((button) => button.classList.add("hidden"))
-                    let typeText = "Expedition to "+(e.target.getAttribute("data-type") == "of mounts" ? "discover mounts" : (e.target.getAttribute("data-type") == "of ruins" ? "discover ruins" : "attack other colonies"))
-                    s1 = new element("span", "ms-2 p-1 px-2 text-white border border-gray-400 bg-"+background+"-800", [], s.getNode())
+                    let typeText = "Expedition to "+(e.target.getAttribute("data-type") == "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") == "of ruins" ? "discover ruins" : "attack other colonies"))
+                    s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [], s.getNode())
                     s1.create(); s1.appendContent(translate(language, typeText))
                     //Build workers/army assigned title
                     let assignedType = type == "of combat" ? "army" : "workers"

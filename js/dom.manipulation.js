@@ -127,16 +127,30 @@ class panel{
                     let typeText = "Expedition to "+(e.target.getAttribute("data-type") == "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") == "of ruins" ? "discover ruins" : "attack other colonies"))
                     s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""}], s.getNode())
                     s1.create(); s1.appendContent(translate(language, typeText))
-                    
                     //Build needed time text
-                    let p1 = new element("p", "w-100 items-center flex-wrap pb-2 px-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p1.create()
+                    let p1 = new element("p", "w-100 items-center flex-wrap px-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p1.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Required travel time"))
                     s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
                     s = new element("span", "ms-1 font-bold", [], p1.getNode(), "expeditionRequiredTime"); s.create()
                     s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML("(")
-                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode(), "newExpeditionTime"); s1.create(); s1.appendContent(translate(language, "Unknown yet"))
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], s.getNode(), "newExpeditionTime"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "m"))
                     s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML(")")
-
+                    //Build mount discovery probability text
+                    p1 = new element("p", "w-100 items-center flex-wrap pb-2 px-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p1.create()
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Mount discovery probability"))
+                    s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
+                    s = new element("span", "ms-1 font-bold", [], p1.getNode(), "expeditionProbability"); s.create()
+                    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML("(")
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"f"}], s.getNode(), "newExpeditionProbability"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "f"))
+                    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML(")")
+                    p = new element("p", "flex justify-left mb-2", [], d1.getNode()); p.create()
+                    b = new element("button", "hidden flex items-center my-1 px-3 text-xs text-white ms-1 p-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
+                    i = new element("i", "mt-0.5 fa fa-play", [], b.getNode()); i.create()
+                    s1 = new element("span", "ms-2 grow", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create()
+                    s1.appendContent(translate(language, "Start expedition"))
+                    p = new element("p", "hidden mb-3 p-1 px-2 rounded font-bold text-white border-red-600 bg-red-600", [], d1.getNode(), "searchZoneWarning"); p.create()
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s1.create()
+                    s1.appendContent(translate(language, "Warning! Time is stopped. Search the zone in the Colony panel to start your game."))
                     //Build workers/army assigned title
                     let assignedType = type == "of combat" ? "army" : "workers"
                     d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType+"-title")
@@ -160,7 +174,7 @@ class panel{
                     d = new element("div", "available"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType)
                     d.create()
                     if(type != "of combat"){
-                        //Check if there is no available expeditionary to add here. If not, place the "No workers available" text instead.
+                        //Check if there are available expeditionaries to add here. If not, place the "No workers available" text instead.
                         if(document.querySelectorAll("[data-role=\"expeditioning\"]").length){
                             document.querySelectorAll("[data-role=\"expeditioning\"]").forEach((citizen) => {
                                 let citizenIndex = citizen.id.split("-")[1]
@@ -183,6 +197,29 @@ class panel{
                         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
                         s1.create(); s1.appendContent(translate(language, "No "+assignedType+" available"))
+                    }
+                    //Build available other objects title
+                    d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-available-objects-title")
+                    d.create()
+                    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Other objects available"))
+                    //Build available other objects panel
+                    d = new element("div", "availableObjects p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-objects")
+                    d.create()
+                    //Any horses in stock?
+                    if(stock.products.horse*1){
+                        for(h=0; h<stock.products.horse*1; h++){
+                            addAvailableHorseToExpedition(h+1)
+                            //document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
+                            document.getElementById("horse-"+(h+1)+"-assign").addEventListener("click", handleToggleHorse)
+                        }
+                    } else {
+                        //Add "No other objects available" text.
+                        p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
+                        s = new element("span", "", [], p.getNode()); s.create()
+                        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
+                        s1.create(); s1.appendContent(translate(language, "No other objects available"))
                     }
                 })
             })
@@ -1243,7 +1280,7 @@ let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     if(document.querySelector("."+newExpeditionClass+" .availableWorkers .empty")!=null){
         document.querySelector("."+newExpeditionClass+" .availableWorkers .empty").remove()
     }
-    h2 = new element("h2", "", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
+    h2 = new element("h2", "availableWorker", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
     d = new element("div", "flex items-center justify-between w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
@@ -1266,13 +1303,32 @@ let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     i = new element("i", "text-sm fa fa-plus", [], s.getNode(), "citizen-"+citizenIndex+"-assign"); i.create()
 }
 //For any mount discovered: Add available worker
+let addAvailableHorseToExpedition = (horseIndex) => {
+    let parentElem = document.querySelector(".newExpedition .availableObjects")
+        //Remove "no available workers" text, if exists
+    if(document.querySelector(".newExpedition .availableObjects .empty")!=null){
+        document.querySelector(".newExpedition .availableObjects .empty").remove()
+    }
+    h2 = new element("h2", "availableHorse", [], parentElem, "available-horse-"+horseIndex); h2.create()
+    d = new element("div", "flex items-center justify-content w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+    d.create()
+    s = new element("span", "grow", [], d.getNode()); s.create()
+    //Add horse
+    //Horse icon
+    i = new element("i", "fa fa-horse", [], s.getNode()); i.create()
+    s1 = new element("span", "mx-1", [], s.getNode(), "expedition-horse-"+horseIndex); s1.create(); s1.appendContent(translate(language, "Horse", "", "capitalized"))
+    s2 = new element("span", "", [], s.getNode()); s2.create(); s2.appendHTML("#"+horseIndex)
+    //Assign horse to expedition workers
+    i = new element("i", "text-sm fa fa-plus", [], d.getNode(), "horse-"+horseIndex+"-assign"); i.create()
+}
+//For any mount discovered: Add available worker
 let addAvailableWorkerToMount = (citizenIndex, mountClass) => {
     let parentElem = document.querySelector("."+mountClass+" .availableWorkers")
     //Remove "no available workers" text, if exists
     if(document.querySelector("."+mountClass+" .availableWorkers .empty")!=null){
         document.querySelector("."+mountClass+" .availableWorkers .empty").remove()
     }
-    h2 = new element("h2", "", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
+    h2 = new element("h2", "availableWorker", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
     d = new element("div", "flex items-center justify-between w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
@@ -1294,6 +1350,30 @@ let addAvailableWorkerToMount = (citizenIndex, mountClass) => {
     //Assign citizen as worker
     i = new element("i", "text-sm fa fa-plus", [], s.getNode(), "citizen-"+citizenIndex+"-assign"); i.create()
 }
+//For certain new expedition: Add assigned horse
+let addAssignedHorseToExpedition = (horseIndex) => {
+    let parentAssigned = document.querySelector(".newExpedition .assignedWorkers")
+    let parentAvailable = document.querySelector(".newExpedition .availableObjects")
+    //Remove "no assigned workers" text, if exists
+    if(document.querySelector(".newExpedition .assignedWorkers .empty")!=null){
+        document.querySelector(".newExpedition .assignedWorkers .empty").remove()
+    }
+    //Assign horse to "Assigned workers" panel.
+    parentAssigned.appendChild(document.getElementById("available-horse-"+horseIndex))
+    document.getElementById("available-horse-"+horseIndex).classList.remove("availableHorse")
+    document.getElementById("available-horse-"+horseIndex).classList.add("assignedHorse")
+    document.getElementById("available-horse-"+horseIndex).id = "assigned-horse-"+horseIndex
+    //Change assign icon, put instead deassign icon
+    document.getElementById("horse-"+horseIndex+"-assign").classList.remove("fa-plus")
+    document.getElementById("horse-"+horseIndex+"-assign").classList.add("fa-minus")
+    //If no more available objects, then show "No other objects available" text
+    if(!parentAvailable.children.length){
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAvailable); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No other objects available"))
+    }
+}
 //For certain new expedition: Add assigned worker (expeditionary)
 let addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     let parentAssigned = document.querySelector("."+newExpeditionClass+" .assignedWorkers")
@@ -1304,6 +1384,8 @@ let addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     }
     //Assign citizen to "Assigned workers" panel.
     parentAssigned.appendChild(document.getElementById("available-citizen-"+citizenIndex))
+    document.getElementById("available-citizen-"+citizenIndex).classList.remove("availableWorker")
+    document.getElementById("available-citizen-"+citizenIndex).classList.add("assignedWorker")
     document.getElementById("available-citizen-"+citizenIndex).id = "assigned-citizen-"+citizenIndex
     //Change assign icon, put instead deassign icon
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-plus")
@@ -1331,6 +1413,8 @@ let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     }
     //Assign citizen to "Assigned workers" panel.
     parentAssigned.appendChild(document.getElementById("available-citizen-"+citizenIndex))
+    document.getElementById("available-citizen-"+citizenIndex).classList.remove("availableWorker")
+    document.getElementById("available-citizen-"+citizenIndex).classList.add("assignedWorker")
     document.getElementById("available-citizen-"+citizenIndex).id = "assigned-citizen-"+citizenIndex
     //Change assign icon, put instead deassign icon
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-plus")
@@ -1363,6 +1447,30 @@ let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
     }
 }
+//For certain new expedition: Remove (Deassign) assigned horse
+let deassignHorseToExpedition = (horseIndex) => {
+    let parentAssigned = document.querySelector(".newExpedition .assignedWorkers")
+    let parentAvailable = document.querySelector(".newExpedition .availableObjects")
+    //Remove "No other objects available" text, if exists
+    if(document.querySelector(".newExpedition .availableObjects .empty")!=null){
+        document.querySelector(".newExpedition .availableObjects .empty").remove()
+    }
+    //Assign horse to "Available objects" panel.
+    parentAvailable.appendChild(document.getElementById("assigned-horse-"+horseIndex))
+    document.getElementById("assigned-horse-"+horseIndex).classList.remove("assignedHorse")
+    document.getElementById("assigned-horse-"+horseIndex).classList.add("availableHorse")
+    document.getElementById("assigned-horse-"+horseIndex).id = "available-horse-"+horseIndex
+    //Change assign icon, put instead deassign icon
+    document.getElementById("horse-"+horseIndex+"-assign").classList.remove("fa-minus")
+    document.getElementById("horse-"+horseIndex+"-assign").classList.add("fa-plus")
+    //If no assigned workers, then show "no workers assigned" text
+    if(!parentAssigned.children.length){
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
+    }
+}
 //For certain new expedition: Remove (Deassign) assigned worker
 let deassignWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     let parentAssigned = document.querySelector("."+newExpeditionClass+" .assignedWorkers")
@@ -1373,6 +1481,8 @@ let deassignWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     }
     //Assign citizen to "Assigned workers" panel.
     parentAvailable.appendChild(document.getElementById("assigned-citizen-"+citizenIndex))
+    document.getElementById("assigned-citizen-"+citizenIndex).classList.remove("assignedWorker")
+    document.getElementById("assigned-citizen-"+citizenIndex).classList.add("availableWorker")
     document.getElementById("assigned-citizen-"+citizenIndex).id = "available-citizen-"+citizenIndex
     //Change assign icon, put instead deassign icon
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-minus")
@@ -1400,6 +1510,8 @@ let deassignWorkerToMount = (citizenIndex, mountClass) => {
     }
     //Assign citizen to "Assigned workers" panel.
     parentAvailable.appendChild(document.getElementById("assigned-citizen-"+citizenIndex))
+    document.getElementById("assigned-citizen-"+citizenIndex).classList.remove("assignedWorker")
+    document.getElementById("assigned-citizen-"+citizenIndex).classList.add("availableWorker")   
     document.getElementById("assigned-citizen-"+citizenIndex).id = "available-citizen-"+citizenIndex
     //Change assign icon, put instead deassign icon
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-minus")

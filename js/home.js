@@ -1,6 +1,6 @@
 var language, citizensAmount, citizensFemaleAmount, citizensMaleAmount
 var daysPassed = 0, dayPassed = weekPassed = false, searchingZone = zoneSearched = lifeStarted = false
-var colonyWaterReservoir = ""
+var colonyWaterReservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0
 var wagonsAmount, horsesAmount
 var colonyScore, colonyLifeQuality
 
@@ -54,10 +54,11 @@ let colonySatisfaction = (lifeQuality, population) => {
     }
     return satisfaction
 }
-let searchZone = () => {
+let searchZone = (e) => {
     document.querySelector("#searchZone > span").innerText = translate(language, "Your citizens are searching the zone...")
     document.querySelector("#searchZone > i").classList.add("fa-beat")
     searchingZone = true
+    e.target.removeEventListener("click", searchZone)
 }
 
 let lifeInterval = setInterval(() => {
@@ -95,8 +96,8 @@ let lifeInterval = setInterval(() => {
             //Remove search zone button from Colony's available actions
             document.querySelector("#colony-actions > p > button").remove()
             s = new element("span", "", [{"key":"data-i18n", "value":""}], document.querySelector("#colony-actions > p")); s.create(); s.appendContent(translate(language, "No actions available"))
-            //Remove warning
-            document.querySelector("#searchZoneWarning").remove()
+            //Remove warnings
+            document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.remove() })
             //Update initial stock
             loadInitialRandomGoods()
             //Update initial shelter capacity
@@ -122,6 +123,12 @@ let lifeInterval = setInterval(() => {
                     citizenStatus.innerHTML = translate(language, "Working")
                 }
             })
+            //Update possible actions blocked by not having searched the zone previously.
+            if(document.querySelectorAll(".newExpedition .assignedWorkers .assignedWorker").length){
+                //If there were expeditionaries assigned to an expedition, add button to start it.
+                document.querySelector("#expeditionStart").classList.remove("hidden")
+                //Add click event
+            }
         }
         if(dayPassed){
             //Update resource extractions
@@ -310,6 +317,32 @@ enableNotificationEvents()
 //daysPassed = 6
 
 let citizenIndex
+let handleToggleHorse = (e) => {
+    e.target.removeEventListener("click", handleToggleHorse)
+    //Get citizen index
+    let horseIndex = e.target.id.split("-")[1]
+    if(e.target.classList.contains("fa-plus")){
+        addAssignedHorseToExpedition(horseIndex)
+    } else {
+        deassignHorseToExpedition(horseIndex)
+    }
+    //Check amount of citizens and horses already assigned.
+    let expeditionariesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedWorker").length
+    let horsesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedHorse").length
+    let timeString = ""
+    if(expeditionariesAlreadyAssigned){
+        //Calculate required expedition time.
+        let timeRequired = expeditionRequiredTime(resourcesExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
+        if(timeRequired.inGame.clock.years > 0){ timeString+= timeRequired.inGame.clock.years+translate(language,"years").charAt(0)+" " }
+        if(timeRequired.inGame.clock.weeks > 0){ timeString+= timeRequired.inGame.clock.weeks+translate(language,"weeks").charAt(0)+" " }
+        if(timeRequired.inGame.clock.days > 0){ timeString+= timeRequired.inGame.clock.days+translate(language,"days").charAt(0)+" " }
+        timeString+= timeRequired.inGame.clock.hours+" hs."
+    } else {
+        timeString = "("+translate(language, "Unknown yet", "m")+")"
+    }
+    document.getElementById("expeditionRequiredTime").innerText = timeString
+    e.target.addEventListener("click", handleToggleHorse)
+}
 let handleToggleWorker = (e) => {
     e.target.removeEventListener("click", handleToggleWorker)
     //Get citizen index
@@ -332,6 +365,45 @@ let handleToggleWorker = (e) => {
             }
         }
     }
+    //Check amount of citizens and horses already assigned.
+    let expeditionariesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedWorker").length
+    let horsesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedHorse").length
+    //Calculate probability of finding a new resources mount.
+    let mountDiscoveryProbability = resourcesExpeditionProbability(resourcesExpeditionsDone, expeditionariesAlreadyAssigned)*1
+    if(lifeStarted){
+        document.getElementById("expeditionStart").classList.remove("hidden")
+    } else {
+        document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.classList.remove("hidden") })
+    }
+    if(mountDiscoveryProbability > 0){
+        document.getElementById("expeditionProbability").innerText = (mountDiscoveryProbability * 100).toFixed(1)+"%"
+    } else {
+        document.getElementById("expeditionProbability").innerText = "("+translate(language, "Unknown yet", "f")+")"
+        if(lifeStarted){
+            document.getElementById("expeditionStart").classList.add("hidden")
+        } else {
+            document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.classList.add("hidden") })
+        }
+    }
+    let timeString = ""
+    if(expeditionariesAlreadyAssigned + horsesAlreadyAssigned){
+        if(e.target.getAttribute("data-class") == "newExpedition"){
+            //Calculate required expedition time.
+            let timeRequired = expeditionRequiredTime(resourcesExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
+            if(timeRequired.inGame.clock.years > 0){ timeString+= timeRequired.inGame.clock.years+translate(language,"years").charAt(0)+" " }
+            if(timeRequired.inGame.clock.weeks > 0){ timeString+= timeRequired.inGame.clock.weeks+translate(language,"weeks").charAt(0)+" " }
+            if(timeRequired.inGame.clock.days > 0){ timeString+= timeRequired.inGame.clock.days+translate(language,"days").charAt(0)+" " }
+            timeString+= timeRequired.inGame.clock.hours+" hs."
+        }
+    } else {
+        if(lifeStarted){
+            document.getElementById("expeditionStart").classList.add("hidden")
+        } else {
+            document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.classList.add("hidden") })
+        }
+        timeString = "("+translate(language, "Unknown yet", "m")+")"
+    }
+    document.getElementById("expeditionRequiredTime").innerText = timeString
     e.target.addEventListener("click", handleToggleWorker)
 }
 //Panel Citizens - Action: Assign Role
@@ -386,8 +458,4 @@ document.querySelectorAll(".assignRole").forEach((value, index) => {
     })
 })
 
-document.querySelector("#searchZone").addEventListener("click", function(e){
-    e.target.removeEventListener("click", function(){})
-    searchZone()
-})
-
+document.querySelector("#searchZone").addEventListener("click", searchZone)

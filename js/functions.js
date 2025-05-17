@@ -1,7 +1,7 @@
 let expeditionRequiredTime = (succesfullExpeditions, horsesAssigned) => {
     //Returns the amount of ingame hours needed for an expedition.
     //It dependes on the current already succesfull expeditions done and mounted expeditionaries assigned.
-    let inGameTotalHours = 2 + Math.pow(2, succesfullExpeditions + 1) / (horsesAssigned + 1)
+    let inGameTotalHours = 30 /*+ 1 * 24 * 7*/ + Math.pow(2, succesfullExpeditions + 1) / (horsesAssigned + 1)
 
     let inGameTotalDays = inGameTotalHours / 24
     let inGameTotalWeeks = inGameTotalDays / 7

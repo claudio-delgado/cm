@@ -125,16 +125,30 @@ class panel{
                     let background = e.target.classList.contains("bg-blue-800") ? "blue" : (e.target.classList.contains("bg-green-800") ? "green" : "red")
                     document.querySelectorAll(".expeditionType button").forEach((button) => button.classList.add("hidden"))
                     let typeText = "Expedition to "+(e.target.getAttribute("data-type") == "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") == "of ruins" ? "discover ruins" : "attack other colonies"))
-                    s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""}], s.getNode())
+                    s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""},{"key":"data-type", "value":e.target.getAttribute("data-type")}], s.getNode())
                     s1.create(); s1.appendContent(translate(language, typeText))
                     //Build needed time text
                     let p1 = new element("p", "w-100 items-center flex-wrap px-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p1.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Required travel time"))
                     s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
-                    s = new element("span", "ms-1 font-bold", [], p1.getNode(), "expeditionRequiredTime"); s.create()
-                    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML("(")
-                    s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], s.getNode(), "newExpeditionTime"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "m"))
-                    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML(")")
+                    s = new element("span", "ms-1 px-1 rounded bg-gray-700 border border-gray-500", [], p1.getNode(), "expeditionRequiredTime"); s.create()
+                    //Initially hidden required time information
+                    s2 = new element("span", "hidden", [], s.getNode(), "newExpedition-required-info"); s2.create()
+                    s1 = new element("span", "hidden font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-years"); s1.create()
+                    s1 = new element("span", "hidden ms-1", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-yearsText"); s1.create(); s1.appendHTML(translate(language, "Years", "", "lowercase"))
+                    s1 = new element("span", "hidden", [], s2.getNode(), "newExpedition-required-yearsComma"); s1.create(); s1.appendContent(", ")
+                    s1 = new element("span", "hidden font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-weeks"); s1.create()
+                    s1 = new element("span", "hidden ms-1", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-weeksText"); s1.create(); s1.appendHTML(translate(language, "Weeks", "", "lowercase"))
+                    s1 = new element("span", "hidden", [], s2.getNode(), "newExpedition-required-weeksComma"); s1.create(); s1.appendContent(", ")
+                    s1 = new element("span", "hidden font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-days"); s1.create()
+                    s1 = new element("span", "hidden ms-1", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-daysText"); s1.create(); s1.appendHTML(translate(language, "Days", "", "lowercase"))
+                    s1 = new element("span", "hidden", [], s2.getNode(), "newExpedition-required-daysComma"); s1.create(); s1.appendContent(", ")
+                    s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-hours"); s1.create()
+                    s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s2.getNode()); s1.create(); s1.appendHTML("hs.")
+                    //Unknown yet text
+                    s1 = new element("span", "unknownTime", [], s.getNode()); s1.create(); s1.appendHTML("(")
+                    s1 = new element("span", "unknownTime", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], s.getNode(), "newExpeditionTime"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "m"))
+                    s1 = new element("span", "unknownTime", [], s.getNode()); s1.create(); s1.appendHTML(")")
                     //Build mount discovery probability text
                     p1 = new element("p", "w-100 items-center flex-wrap pb-2 px-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p1.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Mount discovery probability"))
@@ -143,20 +157,34 @@ class panel{
                     s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML("(")
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"f"}], s.getNode(), "newExpeditionProbability"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "f"))
                     s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML(")")
-                    p = new element("p", "flex justify-left mb-2", [], d1.getNode()); p.create()
-                    b = new element("button", "hidden flex items-center my-1 px-3 text-xs text-white ms-1 p-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
-                    i = new element("i", "mt-0.5 fa fa-play", [], b.getNode()); i.create()
-                    s1 = new element("span", "ms-2 grow", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create()
-                    s1.appendContent(translate(language, "Start expedition"))
+                    /**/
                     p = new element("p", "hidden mb-3 p-1 px-2 rounded font-bold text-white border-red-600 bg-red-600", [], d1.getNode(), "searchZoneWarning"); p.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s1.create()
                     s1.appendContent(translate(language, "Warning! Time is stopped. Search the zone in the Colony panel to start your game."))
+                    //Build New expedition available actions title
+                    d3 = document.getElementById("expeditions-newExpedition")
+                    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-actions-title")
+                    d2.create();
+                    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d2.getNode()); p.create()
+                    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Actions available"))
+                    //Build New expedition available actions area
+                    d2 = new element("div", "activeExpeditions p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-actions-area")
+                    d2.create()
+                    p = new element("p", "empty w-100 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+                    b = new element("button", "hidden text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
+                    i = new element("i", "mt-0.5 fa fa-play", [], b.getNode()); i.create()
+                    s1 = new element("span", "ms-2 grow", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create()
+                    s1.appendContent(translate(language, "Start resources mounts expedition"))
+                    s1 = new element("span", "", [], p.getNode(), "newExpeditionNoActions"); s1.create()
+                    i = new element("i", "fa fa-light fa-empty-set me-1", [], s1.getNode()); i.create()
+                    s2 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "None", "f"))
+
                     //Build workers/army assigned title
                     let assignedType = type == "of combat" ? "army" : "workers"
                     d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType+"-title")
                     d.create()
                     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
-                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned "+assignedType))
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned "+(assignedType == "workers" ? "expeditionaries" : assignedType)))
                     //Build workers assigned panel
                     d = new element("div", "assigned"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType)
                     d.create()
@@ -164,31 +192,45 @@ class panel{
                     s = new element("span", "", [], p.getNode()); s.create()
                     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                    s1.create(); s1.appendContent(translate(language, "No "+assignedType+" assigned"))
+                    s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" assigned"))
                     //Build available workers/army title
                     d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType+"-title")
                     d.create()
                     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
-                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available "+assignedType))
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available "+(assignedType == "workers" ? "expeditionaries" : assignedType)))
                     //Build available workers/army panel
                     d = new element("div", "available"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType)
                     d.create()
                     if(type != "of combat"){
                         //Check if there are available expeditionaries to add here. If not, place the "No workers available" text instead.
                         if(document.querySelectorAll("[data-role=\"expeditioning\"]").length){
+                            let availableExpeditionariesExist = false
                             document.querySelectorAll("[data-role=\"expeditioning\"]").forEach((citizen) => {
                                 let citizenIndex = citizen.id.split("-")[1]
-                                addAvailableWorkerToExpedition(citizenIndex, "newExpedition")
-                                document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
-                                document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
+                                document.querySelectorAll("#citizen-"+citizenIndex+"-status").forEach((elem) => {
+                                    if(elem.getAttribute("data-status") == "idle"){
+                                        addAvailableWorkerToExpedition(citizenIndex, "newExpedition")
+                                        document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
+                                        document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
+                                        availableExpeditionariesExist = true
+                                    }
+                                })
                             })
+                            if(!availableExpeditionariesExist){
+                                //Add "No workers/army available" text.
+                                p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
+                                s = new element("span", "", [], p.getNode()); s.create()
+                                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                                s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
+                                s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" available"))
+                            }
                         } else {
                             //Add "No workers/army available" text.
                             p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
                             s = new element("span", "", [], p.getNode()); s.create()
                             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                             s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                            s1.create(); s1.appendContent(translate(language, "No "+assignedType+" available"))
+                            s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" available"))
                         }
                     } else {
                         //Add "No army available" text.
@@ -196,7 +238,7 @@ class panel{
                         s = new element("span", "", [], p.getNode()); s.create()
                         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                        s1.create(); s1.appendContent(translate(language, "No "+assignedType+" available"))
+                        s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" available"))
                     }
                     //Build available other objects title
                     d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-available-objects-title")
@@ -209,9 +251,7 @@ class panel{
                     //Any horses in stock?
                     if(stock.products.horse*1){
                         for(h=0; h<stock.products.horse*1; h++){
-                            addAvailableHorseToExpedition(h+1)
-                            //document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
-                            document.getElementById("horse-"+(h+1)+"-assign").addEventListener("click", handleToggleHorse)
+                            addAvailableHorseToExpedition().addEventListener("click", handleToggleHorse)
                         }
                     } else {
                         //Add "No other objects available" text.
@@ -990,7 +1030,7 @@ let accordionExpeditions = () => {
         b.getNode().addEventListener("click", function(e){
             let objectData = {"language": language, "parentId": "#expeditions"}
             //Build assign role panel
-            let newExpeditionPanel = new panel("newExpedition", objectData, "expeditions", false, "actions")
+            newExpeditionPanel = new panel("newExpedition", objectData, "expeditions", false, "actions")
             newExpeditionPanel.hidePreviousOptions()
             newExpeditionPanel.buildPanel()
         })
@@ -1014,13 +1054,13 @@ let accordionExpeditions = () => {
     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d1.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Active expeditions")
     //Build Active expeditions area
-    d1 = new element("div", "activeExpeditions p-2 ps-3 mb-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d.getNode(), "active-expeditions-area")
+    d1 = new element("div", "activeExpeditions p-2 ps-2 mb-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d.getNode(), "active-expeditions-area")
     d1.create();
-    p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d1.getNode()); p.create()
+    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d1.getNode()); p.create()
     s = new element("span", "", [], p.getNode()); s.create()
     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
     s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s.getNode()); s1.create(); s1.appendContent("None")
-
+    
     buildActionsAvailable()
 }
 //Build modal popup
@@ -1045,6 +1085,92 @@ let modalPopup = (modalTitle, modalType) => {
     //Build popup body
     if(modalType == "ZoneSearched"){ popupZoneSearched() }
     if(modalType == "RoleCitizenBusy"){ popupCannotChangeRole() }
+}
+let buildActiveExpedition = (parentElem, expeditionData = {}) => {
+    //Build current active expeditions
+    //Remove "No active expeditions" text if exists.
+    if(document.querySelector("#"+parentElem.id+" > p") != null){
+        document.querySelector("#"+parentElem.id+" > p").remove()
+    }
+    //Build current expedition accordion header
+    d2 = new element("div", "accordion-active-expedition", [{"key":"data-accordion", "value":"collapse"}], parentElem, "accordion-expedition-"+expeditionData.id); d2.create()
+    h2 = new element("h2", "", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
+    b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-expedition-"+expeditionData.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-expedition-"+expeditionData.id+"-body"}], h2.getNode())
+    b.create()
+    s = new element("span", "", [], b.getNode()); s.create()
+    i = new element("i", "fa fa-location-dot mt-1 me-2", [], s.getNode()); i.create()
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Resources expedition"))
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(" #"+expeditionData.id)
+    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+    //Build current expedition accordion body
+    d3 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-expedition-"+expeditionData.id+"-header"}], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-body"); d3.create()
+    d4 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d3.getNode()); d4.create()
+    d5 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d4.getNode(), "expedition-"+expeditionData.id); d5.create()
+    //Departure date...
+    p = new element("p", "mx-1 py-1 empty text-xs text-gray-500 dark:text-gray-200", [], d5.getNode()); p.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Departed in"))
+    s1 = new element("span", "", [], p.getNode()); s1.create(); s1.appendContent(": ")
+    s1 = new element("span", "px-1 ms-2 rounded border border-gray-500", [], p.getNode()); s1.create()
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(translate(language, "Year"))
+    s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-year"); s2.create(); s2.appendHTML(expeditionData.departedIn.year)
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(translate(language, "Week"))
+    s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-week"); s2.create(); s2.appendHTML(expeditionData.departedIn.week)
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-1-departed-dayText"); s2.create(); s2.appendHTML(translate(language, "Day"))
+    s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-day"); s2.create(); s2.appendHTML(expeditionData.departedIn.day)
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-1-departed-hour"); s2.create(); s2.appendHTML(expeditionData.departedIn.hour.toString().padStart(2, "0"))
+    s2 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML("hs.") 
+    //Returns in...
+    p = new element("p", "mx-1 py-1 empty text-xs text-gray-500 dark:text-gray-200", [], d5.getNode()); p.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Returns in"))
+    s1 = new element("span", "", [], p.getNode()); s1.create(); s1.appendContent(": ")
+    s2 = new element("span", "countdownTime activeExpedition px-1 ms-2 rounded border border-gray-500", [], p.getNode()); s2.create()
+    let hiddenClass = (expeditionData.returnsIn.years ? "" : "hidden ")
+    s1 = new element("span", hiddenClass+"countdown years font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-years"); s1.create(); s1.appendHTML(expeditionData.returnsIn.years)
+    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-yearsText"); s1.create(); s1.appendHTML(translate(language, "Years", "", "lowercase"))
+    //s1 = new element("span", hiddenClass, [], s2.getNode(), "expedition-"+expeditionData.id+"-pending-yearsComma"); s1.create(); s1.appendContent(", ")
+    hiddenClass = (expeditionData.returnsIn.weeks ? "" : "hidden ")
+    s1 = new element("span", hiddenClass+"countdown weeks font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeks"); s1.create(); s1.appendHTML(expeditionData.returnsIn.weeks)
+    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeksText"); s1.create(); s1.appendHTML(translate(language, "Weeks", "", "lowercase"))
+    //s1 = new element("span", hiddenClass, [], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeksComma"); s1.create(); s1.appendContent(", ")
+    hiddenClass = (expeditionData.returnsIn.days ? "" : "hidden ")
+    s1 = new element("span", hiddenClass+"countdown days font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-days"); s1.create(); s1.appendHTML(expeditionData.returnsIn.days)
+    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-daysText"); s1.create(); s1.appendHTML(translate(language, "Days", "", "lowercase"))
+    //s1 = new element("span", hiddenClass, [], s2.getNode(), "expedition-"+expeditionData.id+"-pending-daysComma"); s1.create(); s1.appendContent(", ")
+    s1 = new element("span", "countdown hours font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hours"); s1.create(); s1.appendHTML(expeditionData.returnsIn.hours)
+    s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hoursText"); s1.create(); s1.appendHTML("hs.")    
+    //Expeditionaries and objects assigned...
+    //Title
+    d3 = new element("div", "mt-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d5.getNode(), "expedition-"+expeditionData.id+"-assigned-workers-title"); d3.create()
+    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d3.getNode()); p.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent("Assigned expeditionaries")
+    //Body
+    d3 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d5.getNode(), "expedition-"+expeditionData.id+"-assigned-workers"); d3.create()
+    h2 = new element("h2", "", [], d3.getNode()); h2.create()
+    expeditionData.crew.forEach((crewMember) => {
+        d4 = new element("div", "flex items-center justify-between w-full p-1 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+        d4.create()
+        s = new element("span", "", [], d4.getNode()); s.create()
+        //Build expeditionary or horse crew div
+        if(crewMember.type == "expeditionary"){
+            i = new element("i", "me-1 fa fa-"+(crewMember.gender == "F" ? "venus" : "mars")+" text-"+(crewMember.gender == "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-gender-icon"); i.create()
+            i = new element("i", "me-1 fa fa-"+(crewMember.age == "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-age-icon"); i.create()
+            i = new element("i", "me-1 fa fa-map-location-dot text-green-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-role-icon"); i.create()
+            s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-xp-icon"); 
+            s1.create(); s1.appendContent(crewMember.xp.toString())
+            s1 = new element("span", "ms-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-name"); s1.create(); s1.appendContent(crewMember.name)
+            s = new element("span", "", [], d4.getNode()); s.create()
+            i = new element("i", "fa fa-eye me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-view-icon"); i.create()
+            //Change citizen status.
+            document.querySelectorAll("#citizen-"+crewMember.index+"-status").forEach((status) => {
+                status.innerText = translate(language, "Travelling")
+                status.setAttribute("data-status", "travelling")
+            })
+        } else {
+            i = new element("i", "me-1 fa fa-horse text-white", [], s.getNode()); i.create()
+            s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Horse", "", "capitalized"))
+            stock.products.horse--
+        }
+    })
 }
 
 //Enable accordion events
@@ -1303,23 +1429,23 @@ let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     i = new element("i", "text-sm fa fa-plus", [], s.getNode(), "citizen-"+citizenIndex+"-assign"); i.create()
 }
 //For any mount discovered: Add available worker
-let addAvailableHorseToExpedition = (horseIndex) => {
+let addAvailableHorseToExpedition = () => {
     let parentElem = document.querySelector(".newExpedition .availableObjects")
         //Remove "no available workers" text, if exists
     if(document.querySelector(".newExpedition .availableObjects .empty")!=null){
         document.querySelector(".newExpedition .availableObjects .empty").remove()
     }
-    h2 = new element("h2", "availableHorse", [], parentElem, "available-horse-"+horseIndex); h2.create()
+    h2 = new element("h2", "availableHorse", [], parentElem); h2.create()
     d = new element("div", "flex items-center justify-content w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "grow", [], d.getNode()); s.create()
     //Add horse
     //Horse icon
     i = new element("i", "fa fa-horse", [], s.getNode()); i.create()
-    s1 = new element("span", "mx-1", [], s.getNode(), "expedition-horse-"+horseIndex); s1.create(); s1.appendContent(translate(language, "Horse", "", "capitalized"))
-    s2 = new element("span", "", [], s.getNode()); s2.create(); s2.appendHTML("#"+horseIndex)
+    s1 = new element("span", "mx-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Horse", "", "capitalized"))
     //Assign horse to expedition workers
-    i = new element("i", "text-sm fa fa-plus", [], d.getNode(), "horse-"+horseIndex+"-assign"); i.create()
+    i = new element("i", "text-sm fa fa-plus", [], d.getNode()); i.create()
+    return i.getNode()
 }
 //For any mount discovered: Add available worker
 let addAvailableWorkerToMount = (citizenIndex, mountClass) => {
@@ -1351,7 +1477,7 @@ let addAvailableWorkerToMount = (citizenIndex, mountClass) => {
     i = new element("i", "text-sm fa fa-plus", [], s.getNode(), "citizen-"+citizenIndex+"-assign"); i.create()
 }
 //For certain new expedition: Add assigned horse
-let addAssignedHorseToExpedition = (horseIndex) => {
+let addAssignedHorseToExpedition = (horseElement) => {
     let parentAssigned = document.querySelector(".newExpedition .assignedWorkers")
     let parentAvailable = document.querySelector(".newExpedition .availableObjects")
     //Remove "no assigned workers" text, if exists
@@ -1359,13 +1485,12 @@ let addAssignedHorseToExpedition = (horseIndex) => {
         document.querySelector(".newExpedition .assignedWorkers .empty").remove()
     }
     //Assign horse to "Assigned workers" panel.
-    parentAssigned.appendChild(document.getElementById("available-horse-"+horseIndex))
-    document.getElementById("available-horse-"+horseIndex).classList.remove("availableHorse")
-    document.getElementById("available-horse-"+horseIndex).classList.add("assignedHorse")
-    document.getElementById("available-horse-"+horseIndex).id = "assigned-horse-"+horseIndex
+    parentAssigned.appendChild(horseElement)
+    horseElement.classList.remove("availableHorse")
+    horseElement.classList.add("assignedHorse")
     //Change assign icon, put instead deassign icon
-    document.getElementById("horse-"+horseIndex+"-assign").classList.remove("fa-plus")
-    document.getElementById("horse-"+horseIndex+"-assign").classList.add("fa-minus")
+    horseElement.querySelectorAll("i")[1].classList.remove("fa-plus")
+    horseElement.querySelectorAll("i")[1].classList.add("fa-minus")
     //If no more available objects, then show "No other objects available" text
     if(!parentAvailable.children.length){
         p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAvailable); p.create()
@@ -1448,7 +1573,7 @@ let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     }
 }
 //For certain new expedition: Remove (Deassign) assigned horse
-let deassignHorseToExpedition = (horseIndex) => {
+let deassignHorseToExpedition = (horseElement) => {
     let parentAssigned = document.querySelector(".newExpedition .assignedWorkers")
     let parentAvailable = document.querySelector(".newExpedition .availableObjects")
     //Remove "No other objects available" text, if exists
@@ -1456,13 +1581,12 @@ let deassignHorseToExpedition = (horseIndex) => {
         document.querySelector(".newExpedition .availableObjects .empty").remove()
     }
     //Assign horse to "Available objects" panel.
-    parentAvailable.appendChild(document.getElementById("assigned-horse-"+horseIndex))
-    document.getElementById("assigned-horse-"+horseIndex).classList.remove("assignedHorse")
-    document.getElementById("assigned-horse-"+horseIndex).classList.add("availableHorse")
-    document.getElementById("assigned-horse-"+horseIndex).id = "available-horse-"+horseIndex
+    parentAvailable.appendChild(horseElement)
+    horseElement.classList.remove("assignedHorse")
+    horseElement.classList.add("availableHorse")
     //Change assign icon, put instead deassign icon
-    document.getElementById("horse-"+horseIndex+"-assign").classList.remove("fa-minus")
-    document.getElementById("horse-"+horseIndex+"-assign").classList.add("fa-plus")
+    horseElement.querySelectorAll("i")[1].classList.remove("fa-minus")
+    horseElement.querySelectorAll("i")[1].classList.add("fa-plus")
     //If no assigned workers, then show "no workers assigned" text
     if(!parentAssigned.children.length){
         p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()

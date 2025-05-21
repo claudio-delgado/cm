@@ -117,7 +117,29 @@ let naming = {
                 "Amarilla", "Amapola", "Amor", "La ambiciosa", "Amatista", "Ananá", "Anilla", "La amigable", "Ámbar",
                 "Arándano", "Arcoiris", "La arisca", "Ardilla", "Araucaria", "Arte", "La astuta", "Argón", "Arce", "Astros",
                 "Atardecer", "La aventurera", "Azabache", "Avellana", "La avistadora", "Azurita", "Azalea", "Autora",
-                "La azotadora", "Azucena",
+                "La azotadora", "Azucena", "Bambú", "Bandera", "Banana", "Bario", "Barca", "La batalladora", "Batata", "Bauxita",
+                "Beige", "La bella", "Bellota", "Begonia", "Berenjena", "Berilo", "Berro", "Beso", "Bisonte", "La bizarra", 
+                "Blanca", "La bondadosa", "La bonita", "Boro", "Botánica","La brava", "Brazalete", "Brigada", "La brillante", 
+                "La bromista", "Bromo", "Bronce", "Brújula", "Bruma", "La brutal", "Burbuja", "La buena", "Búha", "La buscadora",
+                "Caballera", "Cactus", "Caladio", "Calcio", "Caléndula", "La calma", "Camelia", "La caminadora", "La caminante", 
+                "Campanario", "Campanilla", "Campaña", "La campeona", "Campiña", "Canción", "Canela", "Caoba", "Carbono", "Cardo", 
+                "Carmín", "Castaña", "La castigadora", "Catorce", "La cazadora", "Cedro", "Celestina", "Cereza", "Cien", "Cinco", 
+                "La cínica", "Cincuenta", "Ciprés", "Circón", "Ciruela", "Citrina", "Clavel", "Cloro", "Cobalto", "Cobre", "Coco", 
+                "La combativa", "La contenta", "Coral", "Coralina", "Corazón", "La cordial", "La corredora", "Crisantemo", "Cromo", 
+                "La cruel", "Cruzada", "Cuarenta", "Cuarta", "Cuarzo", "Cuatro", "Cuenta", "Cueva", "La cuidadosa", "La culta", 
+                "Cultura", "Dalia", "Damasca", "Dátil", "La decidida", "Décima", "Dédalo", "La delgada", "Del arroyo", "Del bosque",
+                "Del camino", "Del campo", "Del cantero", "Del castillo", "Del cerro", "Del estanque", "Del camino", "Del campo", 
+                "Del cantero", "Del castillo", "Del cerro", "Del estanque", "Del este", "Del horno", "Del lago", "Del mar", 
+                "Del norte", "Del oeste", "Del parque", "Del piedral", "Del prado", "Del puente", "Del rio", "Del sol", "Del sur",
+                "Del trigal", "Del valle", "Del viento", "De la mina", "De la torre", "La desafiante", "La detallista", "La devastadora",
+                "Diamante", "La digna", "Diversión", "La divertida", "La dócil", "Don", "Dorada", "Dos", "Dragón", "Duende", "Durazno", 
+                "La eficaz", "Ébano", "Espina", "Eclipse", "La eficaz", "La eficiente", "Elania", "La elegante", "La encantadora", 
+                "Enigma", "La enorme", "La entusiasta", "Equidna", "Eriza", "Escarlata", "Escorpiona", "La escritora", "Escultura", 
+                "Esfera", "Esmeralda", "Espejo", "La espléndida", "Estaño", "La estoica", "Estrella", "La estudiosa", "Eucalipto",
+                "El eterno", "La extraordinaria", "Fábula", "La fabulosa", "Faisán", "La famosa", "La fanática", "La fantástica", 
+                "Felicidad", "Felina", "La feroz", "Fiesta", "La filósofa", "Flamenca", "Flor", "Flúor", "Foco", "Fogata", "Fósforo",
+                "La frágil", "Frambuesa", "La frenética", "Fresa", "Fresia", "Fresno", "Frontera", "Frutilla", "Fucsia", "Fuego", 
+                "La fuerte", 
             ],
             "M": [
                 "El abominable", "Abeja", "Abedul", "Ábaco", "El aburrido", "Abeto", "Abanico", "El activo", "Aguamarina",
@@ -126,7 +148,29 @@ let naming = {
                 "Amarillo", "Amapola", "Amor", "El ambicioso", "Amatista", "Ananá", "Anillo", "El amigable", "Ámbar",
                 "Arándano", "Arcoiris", "El arisco", "Ardilla", "Araucaria", "Arte", "El astuto", "Argón", "Arce", "Astros",
                 "Atardecer", "El aventurero", "Azabache", "Avellano", "El avistador", "Azurita", "Azalea", "Autor",
-                "El azotador", "Azucena",
+                "El azotador", "Azucena", "Bambú", "Bandera", "Banano", "Bario", "Barco", "El batallador", "Batata", "Bauxita",
+                "Beige", "El bello", "Bellota", "Begonia", "Berenjena", "Berilo", "Berro", "Beso", "Bisonte", "El bizarro", 
+                "Blanco", "El bondadoso", "El bonito", "Boro", "Botánico", "El bravo", "Brazalete", "Brigada", "El brillante",
+                "El bromista", "Bromo", "Brújula",  "Bruma", "Bronce", "El brutal", "El bueno", "Burbuja", "Búho", "El buscador",
+                "Caballero", "Cactus", "Caladio", "Calcio", "Caléndula", "El calmo", "Camelia", "El caminador", "El caminante", 
+                "Campanario", "Campanilla", "Campaña", "El campeón", "Campiña", "Canción", "Canela", "Caoba", "Carbono", "Cardo", 
+                "Carmín", "Castaño", "El castigador", "Catorce", "El cazador", "Cedro", "Celestino", "Cerezo", "Cien", "Cinco", 
+                "El cínico", "Cincuenta", "Ciprés", "Circón", "Ciruelo", "Citrino", "Clavel", "Cloro", "Cobalto", "Cobre", "Coco", 
+                "El combativo", "El contento", "Coral", "Coralino", "Corazón", "El cordial", "El corredor", "Crisantemo", "Cromo", 
+                "El cruel", "Cruzado", "Cuarenta", "Cuarto", "Cuarzo", "Cuatro", "Cuento", "Cueva", "El cuidadoso", "El culto", 
+                "Cultura", "Dalia", "Damasco", "Dátil", "El decidido", "Décimo", "Dédalo", "El delgado", "Del arroyo", "Del bosque",
+                "Del camino", "Del campo", "Del cantero", "Del castillo", "Del cerro", "Del estanque", "Del camino", "Del campo", 
+                "Del cantero", "Del castillo", "Del cerro", "Del estanque", "Del este", "Del horno", "Del lago", "Del mar", 
+                "Del norte", "Del oeste", "Del parque", "Del piedral", "Del prado", "Del puente", "Del rio", "Del sol", "Del sur",
+                "Del trigal", "Del valle", "Del viento", "De la mina", "De la torre", "El desafiante", "El detallista", "El devastador", 
+                "Diamante", "El digno", "Diversión", "El divertido", "El dócil", "Don", "Dorado", "Dos", "Dragón", "Duende", "Durazno",
+                "El eficaz", "Ébano", "Espino", "Eclipse", "El eficaz", "El eficiente", "Elanio", "El elegante", "El encantador", 
+                "Enigma", "El enorme", "El entusiasta", "Equidna", "Erizo", "Escarlata", "Escorpión", "El escritor", "Escultura", 
+                "Esfera", "Esmeralda", "Espejo", "El espléndido", "Estaño", "El estoico", "Estrella", "El estudioso", "Eucalipto", 
+                "La eterna", "El extraordinario", "Fábula", "El fabuloso", "Faisán", "El famoso", "El fanático", "El fantástico", 
+                "Felicidad", "Felino", "El feroz", "Fiesta", "El filósofo", "Flamenco", "Flor", "Flúor", "Foca", "Fogata", "Fósforo",
+                "El frágil", "Frambuesa", "El frenético", "Fresa", "Fresia", "Fresno", "Frontera", "Frutilla", "Fucsia", "Fuego",
+                "El fuerte", 
             ]
         }
     }
@@ -170,7 +214,7 @@ let roleIcons = [
     {"EN": "banker", "ES": {"F": "banquera", "M": "banquero"}, "key":"bankery", "icon": "sack-dollar"}, {"EN": "academic", "ES": {"F": "académica", "M": "académico"}, "key":"researching", "icon": "graduation-cap"}, 
     {"EN": "merchant", "ES": "mercader", "key":"marketing", "icon": "store"}, {"EN": "expeditionary", "ES": {"F": "expedicionaria", "M": "expedicionario"}, "key":"expeditioning", "icon": "map-location-dot"}
 ]
-let personIcons = [ 
+let personIcons = [
     {"EN": "ancient", "ES": {"M":"anciano", "F":"anciana"}, "text":"xs", "icon": "person-cane"}, {"EN": "baby", "ES": {"F":"bebé", "M":"beba"}, "text":"xs", "icon": "baby"},
     {"EN": "child", "ES": {"M":"niño", "F":"niña"}, "text":"xs", "icon": "child"}, {"EN": "teen", "ES": "adolescente", "text":"sm", "icon": "person-walking"},
     {"EN": "adult", "ES": {"M":"adulto", "F":"adulta"}, "text":"base", "icon": "person"}, {"EN": "grown adult", "ES": {"M":"adulto mayor", "F":"adulta mayor", "text":"sm", "icon": "person-circle-exclamation"}},
@@ -199,6 +243,7 @@ var stock = {
         "wooden trunk": 150,
         "water": 75,
         "food": 75,
+        "rock": 10
     },
     "products": {
         "nail": 7500,
@@ -243,5 +288,11 @@ var shelterCapacities = {
     "mansion": 80,
     "graveyard": 16
 }
-//var waterReservoirs = [{"name":"Lake", "daily-water-income":"100", "daily-food-income":"50"}, {"name":"Lagoon", "daily-water-income":"70", "daily-food-income":"35"}, {"name":"River", "daily-water-income":"50", "daily-food-income":"25"}, {"name":"Stream", "daily-water-income":"35", "daily-food-income":"18"}]
+var mounts = {
+                "Hunting mount": {"discovery-probability-1":"0.50"}, 
+                "Stone mount": {"discovery-probability-1":"0.23", "discovery-probability-2":"0.45"}, 
+                "Wood mount": {"discovery-probability-1":"0.15", "discovery-probability-2":"0.3"}, 
+                "Clay mount": {"discovery-probability-1":"0.07", "discovery-probability-2":"0.15"},
+                "Mine": {"discovery-probability-1":"0.05", "discovery-probability-2":"0.1"},
+}
 var waterReservoirs = {"Lake": {"daily-water-income":"10", "daily-food-income":"5"}, "Lagoon":{"daily-water-income":"7", "daily-food-income":"3"}, "River":{"daily-water-income":"5", "daily-food-income":"2"}, "Stream":{"daily-water-income":"3", "daily-food-income":"1"}}

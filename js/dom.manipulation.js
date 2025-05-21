@@ -171,7 +171,7 @@ class panel{
                     d2 = new element("div", "activeExpeditions p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-actions-area")
                     d2.create()
                     p = new element("p", "empty w-100 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-                    b = new element("button", "hidden text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
+                    b = new element("button", "hidden unattached-click text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
                     i = new element("i", "mt-0.5 fa fa-play", [], b.getNode()); i.create()
                     s1 = new element("span", "ms-2 grow", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create()
                     s1.appendContent(translate(language, "Start resources mounts expedition"))
@@ -319,119 +319,187 @@ let accordionNews = () => {
     b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-news-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-news-body"}], h2.getNode())
     b.create()
     s = new element("span", "", [], b.getNode()); s.create()
-    s1 = new element("span", "bg-blue-100 text-blue-800 text-xs fa fa-beat font-medium me-3 px-2 py-1 rounded-sm dark:bg-blue-900 dark:text-blue-300", [], s.getNode(), "newsNotifications"); s1.create(); s1.appendContent("1")
+    s1 = new element("span", "bg-blue-100 text-blue-800 text-xs fa fa-beat font-medium me-3 px-2 py-1 rounded-sm dark:bg-blue-900 dark:text-blue-300", [], s.getNode(), "newsNotifications"); s1.create(); s1.appendContent("0")
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Recent news")
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build news accordion body
     d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-news"}], parentElem, "accordion-menu-news-body"); d1.create()
-    d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode(), "accordion-news-1-header"); d2.create()
+    d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-news"); d.create()
-    //Build notification 1 accordion header
-    h2 = new element("h2", "notificationUnread", [], d.getNode(), "accordion-news-1-header"); h2.create()
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-news-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-news-1-body"}], h2.getNode())
+}
+let addNews = (notificationType = "ZoneSearched", newsData) => {
+    let d = document.querySelector("#accordion-news")
+    let newsIndex = document.querySelectorAll("#accordion-news h2").length + 1
+    //Build notification #newsIndex accordion body
+    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-news-"+newsIndex+"-header"}], d, "accordion-news-"+newsIndex+"-body")
+    d1.create(first = true)
+    //Build notification #newsIndex accordion header
+    h2 = new element("h2", "notificationUnread", [], d, "accordion-news-"+newsIndex+"-header"); h2.create(first = true)
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-news-"+newsIndex+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-news-"+newsIndex+"-body"}], h2.getNode(), "accordion-news-"+newsIndex)
     b.create()
+    enableAccordionClick(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
-    s1.create(); s1.appendContent("NEW")
-    s1 = new element("span", "capital me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Year")
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent("1")
+    s1.create(); s1.appendContent(translate(language, "NEW", "f"))
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year", "", "capitalized"))
+    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentYear").innerText)
     s.appendHTML(", ")
-    s1 = new element("span", "capital me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Week")
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent("1")
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
+    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentWeek").innerText)
     s.appendHTML(", ")
-    s1 = new element("span", "capital me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Day")
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent("1")
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
+    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentDay").innerText)
     s.appendHTML(" (")
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent("00")
+    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentHour").innerText)
     s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.)")
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-    //Build notification 1 accordion body
-    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-news-1-header"}], d.getNode(), "accordion-news-1-body")
-    d1.create()
-    d2 = new element("div", "p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("Welcome to Medieval Colonies!")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("Great news come from a very distant land in which your people has found a place to build up your new colony.")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Your status is this")
-    p.appendHTML(":")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
-    s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(citizensAmount.toString())
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("citizens")
-    p.appendHTML(": ")
-    s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(citizensMaleAmount.toString())
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("men")
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("and")
-    s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(citizensFemaleAmount.toString())
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("women")
-    p.appendHTML(".")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
-    s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("a "+colonyWaterReservoir.toLowerCase())
-    s = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"*"}], p.getNode()); s.create(); s.appendContent("nearby")
-    p.appendHTML(".")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
-    s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(wagonsAmount.toString())
-    s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("wagons")
-    s = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"f"}], p.getNode()); s.create(); s.appendContent("full of resources and products.")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
-    s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(horsesAmount.toString())
-    s = new element("span", "font-bold", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("horses")
-    p.appendHTML(", ")
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("two for each wagon.")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Each wagon")
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("has the following things")
-    p.appendHTML(":")
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.resources["wooden trunk"]).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("wooden trunk")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.nail).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("nail")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.hammer).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("hammer")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.shovel).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("shovel")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.trowel).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("trowel")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.saw).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("saw")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.hay).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("hay")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.rope).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("rope")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.rag).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("rag")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.resources.water).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("water")
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.resources.food).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("food")
-    p = new element("p", "mb-0 p-1 px-2 rounded font-bold text-white border-red-600 bg-red-600", [], d2.getNode(), "searchZoneWarning"); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Warning! Time is stopped. Search the zone in the Colony panel to start your game.")
+    switch(notificationType){
+        case "Welcome":
+            d2 = new element("div", "p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("Welcome to Medieval Colonies!")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("Great news come from a very distant land in which your people has found a place to build up your new colony.")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Your status is this")
+            p.appendHTML(":")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
+            s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(citizensAmount.toString())
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("citizens")
+            p.appendHTML(": ")
+            s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(citizensMaleAmount.toString())
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("men")
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("and")
+            s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(citizensFemaleAmount.toString())
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("women")
+            p.appendHTML(".")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
+            s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("a "+colonyWaterReservoir.toLowerCase())
+            s = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"*"}], p.getNode()); s.create(); s.appendContent("nearby")
+            p.appendHTML(".")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
+            s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(wagonsAmount.toString())
+            s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("wagons")
+            s = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"f"}], p.getNode()); s.create(); s.appendContent("full of resources and products.")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
+            s = new element("span", "font-bold me-1", [], p.getNode()); s.create(); s.appendContent(horsesAmount.toString())
+            s = new element("span", "font-bold", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("horses")
+            p.appendHTML(", ")
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("two for each wagon.")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Each wagon")
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("has the following things")
+            p.appendHTML(":")
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.resources["wooden trunk"]).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("wooden trunk")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.nail).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("nail")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.hammer).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("hammer")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.shovel).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("shovel")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.trowel).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("trowel")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.saw).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("saw")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.hay).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("hay")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.rope).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("rope")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.products.rag).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("rag")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.resources.water).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("water")
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagonGoods.resources.food).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("food")
+            p = new element("p", "mb-0 p-1 px-2 rounded font-bold text-white border-red-600 bg-red-600", [], d2.getNode(), "searchZoneWarning"); p.create()
+            s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Warning! Time is stopped. Search the zone in the Colony panel to start your game.")
+            break
+        case "ZoneSearched":
+            d2 = new element("div", "p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your colony sourroundings have been fully searched!"))
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your citizens have succesfully discovered the following things:"))
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((buildings.shelter["campaign tent"]).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "campaign tents", "", "lowercase"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.stone).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "stone"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.gravel).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "gravel"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.clay).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "clay"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.brick).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "brick"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.hay - wagonGoods.products.hay * 3).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "hay"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.rag - wagonGoods.products.rag * 3).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "rag"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["wooden plank"]).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "wooden plank"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["wooden plate"]).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "wooden plate"))
+            li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["roof tile"]).toString())
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
+            s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "roof tile"))
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Check the stock in the Colony panel to see your current goods."))
+            break
+        case "ResourcesExpeditionFinished":
+            d2 = new element("div", "p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your expeditionaries have returned from the expedition!"))
+            if(data.successfullExpedition){
+                p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "They have succesfully discovered:"))
+                p = new element("p", "font-bold mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, data.mountResourceType+" mount"))
+            } else {
+                p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Unfortunetely, they were not able to find any resources mount."))
+            }
+            break
+    }
+    document.querySelector("#newsNotifications").innerText++
+    document.querySelector("#newsNotifications").hidden = false
+    enableNotificationEvents()
 }
 let accordionColony = () => {
     let d, d1, parentElem = document.getElementById("accordion-menu")
@@ -704,8 +772,9 @@ let accordionColony = () => {
 let addBuilding = (index, type, parentElement) => {
     //Build building 1 - 1 accordion header
     h2 = new element("h2", "notificationUnread", [], parentElement, "accordion-building-1-"+index+"-header"); h2.create()
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-1-"+index+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-1-"+index+"-body"}], h2.getNode())
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-1-"+index+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-1-"+index+"-body"}], h2.getNode(), "accordion-building-1-"+index)
     b.create()
+    enableAccordionClick(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent(translate(language, "NEW", "m"))
@@ -780,14 +849,14 @@ let accordionBuildings = (update = false) => {
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Campaign tents")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Build building group 1 accordion body
-        d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-building-group-1-header"}], d.getNode(), "accordion-building-group-1-body"); d1.create()
-        d3 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [{"key":"aria-labelledby","value":"accordion-building-group-1-header"}], d1.getNode()); d3.create()
-        p = new element("p", "ms-1 mb-2 text-xs text-gray-500 dark:text-gray-200", [], d3.getNode()); p.create()
+        d1 = new element("div", "hidden p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [{"key":"aria-labelledby","value":"accordion-building-group-1-header"}], d.getNode(), "accordion-building-group-1-body"); d1.create()
+        //d3 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d3.create()
+        p = new element("p", "ms-1 mb-2 text-xs text-gray-500 dark:text-gray-200", [], d1.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Total shelter capacity")
         p.appendHTML(": ")
         s = new element("span", "font-bold", [], p.getNode(), "building-group-1-total-capacity"); s.create(); s.appendContent("15")
         s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("citizens")
-        d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d3.getNode(), "accordion-building-group-1"); d.create()
+        d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-building-group-1"); d.create()
         for(i=1; i<=buildings.shelter["campaign tent"]; i++) { addBuilding(i, "Campaign tent", d.getNode()) }
     }
     if(noBuildings){
@@ -866,7 +935,7 @@ let accordionCitizens = (amount = 10) => {
         s = new element("span", "", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent("Experience")
         s.appendHTML(": ")
-        s1 = new element("span", "font-bold", [], s.getNode(), "citizen-"+index+"-xp"); s1.create(); s1.appendContent("0")
+        s1 = new element("span", "font-bold", [{"key":"data-xp", "value":"0"}], s.getNode(), "citizen-"+index+"-xp"); s1.create(); s1.appendContent("0")
         s.appendHTML(".")
         //Forth line
         p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
@@ -1094,9 +1163,10 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     }
     //Build current expedition accordion header
     d2 = new element("div", "accordion-active-expedition", [{"key":"data-accordion", "value":"collapse"}], parentElem, "accordion-expedition-"+expeditionData.id); d2.create()
-    h2 = new element("h2", "", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-expedition-"+expeditionData.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-expedition-"+expeditionData.id+"-body"}], h2.getNode())
+    h2 = new element("h2", "resourcesExpedition", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-expedition-"+expeditionData.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-expedition-"+expeditionData.id+"-body"}], h2.getNode())
     b.create()
+    enableAccordionClick(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     i = new element("i", "fa fa-location-dot mt-1 me-2", [], s.getNode()); i.create()
     s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Resources expedition"))
@@ -1115,9 +1185,9 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-year"); s2.create(); s2.appendHTML(expeditionData.departedIn.year)
     s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(translate(language, "Week"))
     s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-week"); s2.create(); s2.appendHTML(expeditionData.departedIn.week)
-    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-1-departed-dayText"); s2.create(); s2.appendHTML(translate(language, "Day"))
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(translate(language, "Day"))
     s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-day"); s2.create(); s2.appendHTML(expeditionData.departedIn.day)
-    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-1-departed-hour"); s2.create(); s2.appendHTML(expeditionData.departedIn.hour.toString().padStart(2, "0"))
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(expeditionData.departedIn.hour.toString().padStart(2, "0"))
     s2 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML("hs.") 
     //Returns in...
     p = new element("p", "mx-1 py-1 empty text-xs text-gray-500 dark:text-gray-200", [], d5.getNode()); p.create()
@@ -1172,27 +1242,41 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
         }
     })
 }
-
-//Enable accordion events
-let enableAccordions = (accordionId) => {
-    document.querySelectorAll(accordionId).forEach(button => {
-        button.addEventListener('click', function() {
-        const target = document.querySelector(this.getAttribute('data-accordion-target'));
-        if (target.classList.contains('hidden')) {
-            target.classList.remove('hidden');
-            this.setAttribute('aria-expanded', 'true');
-            this.children[1].classList.remove("rotate-180")
-            this.classList.remove("text-gray-500", "dark:text-gray-400")
-            this.classList.add("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
-        } else {
-            target.classList.add('hidden');
-            this.setAttribute('aria-expanded', 'false');
-            this.children[1].classList.add("rotate-180")
-            this.classList.remove("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
-            this.classList.add("text-gray-500", "dark:text-gray-400")
-          }
-        });
-    });
+//Enable accordion button click event
+let enableAccordionClick = (accordionItemButton) => {
+    let handleAccordionClick = (e) => {
+        const target = e.target.closest("button")
+        const accordionItemBody = document.querySelector(target.getAttribute('data-accordion-target'))
+        //Trying to expand accordion item
+        if (accordionItemBody.classList.contains('hidden')) {
+            let parentElem = accordionItemBody.closest("[data-accordion]")
+            parentElem.querySelectorAll("[aria-labelledby]").forEach((elem) => {
+                if(elem != accordionItemBody){
+                    elem.classList.add("hidden")
+                }
+            })
+            parentElem.querySelectorAll("svg").forEach((elem) => {
+                if(elem != target.querySelector("svg") && !elem.classList.contains("rotate-180")){
+                    elem.classList.add("rotate-180")
+                }
+            })
+            accordionItemBody.classList.remove('hidden');
+            target.setAttribute('aria-expanded', 'true');
+            target.children[1].classList.remove("rotate-180")
+            target.classList.remove("text-gray-500", "dark:text-gray-400")
+            target.classList.add("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
+        } else { //Trying to collapse accordion item
+            accordionItemBody.classList.add('hidden');
+            target.setAttribute('aria-expanded', 'false');
+            target.children[1].classList.add("rotate-180")
+            target.classList.remove("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
+            target.classList.add("text-gray-500", "dark:text-gray-400")
+        }
+    }
+    if(accordionItemButton.classList.contains("unattached-click")){
+        accordionItemButton.addEventListener("click", handleAccordionClick)
+        accordionItemButton.classList.remove("unattached-click")
+    }
 }
 let enableNotificationEvents = () => {
     let notificationHandler = (e) => {
@@ -1215,79 +1299,69 @@ let enableNotificationEvents = () => {
         value.addEventListener('click', notificationHandler)
     })
 }
-let addNews = () => {
-    let d = document.querySelector("#accordion-news")
-    let newsNbr = document.getElementById("accordion-news").children.length + 1
-    //Build notification 1 accordion body
-    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-news-"+newsNbr+"-header"}], d, "accordion-news-"+newsNbr+"-body")
-    d1.create(first = true)
-    //Build notification 1 accordion header
-    h2 = new element("h2", "notificationUnread", [], d, "accordion-news-"+newsNbr+"-header"); h2.create(first = true)
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-news-"+newsNbr+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-news-"+newsNbr+"-body"}], h2.getNode())
+let addLandform = (landformType = "hunting") => {
+    let d = document.querySelector("#accordion-landforms")
+    let landformIndex = document.querySelectorAll("#accordion-landforms h2").length + 1
+    let landformTitle
+    switch(landformType){
+        case "hunting": landformTitle = "Hunting mount"; break
+        case "stone": landformTitle = "Stone mount"; break
+        case "clay": landformTitle = "Clay mount"; break
+        case "wood": landformTitle = "Wood mount"; break
+        case "mine": landformTitle = "Mine"; break
+    }
+    //Build landform #landformIndex accordion header
+    h2 = new element("h2", "notificationUnread", [], d, "accordion-landform-"+landformIndex+"-header"); h2.create()
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-landform-"+landformIndex+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-landform-"+landformIndex+"-body"}], h2.getNode(), "accordion-landform-"+landformIndex)
     b.create()
+    enableAccordionClick(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
-    s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
-    s1.create(); s1.appendContent(translate(language, "NEW", "f"))
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year", "", "capitalized"))
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentYear").innerText)
-    s.appendHTML(", ")
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentWeek").innerText)
-    s.appendHTML(", ")
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentDay").innerText)
-    s.appendHTML(" (")
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentHour").innerText)
-    s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.)")
+    s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
+    s1.create(); s1.appendContent("NEW")
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, landformTitle))
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-    //Build notification 1 accordion body
-    d2 = new element("div", "p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your colony sourroundings have been fully searched!"))
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your citizens have succesfully discovered the following things:"))
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((buildings.shelter["campaign tent"]).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "campaign tents", "", "lowercase"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.stone).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "stone"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.gravel).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "gravel"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.clay).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "clay"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.brick).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "brick"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.hay - wagonGoods.products.hay * 3).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "hay"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.rag - wagonGoods.products.rag * 3).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "rag"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["wooden plank"]).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "wooden plank"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["wooden plate"]).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "wooden plate"))
-    li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-    s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["roof tile"]).toString())
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "roof tile"))
-    p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Check the stock in the Colony panel to see your current goods."))
-    document.querySelector("#newsNotifications").innerText++
-    document.querySelector("#newsNotifications").hidden = false
-    enableNotificationEvents()
+    //Build landform #landformIndex accordion body
+    d1 = new element("div", "waterReservoir hidden", [{"key":"aria-labelledby","value":"accordion-landform-"+landformIndex+"-header"}], d, "accordion-landform-"+landformIndex+"-body")
+    d1.create()
+    //Build landform info
+    //First column
+    d2 = new element("div", "p-2 px-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-info")
+    d2.create();
+    p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"M"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Discovered in", "M"))
+    sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year"))
+    s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-"+landformIndex+"-createdYear"); s1.create(); s1.appendContent(document.getElementById("currentYear").innerText)
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week"))
+    s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-"+landformIndex+"-createdWeek"); s1.create(); s1.appendContent(document.getElementById("currentWeek").innerText)
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day"))
+    s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-"+landformIndex+"-createdDay"); s1.create(); s1.appendContent(document.getElementById("currentDay").innerText)
+
+    //Build Assigned Workers title
+    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-assigned-title")
+    d2.create();
+    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned workers"))
+    //Build Assigned Workers area
+    d2 = new element("div", "assignedWorkers p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-assigned")
+    d2.create();
+    p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
+
+    //Build Available Workers title
+    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-available-title")
+    d2.create();
+    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available workers"))
+    //Build Available Workers area
+    d2 = new element("div", "availableWorkers p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-available"); d2.create()
+    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
 }
 let updateStock = () => {
     //Update resources
@@ -1353,8 +1427,9 @@ let updateColony = (event = "zoneSearched") => {
         if(!noCampaignTents){
             //Build building group 1 accordion header
             h2 = new element("h2", "notificationUnread", [], parentElem, "accordion-building-group-1-header"); h2.create()
-            b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-group-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-group-1-body"}], h2.getNode())
+            b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-group-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-group-1-body"}], h2.getNode(), "accordion-building-group-1")
             b.create()
+            enableAccordionClick(b.getNode())
             s = new element("span", "", [], b.getNode()); s.create()
             s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
             s1.create(); s1.appendContent("NEW")
@@ -1362,7 +1437,7 @@ let updateColony = (event = "zoneSearched") => {
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             //Build building group 1 accordion body
             d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-building-group-1-header"}], parentElem, "accordion-building-group-1-body"); d1.create()
-            d3 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [{"key":"aria-labelledby","value":"accordion-building-group-1-header"}], d1.getNode()); d3.create()
+            d3 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d3.create()
             p = new element("p", "ms-1 mb-2 text-xs text-gray-500 dark:text-gray-200", [], d3.getNode()); p.create()
             s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Total shelter capacity"))
             p.appendHTML(": ")
@@ -1370,13 +1445,12 @@ let updateColony = (event = "zoneSearched") => {
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "citizens"))
             d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d3.getNode(), "accordion-building-group-1"); d.create()
             for(i=1; i<=buildings.shelter["campaign tent"]; i++) { addBuilding(i, "Campaign tent", d.getNode()) }
-            enableAccordions('#accordion-buildings-groups [data-accordion-target]')
+            //enableAccordions('#accordion-buildings-groups [data-accordion-target]')
         }
     }
     if(event == "zoneSearched"){
         //Add notification about zone searched
         addNews()
-        enableAccordions('#accordion-news [data-accordion-target]')
         updateStock()
     }
 }
@@ -1515,6 +1589,9 @@ let addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     //Change assign icon, put instead deassign icon
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-plus")
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.add("fa-minus")
+    //Add citizen's xp
+    let citizenXP = document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp")
+    document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-xp", citizenXP)
     //Change citizen status.
     document.querySelectorAll("#citizen-"+citizenIndex+"-status").forEach((status) => {
         status.innerText = translate(language, "Assigned")

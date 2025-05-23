@@ -249,8 +249,8 @@ class panel{
                     d = new element("div", "availableObjects p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-objects")
                     d.create()
                     //Any horses in stock?
-                    if(stock.products.horse*1){
-                        for(h=0; h<stock.products.horse*1; h++){
+                    if(stockDisplayed.products.horse*1){
+                        for(h=0; h<stockDisplayed.products.horse*1; h++){
                             addAvailableHorseToExpedition().addEventListener("click", handleToggleHorse)
                         }
                     } else {
@@ -449,39 +449,39 @@ let addNews = (notificationType = "ZoneSearched", newsData) => {
             s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((buildings.shelter["campaign tent"]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "campaign tents", "", "lowercase"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.stone).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.resources[language][translate(language, "stone")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "stone"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.gravel).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.resources[language][translate(language, "gravel")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "gravel"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.resources.clay).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.resources[language][translate(language, "clay")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "clay"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.brick).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.products[language][translate(language, "brick")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "brick"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.hay - wagonGoods.products.hay * 3).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.products[language][translate(language, "hay")] - wagonGoods.products.hay * 3).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "hay"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products.rag - wagonGoods.products.rag * 3).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.products[language][translate(language, "rag")] - wagonGoods.products.rag * 3).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "rag"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["wooden plank"]).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.products[language][translate(language, "wooden plank")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "wooden plank"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["wooden plate"]).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.products[language][translate(language, "wooden plate")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "wooden plate"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock.products["roof tile"]).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stockDisplayed.products[language][translate(language, "roof tile")]).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "units of"))
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "roof tile"))
             p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Check the stock in the Colony panel to see your current goods."))
@@ -500,6 +500,135 @@ let addNews = (notificationType = "ZoneSearched", newsData) => {
     document.querySelector("#newsNotifications").innerText++
     document.querySelector("#newsNotifications").hidden = false
     enableNotificationEvents()
+}
+let addColonyStockFilters = (stockType = "resources", action = "none", value = null) => {
+    let parentElem = document.getElementById(stockType+"StockFilterPanel")
+    //Delete previous filter contents.
+    document.querySelectorAll("#"+stockType+"StockFilterPanel > *").forEach((elem) => elem.remove())
+    s = new element("span", "flex grow", [], parentElem); s.create()
+    //View all button
+    b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "showAllResourcesStock"); b.create()
+    i = new element("i", "fa fa-database me-2", [], b.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], b.getNode()); s1.create(); s1.appendContent(translate(language, "View all", "m"))
+    b.getNode().addEventListener("click", (e) => {
+        stockDisplayed = []
+        stockDisplayed = JSON.parse(JSON.stringify(stockValues))
+        //Indicate what is being displayed.
+        document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All resources from stock")
+        addColonyStockFilters(stockType)
+        updateStock()
+    })
+    //Filter button
+    b = new element("button", "p-1 mx-2 text-xs grow button border text-white border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "showFilterResourcesStock"); b.create()
+    i = new element("i", "fa fa-filters me-2", [], b.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(translate(language, "Filter"))
+    if(["filter", "filterCategory", "filterGranularity"].includes(action)){
+        //Disable filter button.
+        b.getNode().classList.remove("text-white", "border-gray-400", "bg-gray-800")
+        b.getNode().classList.add("text-gray-400", "border-gray-500", "bg-gray-600")
+    } else {
+        //Enable filter button.
+        b.getNode().classList.remove("text-white", "border-gray-400", "bg-gray-800")
+        b.getNode().classList.remove("text-gray-400", "border-gray-500", "bg-gray-600")
+        b.getNode().classList.add("text-white", "border-gray-400", "bg-gray-800")
+        b.getNode().addEventListener("click", (e) => {
+            addColonyStockFilters(stockType, "filter")
+        })
+    }
+    //Sort/order button.
+    b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "order"+stockType.charAt(0).toUpperCase()+stockType.slice(1)+"Stock"); b.create()
+    i = new element("i", "fa fa-arrow-down-wide-short me-2", [], b.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(translate(language, "Order"))
+    b.getNode().addEventListener("click", (e) => {
+        toggleSortStock(stockType)
+    })
+    if(action == "filter"){
+        //Build category and granularity filters.
+        s = new element("span", "flex grow mt-1", [], parentElem); s.create()
+        //Filter category button.
+        b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "filter"+stockType.charAt(0).toUpperCase()+stockType.slice(1)+"StockCategory"); b.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(translate(language, "Filter by category"))
+        b.getNode().addEventListener("click", (e) => {
+            addColonyStockFilters(stockType, "filterCategory")
+        })
+        //Filter granularity button.
+        b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "filterResourcesStockGranularity"); b.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(translate(language, "Filter by granularity"))
+        b.getNode().addEventListener("click", (e) => {
+            addColonyStockFilters(stockType, "filterGranularity")
+        })
+        //Cancel filter.
+        b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-red-800", [{"key":"type","value":"button"}], s.getNode(), "filterResourcesStockCancel"); b.create()
+        i = new element("i", "fa fa-times", [], b.getNode()); i.create()
+        b.getNode().addEventListener("click", (e) => {
+            addColonyStockFilters(stockType)
+        })
+    }
+    if(["filterCategory", "filterGranularity"].includes(action)){
+        if(value == null){ 
+            //Show all categories or granularities buttons.
+            s = new element("span", "flex grow items-center mt-1", [], parentElem); s.create()
+            let text = (action == "filterCategory" ? "Filtrar por categoría" : "Filtrar por granularidad")
+            let id = (action == "filterCategory" ? "Category" : "Granularity")
+            s1 = new element("span", "ms-2 me-1", [], s.getNode()); s1.create(); s1.appendContent(text); s1.appendHTML(":")
+            let maxIndex = (action == "filterCategory" ? 5 : 6)
+            for(index = 1; index <= maxIndex; index++){
+                b = new element("button", "p-1 mx-1 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"},{"key":"data-index","value":index}], s.getNode(), "filterResourcesStock"+id+index); b.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(index.toString())
+                b.getNode().addEventListener("click", (e) => {
+                    addColonyStockFilters(stockType, action, e.target.closest("button").getAttribute("data-index"))
+                })
+            }
+            //Category or granularity index button.
+            b = new element("button", "p-1 ms-1 me-2 text-xs grow button border border-gray-400 bg-red-800", [{"key":"type","value":"button"}], s.getNode(), "filterResourcesStockCancel"); b.create()
+            i = new element("i", "fa fa-times", [], b.getNode()); i.create()
+            b.getNode().addEventListener("click", (e) => {
+                addColonyStockFilters(stockType)
+            })
+        } else {
+            let filteredStockArray = []
+            if(action == "filterCategory"){
+                //Indicate what is being displayed.
+                document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All category "+value+" "+stockType+" from stock")
+                let filteredStockObject = stockClassified[stockType]["category"+value]
+                //Build array with all the resources of the category selected.
+                filteredStockArray = (filteredStockObject.granularity1!=null ? [...filteredStockArray, ...filteredStockObject.granularity1[language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.granularity2!=null ? [...filteredStockArray, ...filteredStockObject.granularity2[language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.granularity3!=null ? [...filteredStockArray, ...filteredStockObject.granularity3[language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.granularity4!=null ? [...filteredStockArray, ...filteredStockObject.granularity4[language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.granularity5!=null ? [...filteredStockArray, ...filteredStockObject.granularity5[language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.granularity6!=null ? [...filteredStockArray, ...filteredStockObject.granularity6[language]] : filteredStockArray)
+            }
+            if(action == "filterGranularity"){
+                //Indicate what is being displayed.
+                document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All granularity "+value+" "+stockType+" from stock")
+                let filteredStockObject = stockClassified[stockType]
+                //Build array with all the products of the granularity selected for every category.
+                filteredStockArray = (filteredStockObject.category1["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category1["granularity"+value][language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.category2["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category2["granularity"+value][language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.category3["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category3["granularity"+value][language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.category4["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category4["granularity"+value][language]] : filteredStockArray)
+                filteredStockArray = (filteredStockObject.category5["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category5["granularity"+value][language]] : filteredStockArray)
+            }
+            //Remove all null resources from displayed stock.
+            Object.keys(stockDisplayed[stockType][language]).forEach((resourceOrProduct) => {
+                //Current resource/product has a positive value in stockDisplayed?
+                if(stockDisplayed[stockType][language][resourceOrProduct]){
+                    let filteredResourceOrProductFound = false
+                    //Current positive value stock resource/product is of the same category as the filter?
+                    filteredStockArray.forEach((filterResourceOrProduct) => {
+                        filteredResourceOrProductFound = filteredResourceOrProductFound || (resourceOrProduct == filterResourceOrProduct)
+                    })
+                    //If resource/product with positive value is not of the filter category/granularity, remove it from stockDisplayed
+                    if(!filteredResourceOrProductFound){
+                        //Remove resource/product from stockDisplayed
+                        delete stockDisplayed[stockType][language][resourceOrProduct]
+                    }
+                }
+            })
+            updateStock()
+        }
+    }
 }
 let accordionColony = () => {
     let d, d1, parentElem = document.getElementById("accordion-menu")
@@ -697,48 +826,72 @@ let accordionColony = () => {
         //Build vital resources accordion body
         d3 = new element("div", "hidden border-gray-300", [{"key":"aria-labelledby","value":"accordion-stock-header"}], d2.getNode(), "accordion-stock-body")
         d3.create()
-        //Recursos extraídos
+        //Extracted resources
         d4 = new element("div", "p-0 m-0", [], d3.getNode(), "resources-stock"); d4.create()
         p = new element("p", "pb-0 text-xs text-gray-500 dark:text-gray-400", [], d4.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "ps-2 py-2 grow flex-none bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Extracted resources")
+        //Stock list filters
+        p = new element("p", "border border-gray-500 py-1 text-xs text-white bg-gray-600", [], d4.getNode(), "resourcesStockFilterPanel"); p.create()
+        addColonyStockFilters("resources")
+        //Show current filter / order applied.
+        p = new element("p", "flex justify-between border border-gray-500 py-1 text-xs text-white bg-gray-600", [], d4.getNode(), "resourcesStockShowing"); p.create()
+        s = new element("span", "flex ms-2", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Showing"))
+        s1.appendHTML(":")
+        s1 = new element("span", "ms-2 font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), "resourcesStockShowingInfo"); s1.create()
+        s1.appendContent(translate(language, "All resources from stock"))
         let count = 0
-        Object.keys(stock.resources).forEach(resource => {
-            if(resource!="food" && resource!="alimento"){
+        ds = new element("div", "p-0 m-0", [], d4.getNode(), "resources-stock-list"); ds.create()
+        Object.keys(stockDisplayed.resources[language]).forEach(resource => {
+            if(resource!="food" && resource!="alimento" && stockDisplayed.resources[language][resource]){
                 let pt = (!count++ ? "pt-2" : "pt-0")
-                p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], d4.getNode()); p.create()
+                p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], ds.getNode()); p.create()
                 s = new element("span", "flex", [], p.getNode()); s.create()
                 s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
                 s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(resource)
                 s1.appendHTML(": ")
                 formatedResource = resource.replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stock.resources[resource].toString())
+                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockDisplayed.resources[language][resource].toString())
                 s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
             }
         })
         //Add last margin
         p = new element("p", "", [], d3.getNode()); p.create()
         s = new element("span", "bottomMargin flex pt-2 grow bg-gray-500 border border-gray-500", [], p.getNode()); s.create()
-        //Productos manufacturados
+        //Manufactured products
         d4 = new element("div", "p-0 m-0", [], d3.getNode(), "products-stock"); d4.create()
         p = new element("p", "pb-0 text-xs text-gray-500 dark:text-gray-400", [], d4.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "ps-2 py-2 grow flex-none bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Manufactured products")
+        //Stock list filters
+        p = new element("p", "border border-gray-500 py-1 text-xs text-white bg-gray-600", [], d4.getNode(), "productsStockFilterPanel"); p.create()
+        addColonyStockFilters("products")
+        //Show current filter / order applied.
+        p = new element("p", "flex justify-between border border-gray-500 py-1 text-xs text-white bg-gray-600", [], d4.getNode(), "productsStockShowing"); p.create()
+        s = new element("span", "flex ms-2", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Showing"))
+        s1.appendHTML(":")
+        s1 = new element("span", "ms-2 font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), "productsStockShowingInfo"); s1.create()
+        s1.appendContent(translate(language, "All products from stock"))
         count = 0
-        Object.keys(stock.products).forEach(product => {
-            let pt = (!count++ ? "pt-2" : "pt-0")
-            p = new element("p", "productStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], d4.getNode()); p.create()
-            s = new element("span", "flex", [], p.getNode()); s.create()
-            s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
-            s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(product)
-            s1.appendHTML(": ")
-            formatedProduct = product.replaceAll(" ", "")
-            s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stock.products[product].toString())
-            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+        ds = new element("div", "p-0 m-0", [], d4.getNode(), "products-stock-list"); ds.create()
+        Object.keys(stockDisplayed.products[language]).forEach(product => {
+            if(stockDisplayed.products[language][product]){
+                let pt = (!count++ ? "pt-2" : "pt-0")
+                p = new element("p", "productStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], ds.getNode()); p.create()
+                s = new element("span", "flex", [], p.getNode()); s.create()
+                s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+                s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(product)
+                s1.appendHTML(": ")
+                formatedProduct = product.replaceAll(" ", "")
+                s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
+                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockDisplayed.products[language][product].toString())
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+            }
         })
         //Add last margin
         p = new element("p", "", [], d3.getNode()); p.create()
@@ -861,6 +1014,7 @@ let accordionBuildings = (update = false) => {
     }
     if(noBuildings){
         p = new element("p", "ms-1 mb-1 text-xs text-gray-500 dark:text-red-400", [], d.getNode()); p.create()
+        i = new element("i", "fa fa-empty-set me-1", [], p.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("There are no buildings in your colony!")
     }
 }
@@ -1238,7 +1392,8 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
         } else {
             i = new element("i", "me-1 fa fa-horse text-white", [], s.getNode()); i.create()
             s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Horse", "", "capitalized"))
-            stock.products.horse--
+            stockDisplayed.products[language][translate(language, "horse")]--
+            stockValues.products[language][translate(language, "horse")]--
         }
     })
 }
@@ -1365,46 +1520,80 @@ let addLandform = (landformType = "hunting") => {
 }
 let updateStock = () => {
     //Update resources
+    let parentElement = document.getElementById("resources-stock-list")
+    document.querySelectorAll("#resources-stock-list p").forEach((elem) => elem.remove())
     let count = 0
-    let parentElement = document.getElementById("resources-stock")
-    Object.keys(stock.resources).forEach((resource) => {
+    Object.keys(stockDisplayed.resources[language]).forEach((resource) => {
         formatedResource = resource.replaceAll(" ", "")
-        if(resource.toLowerCase() != "food"){
-            //Resource already shown?
-            if(document.getElementById("colony-"+formatedResource+"-stock") != null){
-                document.getElementById("colony-"+formatedResource+"-stock").innerText = stock.resources[resource].toString()
-            } else {
-                //Add dom node as last sibling
-                p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
-                s = new element("span", "flex", [], p.getNode()); s.create()
-                s1 = new element("span", "ps-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
-                s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, resource))
-                s1.appendHTML(": ")
-                s1 = new element("span", "grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stock.resources[resource].toString())
-                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
-            }
+        if(resource.toLowerCase() != "food" && resource.toLowerCase() != "alimento" && stockDisplayed.resources[language][resource]){
+            let pt = (!count++ ? "pt-2" : "pt-0")
+            //Add dom node as last sibling
+            p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
+            s = new element("span", "flex", [], p.getNode()); s.create()
+            s1 = new element("span", pt+" ps-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+            s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, resource))
+            s1.appendHTML(": ")
+            s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
+            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockDisplayed.resources[language][resource].toString())
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "units"))
         }
     })
-    parentElement = document.getElementById("products-stock")
+    //If there was no resource to show, display empty message.
+    if(!count){
+        p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "pt-2 ps-2 flex-none grow bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s1.getNode()); i.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"m"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "None", "m"))
+    }
+
+    parentElement = document.getElementById("products-stock-list")
+    document.querySelectorAll("#products-stock-list p").forEach((elem) => elem.remove())
     //Update products
-    Object.keys(stock.products).forEach((product) => {
+    count = 0
+    Object.keys(stockDisplayed.products[language]).forEach((product) => {
         formatedProduct = product.replaceAll(" ", "")
-        //Product already shown?
-        if(document.getElementById("colony-"+formatedProduct+"-stock") != null){
-            document.getElementById("colony-"+formatedProduct+"-stock").innerText = stock.products[product].toString()
-        } else {
-            p = new element("p", "productStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], d4.getNode()); p.create()
+        if(product.toLowerCase() != "food" && stockDisplayed.products[language][product]){
+            let pt = (!count++ ? "pt-2" : "pt-0")
+            p = new element("p", "productStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
             s = new element("span", "flex", [], p.getNode()); s.create()
-            s1 = new element("span", "ps-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+            s1 = new element("span", pt+" ps-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
             s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, product))
             s1.appendHTML(": ")
             formatedProduct = product.replaceAll(" ", "")
-            s1 = new element("span", "grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stock.products[product].toString())
-            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+            s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
+            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockDisplayed.products[language][product].toString())
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "units"))
         }
     })
+    //If there was no resource to show, display empty message.
+    if(!count){
+        p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "pt-2 ps-2 flex-none grow bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s1.getNode()); i.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"m"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "None", "m"))
+    }
+}
+//Change stock resources or products order from ASC to DESC or viceversa, and display results on Colony panel.
+let toggleSortStock = (type = "resources") => {
+    let reversed = {}
+    Object.keys(stockDisplayed[type][language])
+        .reverse()
+        .forEach((value, key) => {
+            reversed[value] = stockDisplayed[type][language][value]
+        })
+    stockDisplayed[type][language] = reversed
+    //Change order icon on the sorting button.
+    if(type=="resources"){
+        document.querySelector("#orderResourcesStock i").classList.toggle("fa-arrow-down-wide-short")
+        document.querySelector("#orderResourcesStock i").classList.toggle("fa-arrow-down-short-wide")
+    } else {
+        document.querySelector("#orderProductsStock i").classList.toggle("fa-arrow-down-wide-short")
+        document.querySelector("#orderProductsStock i").classList.toggle("fa-arrow-down-short-wide")
+    }
+    //Update stock list in the DOM
+    updateStock()
 }
 //Update accordions structure
 let updateColony = (event = "zoneSearched") => {

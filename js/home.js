@@ -1,17 +1,4 @@
-//Long term global variables
-var language, citizensAmount, citizensFemaleAmount, citizensMaleAmount
-var daysPassed = 0, dayPassed = weekPassed = false, searchingZone = zoneSearched = lifeStarted = false
-var colonyWaterReservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0, huntingMountDiscovered = false
-var wagonsAmount, horsesAmount
-var colonyScore, colonyLifeQuality
-//Constants
-const zoneSearchHoursNeeded = 1
-//User configuration variables
-var showModalZoneSearched = true
-//Temporary global variables
-var citizenIndex, expeditionIndex = 1
-//General dinamic panels
-var newExpeditionPanel, assignRolePanel
+//See init.js to check global variables and constants.
 
 let initColonyInfo = () => {
     language = "ES", colonyScore = 0, colonyLifeQuality = 10
@@ -22,15 +9,15 @@ let initColonyInfo = () => {
     colonyWaterReservoir = Object.keys(waterReservoirs)[Math.floor(Math.random() * Object.keys(waterReservoirs).length)]
 }
 let loadInitialRandomGoods = () => {
-    stock.resources.stone = 800 + Math.floor(Math.random() * (1000 - 800))
-    stock.resources.gravel = 800 + Math.floor(Math.random() * (1000 - 800))
-    stock.resources.clay = 800 + Math.floor(Math.random() * (1000 - 800))
-    stock.products["wooden plank"] = 1000 + Math.floor(Math.random() * (1200 - 1000))
-    stock.products["wooden plate"] = 20 + Math.floor(Math.random() * (50 - 20))
-    stock.products["roof tile"] = 400 + Math.floor(Math.random() * (800 - 400))
-    stock.products.brick = 500 + Math.floor(Math.random() * (900 - 500))
-    stock.products.rag += 600 + Math.floor(Math.random() * (800 - 600))
-    stock.products.hay += 400 + Math.floor(Math.random() * (600 - 400))
+    stockValues.resources[language][translate(language, "stone")] = 800 + Math.floor(Math.random() * (1000 - 800))
+    stockValues.resources[language][translate(language, "gravel")] = 800 + Math.floor(Math.random() * (1000 - 800))
+    stockValues.resources[language][translate(language, "clay")] = 800 + Math.floor(Math.random() * (1000 - 800))
+    stockValues.products[language][translate(language, "wooden plank")] = 1000 + Math.floor(Math.random() * (1200 - 1000))
+    stockValues.products[language][translate(language, "wooden plate")] = 20 + Math.floor(Math.random() * (50 - 20))
+    stockValues.products[language][translate(language, "roof tile")] = 400 + Math.floor(Math.random() * (800 - 400))
+    stockValues.products[language][translate(language, "brick")] = 500 + Math.floor(Math.random() * (900 - 500))
+    stockValues.products[language][translate(language, "rag")] += 600 + Math.floor(Math.random() * (800 - 600))
+    stockValues.products[language][translate(language, "hay")] += 400 + Math.floor(Math.random() * (600 - 400))
 }
 let colonySatisfaction = (lifeQuality, population) => {
     let satisfaction = {}
@@ -605,6 +592,7 @@ let assignRoleToCitizen = (rolekey, roleText, roleIcon, assignRolePanelExists = 
     assignRoleToCitizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
      */
     //daysPassed = 6
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let handleToggleHorse = (e) => {

@@ -1,6 +1,7 @@
 panelClasses = {
     "assignRole": {"i":"fa-handshake-simple", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newExpedition": {"i":"fa-location-dot", "text":"font-bold grow", "bg":"bg-gray-900"},
+    "newProductionRule": {"i":"fa-subscript", "text":"font-bold grow", "bg":"bg-gray-900"}
 }
 
 class panel{
@@ -42,7 +43,7 @@ class panel{
         p = new element("p", "flex justify-between items-center p-1 ps-2 text-xs "+paragraphBg, [], d1.getNode())
         p.create()
 
-        //--Build span with icon before
+        //--Build span with icon before. Set general panel features.
         switch(this.panelName){
             case "assignRole": 
                 i = new element("i", "me-2 fa "+panelClasses.assignRole.i, [], p.getNode()); i.create()
@@ -56,7 +57,14 @@ class panel{
                 s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición"))
                 paragraphBg = panelClasses.newExpedition.bg
                 break
+            case "newRule": 
+                i = new element("i", "me-2 fa "+panelClasses.newProductionRule.i, [], p.getNode()); i.create()
+                s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], p.getNode())
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New production rule") : translate("EN", "Nueva regla de producción"))
+                paragraphBg = panelClasses.newExpedition.bg
+                break
         }
+        
         //Build close icon to the right
         i = new element("i", "mt-0 text-base fa fa-times font-bold", [], p.getNode()); i.create()
         i.getNode().addEventListener("click", (e) => {
@@ -75,11 +83,12 @@ class panel{
         })
 
         //Build specific panel
-        d1 = new element("div", "newExpedition border border-gray-900 dark:border-gray-900 dark:bg-gray-600 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
-        p = new element("p", "flex py-1 w-100 justify-between items-center flex-wrap p-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p.create()
+        d1 = new element("div", this.panelName+" border border-gray-900 dark:border-gray-900 dark:bg-gray-600 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
+        p = new element("p", "flex py-1 w-100 justify-between items-center flex-wrap p-1 text-gray-500 dark:text-gray-300", [], d1.getNode());
         let divSpecificParagraphButton = []
         if(this.panelName == "assignRole"){
             //Specific Assign Role panel
+            p.create()
             let currentRole = document.querySelector("#"+this.objectName+"-"+this.objectId+"-role").getAttribute("data-role")
             let iElement, buttonText = "", generalRole = "", buttonColours = "", isDisabled = false
             roleIcons.forEach((value, index) => {
@@ -103,8 +112,27 @@ class panel{
                 p.appendContent(divSpecificParagraphButton[index])
             })
         }
+        if(this.panelName == "newRule"){
+            //Specific New Production Rule panel
+            p.create(); p.getNode().id = "new-rule-title"
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent("Selecciona un producto")
+            p = new element("p", "flex py-1 w-100 justify-between items-center flex-wrap p-1 text-gray-500 dark:text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
+            let iElement, buttonText = "", buttonColours = ""
+            let products = location_products[this.data.location]["EN"]
+            products.forEach((product, index) => {
+                divSpecificParagraphButton[index] = document.createElement("button")
+                iElement = "<i class='fa fa-plus me-2'></i>"
+                buttonText = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
+                divSpecificParagraphButton[index].innerHTML = iElement + buttonText
+                buttonColours = "border-blue-600 bg-blue-900 text-white"
+                divSpecificParagraphButton[index].classList = "rule_product text-xs capitalize "+(index+1 < products.length ? "grow " : "")+"p-2 py-1 me-1 mb-1 button border "+buttonColours
+                divSpecificParagraphButton[index].setAttribute("data-product", product)
+                p.appendContent(divSpecificParagraphButton[index])
+            })
+        }
         if(this.panelName == "newExpedition"){
             //Specific New Expedition panel
+            p.create()
             //Build type of expedition options
             s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Type"))
             s = new element("span", "", [], p.getNode()); s.create(); s.appendHTML(": ")
@@ -115,9 +143,7 @@ class panel{
             b.create(); b.appendContent(translate(language, "of ruins"))
             b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-red-800", [{"key":"data-type", "value":"of combat"},{"key":"data-i18n", "value":""}], s.getNode())
             b.create(); b.appendContent(translate(language, "of combat"))
-        }
-        //Button events
-        if(this.panelName == "newExpedition"){
+            //Button events
             document.querySelectorAll(".expeditionType button").forEach((value) => {
                 value.addEventListener("click", (e) => {
                     //Build expedition type legend with colors.
@@ -249,8 +275,8 @@ class panel{
                     d = new element("div", "availableObjects p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-objects")
                     d.create()
                     //Any horses in stock?
-                    if(stockDisplayed.products.horse*1){
-                        for(h=0; h<stockDisplayed.products.horse*1; h++){
+                    if(stockDisplayed.products.EN.horse*1){
+                        for(h=0; h<stockDisplayed.products.EN.horse*1; h++){
                             addAvailableHorseToExpedition().addEventListener("click", handleToggleHorse)
                         }
                     } else {
@@ -337,7 +363,7 @@ let addNews = (notificationType = "ZoneSearched", newsData) => {
     h2 = new element("h2", "notificationUnread", [], d, "accordion-news-"+newsIndex+"-header"); h2.create(first = true)
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-news-"+newsIndex+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-news-"+newsIndex+"-body"}], h2.getNode(), "accordion-news-"+newsIndex)
     b.create()
-    enableAccordionClick(b.getNode())
+    enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent(translate(language, "NEW", "f"))
@@ -374,7 +400,7 @@ let addNews = (notificationType = "ZoneSearched", newsData) => {
             p.appendHTML(".")
             p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
             s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("You have")
-            s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("a "+colonyWaterReservoir.toLowerCase())
+            s = new element("span", "font-bold me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("a "+colony_water_reservoir.toLowerCase())
             s = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"*"}], p.getNode()); s.create(); s.appendContent("nearby")
             p.appendHTML(".")
             p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
@@ -496,6 +522,19 @@ let addNews = (notificationType = "ZoneSearched", newsData) => {
                 p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Unfortunetely, they were not able to find any resources mount."))
             }
             break
+        case "RuinsExpeditionFinished":
+            d2 = new element("div", "p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+            p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your expeditionaries have returned from the expedition!"))
+            if(data.successfullExpedition){
+                p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "They have succesfully obtained:"))
+                Object.keys(data.loot).forEach((good) => {
+                    p = new element("p", "font-bold mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, good).charAt(0).toUpperCase()+translate(language, good).slice(1))
+                    p.appendHTML(" x "); p.appendHTML(data.loot[good]); p.appendHTML(" "); p.appendHTML(translate(language, data.loot[good] == 1 ? "unit" : "units"))
+                })
+            } else {
+                p = new element("p", "mb-2 text-gray-500 dark:text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Unfortunetely, they were not able to find any ruins."))
+            }
+            break
     }
     document.querySelector("#newsNotifications").innerText++
     document.querySelector("#newsNotifications").hidden = false
@@ -590,7 +629,7 @@ let addColonyStockFilters = (stockType = "resources", action = "none", value = n
             if(action == "filterCategory"){
                 //Indicate what is being displayed.
                 document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All category "+value+" "+stockType+" from stock")
-                let filteredStockObject = stockClassified[stockType]["category"+value]
+                let filteredStockObject = stockClassified[stockType].byCategory["category"+value]
                 //Build array with all the resources of the category selected.
                 filteredStockArray = (filteredStockObject.granularity1!=null ? [...filteredStockArray, ...filteredStockObject.granularity1[language]] : filteredStockArray)
                 filteredStockArray = (filteredStockObject.granularity2!=null ? [...filteredStockArray, ...filteredStockObject.granularity2[language]] : filteredStockArray)
@@ -602,7 +641,7 @@ let addColonyStockFilters = (stockType = "resources", action = "none", value = n
             if(action == "filterGranularity"){
                 //Indicate what is being displayed.
                 document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All granularity "+value+" "+stockType+" from stock")
-                let filteredStockObject = stockClassified[stockType]
+                let filteredStockObject = stockClassified[stockType].byCategory
                 //Build array with all the products of the granularity selected for every category.
                 filteredStockArray = (filteredStockObject.category1["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category1["granularity"+value][language]] : filteredStockArray)
                 filteredStockArray = (filteredStockObject.category2["granularity"+value]!=undefined ? [...filteredStockArray, ...filteredStockObject.category2["granularity"+value][language]] : filteredStockArray)
@@ -854,8 +893,9 @@ let accordionColony = () => {
                 s1.appendHTML(": ")
                 formatedResource = resource.replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockDisplayed.resources[language][resource].toString())
-                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+                let stockValue = stockDisplayed.resources[language][resource].toString()
+                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockValue)
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
             }
         })
         //Add last margin
@@ -889,8 +929,9 @@ let accordionColony = () => {
                 s1.appendHTML(": ")
                 formatedProduct = product.replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockDisplayed.products[language][product].toString())
-                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+                let stockValue = stockDisplayed.products[language][product].toString()
+                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockValue)
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
             }
         })
         //Add last margin
@@ -927,7 +968,7 @@ let addBuilding = (index, type, parentElement) => {
     h2 = new element("h2", "notificationUnread", [], parentElement, "accordion-building-1-"+index+"-header"); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-1-"+index+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-1-"+index+"-body"}], h2.getNode(), "accordion-building-1-"+index)
     b.create()
-    enableAccordionClick(b.getNode())
+    enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent(translate(language, "NEW", "m"))
@@ -1034,8 +1075,8 @@ let accordionCitizens = (amount = 10) => {
         s1 = new element("span", "hidden rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+index+"-xp-icon"); s1.create(); s1.appendContent("0")
         s1 = new element("span", "ms-1", [{"key":"data-i1n","value":""}], s.getNode(), "citizen-"+index+"-name"); s1.create()
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-        //Build citizen 1 accordion body
-        d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-citizen-"+index+"-header"}], d.getNode(), "accordion-citizen-"+index+"-body"); d1.create()
+        //Build citizen #index accordion body
+        d1 = new element("div", "hidden citizen", [{"key":"aria-labelledby","value":"accordion-citizen-"+index+"-header"}], d.getNode(), "accordion-citizen-"+index+"-body"); d1.create()
         //Citizen's description
         d2 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode()); d2.create()
         p = new element("p", "ms-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
@@ -1150,91 +1191,331 @@ let accordionCitizens = (amount = 10) => {
         citizenBuilder(i)
     }
 }
-let accordionLandforms = () => {
-    //Build landforms accordion
-    let parentElem = document.getElementById("accordion-menu")
-    //Build landforms accordion header
-    h2 = new element("h2", "mt-3", [], parentElem, "accordion-menu-landform"); h2.create()
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-landform-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-landform-body"}], h2.getNode())
-    b.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Landform")
-    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-    //Build landforms accordion body
-    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-landform"}], parentElem, "accordion-menu-landform-body"); d1.create()
-    d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode(), "accordion-landform-1-header"); d2.create()
-    d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-landforms"); d.create()
-    //Build landform 1 accordion header
-    h2 = new element("h2", "notificationUnread", [], d.getNode(), "accordion-landform-1-header"); h2.create()
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-landform-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-landform-1-body"}], h2.getNode())
-    b.create()
-    s = new element("span", "", [], b.getNode()); s.create()
-    s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
-    s1.create(); s1.appendContent("NEW")
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Water reservoir")
-    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-    //Build landform 1 accordion body
-    d1 = new element("div", "waterReservoir hidden", [{"key":"aria-labelledby","value":"accordion-landform-1-header"}], d.getNode(), "accordion-landform-1-body")
-    d1.create()
-    //Build water reservoir info
-    //First column
-    d2 = new element("div", "p-2 px-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-info")
-    d2.create();
-    p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Type")
-    sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-    s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-type"); s1.create()
-    s1.appendContent(colonyWaterReservoir)
-    //Second column
-    s = new element("span", "", [], p.getNode()); s.create();
-    s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"M"}], s.getNode()); s1.create(); s1.appendContent("Discovered in")
-    sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Year")
-    s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdYear"); s1.create(); s1.appendContent("1")
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Week")
-    s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdWeek"); s1.create(); s1.appendContent("1")
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Day")
-    s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdDay"); s1.create(); s1.appendContent("1")
+let new_rule_click_requirement = (click_target, requirement, elem) => {
+    if(click_target.closest("span").classList.contains("unSelected")){
+        let rule_index = click_target.closest("div").getAttribute("data-rule-index")
+        if(requirement.type == "citizen"){
+            //Remove other requirements decorations
+            document.querySelectorAll(".requirement-selected").forEach((elem) => elem.classList.remove("requirement-selected", "px-1", "border-2", "rounded", "border-gray-900", "bg-gray-600"))
+            //Decorate requirement as selected
+            document.getElementById(`rule-${rule_index}-requirement-${requirement.index}`).classList.add("requirement-selected", "px-1", "border-2", "rounded", "border-gray-900", "bg-gray-600")
+            let parentElem = elem.closest("div")
+            pid = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
+            did = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
+            //Remove previous requirement title and area panel.
+            if(document.getElementById(pid)){ document.getElementById(pid).remove() }
+            document.querySelectorAll(".assignable-panel").forEach((elem) => elem.remove())
+            //Add assignable workers title.
+            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parentElem, pid); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Assignable workers"))
+            i = new element("i", "fa fa-rotate", [], p.getNode(), `rule-${rule_index}-refresh-assignable-workers`); i.create()
+            //Add refresh click event
+            document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).addEventListener("click", (e) => {
+                /*
+                document.getElementById("new-rule-"+rule_index+"-requirement-"+requirement.index+"-assigned-citizen-area").remove()
+                new_rule_click_requirement(e.target, requirement, elem)
+                document.getElementById("new-rule-"+rule_index+"-requirement-"+requirement.index+"-assigned-citizen-title").remove()
+                */
+            })
+            //Add assignable workers area.
+            d = new element("div", "assignable-panel new-rule assignable-workers bg-gray-500 text-xs p-2 pb-1", [], parentElem, did); d.create()
+            /*
+            //Add "no workers available" message.
+            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+            s.appendHTML(translate(language, "No workers available"))
+            
+            //Add available workers title.
+            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parentElem, "new-rule-"+rule_index+"-available-citizen-title"); p.create()
+            s = new element("span", "grow", [], p.getNode()); s.create(); s.appendContent(translate(language, "Available workers"))
+            i = new element("i", "fa fa-rotate", [], p.getNode(), "rule-"+rule_index+"-refresh-available-workers"); i.create()
+            document.getElementById("rule-"+rule_index+"-refresh-available-workers").addEventListener("click", (e) => {
+                document.getElementById("new-rule-"+rule_index+"-available-citizen-area").remove()
+                new_rule_click_requirement(e.target, requirement, elem)
+                document.getElementById("new-rule-"+rule_index+"-available-citizen-title").remove()
+            })
+            //Add available workers area.
+            d = new element("div", "new-rule availableWorkers bg-gray-500 text-xs flex justify-between p-2", [], elem.closest("div"), "new-rule-"+rule_index+"-available-citizen-area"); d.create()
+            */
+            //Check if there exists a citizen who accomplishes current worker requirement.
+            //Retrieve all available citizens.
+            let required_worker_found = false
+            document.querySelectorAll(".citizen").forEach((elem) => {
+                let citizen_index = elem.id.split("-")[2]
+                //Get current role and status
+                let loop_citizen_role = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
+                let loop_citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status")
+                //An idle worker with required role found?
+                if(loop_citizen_role == requirement.role && loop_citizen_status == "idle"){
+                    let loop_citizen_xp = document.getElementById(`citizen-${citizen_index}-xp`).getAttribute("data-xp")*1
+                    //Worker with required level of experience found?
+                    if(loop_citizen_xp >= requirement.xp){
+                        //Check if worker has needed tools.
+                        let has_tools_required = required_worker_found = true
+                        requirement.tools.forEach((tool) => {
+                            let left_hand_tool = document.getElementById(`citizen-${citizen_index}-leftHand`).getAttribute("data-tool")
+                            let right_hand_tool = document.getElementById(`citizen-${citizen_index}-rightHand`).getAttribute("data-tool")
+                            has_tools_required = (tool != left_hand_tool && tool != right_hand_tool)
+                        })
+                        required_worker_found &&= has_tools_required
+                        //Add citizen as assignable worker for the rule requirement.
+                        add_assignable_worker_to_rule_requirement(citizen_index, d.getNode())
+                        document.getElementById(`citizen-${citizen_index}-assign`).addEventListener("click", (e) => {
+                            toggle_assignable_worker(e)
+                            //add_assigned_worker_to_rule_requirement(citizen_index, document.getElementById(`new-rule-${rule_index}-requirement-${requirement.index}-assigned-citizen-area`))
+                            //Check if requirement is fullfilled
+                            let requirementAssignedWorkers = document.querySelectorAll("#rule-"+rule_index+"-requirement-"+requirement.index+"-assignable-workers-area .assignable-worker.assigned").length
+                            let requiredWorkers = requirement.quantity
+                            if(requirementAssignedWorkers >= requiredWorkers){
+                                //Mark requirement as fullfilled."rule-"+ruleIndex+"-requirement-"+requirement_index
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
+                                document.querySelector("#rule-"+rule_index+"-result").classList.remove("bg-gray-700", "border-gray-500")
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.add("bg-green-700", "border-green-500")
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.add("bg-green-700", "border-green-500")
+                                document.querySelector("#rule-"+rule_index+"-result").classList.add("bg-green-700", "border-green-500")
+                                //document.querySelector("#rule-"+index+"-requirement-"+requirement.index).nextSibling.querySelector("i").remove()
+                            } else {
+                                //Unmark requirement as fullfilled.
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.remove("bg-green-700", "border-green-500")
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.remove("bg-green-700", "border-green-500")
+                                document.querySelector("#rule-"+rule_index+"-result").classList.remove("bg-green-700", "border-green-500")
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
+                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
+                                document.querySelector("#rule-"+rule_index+"-result").classList.add("bg-gray-700", "border-gray-500")
+                            }
+                        })
+                    }
+                }
+            })
+            if(!required_worker_found){
+                p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s.appendHTML(translate(language, "No workers available"))
+            } 
+        }
+    }
+}
+let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_mount = false) => {
+    //Iterate over al requirements for that rule.
+    p = new element("p", "flex justify-start flex-wrap w-100 p-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p.create()
+    let requirements_quantity = rule.requirements.length, requirement_index = 1
+    let product_name_parent
+    rule.requirements.forEach((requirement) => {
+        requirement.index = requirement_index
+        //Check if square brackes are needed (when requirement object is not something daily consumable)
+        //Create span with product name, add square brackets in case it's not consumable
+        if(!requirement.consumable){
+            sid = `rule-${rule_index}-requirement-${requirement_index}`
+            s = new element("span", "flex items-center", [], p.getNode(), sid); s.create()
+            i1 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square", [], s.getNode()); i1.create()
+            i2 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square-right", [], s.getNode());
+            product_name_parent = s.getNode()
+        } else { product_name_parent = p.getNode()}
+        //Check if current requirement is fullfilled.
+        let requirement_fullfilled = (requirement.object == current_mount)
+        let bg_class = requirement_fullfilled ? "border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
+        sid = `rule-${rule_index}-requirement-${requirement_index}`+(product_name_parent == p.getNode() ? "" : "-name")
+        s = new element("span", `px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
+        let requirement_object_name = translate(language, requirement.object, "", "capitalized")
+        //Check if a minimal xp value is needed
+        let XP_requirement = requirement.xp ? ` (${requirement.xp})` : ""
+        //Check if a tool is needed (max 2 in both worker's hands)
+        let tool_requirement_1 = requirement.tools != undefined && requirement.tools.length ? requirement.tools[0] : ""
+        let tool_requirement_2 = tool_requirement_1 && requirement.tools.length > 1 ? requirement.tools[1] : ""
+        let tool_requirement = tool_requirement_1 ? ` + ${translate(language, requirement.tools[0], "", "capitalized")}` : ""
+        tool_requirement += tool_requirement_2 ? ` + ${translate(language, requirement.tools[1], "", "capitalized")}` : ""
+        let requirement_name = requirement_object_name + XP_requirement + tool_requirement
+        requirement_object_name = tool_requirement ? `(${requirement_name})` : requirement_name
+        //Show requirement name and quantity
+        s.appendContent(requirement_object_name)
+        s.appendHTML(` x ${requirement.quantity}`)
+        if(!requirement_fullfilled){
+            sid = `rule-${rule_index}-requirement-${requirement_index}-update`
+            s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
+            i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
+            //Add click event to requirement arrow button.
+            document.querySelectorAll(".unaccomplished").forEach((elem) => {
+                elem.addEventListener("click", (e) => {
+                    new_rule_click_requirement(e.target, requirement, elem)
+                    //e.target.closest("span").classList.remove("unSelected")
+                })
+            })
+        }
+        if(!requirement.consumable){ i2.create()}
+        if(requirement_index < requirements_quantity){
+            i = new element("i", "text-lg p-1 mb-0 fa fa-plus", [], p.getNode()); i.create()
+        }
+        requirement_index++
+    })
+    //Result
+    s = new element("span", "grow flex items-center", [], p.getNode()); s.create()
+    i = new element("i", "text-lg p-1 px-2 mb-0 fa fa-arrow-right", [], s.getNode()); i.create()
+    s1id = `rule-${rule_index}-result`
+    s1 = new element("span", "p-1 px-2 py-0.5 mb-0 font-bold border border-gray-500 bg-gray-700", [], s.getNode(), s1id); s1.create()
+    s1.appendContent(translate(language, clicked_product, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
+    enable_accordion_click(b.getNode())
+}
+let new_rule_iterate_all_product_available_rules = (clicked_product, current_mount) => {
+    let location_product_rules = product_rules[clicked_product].rules
+    //Iterate over all rules for that selected product.
+    //Build product rules accordions with a rule inside.
+    let rule_index = 1
+    let parent_div = document.querySelector("#active-production-rules-newRule")
+    d = new element("div", "p-2", [{"key": "data-accordion", "value": "collapse"}], parent_div, "accordion-new-production-rules"); d.create()
+    location_product_rules.forEach((rule) => {
+        h2 = new element("h2", "mt-1 border border-gray-800", [], d.getNode(), `accordion-new-production-rule-${rule_index}-header`); h2.create()
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new-production-rule-${rule_index}-body`}, {"key": "aria-controls", "value": `accordion-new-production-rule-${rule_index}-body`}], h2.getNode())
+        b.create();
+        s = new element("span", "", [], b.getNode()); s.create()
+        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Production rule"))
+        s1.appendHTML(" #"+rule_index)
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-${rule_index}-header`}], d.getNode(), `accordion-new-production-rule-${rule_index}-body`); d1.create()
+        d1.getNode().setAttribute("data-rule-index", rule_index)
+        new_rule_iterate_requirements(rule, rule_index, clicked_product, current_mount)
+        //Select rule requirement: bg-gray-600 rounded border-2 border-gray-900
+        rule_index++
+    })
+}
+let accordion_landforms = () => {
+    let build_actions_available = () => {
+        //Actions available
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), "active-production-rules-actions-title"); d2.create()
+        p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Actions available")
+        i = new element("i", "mt-0 text-base fa fa-times invisible font-bold", [], p.getNode()); i.create()
+        //Landform's actions
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "active-production-rules-actions"); d2.create()
+        p = new element("p", "flex w-100 justify-between p-1 text-gray-500 dark:text-gray-300", [], d2.getNode()); p.create()
+        b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
+        i = new element("i", "fa fa-search me-2", [], b.getNode()); i.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New production rule")
+        b.getNode().addEventListener("click", (e) => {
+            let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}
+            //Build new production rule panel
+            let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
+            new_production_rule_panel.hidePreviousOptions()
+            new_production_rule_panel.buildPanel()
+            //For each button with a product rule, add a click event
+            document.querySelectorAll(".rule_product").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    let clicked_product = e.target.closest("button").getAttribute("data-product")
+                    //Remove product buttons.
+                    document.querySelectorAll("#new-rule-title, #new-rule-products").forEach((elem) => elem.remove())
+                    let current_mount = "Water reservoir"
+                    //Iterate over all manufacturable products in a water reservoir
+                    location_products["waterReservoir"]["EN"].forEach((location_product) => {
+                        if(location_product == clicked_product){
+                            new_rule_iterate_all_product_available_rules(clicked_product, current_mount)
+                        }
+                    })
+                })
+            })
+        })
+    }
+    let build_landforms_accordion = () => {
+        //Build landforms accordion
+        let parent_elem = document.getElementById("accordion-menu")
+        //Build landforms accordion header
+        h2 = new element("h2", "mt-3", [], parent_elem, "accordion-menu-landform"); h2.create()
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-landform-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-landform-body"}], h2.getNode())
+        b.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Landform")
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        //Build landforms accordion body
+        d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-landform"}], parent_elem, "accordion-menu-landform-body"); d1.create()
+        d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode(), "accordion-landform-1-header"); d2.create()
+        d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-landforms"); d.create()
+        //Build landform 1 accordion header
+        h2 = new element("h2", "notificationUnread", [], d.getNode(), "accordion-landform-1-header"); h2.create()
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-landform-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-landform-1-body"}], h2.getNode())
+        b.create()
+        s = new element("span", "", [], b.getNode()); s.create()
+        s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
+        s1.create(); s1.appendContent("NEW")
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Water reservoir")
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        //Build landform 1 accordion body
+        d1 = new element("div", "waterReservoir hidden", [{"key":"aria-labelledby","value":"accordion-landform-1-header"}], d.getNode(), "accordion-landform-1-body")
+        d1.create()
+        //Build water reservoir info
+        //First column
+        d2 = new element("div", "p-2 px-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-info")
+        d2.create();
+        p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Type")
+        sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-type"); s1.create()
+        s1.appendContent(colony_water_reservoir)
+        //Second column
+        s = new element("span", "", [], p.getNode()); s.create();
+        s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"M"}], s.getNode()); s1.create(); s1.appendContent("Discovered in")
+        sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
+        s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Year")
+        s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdYear"); s1.create(); s1.appendContent("1")
+        s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Week")
+        s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdWeek"); s1.create(); s1.appendContent("1")
+        s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Day")
+        s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdDay"); s1.create(); s1.appendContent("1")
 
-    p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Daily water income")
-    sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-    s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-water-income"); s1.create()
-    s1.appendContent(waterReservoirs[colonyWaterReservoir]["daily-water-income"])
-    s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("per water bearer")
-    p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create();
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Daily food income")
-    sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-    s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-food-income"); s1.create()
-    s1.appendContent(waterReservoirs[colonyWaterReservoir]["daily-food-income"])
-    s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("per fisherman")
+        p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Daily water income")
+        sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-water-income"); s1.create()
+        s1.appendContent(water_reservoirs[colony_water_reservoir]["daily-water-income"])
+        s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("per water bearer")
+        p = new element("p", "text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create();
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Daily food income")
+        sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-food-income"); s1.create()
+        s1.appendContent(water_reservoirs[colony_water_reservoir]["daily-food-income"])
+        s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("per fisherman")
 
-    //Build Assigned Workers title
-    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assigned-title")
-    d2.create();
-    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Assigned workers")
-    //Build Assigned Workers area
-    d2 = new element("div", "assignedWorkers p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assigned")
-    d2.create();
-    p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("No workers assigned")
-
-    //Build Available Workers title
-    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-available-title")
-    d2.create();
-    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Available workers")
-    //Build Available Workers area
-    d2 = new element("div", "availableWorkers p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-available"); d2.create()
-    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("No workers available")
+        //Build Assignable Workers title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assignable-workers-title")
+        d2.create();
+        p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Permanently assignable workers")
+        //Build Assignable Workers area
+        d2 = new element("div", "assignable-workers p-2 pb-1 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assignable-workers")
+        d2.create();
+        p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"n"}], s.getNode()); s1.create(); s1.appendContent("None")
+        /*
+        //Build Available Workers title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-available-title")
+        d2.create();
+        p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Available workers")
+        //Build Available Workers area
+        d2 = new element("div", "availableWorkers p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-available"); d2.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("No workers available")
+        */
+        //Build Active Production Rules title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-active-production-rules-title")
+        d2.create();
+        p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Active production rules"))
+        //Build Active Production Rules area
+        d2 = new element("div", "active-production-rules p-2 mb-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-active-production-rules"); d2.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
+    }
+    build_landforms_accordion()
+    build_actions_available()
 }
 let accordionExpeditions = () => {
     let d
@@ -1271,6 +1552,24 @@ let accordionExpeditions = () => {
     d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "expeditions"); d.create()
 
+    //Build Succesfully expeditions title
+    d1 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d.getNode(), "active-expeditions-title")
+    d1.create();
+    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d1.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Succesfully expeditions")
+    //Build Successfully expeditions area
+    d1 = new element("div", "activeExpeditions p-2 ps-2 mb-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d.getNode(), "successfully-expeditions-area")
+    d1.create();
+    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d1.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Resources expeditions");
+    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ");
+    s1 = new element("span", "font-bold", [], s.getNode(), "resourcesSuccessfullExpeditions"); s1.create(); s1.appendContent("0")
+    /*p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d1.getNode()); p.create()*/
+    s = new element("span", "", [], p.getNode()); s.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Ruins expeditions");
+    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ");
+    s1 = new element("span", "font-bold", [], s.getNode(), "ruinsSuccessfullExpeditions"); s1.create(); s1.appendContent("0")
     //Build Active expeditions title
     d1 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-800 text-xs", [], d.getNode(), "active-expeditions-title")
     d1.create();
@@ -1315,15 +1614,17 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     if(document.querySelector("#"+parentElem.id+" > p") != null){
         document.querySelector("#"+parentElem.id+" > p").remove()
     }
+    //Expedition type text
+    let expeditionType = expeditionData.type == "of resources" ? "Resources" : "Ruins"
     //Build current expedition accordion header
     d2 = new element("div", "accordion-active-expedition", [{"key":"data-accordion", "value":"collapse"}], parentElem, "accordion-expedition-"+expeditionData.id); d2.create()
-    h2 = new element("h2", "resourcesExpedition", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
+    h2 = new element("h2", expeditionType.toLowerCase()+"Expedition", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-expedition-"+expeditionData.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-expedition-"+expeditionData.id+"-body"}], h2.getNode())
     b.create()
-    enableAccordionClick(b.getNode())
+    enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
-    i = new element("i", "fa fa-location-dot mt-1 me-2", [], s.getNode()); i.create()
-    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Resources expedition"))
+    i = new element("i", "fa fa-beat fa-location-dot mt-1 me-2", [], s.getNode()); i.create()
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, expeditionType+" expedition"))
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(" #"+expeditionData.id)
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build current expedition accordion body
@@ -1350,16 +1651,16 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     s2 = new element("span", "countdownTime activeExpedition px-1 ms-2 rounded border border-gray-500", [], p.getNode()); s2.create()
     let hiddenClass = (expeditionData.returnsIn.years ? "" : "hidden ")
     s1 = new element("span", hiddenClass+"countdown years font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-years"); s1.create(); s1.appendHTML(expeditionData.returnsIn.years)
-    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-yearsText"); s1.create(); s1.appendHTML(translate(language, "Years", "", "lowercase"))
-    //s1 = new element("span", hiddenClass, [], s2.getNode(), "expedition-"+expeditionData.id+"-pending-yearsComma"); s1.create(); s1.appendContent(", ")
+    let yearsText = expeditionData.returnsIn.years != 1 ? translate(language, "Years", "", "lowercase") : translate(language, "Years", "", "lowercase").slice(0, -1)
+    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-yearsText"); s1.create(); s1.appendHTML(yearsText)
     hiddenClass = (expeditionData.returnsIn.weeks ? "" : "hidden ")
     s1 = new element("span", hiddenClass+"countdown weeks font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeks"); s1.create(); s1.appendHTML(expeditionData.returnsIn.weeks)
-    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeksText"); s1.create(); s1.appendHTML(translate(language, "Weeks", "", "lowercase"))
-    //s1 = new element("span", hiddenClass, [], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeksComma"); s1.create(); s1.appendContent(", ")
+    let weeksText = expeditionData.returnsIn.weeks != 1 ? translate(language, "Weeks", "", "lowercase") : translate(language, "Weeks", "", "lowercase").slice(0, -2)+"."
+    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeksText"); s1.create(); s1.appendHTML(weeksText)
     hiddenClass = (expeditionData.returnsIn.days ? "" : "hidden ")
     s1 = new element("span", hiddenClass+"countdown days font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-days"); s1.create(); s1.appendHTML(expeditionData.returnsIn.days)
-    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-daysText"); s1.create(); s1.appendHTML(translate(language, "Days", "", "lowercase"))
-    //s1 = new element("span", hiddenClass, [], s2.getNode(), "expedition-"+expeditionData.id+"-pending-daysComma"); s1.create(); s1.appendContent(", ")
+    let daysText = expeditionData.returnsIn.days != 1 ? translate(language, "Days", "", "lowercase") : translate(language, "Days", "", "lowercase").slice(0, -1)
+    s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-daysText"); s1.create(); s1.appendHTML(daysText)
     s1 = new element("span", "countdown hours font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hours"); s1.create(); s1.appendHTML(expeditionData.returnsIn.hours)
     s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hoursText"); s1.create(); s1.appendHTML("hs.")    
     //Expeditionaries and objects assigned...
@@ -1371,7 +1672,7 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     d3 = new element("div", "p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d5.getNode(), "expedition-"+expeditionData.id+"-assigned-workers"); d3.create()
     h2 = new element("h2", "", [], d3.getNode()); h2.create()
     expeditionData.crew.forEach((crewMember) => {
-        d4 = new element("div", "flex items-center justify-between w-full p-1 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+        d4 = new element("div", crewMember.type+" flex items-center justify-between w-full p-1 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
         d4.create()
         s = new element("span", "", [], d4.getNode()); s.create()
         //Build expeditionary or horse crew div
@@ -1398,39 +1699,39 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     })
 }
 //Enable accordion button click event
-let enableAccordionClick = (accordionItemButton) => {
-    let handleAccordionClick = (e) => {
+let enable_accordion_click = (accordion_item_button) => {
+    let handle_accordion_click = (e) => {
         const target = e.target.closest("button")
-        const accordionItemBody = document.querySelector(target.getAttribute('data-accordion-target'))
+        const accordion_item_body = document.querySelector(target.getAttribute('data-accordion-target'))
         //Trying to expand accordion item
-        if (accordionItemBody.classList.contains('hidden')) {
-            let parentElem = accordionItemBody.closest("[data-accordion]")
-            parentElem.querySelectorAll("[aria-labelledby]").forEach((elem) => {
-                if(elem != accordionItemBody){
+        if (accordion_item_body.classList.contains('hidden')) {
+            let parent_elem = accordion_item_body.closest("[data-accordion]")
+            parent_elem.querySelectorAll("[aria-labelledby]").forEach((elem) => {
+                if(elem != accordion_item_body){
                     elem.classList.add("hidden")
                 }
             })
-            parentElem.querySelectorAll("svg").forEach((elem) => {
+            parent_elem.querySelectorAll("svg").forEach((elem) => {
                 if(elem != target.querySelector("svg") && !elem.classList.contains("rotate-180")){
                     elem.classList.add("rotate-180")
                 }
             })
-            accordionItemBody.classList.remove('hidden');
+            accordion_item_body.classList.remove('hidden');
             target.setAttribute('aria-expanded', 'true');
             target.children[1].classList.remove("rotate-180")
             target.classList.remove("text-gray-500", "dark:text-gray-400")
             target.classList.add("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
         } else { //Trying to collapse accordion item
-            accordionItemBody.classList.add('hidden');
+            accordion_item_body.classList.add('hidden');
             target.setAttribute('aria-expanded', 'false');
             target.children[1].classList.add("rotate-180")
             target.classList.remove("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
             target.classList.add("text-gray-500", "dark:text-gray-400")
         }
     }
-    if(accordionItemButton.classList.contains("unattached-click")){
-        accordionItemButton.addEventListener("click", handleAccordionClick)
-        accordionItemButton.classList.remove("unattached-click")
+    if(accordion_item_button.classList.contains("unattached-click")){
+        accordion_item_button.addEventListener("click", handle_accordion_click)
+        accordion_item_button.classList.remove("unattached-click")
     }
 }
 let enableNotificationEvents = () => {
@@ -1469,7 +1770,7 @@ let addLandform = (landformType = "hunting") => {
     h2 = new element("h2", "notificationUnread", [], d, "accordion-landform-"+landformIndex+"-header"); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-landform-"+landformIndex+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-landform-"+landformIndex+"-body"}], h2.getNode(), "accordion-landform-"+landformIndex)
     b.create()
-    enableAccordionClick(b.getNode())
+    enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent("NEW")
@@ -1493,19 +1794,20 @@ let addLandform = (landformType = "hunting") => {
     s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day"))
     s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-"+landformIndex+"-createdDay"); s1.create(); s1.appendContent(document.getElementById("currentDay").innerText)
 
-    //Build Assigned Workers title
+    //Build Assignable Workers title
     d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-assigned-title")
     d2.create();
     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned workers"))
-    //Build Assigned Workers area
-    d2 = new element("div", "assignedWorkers p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-assigned")
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Permanently assignable workers"))
+    //Build Assignable Workers area
+    d2 = new element("div", "assignable-workers p-2 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-assigned")
     d2.create();
     p = new element("p", "empty text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "", [], p.getNode()); s.create()
     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No assignable workers"))
 
+    /*
     //Build Available Workers title
     d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-available-title")
     d2.create();
@@ -1517,6 +1819,19 @@ let addLandform = (landformType = "hunting") => {
     s = new element("span", "", [], p.getNode()); s.create()
     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
+    */
+    //Build Active Production Rules title
+    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-active-production-rules-title")
+    d2.create();
+    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Active production rules"))
+    //Build Active Production Rules area
+    d2 = new element("div", "active-production-rules p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-active-production-rules"); d2.create()
+    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
+
 }
 let updateStock = () => {
     //Update resources
@@ -1534,8 +1849,9 @@ let updateStock = () => {
             s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, resource))
             s1.appendHTML(": ")
             s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockDisplayed.resources[language][resource].toString())
-            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "units"))
+            let stockValue = stockDisplayed.resources[language][resource].toString()
+            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockValue)
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue == 1 ? "unit" : "units"))
         }
     })
     //If there was no resource to show, display empty message.
@@ -1562,8 +1878,9 @@ let updateStock = () => {
             s1.appendHTML(": ")
             formatedProduct = product.replaceAll(" ", "")
             s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockDisplayed.products[language][product].toString())
-            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "units"))
+            let stockValue = stockDisplayed.products[language][product].toString()
+            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockValue)
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue == 1 ? "unit" : "units"))
         }
     })
     //If there was no resource to show, display empty message.
@@ -1618,7 +1935,7 @@ let updateColony = (event = "zoneSearched") => {
             h2 = new element("h2", "notificationUnread", [], parentElem, "accordion-building-group-1-header"); h2.create()
             b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-group-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-group-1-body"}], h2.getNode(), "accordion-building-group-1")
             b.create()
-            enableAccordionClick(b.getNode())
+            enable_accordion_click(b.getNode())
             s = new element("span", "", [], b.getNode()); s.create()
             s1 = new element("span", "new bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 hidden rounded-sm dark:bg-blue-900 dark:text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
             s1.create(); s1.appendContent("NEW")
@@ -1639,22 +1956,23 @@ let updateColony = (event = "zoneSearched") => {
     }
     if(event == "zoneSearched"){
         //Add notification about zone searched
-        addNews()
         updateStock()
+        addNews()
     }
 }
 //Change all panels in which the role and citizen were involved
-let postconditionsChangingRole = (previousRole, citizenIndex) => {
-    document.querySelectorAll(".availableWorkers > h2").forEach((value) => {
-        currentCitizenId = value.id.split("-")[2]
-        //Check if citizen is available in a water reservoir.
-        if(currentCitizenId == citizenIndex){
-            availableWorkersDiv = value.parentElement
-            //Remove citizen from available workers list
-            value.remove()
-            //If no more available workers, then show "no available workers" text
-            if(!availableWorkersDiv.children.length){
-                p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], availableWorkersDiv); p.create()
+let post_conditions_changing_role = (previous_role, citizen_index) => {
+    let loop_citizen_index
+    document.querySelectorAll(".assignable-workers > h2.assignable-worker.unassigned").forEach((elem) => {
+        loop_citizen_index = elem.id.split("-")[3]
+        //Check if citizen is assignable in a water reservoir.
+        if(["waterBearing", "fishing"].includes(previous_role) && loop_citizen_index == citizen_index){
+            assignable_workers_div = elem.parentElement
+            //Remove citizen from assignable workers list
+            elem.remove()
+            //If no more assignable workers, then show "no workers available" text
+            if(!assignable_workers_div.children.length){
+                p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], assignable_workers_div); p.create()
                 s = new element("span", "", [], p.getNode()); s.create()
                 i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                 s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
@@ -1694,7 +2012,7 @@ let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
 //For any mount discovered: Add available worker
 let addAvailableHorseToExpedition = () => {
     let parentElem = document.querySelector(".newExpedition .availableObjects")
-        //Remove "no available workers" text, if exists
+    //Remove "no available objects" text, if exists
     if(document.querySelector(".newExpedition .availableObjects .empty")!=null){
         document.querySelector(".newExpedition .availableObjects .empty").remove()
     }
@@ -1710,34 +2028,179 @@ let addAvailableHorseToExpedition = () => {
     i = new element("i", "text-sm fa fa-plus", [], d.getNode()); i.create()
     return i.getNode()
 }
-//For any mount discovered: Add available worker
-let addAvailableWorkerToMount = (citizenIndex, mountClass) => {
-    let parentElem = document.querySelector("."+mountClass+" .availableWorkers")
+//For any mount discovered: Add assignable worker as permanent
+let add_assignable_worker_to_mount = (citizen_index, mount_class) => {
+    //Parent div in which to hang structure.
+    let parent_elem = document.querySelector(`.${mount_class} .assignable-workers`)
+    //Remove "no available workers" text, if exists
+    if(document.querySelector(`.${mount_class} .assignable-workers .empty`)!=null){
+        document.querySelector(`.${mount_class} .assignable-workers .empty`).remove()
+    }
+    //Add citizen panel with role information.
+    let currentCitizenRole = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
+    h2id = `${mount_class}-assignable-citizen-${citizen_index}`
+    h2 = new element("h2", "assignable-worker unassigned", [{"key":"data-role", "value":currentCitizenRole}], parent_elem, h2id); h2.create()
+    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+    d.create()
+    s = new element("span", "", [], d.getNode()); s.create()
+    //Gender citizen icon
+    iid = `citizen-${citizen_index}-gender-icon`
+    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    //Age citizen icon
+    iid = `citizen-${citizen_index}-age-icon`
+    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    //Role citizen icon
+    iid = `citizen-${citizen_index}-role-icon`
+    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    //XP citizen icon
+    iid = `citizen-${citizen_index}-xp-icon`
+    let citizenXP = document.getElementById(iid).innerText
+    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), iid); s1.create()
+    s1.appendContent(citizenXP)
+    //Citizen full name
+    iid = `citizen-${citizen_index}-name`
+    let citizenName = document.getElementById(iid).innerText
+    s1 = new element("span", "ms-1", [], s.getNode(), iid); s1.create(); s1.appendContent(citizenName)
+    s = new element("span", "", [], d.getNode()); s.create()
+    //View citizen info
+    iid = `${mount_class}-citizen-${citizen_index}-view-info`
+    i = new element("i", "fa fa-eye me-2", [], s.getNode(), iid); i.create()
+    //Assign / deassign citizen as mount worker
+    iid = `${mount_class}-citizen-${citizen_index}-assign`
+    i = new element("i", "text-sm fa-regular fa-square", [{"key":"data-group", "value":mount_class}], s.getNode(), iid); i.create()
+    //Check if there are open rules within the mount panel to add the worker
+    let openedRules = parent_elem.parentElement.querySelectorAll(".assignable-panel")
+    openedRules.forEach((elem) => {
+        //Remove "no available workers" text, if exists
+        if(elem.querySelector(".empty") != null){
+            elem.querySelector(".empty").remove()
+        }
+        //Add worker to rule assignable panel.
+        let ch2 = h2.getNode().cloneNode(true)
+        elem.appendChild(ch2)
+    })
+}
+//For certain mount discovered: Remove (Deassign) assigned worker
+let deassignWorkerToMount = (citizenIndex, mountClass) => {
+    let parentAssigned = document.querySelector("."+mountClass+" .assignedWorkers")
+    let parentAvailable = document.querySelector("."+mountClass+" .availableWorkers")
     //Remove "no available workers" text, if exists
     if(document.querySelector("."+mountClass+" .availableWorkers .empty")!=null){
         document.querySelector("."+mountClass+" .availableWorkers .empty").remove()
     }
-    h2 = new element("h2", "availableWorker", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
+    //Assign citizen to "Assigned workers" panel.
+    parentAvailable.appendChild(document.getElementById("assigned-citizen-"+citizenIndex))
+    document.getElementById("assigned-citizen-"+citizenIndex).classList.remove("assignedWorker")
+    document.getElementById("assigned-citizen-"+citizenIndex).classList.add("availableWorker")   
+    document.getElementById("assigned-citizen-"+citizenIndex).id = "available-citizen-"+citizenIndex
+    //Change assign icon, put instead deassign icon
+    document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-minus")
+    document.getElementById("citizen-"+citizenIndex+"-assign").classList.add("fa-plus")
+    //Change citizen status.
+    document.querySelectorAll("#citizen-"+citizenIndex+"-status").forEach((status) => {
+        status.innerText = translate(language, "Idle")
+        status.setAttribute("data-status", "idle")
+    })
+    let citizenRoleKey = document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role")
+    if(mountClass == "waterReservoir"){
+        if(citizenRoleKey == "waterbearing"){
+            //Add water income to Colony panel
+            document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
+            let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
+            document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+        }
+        if(citizenRoleKey == "fishing"){
+            //Add water income to Colony panel
+            document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
+            let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
+            document.getElementById("food-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+        }
+    }
+    //If no available workers, then show "no available workers" text
+    if(!parentAssigned.children.length){
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
+    }
+}
+//For any new production rule: Add available worker
+let add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => {
+    //Remove "no assigned workers" text, if exists
+    if(parent_elem.querySelector(".empty")!=null){
+        parent_elem.querySelector(".empty").remove()
+    }
+    //Remove previous available worker instances for current citizen.
+    document.querySelectorAll("#available-citizen-"+citizen_index+".availableWorker").forEach((elem) => {
+        let parentDiv = elem.parentElement
+        elem.remove()
+        if(!parentDiv.children.length){
+            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentDiv); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+            s.appendHTML(translate(language, "No workers available"))
+        }
+    })
+    h2 = new element("h2", "grow assignedWorker", [], parentElem, "assigned-citizen-"+citizen_index); h2.create()
     d = new element("div", "flex items-center justify-between w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
     //Gender citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizenIndex+"-gender-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-gender-icon"); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizen_index+"-gender-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-gender-icon"); i.create()
     //Age citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizenIndex+"-age-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-age-icon"); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizen_index+"-age-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-age-icon"); i.create()
     //Role citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizenIndex+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizen_index+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
     //XP citizen icon
-    let citizenXP = document.getElementById("citizen-"+citizenIndex+"-xp-icon").innerText
+    let citizenXP = document.getElementById("citizen-"+citizen_index+"-xp-icon").innerText
     s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(citizenXP)
     //Citizen full name
-    let citizenName = document.getElementById("citizen-"+citizenIndex+"-name").innerText
-    s1 = new element("span", "ms-1", [], s.getNode(), "citizen-"+citizenIndex+"-name"); s1.create(); s1.appendContent(citizenName)
+    let citizenName = document.getElementById("citizen-"+citizen_index+"-name").innerText
+    s1 = new element("span", "ms-1", [], s.getNode(), "citizen-"+citizen_index+"-name"); s1.create(); s1.appendContent(citizenName)
     s = new element("span", "", [], d.getNode()); s.create()
     //View citizen info
-    i = new element("i", "fa fa-eye me-2", [], s.getNode(), "citizen-"+citizenIndex+"-view-info"); i.create()
+    i = new element("i", "fa fa-eye me-2", [], s.getNode(), "citizen-"+citizen_index+"-view-info"); i.create()
     //Assign citizen as worker
-    i = new element("i", "text-sm fa fa-plus", [], s.getNode(), "citizen-"+citizenIndex+"-assign"); i.create()
+    i = new element("i", "text-sm fa fa-minus", [], s.getNode(), "citizen-"+citizen_index+"-deassign"); i.create()
+}
+//For any new production worker rule: Add assignable worker
+let add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) => {
+    //Remove "no available workers" text, if exists
+    if(parent_elem.querySelector(".empty") != null){
+        parent_elem.querySelector(".empty").remove()
+    }
+    let rule_index = parent_elem.id.split("-")[1], requirement_index = parent_elem.id.split("-")[3]
+    h2id = `rule-assignable-citizen-${citizen_index}`
+    h2 = new element("h2", "assignable-worker unassigned", [], parent_elem, h2id); h2.create()
+    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+    d.create()
+    s = new element("span", "", [], d.getNode()); s.create()
+    //Gender citizen icon
+    iid = `citizen-${citizen_index}-gender-icon`
+    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    //Age citizen icon
+    iid = `citizen-${citizen_index}-age-icon`
+    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    //Role citizen icon
+    iid = `citizen-${citizen_index}-role-icon`
+    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    //XP citizen icon
+    iid = `citizen-${citizen_index}-xp-icon`
+    let citizenXP = document.getElementById(iid).innerText
+    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), iid); s1.create(); 
+    s1.appendContent(citizenXP)
+    //Citizen full name
+    iid = `citizen-${citizen_index}-name`
+    let citizenName = document.getElementById(iid).innerText
+    s1 = new element("span", "ms-1", [], s.getNode(), iid); s1.create(); s1.appendContent(citizenName)
+    s = new element("span", "", [], d.getNode()); s.create()
+    //View citizen info
+    iid = `citizen-${citizen_index}-view-info`
+    i = new element("i", "fa fa-eye me-2", [], s.getNode(), iid); i.create()
+    //Assign citizen as worker
+    //Assign / deassign citizen as rule requirement worker
+    iid = `citizen-${citizen_index}-assign`
+    i = new element("i", "text-sm fa-regular fa-square", [{"key":"data-group", "value":"production-rule"}, {"key":"data-rule", "value":rule_index}, {"key":"data-requirement", "value":requirement_index}], s.getNode(), iid); i.create()
 }
 //For certain new expedition: Add assigned horse
 let addAssignedHorseToExpedition = (horseElement) => {
@@ -1807,6 +2270,18 @@ let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     document.getElementById("available-citizen-"+citizenIndex).classList.remove("availableWorker")
     document.getElementById("available-citizen-"+citizenIndex).classList.add("assignedWorker")
     document.getElementById("available-citizen-"+citizenIndex).id = "assigned-citizen-"+citizenIndex
+    //Remove all other places where the available citizen is shown.
+    document.querySelectorAll("#available-citizen-"+citizenIndex+".availableWorker").forEach((elem) => {
+        let parentElem = elem.closest(".availableWorkers")
+        elem.remove()
+        if(!parentElem.querySelectorAll("h2").length){
+            //Show no workers available message.
+            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentElem); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
+        }
+    })
     //Change assign icon, put instead deassign icon
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-plus")
     document.getElementById("citizen-"+citizenIndex+"-assign").classList.add("fa-minus")
@@ -1819,13 +2294,13 @@ let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     if(mountClass == "waterReservoir"){
         if(citizenRoleKey == "waterbearing"){
             //Add water income to Colony panel
-            document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 + waterReservoirs[colonyWaterReservoir]["daily-water-income"]*1
+            document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
             let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
             document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
         }
         if(citizenRoleKey == "fishing"){
             //Add water income to Colony panel
-            document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 + waterReservoirs[colonyWaterReservoir]["daily-food-income"]*1
+            document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
             let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
             document.getElementById("food-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
         }
@@ -1882,50 +2357,6 @@ let deassignWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
         status.innerText = translate(language, "Idle")
         status.setAttribute("data-status", "idle")
     })
-    //If no available workers, then show "no available workers" text
-    if(!parentAssigned.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()
-        s = new element("span", "", [], p.getNode()); s.create()
-        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
-    }
-}
-//For certain mount discovered: Remove (Deassign) assigned worker
-let deassignWorkerToMount = (citizenIndex, mountClass) => {
-    let parentAssigned = document.querySelector("."+mountClass+" .assignedWorkers")
-    let parentAvailable = document.querySelector("."+mountClass+" .availableWorkers")
-    //Remove "no available workers" text, if exists
-    if(document.querySelector("."+mountClass+" .availableWorkers .empty")!=null){
-        document.querySelector("."+mountClass+" .availableWorkers .empty").remove()
-    }
-    //Assign citizen to "Assigned workers" panel.
-    parentAvailable.appendChild(document.getElementById("assigned-citizen-"+citizenIndex))
-    document.getElementById("assigned-citizen-"+citizenIndex).classList.remove("assignedWorker")
-    document.getElementById("assigned-citizen-"+citizenIndex).classList.add("availableWorker")   
-    document.getElementById("assigned-citizen-"+citizenIndex).id = "available-citizen-"+citizenIndex
-    //Change assign icon, put instead deassign icon
-    document.getElementById("citizen-"+citizenIndex+"-assign").classList.remove("fa-minus")
-    document.getElementById("citizen-"+citizenIndex+"-assign").classList.add("fa-plus")
-    //Change citizen status.
-    document.querySelectorAll("#citizen-"+citizenIndex+"-status").forEach((status) => {
-        status.innerText = translate(language, "Idle")
-        status.setAttribute("data-status", "idle")
-    })
-    let citizenRoleKey = document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role")
-    if(mountClass == "waterReservoir"){
-        if(citizenRoleKey == "waterbearing"){
-            //Add water income to Colony panel
-            document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - waterReservoirs[colonyWaterReservoir]["daily-water-income"]*1
-            let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
-            document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
-        }
-        if(citizenRoleKey == "fishing"){
-            //Add water income to Colony panel
-            document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - waterReservoirs[colonyWaterReservoir]["daily-food-income"]*1
-            let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
-            document.getElementById("food-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
-        }
-    }
     //If no available workers, then show "no available workers" text
     if(!parentAssigned.children.length){
         p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()

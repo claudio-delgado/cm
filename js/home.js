@@ -5,19 +5,29 @@ let initColonyInfo = () => {
     citizensAmount = 10, citizensFemaleAmount = 5, citizensMaleAmount = 5
     daysPassed = 0, dayPassed = false, weekPassed = false
     wagonsAmount = 3, horsesAmount = 6
-    //colonyWaterReservoir = waterReservoirs[Math.floor(Math.random() * waterReservoirs.length)].name
-    colonyWaterReservoir = Object.keys(waterReservoirs)[Math.floor(Math.random() * Object.keys(waterReservoirs).length)]
+    //colony_water_reservoir = water_reservoirs[Math.floor(Math.random() * water_reservoirs.length)].name
+    colony_water_reservoir = Object.keys(water_reservoirs)[Math.floor(Math.random() * Object.keys(water_reservoirs).length)]
 }
 let loadInitialRandomGoods = () => {
-    stockValues.resources[language][translate(language, "stone")] = 800 + Math.floor(Math.random() * (1000 - 800))
-    stockValues.resources[language][translate(language, "gravel")] = 800 + Math.floor(Math.random() * (1000 - 800))
-    stockValues.resources[language][translate(language, "clay")] = 800 + Math.floor(Math.random() * (1000 - 800))
-    stockValues.products[language][translate(language, "wooden plank")] = 1000 + Math.floor(Math.random() * (1200 - 1000))
-    stockValues.products[language][translate(language, "wooden plate")] = 20 + Math.floor(Math.random() * (50 - 20))
-    stockValues.products[language][translate(language, "roof tile")] = 400 + Math.floor(Math.random() * (800 - 400))
-    stockValues.products[language][translate(language, "brick")] = 500 + Math.floor(Math.random() * (900 - 500))
-    stockValues.products[language][translate(language, "rag")] += 600 + Math.floor(Math.random() * (800 - 600))
-    stockValues.products[language][translate(language, "hay")] += 400 + Math.floor(Math.random() * (600 - 400))
+    stockValues.resources["EN"]["stone"]+= 800 + Math.floor(Math.random() * (1000 - 800))
+    stockValues.resources["ES"][translate(language, "stone")] = stockValues.resources["EN"]["stone"]
+    stockValues.resources["EN"]["gravel"]+= 800 + Math.floor(Math.random() * (1000 - 800))
+    stockValues.resources["ES"][translate(language, "gravel")] = stockValues.resources["EN"]["gravel"]
+    stockValues.resources["EN"]["clay"]+= 800 + Math.floor(Math.random() * (1000 - 800))
+    stockValues.resources["ES"][translate(language, "clay")] = stockValues.resources["EN"]["clay"]
+    stockValues.products["EN"]["wooden plank"]+= 1000 + Math.floor(Math.random() * (1200 - 1000))
+    stockValues.products["ES"][translate(language, "wooden plank")] = stockValues.products["EN"]["wooden plank"]
+    stockValues.products["EN"]["wooden plate"]+= 20 + Math.floor(Math.random() * (50 - 20))
+    stockValues.products["ES"][translate(language, "wooden plate")] = stockValues.products["EN"]["wooden plate"]
+    stockValues.products["EN"]["roof tile"]+= 400 + Math.floor(Math.random() * (800 - 400))
+    stockValues.products["ES"][translate(language, "roof tile")] = stockValues.products["EN"]["roof tile"]
+    stockValues.products["EN"]["brick"]+= 500 + Math.floor(Math.random() * (900 - 500))
+    stockValues.products["ES"][translate(language, "brick")] = stockValues.products["EN"]["brick"]
+    stockValues.products["EN"]["rag"]+= 600 + Math.floor(Math.random() * (800 - 600))
+    stockValues.products["ES"][translate(language, "rag")] = stockValues.products["EN"]["rag"]
+    stockValues.products["EN"]["hay"]+= 400 + Math.floor(Math.random() * (600 - 400))
+    stockValues.products["ES"][translate(language, "hay")] = stockValues.products["EN"]["hay"]
+    stockDisplayed = JSON.parse(JSON.stringify(stockValues))
 }
 let colonySatisfaction = (lifeQuality, population) => {
     let satisfaction = {}
@@ -164,8 +174,18 @@ let lifeInterval = setInterval(() => {
             document.querySelectorAll("#accordion-citizens .citizen-properties").forEach((value) => {
                 let citizenYearsAge = document.querySelector("#citizen-"+value.dataset.index+"-ageYears")
                 let citizenWeeksAge = document.querySelector("#citizen-"+value.dataset.index+"-ageWeeks")
+                let previousAge = citizenYearsAge.innerText*1
+                let iconPreviousAge = ageIcons(previousAge)
                 citizenWeeksAge.innerText = (citizenWeeksAge.innerText*1 + 1) % 52
                 citizenYearsAge.innerText = citizenYearsAge.innerText*1 + (citizenWeeksAge.innerText*1 == 0 ? 1 : 0)
+                let iconCurrentAge = ageIcons(citizenYearsAge.innerText)
+                //Check if age icons must change...
+                if(iconPreviousAge != iconCurrentAge){
+                    document.querySelectorAll("#citizen-"+citizenIndex+"-age-icon").forEach((elem) => {
+                        elem.classList.remove(iconPreviousAge)
+                        elem.classList.add(iconCurrentAge)
+                    })
+                }
             })
         }
         //clearInterval(lifeInterval)
@@ -302,13 +322,23 @@ let processCountdowns = () => {
 }
 
 let endActiveExpedition = (expeditionType) => {
-    //Restore expeditionaries status to idle.
+    let mountResourceFound, ruinsFound = true
+    let loot //For ruins expedition.
     let expeditionariesAssigned = 0
     let maxXP = avgXP = 0
+    let expeditionaries, mountedExpeditionaries
+    //Expeditionaries are back in town, so restore their status to idle.
+    //Also calculate max and avg XP to later obtain probability of expedition success.
     document.querySelectorAll(".accordion-active-expedition").forEach((elem) => {
         let expeditionIndex = elem.id.split("-")[2]
-        elem.querySelectorAll("#expedition-"+expeditionIndex+"-assigned-workers h2 div").forEach((citizen) => {
+        expeditionaries = [], mountedExpeditionaries = false
+        mountedExpeditionaries = elem.querySelector("#expedition-"+expeditionIndex+"-assigned-horses h2:first-child") != null &&
+                                 elem.querySelector("#expedition-"+expeditionIndex+"-assigned-horses h2:first-child") != undefined
+        elem.querySelectorAll("#expedition-"+expeditionIndex+"-assigned-workers h2 div.expeditionary").forEach((citizen) => {
+            let expeditionary = {}
             let citizenIndex = citizen.querySelector("i").id.split("-")[3]
+            expeditionary.xp = document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp")
+            expeditionary.mounted = mountedExpeditionaries
             let realCitizenXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp")
             maxXP = maxXP < realCitizenXP ? realCitizenXP : maxXP
             avgXP+= realCitizenXP
@@ -317,16 +347,17 @@ let endActiveExpedition = (expeditionType) => {
                 status.innerText = translate(language, "Idle")
             })
             expeditionariesAssigned++
+            expeditionaries.push(expeditionary)
         })
     })
     avgXP = (avgXP / expeditionariesAssigned)
+    data = {}
     //If resources expedition
     if(expeditionType == "resources"){
         //Calculate result of the expedition (mount discovered?)
         //Calculate probability of finding a new resources mount.
-        let mountDiscoveryProbability = resourcesExpeditionProbability(resourcesExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
-        let mountResourceFound = Math.random() < mountDiscoveryProbability
-        data = {}
+        let mountDiscoveryProbability = expeditionProbability("of "+expeditionType, resourcesExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
+        mountResourceFound = Math.random() < mountDiscoveryProbability       
         if(mountResourceFound){
             //Calculate type of mount discovered
             let mountResourceType = Math.random()
@@ -343,13 +374,152 @@ let endActiveExpedition = (expeditionType) => {
             }
         }
     }
+    //If ruins expedition
+    if(expeditionType == "ruins"){
+        //Calculate result of the expedition (ancient ruin discovered?)
+        //Calculate probability of finding a new ruin.
+        let ruinDiscoveryProbability = expeditionProbability("of "+expeditionType, ruinsExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
+        //ruinsFound = Math.random() < ruinDiscoveryProbability
+        if(ruinsFound){
+            loot = {}
+            expeditionaries.forEach((expeditionary) => {
+                //Calculate type of goods found by current expeditionary.
+                let goodsType = Math.random() < ruinsExpeditionProductsFoundProbability ? "products" : "resources"
+                //Calculate amount of loot for current expeditionary
+                let goodsLootAmount = expeditionCarriageCapacity(expeditionary.xp, expeditionary.mounted)
+                //Calculate category and granularity probability of goods found by current expeditionary.
+                let categoryProbability = Math.random()
+                let granularityProbability = Math.random()
+                let goodsProbability = Math.random()
+                let granularityRandomMultiplication
+                let lootGood = ""
+                //Current expeditionary looted resources?
+                if(goodsType == "resources"){
+                    //Calculate type of mount resources found by current expeditionary.
+                    let resourceMount = Math.random()
+                    let currentProbability = ruinsExpeditionIronMountResourcesProbability
+                    if(resourceMount <= currentProbability) { resourceMount = "iron" }
+                    else{
+                        currentProbability+= ruinsExpeditionWoodMountResourcesProbability
+                        if(resourceMount <= currentProbability) { resourceMount = "wood" }
+                        else{
+                            currentProbability+= ruinsExpeditionClayMountResourcesProbability
+                            if(resourceMount <= currentProbability) { resourceMount = "clay" }
+                            else{ resourceMount = "stone" }
+                        }
+                    }
+                    let categoryFound = false
+                    currentProbability = 0
+                    ruinsExpeditionResourceCategoriesProbability.forEach((probability, category) => {
+                        currentProbability+= probability
+                        categoryFound = !categoryFound && categoryProbability < currentProbability ? category + 1 : categoryFound
+                    })
+                    //Check if category found is available with resources for current mount. If not, get the closest lower one.
+                    while(stockClassified.resources.byMount[resourceMount]["category"+categoryFound] == undefined){
+                        if(categoryFound == 1){
+                            categoryFound = Object.keys(stockClassified.resources.byMount[resourceMount])[0].toString().replace("category", "")*1
+                        } else {
+                            categoryFound--
+                        }
+                    }
+                    //Obtain a random granularity for current mount and category resource.
+                    let resourceGranularityArray = Object.keys(stockClassified.resources.byMount[resourceMount]["category"+categoryFound])
+                    let resourceGranularityIndex = Math.floor(granularityProbability * resourceGranularityArray.length)
+                    let resourceGranularity = resourceGranularityArray[resourceGranularityIndex]
+                    let resourcesArray = stockClassified.resources.byMount[resourceMount]["category"+categoryFound][resourceGranularity]["EN"]
+                    lootGood = resourcesArray[Math.floor(goodsProbability * resourcesArray.length)]
+                    //Multiply loot according to granularity.
+                    let minValue = Math.ceil(granularityLootMultipliers[resourceGranularity].minMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
+                    let maxValue = Math.ceil(granularityLootMultipliers[resourceGranularity].maxMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
+                    let randomGranularityMultiplicator = Math.random() / categoryFound
+                    granularityRandomMultiplication = minValue + Math.floor(randomGranularityMultiplicator * (maxValue - minValue))
+                } else { //Current expeditionary looted products
+                    //Calculate type of product resources found by current expeditionary.
+                    let building = Math.random()
+                    let currentProbability = ruinsExpeditionTextileProductsProbability
+                    if(building <= currentProbability) { building = "textile" }
+                    else{ 
+                        currentProbability+= ruinsExpeditionWorkshopProductsProbability
+                        if(building <= currentProbability) { building = "workshop" }
+                        else{ 
+                            currentProbability+= ruinsExpeditionBlacksmithProductsProbability
+                            if(building <= currentProbability) { building = "blacksmith" }
+                            else{
+                                currentProbability+= ruinsExpeditionSawmillProductsProbability
+                                if(building <= currentProbability) { building = "sawmill" }
+                                else{
+                                    currentProbability+= ruinsExpeditionFurnacesProductsProbability
+                                    if(building <= currentProbability) { building = "furnaces" }
+                                    else{
+                                        currentProbability+= ruinsExpeditionMillProductsProbability
+                                        if(building <= currentProbability) { building = "mill" }
+                                        else{
+                                            currentProbability+= ruinsExpeditionSlaughterhouseProductsProbability
+                                            if(building <= currentProbability) { building = "slaughterhouse" }
+                                            else{
+                                                currentProbability+= ruinsExpeditionBarnyardProductsProbability
+                                                if(building <= currentProbability) { building = "barnyard" }
+                                                else{
+                                                    currentProbability+= ruinsExpeditionFarmProductsProbability
+                                                    if(building <= currentProbability) { building = "farm" }
+                                                    else{
+                                                        currentProbability+= ruinsExpeditionWoodsmithProductsProbability
+                                                        if(building <= currentProbability) { building = "woodsmith" }
+                                                        else{ building = "stonesmith"}
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    let categoryFound = false
+                    currentProbability = 0
+                    ruinsExpeditionProductCategoriesProbability.forEach((probability, category) => {
+                        currentProbability+= probability
+                        categoryFound = !categoryFound && categoryProbability < currentProbability ? category + 1 : categoryFound
+                    })
+                    //Check if category found is available with products for current building. If not, get the closest lower one.
+                    if(stockClassified.products.byBuilding[building] == undefined) debugger
+                    while(stockClassified.products.byBuilding[building]["category"+categoryFound] == undefined){
+                        if(categoryFound == 1){
+                            categoryFound = Object.keys(stockClassified.products.byBuilding[building])[0].toString().replace("category", "")*1
+                        } else {
+                            categoryFound--
+                        }
+                    }
+                    //Obtain a random granularity for current building and category product.
+                    let productGranularityArray = Object.keys(stockClassified.products.byBuilding[building]["category"+categoryFound])
+                    let productGranularityIndex = Math.floor(granularityProbability * productGranularityArray.length)
+                    let productGranularity = productGranularityArray[productGranularityIndex]
+                    let productsArray = stockClassified.products.byBuilding[building]["category"+categoryFound][productGranularity]["EN"]
+                    lootGood = productsArray[Math.floor(goodsProbability * productsArray.length)]
+                    //Multiply loot according to granularity.
+                    let minValue = Math.ceil(granularityLootMultipliers[productGranularity].minMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
+                    let maxValue = Math.ceil(granularityLootMultipliers[productGranularity].maxMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
+                    let randomGranularityMultiplicator = Math.random() / categoryFound
+                    granularityRandomMultiplication = minValue + Math.floor(randomGranularityMultiplicator * (maxValue - minValue))
+                }
+                //loot["loots"] = (loot["loots"] == undefined || loot["loots"] == null) ? [] : loot["loots"]
+                loot[lootGood] = (loot[lootGood] == undefined || loot[lootGood] == null) ? 0 : loot[lootGood]
+                loot[lootGood]+= goodsLootAmount * granularityRandomMultiplication
+                //loot["loots"].push({"good": lootGood, "loot": loot[lootGood]})
+            })
+        }
+    }
     //Update xp to all expeditionaries according to expedition results.
     document.querySelectorAll(".accordion-active-expedition").forEach((elem) => {
         let expeditionIndex = elem.id.split("-")[2]
-        elem.querySelectorAll("#expedition-"+expeditionIndex+"-assigned-workers h2 div").forEach((citizen) => {
+        elem.querySelectorAll("#expedition-"+expeditionIndex+"-assigned-workers h2 div.expeditionary").forEach((citizen) => {
             let citizenIndex = citizen.querySelector("i").id.split("-")[3]
             let realCitizenXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp")
-            let newXP = realCitizenXP + (mountResourceFound ? 1 : 0.25)
+            //Calculate new experience according to expedition time.
+            let newXP = realCitizenXP + 
+                        (expeditionType == "resources" ? (mountResourceFound ? resourcesExpeditionSuccessXPGain : resourcesExpeditionFailXPGain) : 
+                            expeditionType == "ruins" ? (ruinsFound ? ruinsExpeditionSuccessXPGain : ruinsExpeditionFailXPGain) :
+                                0)
             document.querySelector("#citizen-"+citizenIndex+"-xp").setAttribute("data-xp", newXP.toFixed(4))
             document.querySelector("#citizen-"+citizenIndex+"-xp").innerText = Math.floor(newXP)
             //Update icon
@@ -363,11 +533,36 @@ let endActiveExpedition = (expeditionType) => {
     })
     //Add notification with the results of the expedition.
     data.expeditionType = expeditionType
-    data.successfullExpedition = mountResourceFound
-    addNews("ResourcesExpeditionFinished", data)
-    if(mountResourceFound){
-        addLandform(data.mountResourceType.charAt(0).toLowerCase()+data.mountResourceType.slice(1))
-        resourcesExpeditionsDone++
+    if(expeditionType == "resources"){
+        data.successfullExpedition = mountResourceFound
+        addNews("ResourcesExpeditionFinished", data)
+        if(mountResourceFound){
+            addLandform(data.mountResourceType.charAt(0).toLowerCase()+data.mountResourceType.slice(1))
+            resourcesExpeditionsDone++
+            document.querySelector("#resourcesSuccessfullExpeditions").innerText = resourcesExpeditionsDone
+        }
+    }
+    if(expeditionType == "ruins"){
+        data.successfullExpedition = ruinsFound
+        data.loot = loot
+        addNews("RuinsExpeditionFinished", data)
+        if(data.successfullExpedition){
+            //Update stock with loot.
+            Object.keys(loot).forEach((good) => {
+                if(stockValues.resources["EN"][good]!=undefined && stockValues.resources["EN"][good]!=null){
+                    stockValues.resources["EN"][good]+= loot[good]
+                    stockValues.resources["ES"][translate(language, good)] = stockValues.resources["EN"][good]
+                }
+                if(stockValues.products["EN"][good]!=undefined && stockValues.products["EN"][good]!=null){
+                    stockValues.products["EN"][good]+= loot[good]
+                    stockValues.products["ES"][translate(language, good)] = stockValues.products["EN"][good]
+                }
+            })
+            stockDisplayed = JSON.parse(JSON.stringify(stockValues))
+            updateStock()
+            ruinsExpeditionsDone++
+            document.querySelector("#ruinsSuccessfullExpeditions").innerText = ruinsExpeditionsDone
+        }
     }
     //Remove active expedition
     document.querySelector(".accordion-active-expedition").remove()
@@ -524,7 +719,7 @@ addNews("Welcome")
 accordionColony()
 accordionBuildings()
 accordionCitizens(citizensAmount)
-accordionLandforms()
+accordion_landforms()
 accordionExpeditions()
 
 fillCitizenInfo()
@@ -533,13 +728,114 @@ setRandomNames(language)
 
 enableNotificationEvents()
 
-let assignRoleToCitizen = (rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
+let process_worker_assignation = (citizen_index, assigned_where) => {
+    //Perform particular tasks according to the nature of new citizen's assignation.
+    let citizen_role = document.querySelector("#citizen-"+citizen_index+"-role").getAttribute("data-role")
+    if(assigned_where == "waterReservoir"){
+        //Process changes in vital resources daily incomes.
+        if(citizen_role == "waterbearing"){
+            //Update daily water income in Colony panel
+            document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
+            let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
+            document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+        }
+        if(citizen_role == "fishing"){
+            //Update daily fishing income in Colony panel
+            document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
+            let revenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
+            document.getElementById("food-revenue").innerHTML = (revenue ? "+" : "") + revenue
+        }
+    } else {
+        //Production rule assignment
+        
+    }
+}
+let process_worker_deassignation = (citizen_index, deassigned_from_where) => {
+    //Perform particular tasks according to the nature of new citizen's deassignation.
+    let citizen_role = document.querySelector("#citizen-"+citizen_index+"-role").getAttribute("data-role")
+    if(deassigned_from_where == "waterReservoir"){
+        //Process changes in vital resources daily incomes.
+        if(citizen_role == "waterbearing"){
+            //Update daily water income in Colony panel
+            document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
+            let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
+            document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+        }
+        if(citizen_role == "fishing"){
+            //Update daily fishing income in Colony panel
+            document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
+            let revenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
+            document.getElementById("food-revenue").innerHTML = (revenue ? "+" : "") + revenue
+        }
+    }
+}
+let toggle_assignable_worker = (e) => {
+    let toggle_panel_aspect = () => {
+        //Change citizen panel aspect.
+        e.target.classList.toggle("text-green-400")
+        e.target.classList.toggle("fa-square")
+        e.target.classList.toggle("fa-square-check")
+        e.target.closest("h2").classList.toggle("unassigned")
+        e.target.closest("h2").classList.toggle("assigned")
+        e.target.closest("div").classList.toggle("bg-green-800")
+        e.target.closest("div").classList.toggle("dark:border-green-600")
+        e.target.closest("div").querySelector("span > span:last-child").classList.toggle("text-white")
+        e.target.previousSibling.classList.toggle("text-green-400")
+    }
+    toggle_panel_aspect()
+    let id_as_array = e.target.closest("h2").id.split("-")
+    let assigned_where = e.target.getAttribute("data-group")
+    let citizen_index = id_as_array[3], citizenNewStatus = ""
+    //If worker is now assigned, toggle his or her status from "idle" to "working" and viceversa.
+    if(e.target.closest("h2").classList.contains("assigned")){
+        document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((elem) => {
+            //If permanent assignment => new status working
+            if(["stoneMount", "clayMount", "woodMount", "huntingMount", "waterReservoir", "ironMount"].includes(assigned_where)){
+                citizenNewStatus = "working"
+            } else { //If temporary assignment to production rule => new status assigned
+                if(assigned_where == "production-rule"){
+                    assigned_where = `rule-${e.target.getAttribute("data-rule")}-requirement-${e.target.getAttribute("data-requirement")}`
+                }
+                citizenNewStatus = "assigned"
+            }
+            elem.innerText = translate(language, citizenNewStatus)
+            elem.setAttribute("data-status", citizenNewStatus)
+            process_worker_assignation(citizen_index, assigned_where)
+            //Check other citizen appearances as available worker and remove it from there
+            document.querySelectorAll("h2.assignable-worker.unassigned").forEach((elem) => {
+                //Check if current loop worker is the same as the one recently assigned
+                let loop_citizen_index = elem.id.split("-")[3]
+                if(loop_citizen_index == citizen_index){
+                    let assignable_workers_div = elem.parentElement
+                    elem.remove()
+                    //Check if there is no more assignable worker in the panel
+                    if(!assignable_workers_div.children.length){
+                        p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], assignable_workers_div); p.create()
+                        s = new element("span", "", [], p.getNode()); s.create()
+                        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
+                    }
+                }
+            })
+        })
+    } else {
+        document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((elem) => {
+            elem.innerText = translate(language, "idle")
+            elem.setAttribute("data-status", "idle")
+            process_worker_deassignation(citizen_index, assigned_where)
+        })
+    }
+    
+}
+let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
     //Check if citizen is idle or busy.
     if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "idle"){
         //Check previous role if exists.
         previousRole = document.querySelector("#citizen-"+citizenIndex+"-role").getAttribute("data-role")
         //If citizen have had another role previously, change all panels in which the role was involved
-        if(previousRole != translate(language, "Unassigned")){ postconditionsChangingRole(previousRole, citizenIndex) }
+        if(previousRole != translate(language, "Unassigned")){ 
+            post_conditions_changing_role(previousRole, citizenIndex) 
+        }
         //Update role in Citizen's info.
         document.querySelector("#citizen-"+citizenIndex+"-role").innerText = roleText
         document.querySelector("#citizen-"+citizenIndex+"-role").setAttribute("data-role", rolekey)
@@ -552,11 +848,17 @@ let assignRoleToCitizen = (rolekey, roleText, roleIcon, assignRolePanelExists = 
         }
         //New role is "Water bearer"?
         if(["waterbearing", "fishing"].includes(rolekey)){
-            //Add citizen to Water Reservoir Available workers.
-            addAvailableWorkerToMount(citizenIndex, "waterReservoir")
+            //Add citizen to Water Reservoir Assignable workers.
+            add_assignable_worker_to_mount(citizenIndex, "waterReservoir")
+            //Add behavior when clicking selecting box. Toggle color from gray to green and process efects in other panels.
+            document.getElementById("waterReservoir-citizen-"+citizenIndex+"-assign").addEventListener("click", 
+                toggle_assignable_worker
+            )
+            /*
             document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "waterReservoir")
             document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
-        }
+            */
+        }       
         if(rolekey == "expeditioning"){
             if(document.querySelector("#expeditions-newExpedition") != null){
                 addAvailableWorkerToExpedition(citizenIndex, "newExpedition")
@@ -579,21 +881,6 @@ let assignRoleToCitizen = (rolekey, roleText, roleIcon, assignRolePanelExists = 
     }
 }
 
-//Testing functionality
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
-    //searchingZone = true
-    //Avoid modal pop up when zone searched
-    showModalZoneSearched = false
-    //Assign role to citizen 1 & 6 manually
-   /* citizenIndex = 1;
-    assignRoleToCitizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
-    citizenIndex = 6;
-    assignRoleToCitizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
-     */
-    //daysPassed = 6
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let handleToggleHorse = (e) => {
     e.target.removeEventListener("click", handleToggleHorse)
@@ -605,10 +892,10 @@ let handleToggleHorse = (e) => {
     //Check amount of citizens and horses already assigned.
     let expeditionariesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedWorker").length
     let horsesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedHorse").length
-    let timeString = ""
+    let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType span:last-child").getAttribute("data-type")
     if(expeditionariesAlreadyAssigned){
         //Calculate required expedition time.
-        let timeRequired = expeditionRequiredTime(resourcesExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
+        let timeRequired = expeditionRequiredTime(expeditionType, expeditionType == "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
         //Update expedition required time.
         document.getElementById("newExpedition-required-info").classList.remove("hidden")
         document.querySelectorAll(".unknownTime").forEach((elem) => elem.classList.add("hidden"))
@@ -616,20 +903,23 @@ let handleToggleHorse = (e) => {
             document.getElementById("newExpedition-required-years").classList.remove("hidden")
             document.getElementById("newExpedition-required-yearsText").classList.remove("hidden")
             document.getElementById("newExpedition-required-yearsComma").classList.remove("hidden")
-            document.getElementById("newExpedition-required-years").innerText = timeRequired.inGame.clock.years
-        }
+        } else {document.querySelectorAll("#newExpedition-required-years, #newExpedition-required-yearsText, #newExpedition-required-yearsComma").forEach((elem) => elem.classList.add("hidden"))}
+        document.getElementById("newExpedition-required-years").innerText = timeRequired.inGame.clock.years
+        document.getElementById("newExpedition-required-yearsText").innerText = timeRequired.inGame.clock.years != 1 ? translate(language, "Years", "lowercase") : translate(language, "Years", "lowercase").slice(0, -1)
         if(timeRequired.inGame.clock.weeks > 0){ 
             document.getElementById("newExpedition-required-weeks").classList.remove("hidden")
             document.getElementById("newExpedition-required-weeksText").classList.remove("hidden")
             document.getElementById("newExpedition-required-weeksComma").classList.remove("hidden")
-            document.getElementById("newExpedition-required-weeks").innerText = timeRequired.inGame.clock.weeks
-        }
+        } else {document.querySelectorAll("#newExpedition-required-weeks, #newExpedition-required-weeksText, #newExpedition-required-weeksComma").forEach((elem) => elem.classList.add("hidden"))}
+        document.getElementById("newExpedition-required-weeks").innerText = timeRequired.inGame.clock.weeks
+        document.getElementById("newExpedition-required-weeksText").innerText = timeRequired.inGame.clock.weeks != 1 ? translate(language, "Weeks", "lowercase") : translate(language, "Weeks", "lowercase").slice(0, -2)+"."
         if(timeRequired.inGame.clock.days > 0){ 
             document.getElementById("newExpedition-required-days").classList.remove("hidden")
             document.getElementById("newExpedition-required-daysText").classList.remove("hidden")
             document.getElementById("newExpedition-required-daysComma").classList.remove("hidden")
-            document.getElementById("newExpedition-required-days").innerText = timeRequired.inGame.clock.days
-        }
+        } else {document.querySelectorAll("#newExpedition-required-days, #newExpedition-required-daysText, #newExpedition-required-daysComma").forEach((elem) => elem.classList.add("hidden"))}
+        document.getElementById("newExpedition-required-days").innerText = timeRequired.inGame.clock.days
+        document.getElementById("newExpedition-required-daysText").innerText = timeRequired.inGame.clock.days != 1 ? translate(language, "Days", "lowercase") : translate(language, "Days", "lowercase").slice(0, -1)
         document.getElementById("newExpedition-required-hours").innerText = timeRequired.inGame.clock.hours
     } else {
         if(lifeStarted){
@@ -644,9 +934,11 @@ let handleToggleHorse = (e) => {
     }
     e.target.addEventListener("click", handleToggleHorse)
 }
+//Assignment and deassignment of workers in differnte panels (landforms and new expedition)
 let handleToggleWorker = (e) => {
-    let handleNewExpedition = (event) => {
-        event.target.removeEventListener("click", handleNewExpedition)
+    let handleStartExpedition = (event) => {
+        event.target.removeEventListener("click", handleStartExpedition)
+        let expeditionType = event.target.closest("button#expeditionStart").getAttribute("data-type")
         //Prepare expedition data to add in new Active Expedition panel.
         let departedInHours = document.getElementById("currentHour").innerText
         let departedInDays = document.getElementById("currentDay").innerText
@@ -659,6 +951,7 @@ let handleToggleWorker = (e) => {
         //Define data to be parsed while building active expedition panel.
         let expeditionData = {
             "id": expeditionIndex,
+            "type": expeditionType,
             "departedIn":{"year":departedInYears, "week":departedInWeeks, "day":departedInDays, "hour":departedInHours},
             "returnsIn":{"years":returnsInYears, "weeks":returnsInWeeks, "days":returnsInDays, "hours":returnsInHours},
             "crew":[]
@@ -694,42 +987,49 @@ let handleToggleWorker = (e) => {
         newExpeditionPanel.showPreviousOptions()
         expeditionIndex++
     }
-    e.target.removeEventListener("click", handleToggleWorker)
-    //Check in which panel the worker is being assigned.
-    let mountPanel = ["waterReservoir", "stoneMount", "clayMount", "woodMount", "mine"].includes(e.target.getAttribute("data-class"))
-    let expeditionPanel = e.target.getAttribute("data-class") == "newExpedition"
-    let expeditionType, expeditionTypeText
-    //Get citizen index
-    let citizenIndex = e.target.id.split("-")[1]
-    if(expeditionPanel){
+    let getExpeditionType = () => {
         //Get expedition type
-        expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType span:last-child").getAttribute("data-type")
+        let expeditionTypeText
+        let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType span:last-child").getAttribute("data-type")
         //Define type description to be included in "Start expedition" button
         switch (expeditionType){
             case "of resources": expeditionTypeText = "Start resources mounts expedition"; break
             case "of ruins": expeditionTypeText = "Start ancient ruins expedition"; break
             case "of combat": expeditionTypeText = "Start attack expedition"; break
         }
+        return {"type": expeditionType, "text": expeditionTypeText}
     }
+    let toggleAssignDeassign = () => {
+        if(e.target.classList.contains("fa-plus")){
+            if(mountPanel){
+                addAssignedWorkerToMount(citizenIndex, e.target.getAttribute("data-class"))
+            } else {
+                if(expeditionPanel) {
+                    addAssignedWorkerToExpedition(citizenIndex, e.target.getAttribute("data-class"))
+                }
+            }
+        } else { //If worker is about to be dismissed, check if it has to be dismissed from a mount or a new expedition
+            if(mountPanel){
+                deassignWorkerToMount(citizenIndex, e.target.getAttribute("data-class"))
+            } else {
+                if(expeditionPanel) {
+                    deassignWorkerToExpedition(citizenIndex, e.target.getAttribute("data-class"))
+                }
+            }
+        }
+    }
+    e.target.removeEventListener("click", handleToggleWorker)
+    //Check in which panel the worker is being assigned.
+    let mountPanel = ["waterReservoir", "stoneMount", "clayMount", "woodMount", "mine"].includes(e.target.getAttribute("data-class"))
+    let expeditionPanel = e.target.getAttribute("data-class") == "newExpedition"
+    //Get citizen index
+    let citizenIndex = e.target.id.split("-")[1]
     //If worker is about to be added up, check if it has to be added to a mount or a new expedition
-    if(e.target.classList.contains("fa-plus")){
-        if(mountPanel){
-            addAssignedWorkerToMount(citizenIndex, e.target.getAttribute("data-class"))
-        } else {
-            if(expeditionPanel) {
-                addAssignedWorkerToExpedition(citizenIndex, e.target.getAttribute("data-class"))
-            }
-        }
-    } else { //If worker is about to be dismissed, check if it has to be dismissed from a mount or a new expedition
-        if(mountPanel){
-            deassignWorkerToMount(citizenIndex, e.target.getAttribute("data-class"))
-        } else {
-            if(expeditionPanel) {
-                deassignWorkerToExpedition(citizenIndex, e.target.getAttribute("data-class"))
-            }
-        }
-    }
+    toggleAssignDeassign(citizenIndex)
+
     if(expeditionPanel){
+        let expeditionTypeInfo = getExpeditionType()
+        //Calculate for all expeditionaries sent, maximum XP and XP average.
         let assignedExpeditionaries = maxXP = avgXP = 0
         document.querySelectorAll(".newExpedition .assignedWorkers .assignedWorker").forEach((expeditionary) => {
             let citizenIndex = expeditionary.id.split("-")[2]
@@ -742,24 +1042,30 @@ let handleToggleWorker = (e) => {
         let expeditionariesAlreadyAssigned = assignedExpeditionaries //document.querySelectorAll(".assignedWorkers .assignedWorker").length
         let horsesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedHorse").length
         
-        //Calculate probability of finding a new resources mount.
-        let mountDiscoveryProbability = resourcesExpeditionProbability(resourcesExpeditionsDone, assignedExpeditionaries, maxXP, avgXP)*1
+        //Calculate probability of finding a new resources mount or ancient ruin.
+        let discoveryProbability
+        if(assignedExpeditionaries){
+            discoveryProbability = expeditionProbability(expeditionTypeInfo.type, (expeditionTypeInfo.type == "of resources") ? resourcesExpeditionsDone : ruinsExpeditionsDone, assignedExpeditionaries, maxXP, avgXP)*1
+        } else {
+            discoveryProbability = 0
+        }
         if(lifeStarted){
             //Show "Start new expedition" button and hide "No actions available"
-            document.querySelector("#expeditionStart span").innerText = translate(language, expeditionTypeText)
+            document.querySelector("#expeditionStart span").innerText = translate(language, expeditionTypeInfo.text)
             document.getElementById("newExpeditionNoActions").classList.add("hidden")
             document.getElementById("expeditionStart").classList.remove("hidden")
             if(document.querySelector("#expeditionStart").classList.contains("unattached-click")){
+                document.querySelector("#expeditionStart").setAttribute("data-type", expeditionTypeInfo.type)
                 //Add click "Start new expedition" button event
-                document.querySelector("#expeditionStart").addEventListener("click", handleNewExpedition)
+                document.querySelector("#expeditionStart").addEventListener("click", handleStartExpedition)
                 document.querySelector("#expeditionStart").classList.remove("unattached-click")
             }
         } else {
             //Can't start new expedition if life hasn't started. Search zone needed.
             document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.classList.remove("hidden") })
         }
-        if(mountDiscoveryProbability > 0){
-            document.getElementById("expeditionProbability").innerText = (mountDiscoveryProbability * 100).toFixed(1)+"%"
+        if(discoveryProbability > 0){
+            document.getElementById("expeditionProbability").innerText = (discoveryProbability * 100).toFixed(1)+"%"
         } else {
             document.getElementById("expeditionProbability").innerText = "("+translate(language, "Unknown yet", "f")+")"
             if(lifeStarted){
@@ -771,10 +1077,10 @@ let handleToggleWorker = (e) => {
         }
 
         //Expedition crew well formed? It has at least one expeditionary or horse?
-        if(expeditionariesAlreadyAssigned + horsesAlreadyAssigned){
+        if(expeditionariesAlreadyAssigned /*&& expeditionariesAlreadyAssigned + horsesAlreadyAssigned*/){
             if(e.target.getAttribute("data-class") == "newExpedition"){
                 //Calculate required expedition time.
-                let timeRequired = expeditionRequiredTime(resourcesExpeditionsDone, (assignedExpeditionaries <= horsesAlreadyAssigned) ? assignedExpeditionaries : 0)
+                let timeRequired = expeditionRequiredTime(expeditionTypeInfo.type, expeditionTypeInfo.type == "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (assignedExpeditionaries <= horsesAlreadyAssigned) ? assignedExpeditionaries : 0)
                 //Update expedition required time.
                 document.getElementById("newExpedition-required-info").classList.remove("hidden")
                 document.querySelectorAll(".unknownTime").forEach((elem) => elem.classList.add("hidden"))
@@ -782,20 +1088,23 @@ let handleToggleWorker = (e) => {
                     document.getElementById("newExpedition-required-years").classList.remove("hidden")
                     document.getElementById("newExpedition-required-yearsText").classList.remove("hidden")
                     document.getElementById("newExpedition-required-yearsComma").classList.remove("hidden")
-                }
+                } else {document.querySelectorAll("#newExpedition-required-years, #newExpedition-required-yearsText, #newExpedition-required-yearsComma").forEach((elem) => elem.classList.add("hidden"))}
                 document.getElementById("newExpedition-required-years").innerText = timeRequired.inGame.clock.years
+                document.getElementById("newExpedition-required-yearsText").innerText = timeRequired.inGame.clock.years != 1 ? translate(language, "Years", "lowercase") : translate(language, "Years", "lowercase").slice(0, -1)
                 if(timeRequired.inGame.clock.weeks > 0){ 
                     document.getElementById("newExpedition-required-weeks").classList.remove("hidden")
                     document.getElementById("newExpedition-required-weeksText").classList.remove("hidden")
                     document.getElementById("newExpedition-required-weeksComma").classList.remove("hidden")
-                }
+                } else {document.querySelectorAll("#newExpedition-required-weeks, #newExpedition-required-weeksText, #newExpedition-required-weeksComma").forEach((elem) => elem.classList.add("hidden"))}
                 document.getElementById("newExpedition-required-weeks").innerText = timeRequired.inGame.clock.weeks
+                document.getElementById("newExpedition-required-weeksText").innerText = timeRequired.inGame.clock.weeks != 1 ? translate(language, "Weeks", "lowercase") : translate(language, "Weeks", "lowercase").slice(0, -2)+"."
                 if(timeRequired.inGame.clock.days > 0){ 
                     document.getElementById("newExpedition-required-days").classList.remove("hidden")
                     document.getElementById("newExpedition-required-daysText").classList.remove("hidden")
                     document.getElementById("newExpedition-required-daysComma").classList.remove("hidden")
-                }
+                } else {document.querySelectorAll("#newExpedition-required-days, #newExpedition-required-daysText, #newExpedition-required-daysComma").forEach((elem) => elem.classList.add("hidden"))}
                 document.getElementById("newExpedition-required-days").innerText = timeRequired.inGame.clock.days
+                document.getElementById("newExpedition-required-daysText").innerText = timeRequired.inGame.clock.days != 1 ? translate(language, "Days", "lowercase") : translate(language, "Days", "lowercase").slice(0, -1)
                 document.getElementById("newExpedition-required-hours").innerText = timeRequired.inGame.clock.hours
             }
         } else {
@@ -812,6 +1121,33 @@ let handleToggleWorker = (e) => {
     }
     e.target.addEventListener("click", handleToggleWorker)
 }
+
+//Testing functionality
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+    searchingZone = true
+    //Avoid modal pop up when zone searched
+    showModalZoneSearched = false
+    //Assign role to citizen 1 & 6 manually
+    citizenIndex = 1;
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
+    citizenIndex = 2;
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
+    citizenIndex = 3;
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
+    citizenIndex = 4;
+    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    citizenIndex = 6;
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
+    citizenIndex = 7;
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
+    citizenIndex = 8;
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
+    /**/
+    //daysPassed = 6
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //Panel Citizens - Action: Assign Role
 document.querySelectorAll(".assignRole").forEach((value, index) => {
     value.addEventListener("click", function(e){
@@ -826,7 +1162,7 @@ document.querySelectorAll(".assignRole").forEach((value, index) => {
         //For each button with an assignable role, add a click event
         document.querySelectorAll(".assignableRole").forEach((valueButton) => {
             valueButton.addEventListener("click", (e) => {
-                assignRoleToCitizen(e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
+                assign_role_to_citizen(e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
             })
         })
     })

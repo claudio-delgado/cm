@@ -226,7 +226,7 @@ let attributesAdjectives = {
     "ES": {"Agilidad":{"F":"ágil", "M":"ágil"}, "Fuerza":{"F":"fuerte", "M":"fuerte"}, "Destreza":{"F":"muy diestra", "M":"muy diestro"}, "Inteligencia":{"F":"inteligente", "M":"inteligente"}, "Creatividad":{"F":"creativa", "M":"creativo"}, "Astucia":{"F":"astuta", "M":"astuto"}, "Simpatía":{"F":"simpática", "M":"simpático"}, "Carisma":{"F":"carismática", "M":"carismático"}, "Protección":{"F":"protectora", "M":"protector"}, "Compañerismo":{"F":"compañera", "M":"compañero"}, "Valentía":{"F":"valiente", "M":"valiente"}}
 }
 let roleIcons = [ 
-    {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador"}, "key":"fishing", "icon": "fish"},
+    {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
     {"EN": "hunter", "ES": {"F": "cazadora", "M": "cazador"}, "key":"hunting", "icon": "deer"}, {"EN": "stone breaker", "ES": {"F": "picadora", "M": "picador"}, "key":"stonebreaking", "icon": "pickaxe"}, 
     {"EN": "constructor", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
     {"EN": "soldier", "ES": "soldado", "key":"war", "icon": "shield-halved"}, {"EN": "miner", "ES": {"F": "minera", "M": "minero"}, "key":"mining", "icon": "shovel"}, 
@@ -237,9 +237,12 @@ let roleIcons = [
     {"EN": "merchant", "ES": "mercader", "key":"marketing", "icon": "store"}, {"EN": "expeditionary", "ES": {"F": "expedicionaria", "M": "expedicionario"}, "key":"expeditioning", "icon": "map-location-dot"}
 ]
 let personIcons = [
-    {"EN": "ancient", "ES": {"M":"anciano", "F":"anciana"}, "text":"xs", "icon": "person-cane"}, {"EN": "baby", "ES": {"F":"bebé", "M":"beba"}, "text":"xs", "icon": "baby"},
-    {"EN": "child", "ES": {"M":"niño", "F":"niña"}, "text":"xs", "icon": "child"}, {"EN": "teen", "ES": "adolescente", "text":"sm", "icon": "person-walking"},
-    {"EN": "adult", "ES": {"M":"adulto", "F":"adulta"}, "text":"base", "icon": "person"}, {"EN": "grown adult", "ES": {"M":"adulto mayor", "F":"adulta mayor", "text":"sm", "icon": "person-circle-exclamation"}},
+    {"EN": "baby", "ES": {"F":"bebé", "M":"beba"}, "text":"xs", "icon": "baby"},
+    {"EN": "child", "ES": {"M":"niño", "F":"niña"}, "text":"xs", "icon": "child"}, 
+    {"EN": "teen", "ES": "adolescente", "text":"sm", "icon": "person-walking"},
+    {"EN": "adult", "ES": {"M":"adulto", "F":"adulta"}, "text":"base", "icon": "person"}, 
+    {"EN": "grown adult", "ES": {"M":"adulto mayor", "F":"adulta mayor", "text":"sm", "icon": "person-circle-exclamation"}},
+    {"EN": "ancient", "ES": {"M":"anciano", "F":"anciana"}, "text":"xs", "icon": "person-cane"}, 
     {"EN": "pregnant", "ES": "embarazada", "text":"xs", "icon": "person-pregnant"},
 ]
 //Important objects
@@ -345,12 +348,14 @@ var stockValues = {
             "caballo": 6,
             "cabra": 0,
             "calabaza": 0,
+            "caña de pescar": 0,
             "carne de cabra": 0,
             "carne de cerdo": 0,
             "carne de conejo": 0,
             "carne de oveja": 0,
             "carne de pollo": 0,
             "carne de vaca": 0,
+            "carpa": 0,
             "carreta": 3,
             "catapulta": 0,
             "cebada": 0,
@@ -375,13 +380,13 @@ var stockValues = {
             "espinaca": 0,
             "fratacho": 300,
             "frutilla": 0,
-            "fundición de acero": 0,
-            "fundición de bronce": 0,
-            "fundición de cobre": 0,
-            "fundición de estaño": 0,
-            "fundición de hierro": 0,
-            "fundición de oro": 0,
-            "fundición de plata": 0,
+            "acero fundido": 0,
+            "bronce fundido": 0,
+            "cobre fundido": 0,
+            "estaño fundido": 0,
+            "hierro fundido": 0,
+            "oro fundido": 0,
+            "plata fundida": 0,
             "garbanzo": 0,
             "grasa": 0,
             "hacha": 0,
@@ -426,6 +431,7 @@ var stockValues = {
             "pala": 240,
             "papa": 0,
             "pera": 0,
+            "perca": 0,
             "pico": 0,
             "piel": 0,
             "placa de acero": 0,
@@ -436,8 +442,10 @@ var stockValues = {
             "prensa cortadora": 0,
             "puñal": 0,
             "queso": 0,
+            "red de pesca": 0,
             "remolacha": 0,
             "repollo": 0,
+            "salmón": 0,
             "salvado": 0,
             "sémola": 0,
             "sierra": 240,
@@ -446,6 +454,7 @@ var stockValues = {
             "tela": 750,
             "tomate": 0,
             "trigo": 0,
+            "trucha": 0,
             "uva": 0,
             "vaca": 0,
             "vara de hierro": 0,
@@ -473,6 +482,7 @@ var stockValues = {
             "bronze ingot": 0,
             "brick": 0,
             "cabbage": 0,
+            "carp": 0,
             "carpet": 0,
             "carrot": 0,
             "catapult": 0,
@@ -482,7 +492,6 @@ var stockValues = {
             "chicken meat": 0,
             "chickpea": 0,
             "chickpea flour": 0,
-            "clothes": 0,
             "concrete": 0,
             "cow": 0,
             "cow meat": 0,
@@ -496,6 +505,8 @@ var stockValues = {
             "egg": 0,
             "fat": 0,
             "feather": 0,
+            "fishing net": 0,
+            "fishing rod": 0,
             "goat": 0,
             "goat meat": 0,
             "gold coin": 0,
@@ -528,8 +539,10 @@ var stockValues = {
             "olive oil": 0,
             "onion": 0,
             "orange": 0,
+            "outfit": 0,
             "peach": 0,
             "pear": 0,
+            "perch": 0,
             "pickaxe": 0,
             "pig": 0,
             "pig meat": 0,
@@ -553,8 +566,9 @@ var stockValues = {
             "sugar": 0,
             "tomato": 0,
             "trowel": 300,
+            "salmon": 0,
             "saw": 240,
-            "saw dust": 0,
+            "sawdust": 0,
             "shield": 0,
             "shovel": 240,
             "silver coin": 0,
@@ -571,6 +585,7 @@ var stockValues = {
             "tin foundry": 0,
             "tile": 0,
             "thread": 0,
+            "trout": 0,
             "vase": 0,
             "wagon": 3,
             "war knife": 0,
@@ -619,217 +634,841 @@ var stockDisplayed = JSON.parse(JSON.stringify(stockValues))
 //Stock classified by category and granularity.
 var stockClassified = {
     "resources":{
-        "category1":{
-            "granularity1":{
-                "EN":["boulder", "wooden trunk"],
-                "ES":["roca", "tronco"]
+        "byCategory":{
+            "category1":{
+                "granularity1":{
+                    "EN":["boulder", "wooden trunk"],
+                    "ES":["roca", "tronco"]
+                },
+                "granularity2":{
+                    "EN":["stone", "water"],
+                    "ES":["piedra", "agua"]
+                },
+                "granularity3":{
+                    "EN":["wood", "iron"],
+                    "ES":["leño", "hierro"]
+                },
+                "granularity4":{
+                    "EN":["branch", "charcoal"],
+                    "ES":["rama", "carbón"]
+                },
+                "granularity6":{
+                    "EN":["clay", "sand"],
+                    "ES":["arcilla", "arena"]
+                }
             },
-            "granularity2":{
-                "EN":["stone", "water"],
-                "ES":["piedra", "agua"]
+            "category2":{
+                "granularity3":{
+                    "EN":["limestone", "cheese"],
+                    "ES":["piedra caliza", "queso"],
+                },
+                "granularity4":{
+                    "EN":["resin", "mushroom"],
+                    "ES":["resina", "hongo"],
+                },
+                "granularity5":{
+                    "EN":["plaster", "tin"],
+                    "ES":["yeso", "estaño"],
+                },
+                "granularity6":{
+                    "EN":["gravel", "sand", "coffee grain", "tea leaf", "soil", "copper"],
+                    "ES":["gravilla", "arena", "grano de café", "hoja de té", "tierra fértil", "cobre"],
+                },
             },
-            "granularity3":{
-                "EN":["wood", "iron"],
-                "ES":["leño", "hierro"]
+            "category3":{
+                "granularity2":{
+                    "EN":["granite", "basalt"],
+                    "ES":["granito", "basalto"],
+                },
+                "granularity4":{
+                    "EN":["silver", "platinum"],
+                    "ES":["plata", "platino"],
+                },
+                "granularity6":{
+                    "EN":["salt", "sand"],
+                    "ES":["sal", "arena"],
+                },
             },
-            "granularity4":{
-                "EN":["branch", "charcoal"],
-                "ES":["rama", "carbón"]
+            "category4":{
+                "granularity2":{
+                    "EN":["quartz", "marble"],
+                    "ES":["cuarzo", "mármol"],
+                },
+                "granularity4":{
+                    "EN":["gold"],
+                    "ES":["oro"],
+                },
             },
-            "granularity6":{
-                "EN":["clay", "sand"],
-                "ES":["arcilla", "arena"]
+            "category5":{
+                "granularity4":{
+                    "EN":["diamond"],
+                    "ES":["diamante"],
+                },
             }
         },
-        "category2":{
-            "granularity3":{
-                "EN":["limestone", "cheese"],
-                "ES":["piedra caliza", "queso"],
+        "byMount":{
+            "stone":{
+                "category1":{
+                    "granularity1":{
+                        "EN":["boulder"],
+                        "ES":["roca"]
+                    },
+                    "granularity2":{
+                        "EN":["stone", "water"],
+                        "ES":["piedra", "agua"]
+                    },
+                },
+                "category2":{
+                    "granularity3":{
+                        "EN":["limestone"],
+                        "ES":["piedra caliza"],
+                    },
+                    "granularity5":{
+                        "EN":["plaster"],
+                        "ES":["yeso"],
+                    },
+                    "granularity6":{
+                        "EN":["gravel", "sand"],
+                        "ES":["gravilla", "arena"],
+                    },
+                },
+                "category3":{
+                    "granularity2":{
+                        "EN":["granite", "basalt"],
+                        "ES":["granito", "basalto"],
+                    },
+                    "granularity6":{
+                        "EN":["salt"],
+                        "ES":["sal"],
+                    },
+                },
+                "category4":{
+                    "granularity2":{
+                        "EN":["quartz", "marble"],
+                        "ES":["cuarzo", "mármol"],
+                    },
+                }
             },
-            "granularity4":{
-                "EN":["resin", "mushroom"],
-                "ES":["resina", "hongo"],
+            "clay":{
+                "category1":{
+                    "granularity4":{
+                        "EN":["clay"],
+                        "ES":["arcilla"]
+                    },
+                    "granularity6":{
+                        "EN":["sand"],
+                        "ES":["arena"]
+                    },
+                },
+                "category2":{
+                    "granularity6":{
+                        "EN":["soil"],
+                        "ES":["tierra fértil"]
+                    },
+                }
             },
-            "granularity5":{
-                "EN":["plaster", "tin"],
-                "ES":["yeso", "estaño"],
+            "wood":{
+                "category1":{
+                    "granularity1":{
+                        "EN":["wooden trunk"],
+                        "ES":["tronco"]
+                    },
+                    "granularity3":{
+                        "EN":["wood"],
+                        "ES":["leño"]
+                    },
+                    "granularity4":{
+                        "EN":["branch"],
+                        "ES":["rama"]
+                    },
+                },
+                "category2":{
+                    "granularity4":{
+                        "EN":["resin", "mushroom", "tea leaf"],
+                        "ES":["resina", "hongo", "hoja de té"]
+                    },
+                    "granularity6":{
+                        "EN":["coffee grain"],
+                        "ES":["grano de café"]
+                    },
+                }
             },
-            "granularity6":{
-                "EN":["gravel", "sand", "coffee grain", "tea leaf", "soil", "copper"],
-                "ES":["gravilla", "arena", "grano de café", "hoja de té", "tierra fértil", "cobre"],
-            },
+            "iron":{
+                "category1":{
+                    "granularity3":{
+                        "EN":["iron"],
+                        "ES":["hierro"]
+                    },
+                    "granularity4":{
+                        "EN":["charcoal"],
+                        "ES":["carbón"]
+                    },
+                },
+                "category2":{
+                    "granularity5":{
+                        "EN":["tin"],
+                        "ES":["estaño"]
+                    },
+                    "granularity6":{
+                        "EN":["copper"],
+                        "ES":["cobre"]
+                    },
+                },
+                "category3":{
+                    "granularity4":{
+                        "EN":["silver", "platinum"],
+                        "ES":["plata", "platino"]
+                    },
+                },
+                "category4":{
+                    "granularity4":{
+                        "EN":["gold"],
+                        "ES":["oro"]
+                    },
+                },
+                "category5":{
+                    "granularity4":{
+                        "EN":["diamond"],
+                        "ES":["diamante"]
+                    },
+                },
+            }
         },
-        "category3":{
-            "granularity2":{
-                "EN":["granite", "basalt"],
-                "ES":["granito", "basalto"],
-            },
-            "granularity4":{
-                "EN":["silver", "platinum"],
-                "ES":["plata", "platino"],
-            },
-            "granularity6":{
-                "EN":["salt", "sand"],
-                "ES":["sal", "arena"],
-            },
-        },
-        "category4":{
-            "granularity2":{
-                "EN":["quartz", "marble"],
-                "ES":["cuarzo", "mármol"],
-            },
-            "granularity4":{
-                "EN":["gold"],
-                "ES":["oro"],
-            },
-        },
-        "category5":{
-            "granularity4":{
-                "EN":["diamond"],
-                "ES":["diamante"],
-            },
-        }
     },
     "products":{
-        "category1":{
-            "granularity1":{
-                "EN":["wooden plank"],
-                "ES":["madero"],
+        "byCategory":{
+            "category1":{
+                "granularity1":{
+                    "EN":["wooden plank"],
+                    "ES":["madero"],
+                },
+                "granularity2":{
+                    "EN":["fishing net", "fishing rod", "wheat flour", "crops flour", "crops oil", "sugar", "brick", "iron foundry", "iron ingot", "iron rod", "iron plate",
+                          "carp", "perch"
+                    ],
+                    "ES":["red de pesca", "caña de pescar", "harina de trigo", "harina de maíz", "aceite de maíz", "azúcar", "ladrillo", "hierro fundido", "lingote de hierro", 
+                          "vara de hierro", "placa de hierro", "carpa", "perca"],
+                },
+                "granularity3":{
+                    "EN":["potatoe", "carrot", "apple", "pear", "chicken", "chicken meat", "hammer", "war knife"],
+                    "ES":["papa", "zanahoria", "manzana", "pera", "pollo", "carne aviar", "martillo", "puñal"],
+                },
+                "granularity4":{
+                    "EN":["crops", "charcoal", "nail", "wooden stick"],
+                    "ES":["maíz", "carbón", "clavo", "vara de madera"],
+                },
+                "granularity5":{
+                    "EN":["wheat"],
+                    "ES":["trigo"],
+                },
+                "granularity6":{
+                    "EN":["feather", "strand"],
+                    "ES":["pluma", "hebra"],
+                },
             },
-            "granularity2":{
-                "EN":["wheat flour", "crops flour", "crops oil", "sugar", "brick", "iron foundry", "iron ingot", "iron rod", "iron plate"],
-                "ES":["harina de trigo", "harina de maíz", "aceite de maíz", "azúcar", "ladrillo", "fundición de hierro", "lingote de hierro", "vara de hierro", "placa de hierro"],
+            "category2":{
+                "granularity1":{
+                    "EN":["concrete", "cow", "wooden piece", "wagon"],
+                    "ES":["hormigón", "vaca", "viga de madera", "carreta"],
+                },
+                "granularity2":{
+                    "EN":["cement", "milk", "chickpea flour", "grits", "fat", "rawhide", "bread", "steel foundry",
+                    "steel plate", "saw", "pickaxe", "shovel", "sword", "trout"],
+                    "ES":["cemento", "leche", "harina de garbanzo", "sémola", "grasa", "piel", "pan", "acero fundido",
+                    "placa de acero", "sierra", "pico", "pala", "espada", "trucha"],
+                },
+                "granularity3":{
+                    "EN":["basic knife", "pumpkin", "orange", "peach", "egg", "olive oil", "ground coffee",
+                    "cow meat", "dough", "roof tile", "steel ingot", "rope"],
+                    "ES":["cuchilla", "calabaza", "naranja", "durazno", "huevo", "aceite de oliva", "café molido",
+                    "carne vacuna", "masa", "teja", "lingote de acero", "soga"],
+                },
+                "granularity4":{
+                    "EN":["tomatoe", "wedge"],
+                    "ES":["tomate", "cuña"],
+                },
+                "granularity5":{
+                    "EN":["hay", "bran", "wool"],
+                    "ES":["heno", "salvado", "lana"],
+                },
+                "granularity6":{
+                    "EN":["gravel", "sand", "wooden chip"],
+                    "ES":["gravilla", "arena", "viruta"],
+                },
             },
-            "granularity3":{
-                "EN":["fishing net", "fishing rod", "potatoe", "carrot", "apple", "pear", "chicken", "chicken meat", "hammer", "war knife"],
-                "ES":["red de pesca", "caña de pescar", "papa", "zanahoria", "manzana", "pera", "pollo", "carne aviar", "martillo", "puñal"],
+            "category3":{
+                "granularity1":{
+                    "EN":["horse", "cutting press", "wooden plate", "shield"],
+                    "ES":["caballo", "prensa cortadora", "placa de madera", "escudo"],
+                },
+                "granularity2":{
+                    "EN":["rice flour", "groats flour", "raw ham", "leather", "tin foundry", "copper foundry",
+                    "bronze plate", "cog", "salmon"],
+                    "ES":["harina de arroz", "harina de avena", "jamón crudo", "cuero", "estaño fundido", 
+                    "cobre fundido","placa de bronce", "engranaje", "salmón"],
+                },
+                "granularity3":{
+                    "EN":["pig meat", "bronze ingot", "bronze doubloon", "small knife", "axe", "trowel"],
+                    "ES":["carne porcina", "lingote de bronce", "doblón de bronce", "cuchillo", "hacha", "fratacho"],
+                },
+                "granularity4":{
+                    "EN":["handcraft", "groats", "rice", "beet", "cabbage", "strap", "rag"],
+                    "ES":["artesanía", "avena", "arroz", "remolacha", "repollo", "correa", "tela"],
+                },
+                "granularity5":{
+                    "EN":["strawberry", "grape", "bronze coin"],
+                    "ES":["frutilla", "uva", "moneda de bronce"],
+                },
+                "granularity6":{
+                    "EN":["sawdust", "thread"],
+                    "ES":["aserrín", "hilo"],
+                },
             },
-            "granularity4":{
-                "EN":["crops", "charcoal", "nail", "wooden stick"],
-                "ES":["maíz", "carbón", "clavo", "vara de madera"],
+            "category4":{
+                "granularity1":{
+                    "EN":["pig", "vase", "lance", "carpet"],
+                    "ES":["cerdo", "vasija", "lanza", "alfombra"],
+                },
+                "granularity2":{
+                    "EN":["rye flour", "bran flour", "ham", "bronze foundry", "silver foundry"],
+                    "ES":["harina de centeno", "harina de salvado", "jamón cocido", "bronce fundido", "plata fundida"],
+                },
+                "granularity3":{
+                    "EN":["yeast", "goat meat", "silver ingot", "silver doubloon"],
+                    "ES":["levadura", "carne caprina", "lingote de plata", "doblón de plata"],
+                },
+                "granularity4":{
+                    "EN":["barley", "rye", "onion"],
+                    "ES":["cebada", "centeno", "cebolla"],
+                },
+                "granularity5":{
+                    "EN":["green bean", "nut", "almond", "silver coin", "needle"],
+                    "ES":["arveja", "nuez", "almendra", "moneda de plata", "aguja"],
+                },
             },
-            "granularity5":{
-                "EN":["wheat"],
-                "ES":["trigo"],
+            "category5":{
+                "granularity2":{
+                    "EN":["goat", "sheep", "tile", "bow and arrows"],
+                    "ES":["cabra", "oveja", "baldosa", "arco y flechas"],
+                },
+                "granularity3":{
+                    "EN":["sheep meat", "gold foundry", "outfit"],
+                    "ES":["carne ovina", "oro fundido", "vestimenta"],
+                },
+                "granularity4":{
+                    "EN":["lettuce"],
+                    "ES":["lechuga"],
+                },
+                "granularity5":{
+                    "EN":["spinach", "gold coin"],
+                    "ES":["espinaca", "moneda de oro"],
+                },
             },
-            "granularity6":{
-                "EN":["feather", "strand"],
-                "ES":["pluma", "hebra"],
-            },
+            "category6":{
+                "granularity1":{
+                    "EN":["catapult"],
+                    "ES":["catapulta"],
+                },
+                "granularity3":{
+                    "EN":["rabbit", "rabbit meat", "gold ingot", "gold doubloon"],
+                    "ES":["conejo", "carne de conejo", "lingote de oro", "doblón de oro"],
+                },
+                "granularity5":{
+                    "EN":["chickpea", "olive"],
+                    "ES":["garbanzo", "oliva"],
+                },
+            }
         },
-        "category2":{
-            "granularity1":{
-                "EN":["concrete", "cow", "wooden piece", "wagon"],
-                "ES":["hormigón", "vaca", "viga de madera", "carreta"],
+        "byBuilding":{
+            "stonesmith": {         
+                "category2":{
+                    "granularity1":{
+                        "EN":["concrete"],
+                        "ES":["hormigón"]
+                    },
+                    "granularity2":{
+                        "EN":["cement"],
+                        "ES":["cemento"]
+                    },
+                    "granularity3":{
+                        "EN":["basic knife"],
+                        "ES":["cuchilla"]
+                    },
+                    "granularity4":{
+                        "EN":["handcraft"],
+                        "ES":["artesanía"]
+                    },
+                },
             },
-            "granularity2":{
-                "EN":["cement", "milk", "chickpea flour", "grits", "fat", "rawhide", "bread", "steel foundry",
-                "steel plate", "saw", "pickaxe", "shovel", "sword"],
-                "ES":["cemento", "leche", "harina de garbanzo", "sémola", "grasa", "piel", "pan", "fundición de acero",
-                "placa de acero", "sierra", "pico", "pala", "espada"],
+            "woodsmith":{
+                "category1":{
+                    "granularity2":{
+                        "EN":["fishing net"],
+                        "ES":["red de pesca"]
+                    },
+                    "granularity3":{
+                        "EN":["fishing rod"],
+                        "ES":["caña de pescar"]
+                    },
+                }
             },
-            "granularity3":{
-                "EN":["basic knife", "pumpkin", "orange", "peach", "egg", "olive oil", "ground coffee",
-                "cow meat", "dough", "roof tile", "steel ingot", "rope"],
-                "ES":["cuchilla", "calabaza", "naranja", "durazno", "huevo", "aceite de oliva", "café molido",
-                "carne vacuna", "masa", "teja", "lingote de acero", "soga"],
+            "farm":{
+                "category1":{
+                    "granularity3":{
+                        "EN":["potatoe", "carrot"],
+                        "ES":["papa", "zanahoria"]
+                    },
+                    "granularity4":{
+                        "EN":["crops", "apple", "pear"],
+                        "ES":["maíz", "manzana", "pera"]
+                    },
+                    "granularity5":{
+                        "EN":["wheat"],
+                        "ES":["trigo"]
+                    },
+                },
+                "category2":{
+                    "granularity3":{
+                        "EN":["pumpkin"],
+                        "ES":["zapallo"]
+                    },
+                    "granularity4":{
+                        "EN":["tomatoe", "naranja", "durazno"],
+                        "ES":["tomate", "orange", "peach"]
+                    },
+                    "granularity5":{
+                        "EN":["hay", "bran"],
+                        "ES":["heno", "salvado"]
+                    },
+                },
+                "category3":{
+                    "granularity4":{
+                        "EN":["groats", "rice", "beet", "cabbage"],
+                        "ES":["avena", "arroz", "remolacha", "repollo"]
+                    },
+                    "granularity5":{
+                        "EN":["strawberry", "grape"],
+                        "ES":["frutilla", "uva"]
+                    },
+                },
+                "category4":{
+                    "granularity3":{
+                        "EN":["yeast"],
+                        "ES":["levadura"]
+                    },
+                    "granularity4":{
+                        "EN":["barley", "rye", "onion"],
+                        "ES":["cebada", "centeno", "cebolla"]
+                    },
+                    "granularity5":{
+                        "EN":["green bean", "nut", "almond"],
+                        "ES":["arveja", "nuez", "almendra"]
+                    },
+                },
+                "category5":{
+                    "granularity4":{
+                        "EN":["lettuce"],
+                        "ES":["lechuga"]
+                    },
+                    "granularity5":{
+                        "EN":["spinach"],
+                        "ES":["espinaca"]
+                    },
+                },
+                "category6":{
+                    "granularity5":{
+                        "EN":["chickpea", "olive"],
+                        "ES":["garbanzo", "oliva"]
+                    },
+                }
             },
-            "granularity4":{
-                "EN":["tomatoe", "wedge"],
-                "ES":["tomate", "cuña"],
+            "barnyard":{
+                "category1":{
+                    "granularity3":{
+                        "EN": ["chicken", "egg"],
+                        "ES": ["pollo", "huevo"]
+                    },
+                },
+                "category2":{
+                    "granularity1":{
+                        "EN": ["cow"],
+                        "ES": ["vaca"]
+                    },
+                    "granularity2":{
+                        "EN": ["milk"],
+                        "ES": ["leche"]
+                    },
+                    "granularity3":{
+                        "EN": ["cheese"],
+                        "ES": ["queso"]
+                    },
+                    "granularity5":{
+                        "EN": ["wool"],
+                        "ES": ["lana"]
+                    },
+                },
+                "category3":{
+                    "granularity1":{
+                        "EN": ["horse"],
+                        "ES": ["caballo"]
+                    },
+                },
+                "category4":{
+                    "granularity1":{
+                        "EN": ["pig"],
+                        "ES": ["cerdo"]
+                    },
+                },
+                "category5":{
+                    "granularity2":{
+                        "EN": ["goat", "sheep"],
+                        "ES": ["cabra", "oveja"]
+                    },
+                },
+                "category6":{
+                    "granularity3":{
+                        "EN": ["rabbit"],
+                        "ES": ["conejo"]
+                    },
+                },
             },
-            "granularity5":{
-                "EN":["hay", "bran", "wool"],
-                "ES":["heno", "salvado", "lana"],
+            "mill":{
+                "category1":{
+                    "granularity2":{
+                        "EN":["wheat flour", "crops flour", "crops oil", "sugar"],
+                        "ES":["harina de trigo", "harina de maíz", "aceite de maíz", "azúcar"]
+                    }
+                },
+                "category2":{
+                    "granularity2":{
+                        "EN":["chickpea flour", "grits"],
+                        "ES":["harina de garbanzo", "sémola"]
+                    },
+                    "granularity3":{
+                        "EN":["olive oil", "ground coffee"],
+                        "ES":["aceite de oliva", "café molido"]
+                    }
+                },
+                "category3":{
+                    "granularity2":{
+                        "EN":["rice flour", "groats flour"],
+                        "ES":["harina de arroz", "harina de avena"]
+                    }
+                },
+                "category4":{
+                    "granularity2":{
+                        "EN":["rye flour", "bran flour"],
+                        "ES":["harina de centeno", "harina de salvado"]
+                    }
+                },
             },
-            "granularity6":{
-                "EN":["gravel", "sand", "wooden chip"],
-                "ES":["gravilla", "arena", "viruta"],
+            "slaughterhouse":{
+                "category1":{
+                    "granularity3":{
+                        "EN":["chicken meat"],
+                        "ES":["carne aviar"]
+                    },
+                    "granularity6":{
+                        "EN":["feather"],
+                        "ES":["pluma"]
+                    },
+                },
+                "category2":{
+                    "granularity2":{
+                        "EN":["fat", "rawhide"],
+                        "ES":["grasa", "piel"]
+                    },
+                    "granularity3":{
+                        "EN":["cow meat"],
+                        "ES":["carne vacuna"]
+                    }
+                },
+                "category3":{
+                    "granularity2":{
+                        "EN":["raw ham", "leather"],
+                        "ES":["jamón crudo", "cuero"]
+                    },
+                    "granularity3":{
+                        "EN":["pig meat"],
+                        "ES":["carne porcina"]
+                    }
+                },
+                "category4":{
+                    "granularity3":{
+                        "EN":["ham"],
+                        "ES":["jamón cocido"]
+                    },
+                    "granularity3":{
+                        "EN":["goat meat"],
+                        "ES":["carne caprina"]
+                    }
+                },
+                "category5":{
+                    "granularity3":{
+                        "EN":["sheep meat"],
+                        "ES":["carne ovina"]
+                    }
+                },
+                "category6":{
+                    "granularity3":{
+                        "EN":["rabbit meat"],
+                        "ES":["carne de conejo"]
+                    }
+                },
             },
-        },
-        "category3":{
-            "granularity1":{
-                "EN":["horse", "cutting press", "wooden plate", "shield"],
-                "ES":["caballo", "prensa cortadora", "placa de madera", "escudo"],
+            "furnaces":{
+                "category1":{
+                    "granularity2":{
+                        "EN":["brick", "iron foundry"],
+                        "ES":["ladrillo", "hierro fundido"]
+                    },
+                    "granularity3":{
+                        "EN":["chicken meat"],
+                        "ES":["carne aviar"]
+                    },
+                    "granularity4":{
+                        "EN":["charcoal"],
+                        "ES":["carbón"]
+                    },
+                },
+                "category2":{
+                    "granularity2":{
+                        "EN":["bread", "steel foundry"],
+                        "ES":["pan", "acero fundido"]
+                    },
+                    "granularity3":{
+                        "EN":["dough", "roof tile"],
+                        "ES":["masa", "teja"]
+                    },
+                },
+                "category3":{
+                    "granularity2":{
+                        "EN":["tin foundry", "copper foundry"],
+                        "ES":["estaño fundido", "cobre fundido"]
+                    },
+                    "granularity4":{
+                        "EN":["strap"],
+                        "ES":["correa"]
+                    },
+                },
+                "category4":{
+                    "granularity1":{
+                        "EN":["vase"],
+                        "ES":["vasija"]
+                    },
+                    "granularity2":{
+                        "EN":["bronze foundry", "silver foundry"],
+                        "ES":["bronce fundido", "plata fundida"]
+                    },
+                },
+                "category5":{
+                    "granularity2":{
+                        "EN":["tile"],
+                        "ES":["baldosa"]
+                    },
+                    "granularity3":{
+                        "EN":["gold foundry"],
+                        "ES":["oro fundido"]
+                    },
+                },
             },
-            "granularity2":{
-                "EN":["rice flour", "groats flour", "raw ham", "leather", "tin foundry", "copper foundry",
-                "bronze plate", "cog"],
-                "ES":["harina de arroz", "harina de avena", "jamón crudo", "cuero", "fundición de estaño", 
-                "fundición de cobre","placa de bronce", "engranaje"],
+            "blacksmith":{
+                "category1":{
+                    "granularity2":{
+                        "EN":["iron ingot", "iron rod", "iron plate"],
+                        "ES":["lingote de hierro", "vara de hierro", "placa de hierro"]
+                    },
+                    "granularity4":{
+                        "EN":["nail"],
+                        "ES":["clavo"]
+                    },
+                },
+                "category2":{
+                    "granularity2":{
+                        "EN":["steel plate", "saw"],
+                        "ES":["placa de acero", "sierra"]
+                    },
+                    "granularity3":{
+                        "EN":["steel ingot"],
+                        "ES":["lingote de acero"]
+                    },
+                    "granularity4":{
+                        "EN":["wedge"],
+                        "ES":["cuña"]
+                    },
+                },
+                "category3":{
+                    "granularity1":{
+                        "EN":["cutting press"],
+                        "ES":["prensa cortadora"]
+                    },
+                    "granularity2":{
+                        "EN":["bronze plate", "cog"],
+                        "ES":["placa de bronce", "engranaje"]
+                    },
+                    "granularity3":{
+                        "EN":["bronze ingot", "bronze doubloon"],
+                        "ES":["lingote de bronce", "doblón de bronce"]
+                    },
+                    "granularity5":{
+                        "EN":["bronze coin"],
+                        "ES":["moneda de bronce"]
+                    },
+                },
+                "category4":{
+                    "granularity3":{
+                        "EN":["silver ingot", "silver doubloon"],
+                        "ES":["lingote de plata", "doblón de plata"]
+                    },
+                    "granularity5":{
+                        "EN":["silver coin", "needle"],
+                        "ES":["moneda de plata", "aguja"]
+                    },
+                },
+                "category5":{
+                    "granularity5":{
+                        "EN":["gold coin"],
+                        "ES":["moneda de oro"]
+                    },
+                },
+                "category6":{
+                    "granularity3":{
+                        "EN":["gold ingot", "gold doubloon"],
+                        "ES":["lingote de oro", "doblón de oro"]
+                    },
+                }
             },
-            "granularity3":{
-                "EN":["pig meat", "bronze ingot", "bronze doubloon", "small knife", "axe", "trowel"],
-                "ES":["carne de cerdo", "lingote de bronce", "doblón de bronce", "cuchillo", "hacha", "fratacho"],
+            "sawmill":{
+                "category1":{
+                    "granularity1":{
+                        "EN":["wooden plank"],
+                        "ES":["madero"]
+                    },
+                    "granularity4":{
+                        "EN":["wooden stick"],
+                        "ES":["vara de madera"]
+                    },
+                },
+                "category2":{
+                    "granularity1":{
+                        "EN":["wooden piece"],
+                        "ES":["viga"]
+                    },
+                    "granularity6":{
+                        "EN":["wooden chip"],
+                        "ES":["viruta"]
+                    },
+                },
+                "category3":{
+                    "granularity1":{
+                        "EN":["wooden plate"],
+                        "ES":["placa de madera"]
+                    },
+                    "granularity6":{
+                        "EN":["sawdust"],
+                        "ES":["aserrín"]
+                    },
+                },
             },
-            "granularity4":{
-                "EN":["handcraft", "groats", "rice", "beet", "cabbage", "strap", "rag"],
-                "ES":["artesanía", "avena", "arroz", "remolacha", "repollo", "correa", "tela"],
+            "workshop":{
+                "category1":{
+                    "granularity3":{
+                        "EN":["hammer", "war knife"],
+                        "ES":["martillo", "puñal"]
+                    },
+                },
+                "category2":{
+                    "granularity1":{
+                        "EN":["wagon"],
+                        "ES":["carreta"]
+                    },
+                    "granularity2":{
+                        "EN":["pickaxe", "shovel", "sword"],
+                        "ES":["pico", "pala", "espada"]
+                    },
+                },
+                "category3":{
+                    "granularity1":{
+                        "EN":["shield"],
+                        "ES":["escudo"]
+                    },
+                    "granularity3":{
+                        "EN":["knife", "axe", "trowel"],
+                        "ES":["cuchillo", "hacha", "fratacho"]
+                    },
+                },
+                "category4":{
+                    "granularity1":{
+                        "EN":["lance"],
+                        "ES":["lanza"]
+                    },
+                },
+                "category5":{
+                    "granularity2":{
+                        "EN":["bow and arrows"],
+                        "ES":["arco y flechas"]
+                    },
+                },
+                "category6":{
+                    "granularity1":{
+                        "EN":["catapult"],
+                        "ES":["catapulta"]
+                    },
+                }
             },
-            "granularity5":{
-                "EN":["strawberry", "grape", "bronze coin"],
-                "ES":["frutilla", "uva", "moneda de bronce"],
-            },
-            "granularity6":{
-                "EN":["sawdust", "thread"],
-                "ES":["aserrín", "hilo"],
-            },
-        },
-        "category4":{
-            "granularity1":{
-                "EN":["pig", "vase", "lance", "carpet"],
-                "ES":["cerdo", "vasija", "lanza", "alfombra"],
-            },
-            "granularity2":{
-                "EN":["rye flour", "bran flour", "ham", "bronze foundry", "silver foundry"],
-                "ES":["harina de centeno", "harina de salvado", "jamón cocido", "fundición de bronce", "fundición de plata"],
-            },
-            "granularity3":{
-                "EN":["yeast", "goat meat", "silver ingot", "silver doubloon"],
-                "ES":["levadura", "carne de cabra", "lingote de plata", "doblón de plata"],
-            },
-            "granularity4":{
-                "EN":["barley", "rye", "onion"],
-                "ES":["cebada", "centeno", "cebolla"],
-            },
-            "granularity5":{
-                "EN":["green bean", "nut", "almond", "silver coin", "needle"],
-                "ES":["arveja", "nuez", "almendra", "moneda de plata", "aguja"],
-            },
-        },
-        "category5":{
-            "granularity2":{
-                "EN":["goat", "sheep", "tile", "bow and arrows"],
-                "ES":["cabra", "oveja", "baldosa", "arco y flechas"],
-            },
-            "granularity3":{
-                "EN":["sheep meat", "gold foundry", "clothes"],
-                "ES":["carne de oveja", "fundición de oro", "vestimenta"],
-            },
-            "granularity4":{
-                "EN":["lettuce"],
-                "ES":["lechuga"],
-            },
-            "granularity5":{
-                "EN":["spinach", "gold coin"],
-                "ES":["espinaca", "moneda de oro"],
-            },
-        },
-        "category6":{
-            "granularity1":{
-                "EN":["catapult"],
-                "ES":["catapulta"],
-            },
-            "granularity3":{
-                "EN":["rabbit", "rabbit meat", "gold ingot", "gold doubloon"],
-                "ES":["conejo", "carne de conejo", "lingote de oro", "doblón de oro"],
-            },
-            "granularity5":{
-                "EN":["chickpea", "olive"],
-                "ES":["garbanzo", "oliva"],
+            "textile":{
+                "category1":{
+                    "granularity6":{
+                        "EN":["strand"],
+                        "ES":["hebra"]
+                    },
+                },
+                "category2":{
+                    "granularity3":{
+                        "EN":["rope"],
+                        "ES":["soga"]
+                    },
+                },
+                "category3":{
+                    "granularity4":{
+                        "EN":["rag"],
+                        "ES":["tela"]
+                    },
+                    "granularity6":{
+                        "EN":["thread"],
+                        "ES":["hilo"]
+                    },
+                },
+                "category4":{
+                    "granularity1":{
+                        "EN":["carpet"],
+                        "ES":["alfombra"]
+                    },
+                },
+                "category5":{
+                    "granularity3":{
+                        "EN":["outfit"],
+                        "ES":["vestimenta"]
+                    },
+                },
             },
         }
     }
+}
+//Loot multipliers due to granularity of resource or product obtained.
+var granularityLootMultipliers = {
+    "granularity1" : {"minMultiplier":1, "maxMultiplier":5},
+    "granularity2" : {"minMultiplier":5, "maxMultiplier":10},
+    "granularity3" : {"minMultiplier":10, "maxMultiplier":30},
+    "granularity4" : {"minMultiplier":30, "maxMultiplier":60},
+    "granularity5" : {"minMultiplier":60, "maxMultiplier":100},
+    "granularity6" : {"minMultiplier":100, "maxMultiplier":300},
+    "category1": {"reductionCoeficient": 1},
+    "category2": {"reductionCoeficient": 0.85},
+    "category3": {"reductionCoeficient": 0.7},
+    "category4": {"reductionCoeficient": 0.5},
+    "category5": {"reductionCoeficient": 0.3},
+    "category6": {"reductionCoeficient": 0.05},
 }
 let orderKeys = (unordered, order = "ASC") => {
     // Sorting the object by keys
@@ -871,4 +1510,75 @@ var mounts = {
     "Clay mount": {"discovery-probability-1":"0.07", "discovery-probability-2":"0.15"},
     "Mine": {"discovery-probability-1":"0.05", "discovery-probability-2":"0.1"},
 }
-var waterReservoirs = {"Lake": {"daily-water-income":"10", "daily-food-income":"5"}, "Lagoon":{"daily-water-income":"7", "daily-food-income":"3"}, "River":{"daily-water-income":"5", "daily-food-income":"2"}, "Stream":{"daily-water-income":"3", "daily-food-income":"1"}}
+var location_products = {
+    "waterReservoir":{
+        "EN": ["perch", "carp", "trout", "salmon"],
+        "ES": ["perca", "carpa", "trucha", "salmón"]
+    }
+}
+var product_rules = {
+    "perch": {
+        "rules": [{
+            "requirements": [
+                {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false},
+            ],
+            "result": {"quantity": 1, "score": 1/200},
+        }]
+    },
+    "carp": {
+        "rules": [{
+            "requirements": [
+                {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false},
+            ],
+            "result": {"quantity": 0.5, "score": 1/300},
+        }]
+    },
+    "trout": {
+        "rules": [{
+            "requirements": [
+                {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false},
+            ],
+            "result": {"quantity": 0.2, "score": 1/400},
+        }]
+    },
+    "salmon": {
+        "rules": [
+            {
+                "requirements": [
+                    {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                    {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 1, "tools": ["fishing rod"]},
+                ],
+                "result": {"quantity": 1, "score": 1/600},
+            },
+            {
+                "requirements": [
+                    {"object": "Water reservoir", "quantity": 1, "tools": [], "consumable": false},
+                    {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 1, "tools": ["fishing net"]},
+                ],
+                "result": {"quantity": 5, "score": 1/600},
+            }
+        ]
+    },
+}
+
+var water_reservoirs = {
+    "Lake": {
+        "daily-water-income":"10", 
+        "daily-food-income":"5"
+    }, 
+    "Lagoon":{
+        "daily-water-income":"7", 
+        "daily-food-income":"3"
+    }, 
+    "River":{
+        "daily-water-income":"5", 
+        "daily-food-income":"2"
+    }, 
+    "Stream":{
+        "daily-water-income":"3", 
+        "daily-food-income":"1"
+    }
+}

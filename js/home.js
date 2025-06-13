@@ -783,9 +783,9 @@ let toggle_assignable_worker = (e) => {
         e.target.previousSibling.classList.toggle("text-green-400")
     }
     toggle_panel_aspect()
-    let id_as_array = e.target.closest("h2").id.split("-")
+    let id_as_array = e.target.closest("h2").id.split("citizen-")
     let assigned_where = e.target.getAttribute("data-group")
-    let citizen_index = id_as_array[3], citizenNewStatus = ""
+    let citizen_index = id_as_array[1], citizenNewStatus = ""
     //If worker is now assigned, toggle his or her status from "idle" to "working" and viceversa.
     if(e.target.closest("h2").classList.contains("assigned")){
         document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((elem) => {
@@ -804,7 +804,7 @@ let toggle_assignable_worker = (e) => {
             //Check other citizen appearances as available worker and remove it from there
             document.querySelectorAll("h2.assignable-worker.unassigned").forEach((elem) => {
                 //Check if current loop worker is the same as the one recently assigned
-                let loop_citizen_index = elem.id.split("-")[3]
+                let loop_citizen_index = elem.id.split("citizen-")[1]
                 if(loop_citizen_index == citizen_index){
                     let assignable_workers_div = elem.parentElement
                     elem.remove()
@@ -818,7 +818,7 @@ let toggle_assignable_worker = (e) => {
                 }
             })
         })
-    } else {
+    } else { //If worker is now deassigned, set his or her status to "idle".
         document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((elem) => {
             elem.innerText = translate(language, "idle")
             elem.setAttribute("data-status", "idle")

@@ -1520,8 +1520,9 @@ var product_rules = {
     "perch": {
         "rules": [{
             "requirements": [
-                {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
-                {"object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "workers": [], "tools": []},
             ],
             "result": {"quantity": 1, "score": 1/200},
         }]
@@ -1529,8 +1530,9 @@ var product_rules = {
     "carp": {
         "rules": [{
             "requirements": [
-                {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
-                {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "workers": [], "tools": []},
             ],
             "result": {"quantity": 0.5, "score": 1/300},
         }]
@@ -1538,32 +1540,50 @@ var product_rules = {
     "trout": {
         "rules": [{
             "requirements": [
-                {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
-                {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "workers": [], "tools": []},
             ],
             "result": {"quantity": 0.2, "score": 1/400},
         }]
     },
     "salmon": {
         "rules": [
-            {
-                "requirements": [
-                    {"object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
-                    {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 1, "tools": ["fishing rod"]},
-                ],
-                "result": {"quantity": 1, "score": 1/600},
-            },
-            {
-                "requirements": [
-                    {"object": "Water reservoir", "quantity": 1, "tools": [], "consumable": false},
-                    {"object": "fisher", "type": "citizen", "quantity": 1, "xp": 1, "tools": ["fishing net"]},
-                ],
-                "result": {"quantity": 5, "score": 1/600},
-            }
-        ]
+        {
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 1, "consumable": false,
+                 "workers": [], "tools": ["fishing rod"]},
+            ],
+            "result": {"quantity": 1, "score": 1/600},
+        },
+        {
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 1, "consumable": false,
+                 "workers": [], "tools": ["fishing net"]},
+            ],
+            "result": {"quantity": 5, "score": 1/600},
+        }]
     },
 }
-
+var product_rules_defined = [
+    { //rule_created
+        "index": 0,
+        "object": "", 
+        "status":["running", "suspended"],
+        "rule_definition": {
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false,
+                 "workers": []
+                },
+            ],
+            "result": {"quantity": 1, "score": 1/200},
+        }
+    }
+]
+product_rules_defined = []
 var water_reservoirs = {
     "Lake": {
         "daily-water-income":"10", 

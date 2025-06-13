@@ -1191,114 +1191,240 @@ let accordionCitizens = (amount = 10) => {
         citizenBuilder(i)
     }
 }
+let show_active_production_rules = () => {
+    let parent_div = document.querySelector(".active-production-rules")
+    if(parent_div.querySelector(".empty") != undefined){
+        parent_div.querySelector(".empty").remove()
+    }
+    product_rules_defined.forEach((rule) => {
+        //Current rule accordion
+        d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.index}`); d.create()
+        //Current rule accordion header
+        h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-active-rule-${rule.index}-header`); h2.create()
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.index}-body`}], h2.getNode())
+        b.create()
+        s = new element("span", "", [], b.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendContent(translate(language, "Production rule")); s1.appendHTML(` #${rule.index}`); s1.appendHTML(` [${translate(language, rule.object, "", "capitalized")}]`)
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        //Current rule accordion body
+        d1 = new element("div", "hidden p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.index}-header`}], d.getNode(), `accordion-active-rule-${rule.index}-body`); d1.create()
+        p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+        p.appendHTML(": ")
+        s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, rule.status, "", "capitalized"))
+        p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
+        s = new element("span", "underline underline-offset-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Scheme", "", "capitalized"))
+        p.appendHTML(": ")
+        p = new element("p", "ms-1 mb-1 flex flex-wrap items-center text-xs text-white ", [], d1.getNode()); p.create()
+        let requirements_last_index = rule.rule_definition.requirements.length - 1
+        rule.rule_definition.requirements.forEach((requirement, index) => {
+            if(!requirement.consumable){
+                s = new element("span", "flex items-center m-0", [], p.getNode()); s.create()
+                s1 = new element("span", "font-bold pb-1 text-base", [], s.getNode()); s1.create(); s1.appendContent("[")
+                if(requirement.type == "citizen"){/*
+                    b = new element("button", "py-2 px-3 text-xs text-gray-400 bg-gray-900", [], s.getNode()); b.create();
+                    s1 = new element("span", "", [], b.getNode()); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
+                */} else {
+                    s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 my-1 px-1 mx-1 py-0 bg-gray-600", [], s.getNode()); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
+                }
+                s1 = new element("span", "font-bold pb-1 text-base", [], s.getNode()); s1.create(); s1.appendContent("]")
+            }
+            if(index < requirements_last_index){
+                i = new element("i", "font-bold mx-2 my-2 fa fa-plus text-sm", [], p.getNode()); i.create()
+            }
+        })
+        i = new element("i", "font-bold mx-2 fa fa-arrow-right mt-1 text-sm", [], p.getNode()); i.create()
+        s = new element("span", "font-bold flex flex-nowrap border-2 border-blue-800 mt-1 px-1 mx-1 py-0 bg-blue-500", [], p.getNode()); 
+        s.create(); s.appendContent(translate(language, rule.object, "", "capitalized") + " x " + rule.rule_definition.result.quantity)
+        enable_accordion_click(b.getNode())
+    })
+}
 let new_rule_click_requirement = (click_target, requirement, elem) => {
-    if(click_target.closest("span").classList.contains("unSelected")){
-        let rule_index = click_target.closest("div").getAttribute("data-rule-index")
-        if(requirement.type == "citizen"){
-            //Remove other requirements decorations
-            document.querySelectorAll(".requirement-selected").forEach((elem) => elem.classList.remove("requirement-selected", "px-1", "border-2", "rounded", "border-gray-900", "bg-gray-600"))
-            //Decorate requirement as selected
-            document.getElementById(`rule-${rule_index}-requirement-${requirement.index}`).classList.add("requirement-selected", "px-1", "border-2", "rounded", "border-gray-900", "bg-gray-600")
-            let parentElem = elem.closest("div")
-            pid = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
-            did = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
-            //Remove previous requirement title and area panel.
-            if(document.getElementById(pid)){ document.getElementById(pid).remove() }
-            document.querySelectorAll(".assignable-panel").forEach((elem) => elem.remove())
-            //Add assignable workers title.
-            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parentElem, pid); p.create()
-            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Assignable workers"))
-            i = new element("i", "fa fa-rotate", [], p.getNode(), `rule-${rule_index}-refresh-assignable-workers`); i.create()
-            //Add refresh click event
-            document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).addEventListener("click", (e) => {
-                /*
-                document.getElementById("new-rule-"+rule_index+"-requirement-"+requirement.index+"-assigned-citizen-area").remove()
-                new_rule_click_requirement(e.target, requirement, elem)
-                document.getElementById("new-rule-"+rule_index+"-requirement-"+requirement.index+"-assigned-citizen-title").remove()
-                */
+    let rule_index
+    let toggle_save_new_rule_panel = (div, rule_index) => {
+        let click_save_rule = (e) => {
+            //Save rule
+            let rule_created = {}
+            rule_created.index = rule_index
+            rule_created.object = document.querySelector(`#rule-${rule_index}-object`).getAttribute("data-object")
+            let rule_definition = product_rules[rule_created.object].rules[0]
+            rule_created.status = "running"
+            document.querySelectorAll(".rule-requirement").forEach((elem) => {
+                //debugger
+                let requirement_index = elem.id.split("-")[3]
+                rule_created.rule_definition = rule_definition
+                //Iterate rule's requirements
+                rule_created.rule_definition.requirements.forEach((requirement_element, requirement_array_index) => {
+                    //Current requirement found?
+                    if(requirement_element.index == requirement_index){
+                        //Check if current requirement demands workers
+                        if(requirement_element.type == "citizen"){
+                            //Search workers assigned to requirement
+                            let did = `#rule-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2.assigned`
+                            document.querySelectorAll(did).forEach((citizen_elem) => {
+                                //Obtain citizen index from div panel
+                                let citizen_index = citizen_elem.id.split("citizen-")[1]
+                                rule_created.rule_definition.requirements[requirement_array_index].workers.push(citizen_index)
+                            })
+                        }
+                    }
+                })
             })
-            //Add assignable workers area.
-            d = new element("div", "assignable-panel new-rule assignable-workers bg-gray-500 text-xs p-2 pb-1", [], parentElem, did); d.create()
-            /*
-            //Add "no workers available" message.
-            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
+            product_rules_defined.push(rule_created)
+            document.querySelector("#active-production-rules-newRule-title").remove()
+            document.querySelector("#active-production-rules-newRule").remove()
+            b.getNode().removeEventListener("click", click_save_rule)
+            show_active_production_rules()
+            //Build new production rule panel
+            let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}
+            let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
+            new_production_rule_panel.showPreviousOptions()
+        }
+
+        pid = `rule-${rule_index}-requirement-${requirement.index}-available-actions-title`
+        if(document.getElementById(pid) == undefined || document.getElementById(pid) == null){
+            //Add available actions title.
+            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], div, pid); p.create()
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+            //Add available actions area.
+            did = `rule-${rule_index}-requirement-${requirement.index}-available-actions-area`
+            d = new element("div", "flex bg-gray-500 text-xs p-2 pb-1", [], div, did); d.create()
+            b = new element("button", "text-xs text-white grow p-2 me-2 button border border-gray-400 bg-gray-800", [{"key":"type", "value":"button"}], d.getNode(), `rule-${rule_index}-requirement-${requirement.index}-confirm`); b.create()
+            i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Confirm rule"))
+            //Add confirm rule click event
+            b.getNode().addEventListener("click", click_save_rule)
+            b = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d.getNode(), `rule-${rule_index}-requirement-${requirement.index}-cancel`); b.create()
+            i = new element("i", "fa fa-times me-2", [], b.getNode()); i.create()
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Cancel rule"))
+            //Add cancel rule click event
+            b.getNode().addEventListener("click", (e) => {
+                //Restore workers to idle status.
+                document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).forEach((elem) => {
+                    let citizen_index = elem.id.split("citizen-")[1]
+                    document.querySelectorAll(`#citizen-${citizen_index}-status`).forEach((citizen_elem) => {
+                        let citizen_gender = document.getElementById(`citizen-${citizen_index}-gender`).innerText.charAt(0)
+                        citizen_elem.setAttribute("data-status", "idle")
+                        citizen_elem.innerText = translate(language, "Idle", citizen_gender)
+                    })
+                })
+                let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}            
+                let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
+                new_production_rule_panel.removePanel()
+                new_production_rule_panel.showPreviousOptions()
+            })
+        } else {
+            document.getElementById(pid).remove()
+            document.getElementById(did).remove()
+        }
+    }
+    let check_candidates = (requirement, rule_index, parent_elem) => {
+        //Check if there exists citizens who accomplish current worker requirement.
+        //Retrieve all available citizens.
+        let required_worker_found = false, requirement_assigned_workers_div, requirement_assigned_workers
+        let click_assigned = (e) => {
+            toggle_assignable_worker(e)
+            //Check if requirement is fullfilled
+            let requiredWorkers = requirement.quantity
+            requirement_assigned_workers = document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).length
+            if(requirement_assigned_workers >= requiredWorkers){
+                //Mark requirement as fullfilled.
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-green-700", "border-green-500")
+            } else {
+                //Unmark requirement as fullfilled.
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
+            }
+            toggle_save_new_rule_panel(parent_elem, rule_index)
+        }
+        document.querySelectorAll(".citizen").forEach((elem) => {
+            let citizen_index = elem.id.split("-")[2]
+            //Get current role and status
+            let loop_citizen_role = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
+            let loop_citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status")
+            //An idle worker with required role found?
+            if(loop_citizen_role == requirement.role && loop_citizen_status == "idle"){
+                let loop_citizen_xp = document.getElementById(`citizen-${citizen_index}-xp`).getAttribute("data-xp")*1
+                //Worker with required level of experience found?
+                if(loop_citizen_xp >= requirement.xp){
+                    //Check if worker has needed tools.
+                    let has_tools_required = required_worker_found = true
+                    requirement.tools.forEach((tool) => {
+                        let left_hand_tool = document.getElementById(`citizen-${citizen_index}-leftHand`).getAttribute("data-tool")
+                        let right_hand_tool = document.getElementById(`citizen-${citizen_index}-rightHand`).getAttribute("data-tool")
+                        has_tools_required = (tool != left_hand_tool && tool != right_hand_tool)
+                    })
+                    required_worker_found &&= has_tools_required
+                    let worker_already_listed = document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2#rule-${rule_index}-requirement-${requirement.index}-assignable-citizen-${citizen_index}`) != undefined
+                    if(required_worker_found && !worker_already_listed){
+                        //Add citizen as assignable worker for the rule requirement.
+                        add_assignable_worker_to_rule_requirement(citizen_index, parent_elem.querySelector(".assignable-panel")/*d.getNode()*/)
+                        requirement_assigned_workers = document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2`).length
+                        document.getElementById(`citizen-${citizen_index}-assign`).addEventListener("click", click_assigned)
+                    }
+                }
+            }
+        })
+        requirement_assigned_workers_div = document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area`)
+        requirement_assigned_workers = requirement_assigned_workers_div.querySelectorAll("h2").length
+        if(!requirement_assigned_workers && requirement_assigned_workers_div.querySelector("p.empty") == undefined){
+            p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], requirement_assigned_workers_div); p.create()
             s = new element("span", "", [], p.getNode()); s.create()
             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
             s.appendHTML(translate(language, "No workers available"))
-            
-            //Add available workers title.
-            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parentElem, "new-rule-"+rule_index+"-available-citizen-title"); p.create()
-            s = new element("span", "grow", [], p.getNode()); s.create(); s.appendContent(translate(language, "Available workers"))
-            i = new element("i", "fa fa-rotate", [], p.getNode(), "rule-"+rule_index+"-refresh-available-workers"); i.create()
-            document.getElementById("rule-"+rule_index+"-refresh-available-workers").addEventListener("click", (e) => {
-                document.getElementById("new-rule-"+rule_index+"-available-citizen-area").remove()
-                new_rule_click_requirement(e.target, requirement, elem)
-                document.getElementById("new-rule-"+rule_index+"-available-citizen-title").remove()
-            })
-            //Add available workers area.
-            d = new element("div", "new-rule availableWorkers bg-gray-500 text-xs flex justify-between p-2", [], elem.closest("div"), "new-rule-"+rule_index+"-available-citizen-area"); d.create()
-            */
-            //Check if there exists a citizen who accomplishes current worker requirement.
-            //Retrieve all available citizens.
-            let required_worker_found = false
-            document.querySelectorAll(".citizen").forEach((elem) => {
-                let citizen_index = elem.id.split("-")[2]
-                //Get current role and status
-                let loop_citizen_role = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
-                let loop_citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status")
-                //An idle worker with required role found?
-                if(loop_citizen_role == requirement.role && loop_citizen_status == "idle"){
-                    let loop_citizen_xp = document.getElementById(`citizen-${citizen_index}-xp`).getAttribute("data-xp")*1
-                    //Worker with required level of experience found?
-                    if(loop_citizen_xp >= requirement.xp){
-                        //Check if worker has needed tools.
-                        let has_tools_required = required_worker_found = true
-                        requirement.tools.forEach((tool) => {
-                            let left_hand_tool = document.getElementById(`citizen-${citizen_index}-leftHand`).getAttribute("data-tool")
-                            let right_hand_tool = document.getElementById(`citizen-${citizen_index}-rightHand`).getAttribute("data-tool")
-                            has_tools_required = (tool != left_hand_tool && tool != right_hand_tool)
-                        })
-                        required_worker_found &&= has_tools_required
-                        //Add citizen as assignable worker for the rule requirement.
-                        add_assignable_worker_to_rule_requirement(citizen_index, d.getNode())
-                        document.getElementById(`citizen-${citizen_index}-assign`).addEventListener("click", (e) => {
-                            toggle_assignable_worker(e)
-                            //add_assigned_worker_to_rule_requirement(citizen_index, document.getElementById(`new-rule-${rule_index}-requirement-${requirement.index}-assigned-citizen-area`))
-                            //Check if requirement is fullfilled
-                            let requirementAssignedWorkers = document.querySelectorAll("#rule-"+rule_index+"-requirement-"+requirement.index+"-assignable-workers-area .assignable-worker.assigned").length
-                            let requiredWorkers = requirement.quantity
-                            if(requirementAssignedWorkers >= requiredWorkers){
-                                //Mark requirement as fullfilled."rule-"+ruleIndex+"-requirement-"+requirement_index
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
-                                document.querySelector("#rule-"+rule_index+"-result").classList.remove("bg-gray-700", "border-gray-500")
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.add("bg-green-700", "border-green-500")
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.add("bg-green-700", "border-green-500")
-                                document.querySelector("#rule-"+rule_index+"-result").classList.add("bg-green-700", "border-green-500")
-                                //document.querySelector("#rule-"+index+"-requirement-"+requirement.index).nextSibling.querySelector("i").remove()
-                            } else {
-                                //Unmark requirement as fullfilled.
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.remove("bg-green-700", "border-green-500")
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.remove("bg-green-700", "border-green-500")
-                                document.querySelector("#rule-"+rule_index+"-result").classList.remove("bg-green-700", "border-green-500")
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-name").classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
-                                document.querySelector("#rule-"+rule_index+"-requirement-"+requirement.index+"-update").classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
-                                document.querySelector("#rule-"+rule_index+"-result").classList.add("bg-gray-700", "border-gray-500")
-                            }
-                        })
-                    }
-                }
-            })
-            if(!required_worker_found){
-                p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d.getNode()); p.create()
-                s = new element("span", "", [], p.getNode()); s.create()
-                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-                s.appendHTML(translate(language, "No workers available"))
-            } 
+        }
+    }
+    let process_citizen_requirement = (rule_index, requirement, elem) => {
+        let click_refresh = (e) => {
+            process_citizen_requirement(rule_index, requirement, elem)
+            document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
+        }
+        let parent_elem = elem.closest("div")
+        pid = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
+        //If assignable workers panel is not shown, display it
+        if(document.getElementById(`rule-${rule_index}-refresh-assignable-workers`) == undefined){
+            //Add assignable workers title.
+            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parent_elem, pid); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Assignable workers"))
+            i = new element("i", "fa fa-rotate", [], p.getNode(), `rule-${rule_index}-refresh-assignable-workers`); i.create()
+            //Add assignable workers area.
+            did = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
+            d = new element("div", "assignable-panel new-rule assignable-workers bg-gray-500 text-xs p-2 pb-1", [], parent_elem, did); d.create()
+        }
+        //Add refresh click event
+        document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
+        document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).addEventListener("click", click_refresh)
+        check_candidates(requirement, rule_index, parent_elem)
+    }
+    if(click_target.closest("span").classList.contains("unSelected")){
+        rule_index = click_target.closest("div").getAttribute("data-rule-index")
+        if(requirement.type == "citizen"){
+            process_citizen_requirement(rule_index, requirement, elem)
         }
     }
 }
+//Display all rule requirements
+//Receives: rule as object, rule_index as id, clicked_product as DOM element, current_mount
 let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_mount = false) => {
+    let get_product_name_parent = (requirement) => {
+        if(!requirement.consumable){
+            sid = `rule-${rule_index}-requirement-${requirement.index}`
+            s = new element("span", "flex items-center", [], p.getNode(), sid); s.create()
+            i1 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square", [], s.getNode()); i1.create()
+            i2 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square-right", [], s.getNode());
+            return s.getNode()
+        } else return p.getNode()
+    }
     //Iterate over al requirements for that rule.
     p = new element("p", "flex justify-start flex-wrap w-100 p-1 text-gray-500 dark:text-gray-300", [], d1.getNode()); p.create()
     let requirements_quantity = rule.requirements.length, requirement_index = 1
@@ -1306,19 +1432,13 @@ let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_
     rule.requirements.forEach((requirement) => {
         requirement.index = requirement_index
         //Check if square brackes are needed (when requirement object is not something daily consumable)
+        product_name_parent = get_product_name_parent(requirement)
         //Create span with product name, add square brackets in case it's not consumable
-        if(!requirement.consumable){
-            sid = `rule-${rule_index}-requirement-${requirement_index}`
-            s = new element("span", "flex items-center", [], p.getNode(), sid); s.create()
-            i1 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square", [], s.getNode()); i1.create()
-            i2 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square-right", [], s.getNode());
-            product_name_parent = s.getNode()
-        } else { product_name_parent = p.getNode()}
         //Check if current requirement is fullfilled.
-        let requirement_fullfilled = (requirement.object == current_mount)
-        let bg_class = requirement_fullfilled ? "border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
+        let location_requirement_fullfilled = (requirement.object == current_mount)
+        let bg_class = location_requirement_fullfilled ? "border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
         sid = `rule-${rule_index}-requirement-${requirement_index}`+(product_name_parent == p.getNode() ? "" : "-name")
-        s = new element("span", `px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
+        s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
         let requirement_object_name = translate(language, requirement.object, "", "capitalized")
         //Check if a minimal xp value is needed
         let XP_requirement = requirement.xp ? ` (${requirement.xp})` : ""
@@ -1332,7 +1452,7 @@ let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_
         //Show requirement name and quantity
         s.appendContent(requirement_object_name)
         s.appendHTML(` x ${requirement.quantity}`)
-        if(!requirement_fullfilled){
+        if(!location_requirement_fullfilled){
             sid = `rule-${rule_index}-requirement-${requirement_index}-update`
             s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
             i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
@@ -1354,7 +1474,7 @@ let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_
     s = new element("span", "grow flex items-center", [], p.getNode()); s.create()
     i = new element("i", "text-lg p-1 px-2 mb-0 fa fa-arrow-right", [], s.getNode()); i.create()
     s1id = `rule-${rule_index}-result`
-    s1 = new element("span", "p-1 px-2 py-0.5 mb-0 font-bold border border-gray-500 bg-gray-700", [], s.getNode(), s1id); s1.create()
+    s1 = new element("span", "rule-result p-1 px-2 py-0.5 mb-0 font-bold border border-gray-500 bg-gray-700", [], s.getNode(), s1id); s1.create()
     s1.appendContent(translate(language, clicked_product, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
     enable_accordion_click(b.getNode())
 }
@@ -1372,11 +1492,14 @@ let new_rule_iterate_all_product_available_rules = (clicked_product, current_mou
         s = new element("span", "", [], b.getNode()); s.create()
         s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Production rule"))
         s1.appendHTML(" #"+rule_index)
+        s2 = new element("span", "", [], s.getNode()); s2.create(); s2.appendContent(" [")
+        s3 = new element("span", "", [{"key":"data-object", "value":clicked_product}], s.getNode(), `rule-${rule_index}-object`); s3.create(); s3.appendContent(translate(language, clicked_product, "", "capitalized"))
+        s4 = new element("span", "", [], s.getNode()); s4.create(); s4.appendContent("]")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-${rule_index}-header`}], d.getNode(), `accordion-new-production-rule-${rule_index}-body`); d1.create()
         d1.getNode().setAttribute("data-rule-index", rule_index)
         new_rule_iterate_requirements(rule, rule_index, clicked_product, current_mount)
-        //Select rule requirement: bg-gray-600 rounded border-2 border-gray-900
+        //Select rule requirement
         rule_index++
     })
 }
@@ -1480,8 +1603,36 @@ let accordion_landforms = () => {
         //Build Assignable Workers title
         d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assignable-workers-title")
         d2.create();
-        p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Permanently assignable workers")
+        i = new element("i", "fa fa-rotate", [], p.getNode(), `landform-1-refresh-assignable-workers`); i.create()
+        i.getNode().addEventListener("click", (e) => {
+            //Remove no available workers message if exist
+            document.querySelectorAll(".waterReservoir .assignable-workers .empty").forEach((elem) => elem.remove())
+            //Check if there are new assignable workers
+            let assignable_worker_found = false
+            document.querySelectorAll(".citizen").forEach((elem) => {
+                let citizen_index = elem.id.split("-")[2]
+                let citizen_role = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
+                let citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status")
+                let citizen_already_listed = document.getElementById(`waterReservoir-assignable-citizen-${citizen_index}`) != undefined
+                if(["waterbearing", "fishing"].includes(citizen_role) && citizen_status == "idle" && !citizen_already_listed){
+                    assignable_worker_found = true
+                    add_assignable_worker_to_mount(citizen_index, "waterReservoir")
+                    document.getElementById(`waterReservoir-citizen-${citizen_index}-assign`).addEventListener("click", 
+                        toggle_assignable_worker
+                    )
+                }
+                assignable_worker_found ||= citizen_already_listed
+            })
+            if(!assignable_worker_found){
+                let parent_div = document.querySelector(".waterReservoir .assignable-workers")
+                p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parent_div); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
+            }
+        })
         //Build Assignable Workers area
         d2 = new element("div", "assignable-workers p-2 pb-1 ps-3 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assignable-workers")
         d2.create();
@@ -1489,19 +1640,6 @@ let accordion_landforms = () => {
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"n"}], s.getNode()); s1.create(); s1.appendContent("None")
-        /*
-        //Build Available Workers title
-        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-available-title")
-        d2.create();
-        p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Available workers")
-        //Build Available Workers area
-        d2 = new element("div", "availableWorkers p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-available"); d2.create()
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-        s = new element("span", "", [], p.getNode()); s.create()
-        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("No workers available")
-        */
         //Build Active Production Rules title
         d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-1-active-production-rules-title")
         d2.create();
@@ -1533,7 +1671,7 @@ let accordionExpeditions = () => {
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New expedition")
         b.getNode().addEventListener("click", function(e){
             let objectData = {"language": language, "parentId": "#expeditions"}
-            //Build assign role panel
+            //Build panel
             newExpeditionPanel = new panel("newExpedition", objectData, "expeditions", false, "actions")
             newExpeditionPanel.hidePreviousOptions()
             newExpeditionPanel.buildPanel()
@@ -1806,20 +1944,6 @@ let addLandform = (landformType = "hunting") => {
     s = new element("span", "", [], p.getNode()); s.create()
     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No assignable workers"))
-
-    /*
-    //Build Available Workers title
-    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-available-title")
-    d2.create();
-    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available workers"))
-    //Build Available Workers area
-    d2 = new element("div", "availableWorkers p-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-available"); d2.create()
-    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
-    */
     //Build Active Production Rules title
     d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "landform-"+landformIndex+"-active-production-rules-title")
     d2.create();
@@ -2069,7 +2193,7 @@ let add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     iid = `${mount_class}-citizen-${citizen_index}-assign`
     i = new element("i", "text-sm fa-regular fa-square", [{"key":"data-group", "value":mount_class}], s.getNode(), iid); i.create()
     //Check if there are open rules within the mount panel to add the worker
-    let openedRules = parent_elem.parentElement.querySelectorAll(".assignable-panel")
+    /*let openedRules = parent_elem.parentElement.querySelectorAll(".assignable-panel")
     openedRules.forEach((elem) => {
         //Remove "no available workers" text, if exists
         if(elem.querySelector(".empty") != null){
@@ -2078,7 +2202,7 @@ let add_assignable_worker_to_mount = (citizen_index, mount_class) => {
         //Add worker to rule assignable panel.
         let ch2 = h2.getNode().cloneNode(true)
         elem.appendChild(ch2)
-    })
+    })*/
 }
 //For certain mount discovered: Remove (Deassign) assigned worker
 let deassignWorkerToMount = (citizenIndex, mountClass) => {
@@ -2170,7 +2294,7 @@ let add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) => 
         parent_elem.querySelector(".empty").remove()
     }
     let rule_index = parent_elem.id.split("-")[1], requirement_index = parent_elem.id.split("-")[3]
-    h2id = `rule-assignable-citizen-${citizen_index}`
+    h2id = `rule-${rule_index}-requirement-${requirement_index}-assignable-citizen-${citizen_index}`
     h2 = new element("h2", "assignable-worker unassigned", [], parent_elem, h2id); h2.create()
     d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
     d.create()

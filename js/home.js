@@ -132,6 +132,7 @@ let lifeInterval = setInterval(() => {
                 let citizenIndex = citizenStatus.id.split("-")[1]
                 if(["waterbearing", "fishing"].includes(document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role"))){
                     citizenStatus.innerHTML = translate(language, "Working")
+                    citizens[citizenIndex].status = "working"
                 }
             })
             //Update possible actions blocked by not having searched the zone previously.
@@ -156,6 +157,7 @@ let lifeInterval = setInterval(() => {
                             elem.classList.remove("hidden")
                         }
                     })
+                    citizens[citizenIndex].xp = newXP
                 }
             })
             //Update resource extractions
@@ -167,7 +169,33 @@ let lifeInterval = setInterval(() => {
             document.querySelectorAll("#colony-food-stock").forEach((value) => {
                 value.innerText = value.innerText * 1 + (dailyFoodGained)
             })
-            //Update productions
+            //Update running productions
+            product_rules_defined.forEach((product_rule, product_index) => {
+                if(product_rule.status == "running"){
+                    let rule_object = product_rule.object
+                    //Check if requirements are currently fulfilled.
+                    let requirement_fulfilled = true
+                    product_rule.rule_definition.requirements.forEach((req) => {
+                        if(!req.consumable){
+                            if(req.type == "citizen"){
+                                req.workers.forEach((citizen_index) => {
+                                    requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].role == req.object)
+                                })
+                            }
+                        } else {
+                            //Check if product or resource quantity needed is available.
+                        }
+                    })
+                    if(!requirement_fulfilled){
+                        product_rules[product_index].status = "suspended"
+                    } else {
+                        //Update product stock with new value.
+                        stockValues.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
+                        stockValues.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
+                        updateStock()
+                    }
+                }
+            })
         }
         if(weekPassed){
             //Update citizens age
@@ -346,6 +374,7 @@ let endActiveExpedition = (expeditionType) => {
                 status.setAttribute("data-status", "idle")
                 status.innerText = translate(language, "Idle")
             })
+            citizens[citizenIndex].status = "idle"
             expeditionariesAssigned++
             expeditionaries.push(expeditionary)
         })
@@ -650,7 +679,8 @@ let setRandomNames = (language) => {
         }
         document.querySelector("#citizen-"+i+"-gender-icon").classList.remove("hidden")
         document.querySelector("#citizen-"+i+"-gender-icon").classList.add(iconGroup, genderClass, genderColour)
-        document.querySelector("#citizen-"+i+"-name").innerHTML = randomCitizenName+", "+randomCitizenFamily
+        citizens[i].name = randomCitizenName+", "+randomCitizenFamily
+        document.querySelector("#citizen-"+i+"-name").innerHTML = citizens[i].name
         //"<i id='citizen-"+i+"-gender-icon' class='text-red-500 fa fa-venus me-1'></i><i id='citizen-"+i+"-role-icon' class='text-green-500 hidden fa me-1'></i></i><span class='text-yellow-500 border border-yellow-500 rounded px-1 me-1'>2</span>"+
     }
 }
@@ -686,18 +716,26 @@ let fillCitizenInfo = () => {
     let citizenBirthweeks, citizenFertility, citizenWeekOfDeath
     //Iterate over each citizen
     for(h=1; h<=citizensAmount; h++){
-        citizenBirthweeks = /*1092*/0+ Math.floor(Math.random() * (3800-0)/*(1820-1092)*/)        
+        citizenBirthweeks = /*1092*/0+ Math.floor(Math.random() * (3800-0)/*(1820-1092)*/)
         citizenWeekOfDeath = 3120 + Math.floor(Math.random() * (4420-3120))
+        citizens[h].deathWeek = citizenWeekOfDeath
         citizenFertility = 10 + Math.floor(Math.random() * 90)
+        citizens[h].fertility = citizenFertility
         citizenOwnAttributes = getRandomAttributes(language)
+        citizens[h].attributes = citizenOwnAttributes
         citizenWishedAttributes = getRandomAttributes(language)
+        citizens[h].wishedAttributes = citizenWishedAttributes
         citizenMustAttribute = getRandomAttributes(language, 1, citizenWishedAttributes)
+        citizens[h].mustAttribute = citizenMustAttribute
         //Update description
         updateCitizenDescription(h, citizenBirthweeks, citizenOwnAttributes, citizenWishedAttributes, citizenMustAttribute)
         //Ubicar edad en panel de habitante actual
         let birthweek = Math.floor(-citizenBirthweeks), ageYears = Math.floor(citizenBirthweeks/52), ageWeeks = citizenBirthweeks % 52
+        citizens[h].birthWeek = birthweek
         document.querySelector("#citizen-"+h+"-birthWeek").innerText = birthweek
+        citizens[h].ageYears = ageYears
         document.querySelector("#citizen-"+h+"-ageYears").innerText = ageYears
+        citizens[h].ageWeeks = ageWeeks
         document.querySelector("#citizen-"+h+"-ageWeeks").innerText = ageWeeks
         //Define age icon according to citizen's weekage
         iconGroup = "fa"; ageColour = "text-white"
@@ -800,6 +838,8 @@ let toggle_assignable_worker = (e) => {
             }
             elem.innerText = translate(language, citizenNewStatus)
             elem.setAttribute("data-status", citizenNewStatus)
+            //Change status in global citizens array
+            citizens[citizen_index].status = citizenNewStatus
             process_worker_assignation(citizen_index, assigned_where)
             //Check other citizen appearances as available worker and remove it from there
             document.querySelectorAll("h2.assignable-worker.unassigned").forEach((elem) => {
@@ -822,6 +862,8 @@ let toggle_assignable_worker = (e) => {
         document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((elem) => {
             elem.innerText = translate(language, "idle")
             elem.setAttribute("data-status", "idle")
+            //Change status in global citizens array
+            citizens[citizen_index].status = "idle"
             process_worker_deassignation(citizen_index, assigned_where)
         })
     }
@@ -839,6 +881,7 @@ let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists
         //Update role in Citizen's info.
         document.querySelector("#citizen-"+citizenIndex+"-role").innerText = roleText
         document.querySelector("#citizen-"+citizenIndex+"-role").setAttribute("data-role", rolekey)
+        citizens[citizenIndex].role = rolekey
         //Update role icon in Citizen's info.
         document.querySelector("#citizen-"+citizenIndex+"-role-icon").classList.remove("hidden")
         document.querySelector("#citizen-"+citizenIndex+"-role-icon").classList = "text-green-500 fa me-1 fa-"+roleIcon
@@ -1130,9 +1173,9 @@ let handleToggleWorker = (e) => {
     showModalZoneSearched = false
     //Assign role to citizen 1 & 6 manually
     citizenIndex = 1;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
+    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "map-location-dot", false)
     citizenIndex = 2;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
+    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "map-location-dot", false)
     citizenIndex = 3;
     assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
     citizenIndex = 4;

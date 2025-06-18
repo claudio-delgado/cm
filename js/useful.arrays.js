@@ -1602,3 +1602,5 @@ var water_reservoirs = {
         "daily-food-income":"1"
     }
 }
+
+var citizens = []

@@ -1216,9 +1216,15 @@ let modal_citizen_info = (e) => {
 }
 let show_active_production_rules = () => {
     let show_workers_assigned = (parent_div, workers_label, rule_index, req_index) => {
+        let remove_requirement_workers = (e) => {
+            document.querySelector(`#active-rule-${rule_index}-requirement-${req_index}-assigned-title`).remove()
+            document.querySelector(`#active-rule-${rule_index}-requirement-${req_index}-assigned-area`).remove()
+        }
         d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs active-rule-requirement-assigned-title", [], parent_div, `active-rule-${rule_index}-requirement-${req_index}-assigned-title`); d.create()
         p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d.getNode()); p.create()
-        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(workers_label)
+        s = new element("span", "grow", [], p.getNode()); s.create(); s.appendContent(workers_label)
+        i = new element("span", "me-1 text-sm fa fa-times", [], p.getNode()); i.create()
+        i.getNode().addEventListener("click", remove_requirement_workers)
         d1 = new element("div", "px-1 py-1 pb-0 border border-gray-300 dark:border-gray-800 dark:bg-gray-400 text-xs active-rule-requirement-assigned-area", [], parent_div, `active-rule-${rule_index}-requirement-${req_index}-assigned-area`); d1.create()
         let req_found = false
         product_rules_defined.forEach((rule) => {
@@ -1245,7 +1251,7 @@ let show_active_production_rules = () => {
                             })
                             i = new element("i", `text-green-500 me-1 fa ${role_class}`, [], s.getNode(), `citizen-${assigned_worker_index}-role-icon`); i.create()
                             s1 = new element("span", "text-yellow-500 rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), `citizen-${assigned_worker_index}-xp-icon`); s1.create()
-                            s1.appendContent(current_citizen.xp.toString())
+                            s1.appendContent(Math.floor(current_citizen.xp).toString())
                             s1 = new element("span", "ms-1", [], s.getNode(), `citizen-${assigned_worker_index}-name`); s1.create(); s1.appendContent(current_citizen.name)
                             s = new element("span", "", [], d.getNode()); s.create()
                             i = new element("i", "fa fa-eye", [{"key":"data-index", "value":assigned_worker_index}], s.getNode(), `citizen-${assigned_worker_index}-view-info`); i.create()
@@ -1262,7 +1268,7 @@ let show_active_production_rules = () => {
         let req_index = e.target.closest("span").id.split("-")[4]
         if(document.getElementById(`active-rule-${rule_index}-requirement-${req_index}-assigned-title`) == undefined){
             document.querySelectorAll(".active-rule-requirement-assigned-title").forEach((elem) => elem.remove())
-            show_workers_assigned(e.target.closest("div").parentElement, e.target.closest("span").previousSibling.innerText, rule_index, req_index)
+            show_workers_assigned(e.target.closest("div"), e.target.closest("span").previousSibling.innerText, rule_index, req_index)
         }
     }
     let parent_div = document.querySelector(".active-production-rules")
@@ -1342,6 +1348,11 @@ let new_rule_click_requirement = (click_target, requirement, elem) => {
                             document.querySelectorAll(did).forEach((citizen_elem) => {
                                 //Obtain citizen index from div panel
                                 let citizen_index = citizen_elem.id.split("citizen-")[1]
+                                citizens[citizen_index].status = "working"
+                                document.querySelectorAll(`#citizen-${citizen_index}-status`).forEach((elem) => {
+                                    elem.setAttribute("data-status", "working")
+                                    elem.innerText = translate(language, "working", "", "capitalized")
+                                })
                                 rule_created.rule_definition.requirements[requirement_array_index].workers.push(citizen_index)
                             })
                             rule_created.rule_definition.result.quantity*= rule_created.rule_definition.requirements[requirement_array_index].workers.length
@@ -1918,7 +1929,7 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
             i = new element("i", "me-1 fa fa-"+(crewMember.age == "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-age-icon"); i.create()
             i = new element("i", "me-1 fa fa-map-location-dot text-green-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-role-icon"); i.create()
             s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-xp-icon"); 
-            s1.create(); s1.appendContent(crewMember.xp.toString())
+            s1.create(); s1.appendContent(Math.floor(crewMember.xp).toString())
             s1 = new element("span", "ms-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-name"); s1.create(); s1.appendContent(crewMember.name)
             s = new element("span", "", [], d4.getNode()); s.create()
             i = new element("i", "fa fa-eye me-1", [{"key":"data-index", "value":crewMember.index}], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-view-icon"); i.create()
@@ -2065,7 +2076,7 @@ let updateStock = () => {
     let count = 0
     Object.keys(stockDisplayed.resources[language]).forEach((resource) => {
         formatedResource = resource.replaceAll(" ", "")
-        if(resource.toLowerCase() != "food" && resource.toLowerCase() != "alimento" && stockDisplayed.resources[language][resource]){
+        if(resource.toLowerCase() != "food" && resource.toLowerCase() != "alimento" && stockDisplayed.resources[language][resource] >= 1){
             let pt = (!count++ ? "pt-2" : "pt-0")
             //Add dom node as last sibling
             p = new element("p", "resourceStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
@@ -2094,7 +2105,7 @@ let updateStock = () => {
     count = 0
     Object.keys(stockDisplayed.products[language]).forEach((product) => {
         formatedProduct = product.replaceAll(" ", "")
-        if(product.toLowerCase() != "food" && stockDisplayed.products[language][product]){
+        if(product.toLowerCase() != "food" && stockDisplayed.products[language][product] >= 1){
             let pt = (!count++ ? "pt-2" : "pt-0")
             p = new element("p", "productStock pb-0 text-xs text-gray-500 dark:text-gray-400", [], parentElement); p.create()
             s = new element("span", "flex", [], p.getNode()); s.create()
@@ -2224,7 +2235,7 @@ let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     i = new element("i", document.getElementById("citizen-"+citizenIndex+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
     //XP citizen icon
     let citizenXP = document.getElementById("citizen-"+citizenIndex+"-xp-icon").innerText
-    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(citizenXP)
+    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     let citizenName = document.getElementById("citizen-"+citizenIndex+"-name").innerText
     s1 = new element("span", "ms-1", [], s.getNode(), "citizen-"+citizenIndex+"-name"); s1.create(); s1.appendContent(citizenName)
@@ -2282,7 +2293,7 @@ let add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     iid = `citizen-${citizen_index}-xp-icon`
     let citizenXP = document.getElementById(iid).innerText
     s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), iid); s1.create()
-    s1.appendContent(citizenXP)
+    s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     iid = `citizen-${citizen_index}-name`
     let citizenName = document.getElementById(iid).innerText
@@ -2381,7 +2392,7 @@ let add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => {
     i = new element("i", document.getElementById("citizen-"+citizen_index+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
     //XP citizen icon
     let citizenXP = document.getElementById("citizen-"+citizen_index+"-xp-icon").innerText
-    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(citizenXP)
+    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     let citizenName = document.getElementById("citizen-"+citizen_index+"-name").innerText
     s1 = new element("span", "ms-1", [], s.getNode(), "citizen-"+citizen_index+"-name"); s1.create(); s1.appendContent(citizenName)
@@ -2417,7 +2428,7 @@ let add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) => 
     iid = `citizen-${citizen_index}-xp-icon`
     let citizenXP = document.getElementById(iid).innerText
     s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), iid); s1.create(); 
-    s1.appendContent(citizenXP)
+    s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     iid = `citizen-${citizen_index}-name`
     let citizenName = document.getElementById(iid).innerText

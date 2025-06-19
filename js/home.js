@@ -179,7 +179,7 @@ let lifeInterval = setInterval(() => {
                         if(!req.consumable){
                             if(req.type == "citizen"){
                                 req.workers.forEach((citizen_index) => {
-                                    requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].role == req.object)
+                                    requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].role == req.role)
                                 })
                             }
                         } else {
@@ -192,6 +192,8 @@ let lifeInterval = setInterval(() => {
                         //Update product stock with new value.
                         stockValues.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
                         stockValues.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
+                        stockDisplayed.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
+                        stockDisplayed.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
                         updateStock()
                     }
                 }

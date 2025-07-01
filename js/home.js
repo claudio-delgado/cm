@@ -179,7 +179,7 @@ let lifeInterval = setInterval(() => {
                         if(!req.consumable){
                             if(req.type == "citizen"){
                                 req.workers.forEach((citizen_index) => {
-                                    requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].role == req.role)
+                                    requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].rolekey == req.role)
                                 })
                             }
                         } else {
@@ -642,7 +642,7 @@ let citizenDescription = (gender, birthWeeks, language, texts, attributes, gende
     }
     return text
 }
-let updateCitizenDescription = (citizenIndex, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenMustAttribute) => {
+let updateCitizenDescription = (citizenIndex, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
     let descriptionText1 = {"ES" : {"F": "Ella es una", "M": "El es un"}, "EN" : {"F": "She is a", "M": "He is a"}}
     let descriptionText2 = {"ES" : {"F": "A ella le gusta un", "M": "A él le gusta una"}, "EN" : {"F": "She likes a", "M": "He likes a"}}
     let descriptionText3 = {"ES" : {"F": "Ella prefiere que no sea", "M": "Él prefiere que no sea"}, "EN" : {"F": "She prefers a no", "M": "He prefers a no"}}
@@ -650,7 +650,7 @@ let updateCitizenDescription = (citizenIndex, birthWeeks, citizenOwnAttributes, 
     //Only show possible future partner features if he or she is no baby.
     if(birthWeeks > 260){
         citizenBio+= "</br>"+citizenDescription(h<=5 ? "Masculine" : "Femenine", birthWeeks, language, (h<=5 ? descriptionText2[language]["F"] : descriptionText2[language]["M"]), citizenWishedAttributes, language=="ES" ? "left" : "right")+".</br>"
-        citizenBio+= citizenDescription(h<=5 ? "Masculine" : "Femenine", birthWeeks, language, (h<=5 ? descriptionText3[language]["F"] : descriptionText3[language]["M"]), citizenMustAttribute, language=="ES" ? "none" : "right")
+        citizenBio+= citizenDescription(h<=5 ? "Masculine" : "Femenine", birthWeeks, language, (h<=5 ? descriptionText3[language]["F"] : descriptionText3[language]["M"]), citizenHatedAttribute, language=="ES" ? "none" : "right")
     }
     //Place description in citizen's description panel, removing previous one if existed.
     document.querySelector("#citizen-"+citizenIndex+"-description").innerHTML = "\""+citizenBio+"\""
@@ -714,7 +714,7 @@ let fillCitizenInfo = () => {
     //Cargar atributos propios aleatorios para los 10 habitantes.
     //Generar también edades aletatorias.
     let attributeGroups = JSON.parse(JSON.stringify(attributes[language]))
-    let citizenOwnAttributes = [], citizenWishedAttributes = [], citizenMustAttribute
+    let citizenOwnAttributes = [], citizenWishedAttributes = [], citizenHatedAttribute
     let citizenBirthweeks, citizenFertility, citizenWeekOfDeath
     //Iterate over each citizen
     for(h=1; h<=citizensAmount; h++){
@@ -727,10 +727,10 @@ let fillCitizenInfo = () => {
         citizens[h].attributes = citizenOwnAttributes
         citizenWishedAttributes = getRandomAttributes(language)
         citizens[h].wishedAttributes = citizenWishedAttributes
-        citizenMustAttribute = getRandomAttributes(language, 1, citizenWishedAttributes)
-        citizens[h].mustAttribute = citizenMustAttribute
+        citizenHatedAttribute = getRandomAttributes(language, 1, citizenWishedAttributes)
+        citizens[h].hatedAttribute = citizenHatedAttribute[0]
         //Update description
-        updateCitizenDescription(h, citizenBirthweeks, citizenOwnAttributes, citizenWishedAttributes, citizenMustAttribute)
+        updateCitizenDescription(h, citizenBirthweeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute)
         //Ubicar edad en panel de habitante actual
         let birthweek = Math.floor(-citizenBirthweeks), ageYears = Math.floor(citizenBirthweeks/52), ageWeeks = citizenBirthweeks % 52
         citizens[h].birthWeek = birthweek
@@ -883,7 +883,8 @@ let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists
         //Update role in Citizen's info.
         document.querySelector("#citizen-"+citizenIndex+"-role").innerText = roleText
         document.querySelector("#citizen-"+citizenIndex+"-role").setAttribute("data-role", rolekey)
-        citizens[citizenIndex].role = rolekey
+        citizens[citizenIndex].role = roleText
+        citizens[citizenIndex].rolekey = rolekey
         //Update role icon in Citizen's info.
         document.querySelector("#citizen-"+citizenIndex+"-role-icon").classList.remove("hidden")
         document.querySelector("#citizen-"+citizenIndex+"-role-icon").classList = "text-green-500 fa me-1 fa-"+roleIcon
@@ -1175,19 +1176,19 @@ let handleToggleWorker = (e) => {
     showModalZoneSearched = false
     //Assign role to citizen 1 & 6 manually
     citizenIndex = 1;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "map-location-dot", false)
+    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 2;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "map-location-dot", false)
+    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 3;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "map-location-dot", false)
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "fish", false)
     citizenIndex = 4;
     assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 6;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "fish", false)
     citizenIndex = 7;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "fish", false)
     citizenIndex = 8;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "map-location-dot", false)
+    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "fish", false)
     /**/
     //daysPassed = 6
 

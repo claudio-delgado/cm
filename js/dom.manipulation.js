@@ -1130,7 +1130,7 @@ let accordionCitizens = (amount = 10) => {
         p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         //Citizen's role
-        citizens[index].role = ""
+        citizens[index].role = citizens[index].rolekey = ""
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent("Role")
         s.appendHTML(": ")
         s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), "citizen-"+index+"-role"); s1.create(); s1.appendContent("Unassigned")
@@ -1211,6 +1211,7 @@ let get_citizen_by_index = (citizen_index) => {
 let modal_citizen_info = (e) => {
     let citizen_index = e.target.getAttribute("data-index")
     let citizen = get_citizen_by_index(citizen_index)
+    citizen.modalStyle = "small"
     modalPopup(citizen.name, "ViewCitizenInfo", citizen)
     modal.show()
 }
@@ -1753,7 +1754,7 @@ let accordion_landforms = () => {
         p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
+        s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
     }
     build_landforms_accordion()
     build_actions_available()
@@ -1829,6 +1830,22 @@ let accordionExpeditions = () => {
 //Build modal popup
 let modalPopup = (modalTitle, modalType, modalData = {}) => {
     let parent = document.getElementById("modalBody")
+    //Adjust style if it's a functional modal or information modal.
+    if(modalData.modalStyle == "small"){
+        document.querySelector("#modalTitle").classList.remove("text-xl")
+        document.querySelector("#modalTitle").classList.add("text-base")
+        document.querySelector("#modalTitle").parentElement.classList.remove("p-4", "py-2", "ps-4")
+        document.querySelector("#modalTitle").parentElement.classList.add("py-2", "ps-4")
+        document.querySelector("#modalBody").classList.remove("p-4", "py-1", "px-4")
+        document.querySelector("#modalBody").classList.add("py-1", "px-4")
+    } else {
+        document.querySelector("#modalTitle").classList.remove("text-base")
+        document.querySelector("#modalTitle").classList.add("text-xl")
+        document.querySelector("#modalTitle").parentElement.classList.remove("text-base", "py-2", "ps-4", "p-4")
+        document.querySelector("#modalTitle").parentElement.classList.add("text-xl", "p-4")
+        document.querySelector("#modalBody").classList.remove("py-1", "px-4", "p-4")
+        document.querySelector("#modalBody").classList.add("p-4")
+    }/**/
     parent.innerHTML = ""
     let popupCannotChangeRole = () => {
         p = new element("p", "text-base py-2 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent)
@@ -1844,9 +1861,71 @@ let modalPopup = (modalTitle, modalType, modalData = {}) => {
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
     let popupViewCitizenInfo = () => {
-        p = new element("p", "text-base py-2 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent)
-        p.create(); p.appendContent(translate(language, "You cannot change this citizen's role because his or her status is not \"idle\"."))
-        p.create(); p.appendContent(translate(language, "Please, first deassign him or her from his or her current duty."))
+        p = new element("p", "flex justify-between text-sm pt-1 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Gender", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(translate(language, modalData.gender, "", "capitalized"))
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Status", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(translate(language, modalData.status, "", "capitalized"))
+        p = new element("p", "flex justify-between text-sm pt-1 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Role", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(translate(language, modalData.role, "", "capitalized"))
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Experience", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(modalData.xp.toString())
+        p = new element("p", "flex justify-between text-sm pt-1 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Birth week", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(modalData.birthWeek.toString())
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Age", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(modalData.ageYears.toString())
+        s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "years")); s1.appendHTML(", ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(modalData.ageWeeks.toString())
+        s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "weeks"))
+        p = new element("p", "flex justify-between text-sm pt-1 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Left hand", "", "capitalized"))
+        s1.appendHTML(": ")
+        let left_hand_object = !modalData.leftHand.toString() ? translate(language, "empty", "f", "capitalized") : translate(language, modalData.leftHand.toString())
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(left_hand_object)
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Right hand", "", "capitalized"))
+        s1.appendHTML(": ")
+        let right_hand_object = !modalData.leftHand.toString() ? translate(language, "empty", "f", "capitalized") : translate(language, modalData.rightHand.toString())
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(right_hand_object)
+        p = new element("p", "flex justify-between text-sm pt-1 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Outfit", "", "capitalized"))
+        s1.appendHTML(": ")
+        let outfit = modalData.outfit ? translate(language, "yes", "", "capitalized") : translate(language, "no", "", "capitalized")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(outfit)
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Fertility", "", "capitalized"))
+        s1.appendHTML(": ")
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(modalData.fertility.toString())
+        d = new element("div", "my-2 px-2 pb-1 border border-gray-800 rounded bg-gray-600 text-ms text-white", [], parent); d.create()
+        p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent(translate(language, "Atributos propios"))
+        p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
+        modalData.attributes.forEach((attribute) => {
+            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors[language][attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
+        })
+        p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributos deseados")
+        p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
+        modalData.wishedAttributes.forEach((attribute) => {
+            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors[language][attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
+        })
+        p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributo no deseado")
+        p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
+        s = new element("span", `mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors[language][modalData.hatedAttribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
     //Build modal pop up structure
@@ -2066,7 +2145,7 @@ let addLandform = (landformType = "hunting") => {
     p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "", [], p.getNode()); s.create()
     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
+    s1 = new element("span", "a", [{"key":"data-i18n","value":""}, {"key":"gender","value":"F"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "F"))
 
 }
 let updateStock = () => {

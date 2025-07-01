@@ -226,7 +226,7 @@ let attributesAdjectives = {
     "ES": {"Agilidad":{"F":"ágil", "M":"ágil"}, "Fuerza":{"F":"fuerte", "M":"fuerte"}, "Destreza":{"F":"muy diestra", "M":"muy diestro"}, "Inteligencia":{"F":"inteligente", "M":"inteligente"}, "Creatividad":{"F":"creativa", "M":"creativo"}, "Astucia":{"F":"astuta", "M":"astuto"}, "Simpatía":{"F":"simpática", "M":"simpático"}, "Carisma":{"F":"carismática", "M":"carismático"}, "Protección":{"F":"protectora", "M":"protector"}, "Compañerismo":{"F":"compañera", "M":"compañero"}, "Valentía":{"F":"valiente", "M":"valiente"}}
 }
 let roleIcons = [ 
-    {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
+    {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero", "N":"aguatero/a"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
     {"EN": "hunter", "ES": {"F": "cazadora", "M": "cazador"}, "key":"hunting", "icon": "deer"}, {"EN": "stone breaker", "ES": {"F": "picadora", "M": "picador"}, "key":"stonebreaking", "icon": "pickaxe"}, 
     {"EN": "constructor", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
     {"EN": "soldier", "ES": "soldado", "key":"war", "icon": "shield-halved"}, {"EN": "miner", "ES": {"F": "minera", "M": "minero"}, "key":"mining", "icon": "shovel"}, 

@@ -1216,27 +1216,27 @@ let modal_citizen_info = (e) => {
     modal.show()
 }
 let show_active_production_rules = () => {
-    let show_workers_assigned = (parent_div, workers_label, rule_index, req_index) => {
+    let show_workers_assigned = (parent_div, workers_label, rule_id, req_index) => {
         let remove_requirement_workers = (e) => {
-            document.querySelector(`#active-rule-${rule_index}-requirement-${req_index}-assigned-title`).remove()
-            document.querySelector(`#active-rule-${rule_index}-requirement-${req_index}-assigned-area`).remove()
+            document.querySelector(`#active-rule-${rule_id}-requirement-${req_index}-assigned-title`).remove()
+            document.querySelector(`#active-rule-${rule_id}-requirement-${req_index}-assigned-area`).remove()
         }
-        d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs active-rule-requirement-assigned-title", [], parent_div, `active-rule-${rule_index}-requirement-${req_index}-assigned-title`); d.create()
+        d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs active-rule-requirement-assigned-title", [], parent_div, `active-rule-${rule_id}-requirement-${req_index}-assigned-title`); d.create()
         p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d.getNode()); p.create()
         s = new element("span", "grow", [], p.getNode()); s.create(); s.appendContent(workers_label)
         i = new element("span", "me-1 text-sm fa fa-times", [], p.getNode()); i.create()
         i.getNode().addEventListener("click", remove_requirement_workers)
-        d1 = new element("div", "px-1 py-1 pb-0 border border-gray-300 dark:border-gray-800 dark:bg-gray-400 text-xs active-rule-requirement-assigned-area", [], parent_div, `active-rule-${rule_index}-requirement-${req_index}-assigned-area`); d1.create()
+        d1 = new element("div", "px-1 py-1 pb-0 border border-gray-300 dark:border-gray-800 dark:bg-gray-400 text-xs active-rule-requirement-assigned-area", [], parent_div, `active-rule-${rule_id}-requirement-${req_index}-assigned-area`); d1.create()
         let req_found = false
         product_rules_defined.forEach((rule) => {
-            if(rule.index == rule_index){
+            if(rule.id == rule_id){
                 rule.rule_definition.requirements.forEach((requirement) => {
                     if(requirement.index == req_index && requirement.type == "citizen"){
                         req_found = true
                         requirement.workers.forEach((assigned_worker_index) => {
                             //Get citizen info.
                             let current_citizen = get_citizen_by_index(assigned_worker_index)
-                            let did = `active-rule-${rule_index}-requirement-${requirement.index}-worker-${assigned_worker_index}`
+                            let did = `active-rule-${rule_id}-requirement-${requirement.index}-worker-${assigned_worker_index}`
                             d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-white bg-gray-700 border border-gray-200 gap-3", [], d1.getNode(), did); d.create()
                             s = new element("span", "", [], d.getNode()); s.create()
                             let gender_class = current_citizen.gender == "Feminine" ? "fa-venus" : "fa-mars"
@@ -1265,34 +1265,37 @@ let show_active_production_rules = () => {
         })
     }
     let click_worker = (e) => {
-        let rule_index = e.target.closest("span").id.split("-")[2]
+        let rule_id = e.target.closest("span").id.split("-")[2]
         let req_index = e.target.closest("span").id.split("-")[4]
-        if(document.getElementById(`active-rule-${rule_index}-requirement-${req_index}-assigned-title`) == undefined){
+        if(document.getElementById(`active-rule-${rule_id}-requirement-${req_index}-assigned-title`) == undefined){
             document.querySelectorAll(".active-rule-requirement-assigned-title").forEach((elem) => elem.remove())
-            show_workers_assigned(e.target.closest("div"), e.target.closest("span").previousSibling.innerText, rule_index, req_index)
+            show_workers_assigned(e.target.closest("div"), e.target.closest("span").previousSibling.innerText, rule_id, req_index)
         }
     }
     let parent_div = document.querySelector(".active-production-rules")
     if(parent_div.querySelector(".empty") != undefined){
         parent_div.querySelector(".empty").remove()
     }
+    //Remove active production rules
+    parent_div.querySelectorAll("div").forEach((elem) => elem.remove())
+    //Add all active production rules
     product_rules_defined.forEach((rule) => {
         //Current rule accordion
-        d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.index}`); d.create()
+        d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.id}`); d.create()
         //Current rule accordion header
-        h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-active-rule-${rule.index}-header`); h2.create()
-        b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.index}-body`}], h2.getNode())
+        h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-active-rule-${rule.id}-header`); h2.create()
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
-        s1.appendContent(translate(language, "Production rule")); s1.appendHTML(` #${rule.index}`); s1.appendHTML(` [${translate(language, rule.object, "", "capitalized")}]`)
+        s1.appendContent(translate(language, "Production rule")); s1.appendHTML(` #${rule.id}`); s1.appendHTML(` [${translate(language, rule.object, "", "capitalized")}]`)
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Current rule accordion body
-        d1 = new element("div", "hidden p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.index}-header`}], d.getNode(), `accordion-active-rule-${rule.index}-body`); d1.create()
+        d1 = new element("div", "hidden p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], d.getNode(), `accordion-active-rule-${rule.id}-body`); d1.create()
         p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Status"))
         p.appendHTML(": ")
-        s = new element("span", "font-bold", [], p.getNode(), `active-rule-${rule.index}-status`); s.create(); s.appendContent(translate(language, rule.status, "", "capitalized"))
+        s = new element("span", "font-bold", [], p.getNode(), `active-rule-${rule.id}-status`); s.create(); s.appendContent(translate(language, rule.status, "", "capitalized"))
         p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
         s = new element("span", "underline underline-offset-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Scheme", "", "capitalized"))
         p.appendHTML(": ")
@@ -1302,7 +1305,7 @@ let show_active_production_rules = () => {
             if(!requirement.consumable){
                 s = new element("span", "flex items-center m-0", [], p.getNode()); s.create()
                 s1 = new element("span", "font-bold pb-1 text-base", [], s.getNode()); s1.create(); s1.appendContent("[")
-                s1id = `active-rule-${rule.index}-requirement-${requirement.index}-object`
+                s1id = `active-rule-${rule.id}-requirement-${requirement.index}-object`
                 if(requirement.type == "citizen"){
                     s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 my-1 px-1 ms-1 py-0 bg-gray-600", [], s.getNode(), s1id); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
                     s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 border-s-0 my-1 px-1 me-1 py-0 bg-gray-600 rule-worker-unselected", [], s.getNode(), s1id+"-view"); s1.create()
@@ -1319,7 +1322,7 @@ let show_active_production_rules = () => {
         })
         i = new element("i", "font-bold mx-2 fa fa-arrow-right my-1 text-sm", [], p.getNode()); i.create()
         s = new element("span", "font-bold flex flex-nowrap border-2 border-blue-800 my-1 px-1 mx-1 py-0 bg-blue-500", [{"key":"data-object", "value":rule.object}], p.getNode()); 
-        sid = `active-rule-${rule.index}-result`
+        sid = `active-rule-${rule.id}-result`
         s.create(); s.appendContent(translate(language, rule.object, "", "capitalized") + " x " + rule.rule_definition.result.quantity)
         enable_accordion_click(b.getNode())
     })
@@ -1330,6 +1333,8 @@ let new_rule_click_requirement = (click_target, requirement, elem) => {
         let click_save_rule = (e) => {
             //Save rule
             let rule_created = {}
+            rule_last_id++
+            rule_created.id = rule_last_id
             rule_created.index = rule_index
             rule_created.object = document.querySelector(`#rule-${rule_index}-object`).getAttribute("data-object")
             let rule_definition = product_rules[rule_created.object].rules[0]
@@ -1599,8 +1604,7 @@ let new_rule_iterate_all_product_available_rules = (clicked_product, current_mou
         s3 = new element("span", "", [{"key":"data-object", "value":clicked_product}, {"key":"data-rule", "value":rule_index}], s.getNode(), `rule-${rule_index}-object`); s3.create(); s3.appendContent(translate(language, clicked_product, "", "capitalized"))
         s4 = new element("span", "", [], s.getNode()); s4.create(); s4.appendContent("]")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-        d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-${rule_index}-header`}], d.getNode(), `accordion-new-production-rule-${rule_index}-body`); d1.create()
-        d1.getNode().setAttribute("data-rule-index", rule_index)
+        d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-${rule_index}-header`},{"key": "data-rule-index", "value": rule_index}], d.getNode(), `accordion-new-production-rule-${rule_index}-body`); d1.create()
         new_rule_iterate_requirements(rule, rule_index, clicked_product, current_mount)
         //Select rule requirement
         rule_index++

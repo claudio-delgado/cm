@@ -1176,19 +1176,19 @@ let handleToggleWorker = (e) => {
     showModalZoneSearched = false
     //Assign role to citizen 1 & 6 manually
     citizenIndex = 1;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 2;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 3;
-    assign_role_to_citizen("fishing", translate(language, "Expeditionary", "f"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f"), "fish", false)
     citizenIndex = 4;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 6;
-    assign_role_to_citizen("fishing", translate(language, "Expeditionary", "m"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 7;
-    assign_role_to_citizen("fishing", translate(language, "Expeditionary", "m"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 8;
-    assign_role_to_citizen("fishing", translate(language, "Expeditionary", "m"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     /**/
     //daysPassed = 6
 

@@ -1516,7 +1516,7 @@ var location_products = {
         "ES": ["perca", "carpa", "trucha", "salmón"]
     }
 }
-var product_rules = {
+const product_rules = {
     "perch": {
         "rules": [{
             "requirements": [

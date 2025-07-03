@@ -1269,7 +1269,7 @@ let show_active_production_rules = () => {
         let req_index = e.target.closest("span").id.split("-")[4]
         if(document.getElementById(`active-rule-${rule_id}-requirement-${req_index}-assigned-title`) == undefined){
             document.querySelectorAll(".active-rule-requirement-assigned-title").forEach((elem) => elem.remove())
-            show_workers_assigned(e.target.closest("div"), e.target.closest("span").previousSibling.innerText, rule_id, req_index)
+            show_workers_assigned(e.target.closest("div").querySelector(".rule-assigned-workers"), e.target.closest("span").previousSibling.innerText, rule_id, req_index)
         }
     }
     let parent_div = document.querySelector(".active-production-rules")
@@ -1293,9 +1293,12 @@ let show_active_production_rules = () => {
         //Current rule accordion body
         d1 = new element("div", "hidden p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], d.getNode(), `accordion-active-rule-${rule.id}-body`); d1.create()
         p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
-        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Status"))
-        p.appendHTML(": ")
-        s = new element("span", "font-bold", [], p.getNode(), `active-rule-${rule.id}-status`); s.create(); s.appendContent(translate(language, rule.status, "", "capitalized"))
+        s1 = new element("span", "", [], p.getNode()); s1.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+        s1.appendHTML(": ")
+        s = new element("span", "font-bold", [], s1.getNode(), `active-rule-${rule.id}-status`); s.create(); s.appendContent(translate(language, rule.status, "", "capitalized"))
+        s2 = new element("span", "", [], p.getNode()); s2.create()
+        //i = new element("i", "fa fa-times", [], s2.getNode()); i.create(); i.appendContent("Cancel")
         p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
         s = new element("span", "underline underline-offset-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Scheme", "", "capitalized"))
         p.appendHTML(": ")
@@ -1325,6 +1328,36 @@ let show_active_production_rules = () => {
         sid = `active-rule-${rule.id}-result`
         s.create(); s.appendContent(translate(language, rule.object, "", "capitalized") + " x " + rule.rule_definition.result.quantity)
         enable_accordion_click(b.getNode())
+        d = new element("div", "rule-assigned-workers", [], document.getElementById(`accordion-active-rule-${rule.id}-body`)); d.create()
+        d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], document.getElementById(`accordion-active-rule-${rule.id}-body`), `active-rule-${rule.id}-actions-available-title`); d.create()
+        p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d.getNode()); p.create()
+        s = new element("span", "grow", [], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+        
+        d = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-400 text-xs", [], document.getElementById(`accordion-active-rule-${rule.id}-body`), `active-rule-${rule.id}-actions-available-body`); d.create()
+        p = new element("p", "flex w-100 justify-between p-1 text-gray-500 dark:text-gray-300", [], d.getNode()); p.create()
+        b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [{"key":"data-rule-id", "value":rule.id}], p.getNode()); b.create()
+        i = new element("i", "fa fa-times me-2", [], b.getNode()); i.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Cancel production rule"))
+        b.getNode().addEventListener("click", function(e){
+            //Cancel rule
+            let rule_id = e.target.closest("button").getAttribute("data-rule-id")
+            //Search rule in structure and remove it
+            product_rules_defined.forEach((rule, rule_index) => {
+                if(rule.id == rule_id){
+                    product_rules_defined.splice(rule_index, 1)
+                }
+            })
+            //Remove active rule panel
+            let panel_parent = document.getElementById(`accordion-active-rule-${rule_id}`).parentElement
+            document.getElementById(`accordion-active-rule-${rule_id}`).remove()
+            if(!panel_parent.children.length){
+                p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], panel_parent); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key": "data-18n", "value":""}, {"key": "gender", "value":"f"}], s.getNode()); s1.create()
+                s1.appendContent(translate(language, "None", "f"))
+            }
+        })
     })
 }
 let new_rule_click_requirement = (click_target, requirement, elem) => {
@@ -1337,10 +1370,9 @@ let new_rule_click_requirement = (click_target, requirement, elem) => {
             rule_created.id = rule_last_id
             rule_created.index = rule_index
             rule_created.object = document.querySelector(`#rule-${rule_index}-object`).getAttribute("data-object")
-            let rule_definition = product_rules[rule_created.object].rules[0]
+            let rule_definition = JSON.parse(JSON.stringify(product_rules[rule_created.object].rules[0]))
             rule_created.status = "running"
             document.querySelectorAll(".rule-requirement").forEach((elem) => {
-                //debugger
                 let requirement_index = elem.id.split("-")[3]
                 rule_created.rule_definition = rule_definition
                 //Iterate rule's requirements
@@ -1882,7 +1914,7 @@ let modalPopup = (modalTitle, modalType, modalData = {}) => {
         s = new element("span", "", [], p.getNode()); s.create()
         s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Experience", "", "capitalized"))
         s1.appendHTML(": ")
-        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(modalData.xp.toString())
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(Math.floor(modalData.xp).toString())
         p = new element("p", "flex justify-between text-sm pt-1 text-gray-500 dark:text-gray-400", [{"key":"data-i18n","value":""}], parent); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Birth week", "", "capitalized"))

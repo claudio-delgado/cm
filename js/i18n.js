@@ -117,6 +117,8 @@ var translationObject = {
     "Campaign tents":{"ES":"Tiendas de campaña"},
     "Can't change role":{"ES":"No se puede cambiar el rol"},
     "Cancel filter":{"ES":"Cancelar filtro"},
+    "Cancel production rule":{"ES":"Cancelar regla de producción"},
+    "Cancelar regla de producción":{"EN":"Cancel production rule"},
     "Cancelar filtro":{"EN":"Cancel filter"},
     "caña de pescar":{"EN":"fishing rod"},
     "Capacidad de albergue":{"EN":"Shelter capacity"},

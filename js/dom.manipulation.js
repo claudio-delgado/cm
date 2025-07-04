@@ -1,5 +1,6 @@
 panelClasses = {
     "assignRole": {"i":"fa-handshake-simple", "text":"font-bold grow", "bg":"bg-gray-900"},
+    "searchCouple": {"i":"fa-venus-mars", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newExpedition": {"i":"fa-location-dot", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newProductionRule": {"i":"fa-subscript", "text":"font-bold grow", "bg":"bg-gray-900"}
 }
@@ -50,6 +51,12 @@ class panel{
                 s = new element("span", panelClasses.assignRole.text, [{"key":"data-i18n", "value":""}], p.getNode())
                 s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol"))
                 paragraphBg = panelClasses.assignRole.bg
+                break
+            case "searchCouple": 
+                i = new element("i", "me-2 fa "+panelClasses.searchCouple.i, [], p.getNode()); i.create()
+                s = new element("span", panelClasses.searchCouple.text, [{"key":"data-i18n", "value":""}], p.getNode())
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Search a couple") : translate("EN", "Buscarle una pareja"))
+                paragraphBg = panelClasses.searchCouple.bg
                 break
             case "newExpedition": 
                 i = new element("i", "me-2 fa "+panelClasses.newExpedition.i, [], p.getNode()); i.create()
@@ -112,6 +119,28 @@ class panel{
                 divSpecificParagraphButton[index].classList = generalRole+" assignableRole text-xs capitalize "+(index+1 < roleIcons.length ? "grow " : "")+"p-2 me-1 mb-1 button border "+buttonColours
                 divSpecificParagraphButton[index].disabled = isDisabled
                 p.appendContent(divSpecificParagraphButton[index])
+            })
+        }
+        if(this.panelName == "searchCouple"){
+            //Specific Search couple panel
+            p.create()
+            let current_citizen_id = this.objectId
+            let current_citizen_gender = this.data.gender
+            citizens.forEach((citizen, id) => {
+                if(id != current_citizen_id && citizen.gender.charAt(0) != current_citizen_gender){
+                    h2 = new element("h2", "grow selectable-couple", [], p.getNode(), `couple-citizen-${id}`); h2.create()
+                    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode()); d.create()
+                    s = new element("span", "", [], d.getNode()); s.create()
+                    let gender_class = citizen.gender == "F" ? "fa-venus" : "fa-mars"
+                    i = new element("i", `me-1 fa ${gender_class} text-red-500`, [], s.getNode(), `couple-citizen-${id}-gender-icon`); i.create()
+                    i = new element("i", "me-1 fa fa-child text-white", [], s.getNode(), `couple-citizen-${id}-age-icon`); i.create()
+                    i = new element("i", "text-green-500 fa me-1 fa-fish", [], s.getNode(), `couple-citizen-${id}-role-icon`); i.create()
+                    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), `couple-citizen-${id}-xp-icon`)
+                    s1 = new element("span", "ms-1", [], s.getNode(), `couple-citizen-${id}-name`); s1.create(); s1.appendContent(citizen.name)
+                    s = new element("span", "", [], d.getNode()); s.create()
+                    i = new element("i", "fa fa-eye me-2", [], s.getNode(), `couple-citizen-${id}-view-info`); i.create()
+                    i = new element("i", "fa fa-regular fa-square", [], s.getNode(), `couple-citizen-${id}-assign`); i.create()
+                }
             })
         }
         if(this.panelName == "newRule"){
@@ -1181,11 +1210,11 @@ let accordionCitizens = (amount = 10) => {
         i = new element("i", "mt-0 text-base fa fa-times invisible font-bold", [], p.getNode()); i.create()
         //Citizen's actions
         d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "citizen-"+index+"-actions"); d2.create()
-        p = new element("p", "flex w-100 justify-between p-1 text-gray-500 dark:text-gray-400", [], d2.getNode()); p.create()
-        b = new element("button", "text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "searchCouple-"+index); b.create()
+        p = new element("p", "flex w-100 justify-between gap-2 p-1 text-gray-500 dark:text-gray-400", [], d2.getNode()); p.create()
+        b = new element("button", "searchCouple text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "searchCouple-"+index); b.create()
         i = new element("i", "fa fa-venus-mars me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("Search a couple")
-        b = new element("button", "assignRole text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "assignRole-"+index); b.create()
+        b = new element("button", "assignRole text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "assignRole-"+index); b.create()
         i = new element("i", "fa fa-handshake-simple me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("Assign a role")
     }
@@ -1281,14 +1310,18 @@ let show_active_production_rules = () => {
     //Add all active production rules
     product_rules_defined.forEach((rule) => {
         //Current rule accordion
-        d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.id}`); d.create()
+        d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.id}`); d.create()
         //Current rule accordion header
         h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-active-rule-${rule.id}-header`); h2.create()
         b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
-        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
-        s1.appendContent(translate(language, "Production rule")); s1.appendHTML(` #${rule.id}`); s1.appendHTML(` [${translate(language, rule.object, "", "capitalized")}]`)
+        s1 = new element("span", "font-bold text-sm", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendContent(`Regla ${rule.id} -`)
+        s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendContent(`${translate(language, "Product")}:`)
+        s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendHTML(`${translate(language, rule.object, "", "uppercase")}`)
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Current rule accordion body
         d1 = new element("div", "hidden p-1 border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], d.getNode(), `accordion-active-rule-${rule.id}-body`); d1.create()
@@ -1630,11 +1663,9 @@ let new_rule_iterate_all_product_available_rules = (clicked_product, current_mou
         b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new-production-rule-${rule_index}-body`}, {"key": "aria-controls", "value": `accordion-new-production-rule-${rule_index}-body`}], h2.getNode())
         b.create();
         s = new element("span", "", [], b.getNode()); s.create()
-        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Production rule"))
-        s1.appendHTML(" #"+rule_index)
-        s2 = new element("span", "", [], s.getNode()); s2.create(); s2.appendContent(" [")
-        s3 = new element("span", "", [{"key":"data-object", "value":clicked_product}, {"key":"data-rule", "value":rule_index}], s.getNode(), `rule-${rule_index}-object`); s3.create(); s3.appendContent(translate(language, clicked_product, "", "capitalized"))
-        s4 = new element("span", "", [], s.getNode()); s4.create(); s4.appendContent("]")
+        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Production rule for"))
+        s1.appendHTML(":")
+        s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-object", "value":clicked_product}, {"key":"data-rule", "value":rule_index}], s.getNode(), `rule-${rule_index}-object`); s1.create(); s1.appendContent(translate(language, clicked_product, "", "uppercase"))
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-${rule_index}-header`},{"key": "data-rule-index", "value": rule_index}], d.getNode(), `accordion-new-production-rule-${rule_index}-body`); d1.create()
         new_rule_iterate_requirements(rule, rule_index, clicked_product, current_mount)

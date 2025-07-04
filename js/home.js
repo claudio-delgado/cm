@@ -1195,7 +1195,7 @@ let handleToggleWorker = (e) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Panel Citizens - Action: Assign Role
-document.querySelectorAll(".assignRole").forEach((value, index) => {
+document.querySelectorAll(".assignRole").forEach((value) => {
     value.addEventListener("click", function(e){
         //Get citizen & gender
         citizenIndex = e.target.id ? e.target.id.match(/\d+/g)[0] : e.target.parentElement.id.match(/\d+/g)[0]
@@ -1211,6 +1211,20 @@ document.querySelectorAll(".assignRole").forEach((value, index) => {
                 assign_role_to_citizen(e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
             })
         })
+    })
+})
+
+//Panel Citizens - Action: Search couple
+document.querySelectorAll(".searchCouple").forEach((value) => {
+    value.addEventListener("click", function(e){
+        //Get citizen & gender
+        citizenIndex = e.target.id ? e.target.id.match(/\d+/g)[0] : e.target.parentElement.id.match(/\d+/g)[0]
+        gender = document.querySelector("#citizen-"+citizenIndex+"-gender-icon").classList.contains("fa-venus") ? "F" : "M"
+        let objectData = {"language": language, "gender": gender, "parentId": "#accordion-citizen-"+citizenIndex+"-body"}
+        //Build assign role panel
+        searchCouplePanel = new panel("searchCouple", objectData, "citizen", citizenIndex, "actions")
+        searchCouplePanel.hidePreviousOptions()
+        searchCouplePanel.buildPanel()
     })
 })
 

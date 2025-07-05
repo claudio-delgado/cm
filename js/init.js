@@ -4,6 +4,7 @@ var daysPassed = 0, dayPassed = weekPassed = false, searchingZone = zoneSearched
 var colony_water_reservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0, huntingMountDiscovered = false
 var wagonsAmount, horsesAmount
 var colonyScore, colonyLifeQuality
+var rule_last_id = 0
 //Constants
 const zoneSearchHoursNeeded = 1
 const minimalExpeditionDuration = 0 //In game hours

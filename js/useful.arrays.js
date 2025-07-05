@@ -1516,7 +1516,7 @@ var location_products = {
         "ES": ["perca", "carpa", "trucha", "salmón"]
     }
 }
-var product_rules = {
+const product_rules = {
     "perch": {
         "rules": [{
             "requirements": [
@@ -1569,6 +1569,7 @@ var product_rules = {
 }
 var product_rules_defined = [
     { //rule_created
+        "id": 0,
         "index": 0,
         "object": "", 
         "status":["running", "suspended"],

@@ -1176,26 +1176,26 @@ let handleToggleWorker = (e) => {
     showModalZoneSearched = false
     //Assign role to citizen 1 & 6 manually
     citizenIndex = 1;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 2;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 3;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "f"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f"), "fish", false)
     citizenIndex = 4;
-    assign_role_to_citizen("fishing", translate(language, "fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 6;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 7;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 8;
-    assign_role_to_citizen("expeditioning", translate(language, "Expeditionary", "m"), "fish", false)
+    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     /**/
     //daysPassed = 6
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Panel Citizens - Action: Assign Role
-document.querySelectorAll(".assignRole").forEach((value, index) => {
+document.querySelectorAll(".assignRole").forEach((value) => {
     value.addEventListener("click", function(e){
         //Get citizen & gender
         citizenIndex = e.target.id ? e.target.id.match(/\d+/g)[0] : e.target.parentElement.id.match(/\d+/g)[0]
@@ -1211,6 +1211,20 @@ document.querySelectorAll(".assignRole").forEach((value, index) => {
                 assign_role_to_citizen(e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
             })
         })
+    })
+})
+
+//Panel Citizens - Action: Search couple
+document.querySelectorAll(".searchCouple").forEach((value) => {
+    value.addEventListener("click", function(e){
+        //Get citizen & gender
+        citizenIndex = e.target.id ? e.target.id.match(/\d+/g)[0] : e.target.parentElement.id.match(/\d+/g)[0]
+        gender = document.querySelector("#citizen-"+citizenIndex+"-gender-icon").classList.contains("fa-venus") ? "F" : "M"
+        let objectData = {"language": language, "gender": gender, "parentId": "#accordion-citizen-"+citizenIndex+"-body"}
+        //Build assign role panel
+        searchCouplePanel = new panel("searchCouple", objectData, "citizen", citizenIndex, "actions")
+        searchCouplePanel.hidePreviousOptions()
+        searchCouplePanel.buildPanel()
     })
 })
 

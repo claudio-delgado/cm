@@ -15,7 +15,7 @@ const ruinsExpeditionFailXPGain = 0.1
 //User configuration variables
 var showModalZoneSearched = true
 //Temporary global variables
-var citizenIndex, expeditionIndex = 1
+var citizenIndex, expeditionIndex = 1, rule_id = 1
 
 //Ruins expedition resource or product loots probabilities
 var ruinsExpeditionResourcesFoundProbability = 0.6, ruinsExpeditionProductsFoundProbability = 0.4

@@ -1,6 +1,7 @@
 panelClasses = {
     "assignRole": {"i":"fa-handshake-simple", "text":"font-bold grow", "bg":"bg-gray-900"},
     "searchCouple": {"i":"fa-venus-mars", "text":"font-bold grow", "bg":"bg-gray-900"},
+    "tryBreeding": {"i":"fa-venus-mars", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newExpedition": {"i":"fa-location-dot", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newProductionRule": {"i":"fa-subscript", "text":"font-bold grow", "bg":"bg-gray-900"}
 }
@@ -16,6 +17,7 @@ class panel{
         this.previousOptionsPanelId = objectName+(objectId ? "-"+objectId : "")+"-"+optionName
         this.previousPanel = ""
         this.isDisplayed = false
+        currently_used_panel = this
     }
     hidePreviousOptions(){
         this.previousPanel = document.querySelector("#"+this.previousOptionsPanelId)
@@ -49,25 +51,31 @@ class panel{
             case "assignRole": 
                 i = new element("i", "me-2 fa "+panelClasses.assignRole.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.assignRole.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol"))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", gender="", format="", changeLanguage=false))
                 paragraphBg = panelClasses.assignRole.bg
                 break
             case "searchCouple": 
                 i = new element("i", "me-2 fa "+panelClasses.searchCouple.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.searchCouple.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Search a couple") : translate("EN", "Buscarle una pareja"))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", gender="", format="", changeLanguage=false))
                 paragraphBg = panelClasses.searchCouple.bg
+                break
+            case "tryBreeding": 
+                i = new element("i", "me-2 fa "+panelClasses.tryBreeding.i, [], p.getNode()); i.create()
+                s = new element("span", panelClasses.tryBreeding.text, [{"key":"data-i18n", "value":""}], p.getNode())
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Try breeding", gender="", "", false) : translate("EN", "Intentar reproducción", gender="", format="", changeLanguage=false))
+                paragraphBg = panelClasses.tryBreeding.bg
                 break
             case "newExpedition": 
                 i = new element("i", "me-2 fa "+panelClasses.newExpedition.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición"))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", gender="", format="", changeLanguage=false))
                 paragraphBg = panelClasses.newExpedition.bg
                 break
             case "newRule": 
                 i = new element("i", "me-2 fa "+panelClasses.newProductionRule.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New production rule") : translate("EN", "Nueva regla de producción"))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New production rule", gender="", format="", changeLanguage=false) : translate("EN", "Nueva regla de producción", gender="", format="", changeLanguage=false))
                 paragraphBg = panelClasses.newExpedition.bg
                 break
         }
@@ -93,7 +101,7 @@ class panel{
 
         //Build specific panel
         d1 = new element("div", this.panelName+" border border-gray-900 dark:border-gray-900 dark:bg-gray-600 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
-        p = new element("p", "flex py-1 w-100 justify-between items-center flex-wrap p-1 text-gray-500 dark:text-gray-300", [], d1.getNode());
+        p = new element("p", "flex py-1 w-100 gap-1 justify-between items-center flex-wrap p-1 text-gray-500 dark:text-gray-300", [], d1.getNode());
         let divSpecificParagraphButton = []
         if(this.panelName == "assignRole"){
             //Specific Assign Role panel
@@ -124,24 +132,1923 @@ class panel{
         if(this.panelName == "searchCouple"){
             //Specific Search couple panel
             p.create()
-            let current_citizen_id = this.objectId
-            let current_citizen_gender = this.data.gender
-            citizens.forEach((citizen, id) => {
-                if(id != current_citizen_id && citizen.gender.charAt(0) != current_citizen_gender){
-                    h2 = new element("h2", "grow selectable-couple", [], p.getNode(), `couple-citizen-${id}`); h2.create()
-                    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode()); d.create()
-                    s = new element("span", "", [], d.getNode()); s.create()
-                    let gender_class = citizen.gender == "F" ? "fa-venus" : "fa-mars"
-                    i = new element("i", `me-1 fa ${gender_class} text-red-500`, [], s.getNode(), `couple-citizen-${id}-gender-icon`); i.create()
-                    i = new element("i", "me-1 fa fa-child text-white", [], s.getNode(), `couple-citizen-${id}-age-icon`); i.create()
-                    i = new element("i", "text-green-500 fa me-1 fa-fish", [], s.getNode(), `couple-citizen-${id}-role-icon`); i.create()
-                    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), `couple-citizen-${id}-xp-icon`)
-                    s1 = new element("span", "ms-1", [], s.getNode(), `couple-citizen-${id}-name`); s1.create(); s1.appendContent(citizen.name)
-                    s = new element("span", "", [], d.getNode()); s.create()
-                    i = new element("i", "fa fa-eye me-2", [], s.getNode(), `couple-citizen-${id}-view-info`); i.create()
-                    i = new element("i", "fa fa-regular fa-square", [], s.getNode(), `couple-citizen-${id}-assign`); i.create()
+            let citizen_id = this.objectId*1
+            let citizen = get_citizen_by_index(citizen_id)
+            citizen.id = citizen_id
+            let citizen_parents = get_citizen_parents(citizen)
+            let citizen_is_old_enough = citizen.ageYears >= 15
+            let citizen_is_single = citizen.couple == null
+            let candidates_count = 0
+            if(citizen_is_old_enough && citizen_is_single){
+                citizens.forEach((candidate, candidate_id) => {
+                    candidate.id = candidate_id*1
+                    let candidate_and_citizen_differents = candidate_id != citizen_id
+                    let candidate_has_different_gender = candidate.gender != citizen.gender
+                    let age_difference_within_limits = Math.abs(citizen.ageYears - candidate.ageYears) < 40
+                    let candidate_is_old_enough = candidate.ageYears >= 15
+                    let candidate_is_single = candidate.couple == null
+                    //Current citizen found is a possible candidate or simply discard him/her?
+                    if(candidate_and_citizen_differents && candidate_has_different_gender && age_difference_within_limits 
+                        && candidate_is_old_enough && candidate_is_single){
+                        //Check consanguinity level 1 between citizen and candidate.
+                        let candidate_parents = get_citizen_parents(candidate)
+                        let citizen_is_parent_of_candidate = candidate_parents.includes(citizen_id)
+                        let candidate_is_parent_of_citizen = citizen_parents.includes(candidate_id)
+                        let have_consanguinity_1 = citizen_is_parent_of_candidate || candidate_is_parent_of_citizen
+                        //Check consanguinity level 2 between citizen and candidate.
+                        let citizen_and_candidate_are_siblings = citizens_are_siblings(citizen, candidate)
+                        /*(candidate.father && citizens[candidate.father].children.filter((id) => id != candidate_id).includes(citizen_id)) ||
+                                           (candidate.mother && citizens[candidate.mother].children.filter((id) => id != candidate_id).includes(citizen_id)) ||
+                                           (candidate.father && citizens[citizen.father].children.filter((id) => id != citizen_id).includes(candidate_id)) ||
+                                           (candidate.mother && citizens[citizen.mother].children.filter((id) => id != citizen_id).includes(candidate_id))*/
+                        let candidate_grandparents = get_citizen_grandparents(candidate)
+                        let citizen_grandparents = get_citizen_grandparents(citizen)
+                        let candidate_is_citizen_s_grandchild = candidate_grandparents.includes(citizen_id)
+                        let candidate_is_citizen_s_grandparent = citizen_grandparents.includes(candidate_id)
+                        let have_consanguinity_2 = citizen_and_candidate_are_siblings || candidate_is_citizen_s_grandchild 
+                                                   || candidate_is_citizen_s_grandparent
+                        //Check consanguinity level 3 between citizen and candidate.
+                        let citizen_uncles = get_citizen_uncles(citizen)
+                        let candidate_uncles = get_citizen_uncles(candidate)
+                        let candidate_is_uncle_of_citizen = candidate_uncles.includes(citizen_id)
+                        let citizen_is_uncle_of_candidate = citizen_uncles.includes(candidate_id)
+                        let citizen_cousins = get_citizen_cousins(citizen)
+                        let candidate_and_citizen_are_cousins = citizen_cousins.includes(candidate_id)
+                        let have_consanguinity_3 = candidate_is_uncle_of_citizen || citizen_is_uncle_of_candidate 
+                                                   || candidate_and_citizen_are_cousins
+                        let is_a_possible_candidate = !have_consanguinity_1 && !have_consanguinity_2 && !have_consanguinity_3
+                        if(is_a_possible_candidate){
+                            h2 = new element("h2", "grow selectable-couple", [], p.getNode(), `couple-citizen-${candidate_id}`); h2.create()
+                            d = new element("div", "flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode()); d.create()
+                            s = new element("span", "", [], d.getNode()); s.create()
+                            let gender_class = candidate.gender == "Femenine" ? "fa-venus" : "fa-mars"
+                            let gender_color_class = candidate.gender == "Femenine" ? "text-red-500" : "text-blue-500"
+                            i = new element("i", `me-1 fa ${gender_class} ${gender_color_class}`, [], s.getNode(), `couple-citizen-${candidate_id}-gender-icon`); i.create()
+                            let age_class = (candidate.ageYears <= 5 ? "fa-baby" : (candidate.ageYears < 15 ? "fa-child" : (candidate.ageYears < 21 ? "fa-person-walking" : (candidate.ageYears < 50 ? "fa-person" : (candidate.ageYears < 65 ? "fa-person" : "fa-person-cane"))))); 
+                            i = new element("i", `me-1 fa ${age_class} text-white`, [], s.getNode(), `couple-citizen-${candidate_id}-age-icon`); i.create()
+                            i = new element("i", "text-green-500 fa me-1 fa-fish", [], s.getNode(), `couple-citizen-${candidate_id}-role-icon`); i.create()
+                            s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), `couple-citizen-${candidate_id}-xp-icon`)
+                            s1 = new element("span", "ms-1", [], s.getNode(), `couple-citizen-${candidate_id}-name`); s1.create(); s1.appendContent(candidate.name)
+                            s = new element("span", "", [], d.getNode()); s.create()
+                            i = new element("i", "fa fa-down me-2", [{"key":"data-index", "value":candidate_id}], s.getNode(), `couple-citizen-${candidate_id}-view-attributes`); i.create()
+                            i.getNode().addEventListener("click", show_citizen_attributes)
+                            i = new element("i", "fa fa-eye me-2", [{"key":"data-index", "value":candidate_id}], s.getNode(), `couple-citizen-${candidate_id}-view-info`); i.create()
+                            i.getNode().addEventListener("click", modal_citizen_info)
+                            i = new element("i", "fa fa-regular fa-square", [], s.getNode(), `couple-citizen-${candidate_id}-assign`); i.create()
+                            i.getNode().addEventListener("click", assign_couple_to_citizen)
+                            candidates_count++
+                        }
+                    }
+                })
+            }
+            if(!candidates_count){
+                let p1 = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], p.getNode()); p1.create()
+                s = new element("span", "", [], p1.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key": "data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No candidates available"))
+            }
+        }
+        if(this.panelName == "tryBreeding"){
+            //Specific Try breeding panel.
+            p.create()
+            let stage = 0, attraction_percent_citizen = 0, attraction_percent_couple = 0, accumulative_percent = 0
+            let accumulative_percent_citizen = 0, accumulative_percent_couple = 0
+            let breeding_stage
+            let citizen_id = document.getElementById(`accordion-relationship-${this.objectId}`).getAttribute("data-citizen-1")
+            let couple_id = document.getElementById(`accordion-relationship-${this.objectId}`).getAttribute("data-citizen-2")
+            let citizen = citizens[citizen_id]
+            let couple = citizens[couple_id]
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], p.getNode(), `accordion-relationship-${this.objectId}-breeding-processes`); d.create()
+            //Build mutual knowledge process header
+            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.objectId}-breeding-stages-header`); h2.create()
+            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-breeding-stages-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-breeding-stages-body`}], h2.getNode())
+            b.create()
+            s = new element("span", "flex items-center w-full", [], b.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Mutual knowledge process"))
+            s1 = new element("span", "grow flex justify-end", [], s.getNode()); s1.create()
+            s2 = new element("span", "px-1 border border-gray-300 text-white", [], s1.getNode(), `relationship-${this.objectId}-attraction-group`); s2.create()
+            i = new element("i", "fa me-1 font-bold", [], s2.getNode(), `relationship-${this.objectId}-attraction-icon`); i.create();
+            let s3 = new element("span", "font-bold", [], s2.getNode(), `relationship-${this.objectId}-attraction-value`); s3.create(); s3.appendContent("100%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //Build mutual knowledge process body
+            d1 = new element("div", "hidden p-1 border border-gray-900 bg-gray-500", [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-breeding-stages-header`}], d.getNode(), `accordion-relationship-${this.objectId}-breeding-stages-body`)
+            d1.create()
+            //Obtain couple's information
+            let citizen_own_attributes = new Set(citizen.attributes)
+            let citizen_wished_attributes = new Set(citizen.wishedAttributes)
+            let citizen_hated_attribute = citizen.hatedAttribute
+            let citizen_age_group = citizen.ageYears < 21 ? 1 : (citizen.ageYears < 50 ? 2 : (citizen.ageYears < 65 ? 3 : 4))
+            let couple_age_group = couple.ageYears < 21 ? 1 : (couple.ageYears < 50 ? 2 : (couple.ageYears < 65 ? 3 : 4))
+            let citizen_couple_age_group_difference = Math.abs(citizen_age_group - couple_age_group)
+            let citizen_couple_age_difference = Math.abs(citizen.ageYears - couple.ageYears)
+            let couple_own_attributes = new Set(couple.attributes)
+            let couple_wished_attributes = new Set(couple.wishedAttributes)
+            let couple_hated_attribute = couple.hatedAttribute
+            let stage_accordion_bg_class, status_message, stage_class
+            
+            //Relationship final results
+            d = new element("div", "hidden m-1 mb-1 border border-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-stages-result`); d.create()
+            p = new element("p", "p-1 px-2 w-full", [], d.getNode()); p.create()
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [], p.getNode(), `accordion-relationship-${this.objectId}-stages-result-viability`); s.create()
+            s = new element("span", "ms-1 font-bold", [], p.getNode(), `accordion-relationship-${this.objectId}-stages-result-grade`); s.create()
+            s = new element("span", "hidden ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "relationship"))
+            p = new element("p", "p-1 px-2 flex w-full", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction level obtained"))
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [], p.getNode(), `accordion-relationship-${this.objectId}-stages-result-attraction`); s.create()
+
+            d = new element("div", "m-1 mb-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stages`); d.create()
+            //Stages details header
+            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.objectId}-stages-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs bg-gray-700 border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stages-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stages-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stages details"))
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //Stages details body
+            d1 = new element("div", `hidden p-1 px-1 mb-1 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stages-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stages-body`)
+            d1.create()
+            
+            //Stage 1: Strong interest of citizen
+            stage = 1
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate interest of citizen.
+            let citizen_much_interested_in_couple = citizen_wished_attributes.intersection(couple_own_attributes).size
+            attraction_percent_citizen = citizen_much_interested_in_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent += Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_much_interested_in_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_much_interested_in_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            /*
+            s2 = new element("span", `${stage_color} ms-1` , [], s1.getNode()); s2.create(); s2.appendContent("[")
+            s2 = new element("span", `${stage_color} ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent(accumulative_percent.toString() + "%")
+            s2 = new element("span", `${stage_color} ms-1`, [], s1.getNode()); s2.create(); s2.appendContent("]")
+            */
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 mb-1 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is very interested in"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "flex items-center", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 2: Strong interest of couple
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate interest of couple.
+            let couple_much_interested_in_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size
+            attraction_percent_couple = couple_much_interested_in_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_much_interested_in_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_much_interested_in_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is very interested in"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "flex items-center", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 3: Big love of citizen
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate big love of citizen.
+            let citizen_in_love_with_couple = citizen_wished_attributes.intersection(couple_own_attributes).size > 1
+            attraction_percent_citizen = citizen_in_love_with_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_in_love_with_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_in_love_with_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is in love with"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "font-bold", [],p.getNode()); s.create(); s.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }           
+            
+            //Stage 4: Big love of couple
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate big love of couple.
+            let couple_in_love_with_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size > 1
+            attraction_percent_couple = couple_in_love_with_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_in_love_with_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_in_love_with_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is in love with"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 5: Passion of citizen
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate passion of citizen.
+            let citizen_passionate_with_couple = citizen_wished_attributes.intersection(couple_own_attributes).size == 3
+            attraction_percent_citizen = citizen_passionate_with_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_passionate_with_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_passionate_with_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is passionate for"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 6: Passion of couple
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate passion of couple.
+            let couple_passionate_with_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size == 3
+            attraction_percent_couple = couple_passionate_with_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_passionate_with_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_passionate_with_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is passionate for"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 7: Compatibility of citizen
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate compatibility of citizen.
+            let citizen_feels_compatible_with_couple
+            attributes[language].forEach((attribute_class) => {
+                let class_attributes = new Set(attribute_class.attributes)
+                if(couple_own_attributes.intersection(class_attributes).size && citizen_wished_attributes.intersection(class_attributes).size){
+                    citizen_feels_compatible_with_couple = true
                 }
             })
+            attraction_percent_citizen = citizen_feels_compatible_with_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_compatible_with_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_compatible_with_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels compatible with"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 8: Compatibility of couple
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate compatibility of citizen.
+            let couple_feels_compatible_with_citizen
+            attributes[language].forEach((attribute_class) => {
+                let class_attributes = new Set(attribute_class.attributes)
+                if(citizen_own_attributes.intersection(class_attributes).size && couple_wished_attributes.intersection(class_attributes).size){
+                    couple_feels_compatible_with_citizen = true
+                }
+            })
+            attraction_percent_couple = couple_feels_compatible_with_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_compatible_with_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_compatible_with_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels compatible with"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 9: Citizen feels too young
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels too young.
+            let citizen_feels_too_young_for_couple = citizen_age_group < couple_age_group
+            attraction_percent_citizen = breeding_stage.percent[citizen_couple_age_group_difference]*1
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_too_young_for_couple ? "bg-red-900" : "bg-green-900"
+            status_message = citizen_feels_too_young_for_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels too young for"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.ageYears.toString())
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.ageYears.toString())
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 10: Couple feels too young
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels too young.
+            let couple_feels_too_young_for_citizen = couple_age_group < citizen_age_group
+            attraction_percent_couple = breeding_stage.percent[citizen_couple_age_group_difference]*1
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_too_young_for_citizen ? "bg-red-900" : "bg-green-900"
+            status_message = couple_feels_too_young_for_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels too young for"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.ageYears.toString())
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.ageYears.toString())
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 11: Citizen feels too old
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels too young.
+            let citizen_feels_too_old_for_couple = couple_age_group < citizen_age_group
+            attraction_percent_citizen = breeding_stage.percent[citizen_couple_age_group_difference]*1
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_too_old_for_couple ? "bg-red-900" : "bg-green-900"
+            status_message = citizen_feels_too_old_for_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels too old for"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.ageYears.toString())
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.ageYears.toString())
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 12: Couple feels too old
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels too young.
+            let couple_feels_too_old_for_citizen = citizen_age_group < couple_age_group
+            attraction_percent_couple = breeding_stage.percent[citizen_couple_age_group_difference]*1
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_too_old_for_citizen ? "bg-red-900" : "bg-green-900"
+            status_message = couple_feels_too_old_for_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels too old for"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.ageYears.toString())
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.ageYears.toString())
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 13: Both citizens feel age difference
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate how they both feel the age difference with the other.
+            attraction_percent_citizen = attraction_percent_couple = age_difference_attraction(citizen_couple_age_difference)
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = attraction_percent_citizen > 0 ? "bg-green-900" : (attraction_percent_citizen < 0 ? "bg-red-900" : "bg-gray-700")
+            status_message = attraction_percent_citizen >= 0 ? translate(language, "not fulfilled", "f", "capitalized") : translate(language, "fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feel their age difference"))
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.ageYears.toString())
+            s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "'s age:"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.ageYears.toString())
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent("=>")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent("=>")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 14: Citizen feels admiration
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels admiration.
+            let citizen_feels_admiration_for_couple = true
+            attributes[language].forEach((attribute_class) => {
+                let class_attributes = new Set(attribute_class.attributes)
+                citizen_feels_admiration_for_couple &&= couple_own_attributes.intersection(class_attributes).size
+            })
+            attraction_percent_citizen = citizen_feels_admiration_for_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_admiration_for_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_admiration_for_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels that"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is a complete person"))
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 15: Couple feels admiration
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels admiration.
+            let couple_feels_admiration_for_citizen = true
+            attributes[language].forEach((attribute_class) => {
+                let class_attributes = new Set(attribute_class.attributes)
+                couple_feels_admiration_for_citizen &&= citizen_own_attributes.intersection(class_attributes).size
+            })
+            attraction_percent_couple = couple_feels_admiration_for_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_admiration_for_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_admiration_for_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels that"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "is a complete person"))
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 16: Citizen feels physical attraction
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels physically attracted to couple.
+            let couple_physical_attributes = 0
+            attributes["EN"].forEach((attribute_class) => {
+                if(attribute_class.name == "Physical"){
+                    couple.attributes.forEach((attribute) => {
+                        couple_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                    })
+                }
+            })
+            let citizen_feels_physically_attracted_to_couple = couple_physical_attributes > 1
+            attraction_percent_citizen = citizen_feels_physically_attracted_to_couple ? breeding_stage.percent[couple_physical_attributes]*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_physically_attracted_to_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_physically_attracted_to_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels physically attracted to"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 17: Couple feels physical attraction
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels physically attracted to citizen.
+            let citizen_physical_attributes = 0
+            attributes["EN"].forEach((attribute_class) => {
+                if(attribute_class.name == "Physical"){
+                    citizen.attributes.forEach((attribute) => {
+                        citizen_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                    })
+                }
+            })
+            let couple_feels_physically_attracted_to_citizen = citizen_physical_attributes > 1
+            attraction_percent_couple = couple_feels_physically_attracted_to_citizen ? breeding_stage.percent[citizen_physical_attributes]*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_physically_attracted_to_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_physically_attracted_to_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels physically attracted to"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 18: Citizen feels mental attraction
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels mentally attracted to couple.
+            let couple_mental_attributes = 0
+            attributes["EN"].forEach((attribute_class) => {
+                if(attribute_class.name == "Mentals"){
+                    couple.attributes.forEach((attribute) => {
+                        couple_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                    })
+                }
+            })
+            let citizen_feels_mentally_attracted_to_couple = couple_mental_attributes > 1
+            attraction_percent_citizen = citizen_feels_mentally_attracted_to_couple ? breeding_stage.percent[couple_mental_attributes]*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_mentally_attracted_to_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_mentally_attracted_to_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels mentally attracted to"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 19: Couple feels mental attraction
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels mentally attracted to citizen.
+            let citizen_mental_attributes = 0
+            attributes["EN"].forEach((attribute_class) => {
+                if(attribute_class.name == "Mentals"){
+                    citizen.attributes.forEach((attribute) => {
+                        citizen_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                    })
+                }
+            })
+            let couple_feels_mentally_attracted_to_citizen = citizen_mental_attributes > 1
+            attraction_percent_couple = couple_feels_mentally_attracted_to_citizen ? breeding_stage.percent[citizen_mental_attributes]*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_mentally_attracted_to_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_mentally_attracted_to_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels mentally attracted to"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 20: Both citizens feel things in common
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate how they both feel having things in common with the other.
+            let common_attributes = citizen_own_attributes.intersection(couple_own_attributes)
+            let both_have_something_in_common = common_attributes.size > 0
+            attraction_percent_citizen = attraction_percent_couple = both_have_something_in_common ? breeding_stage.percent[common_attributes.size]*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = attraction_percent_citizen > 0 ? "bg-green-900" : "bg-gray-700"
+            status_message = attraction_percent_citizen >= 0 ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels things in common with"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent("=>")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent("=>")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+
+            //Stage 21: Citizen feels protected
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels protected.
+            let citizen_feels_protected_by_couple = couple_own_attributes.has(translate(language, "Protection"))
+            attraction_percent_citizen = citizen_feels_protected_by_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_protected_by_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_protected_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels protected by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 22: Couple feels protected
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels protected.
+            let couple_feels_protected_by_couple = citizen_own_attributes.has(translate(language, "Protection"))
+            attraction_percent_couple = couple_feels_protected_by_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_protected_by_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_protected_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels protected by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 23: Citizen feels supported
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels supported.
+            let citizen_feels_supported_by_couple = couple_own_attributes.has(translate(language, "Partnership"))
+            attraction_percent_citizen = citizen_feels_supported_by_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_supported_by_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_supported_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels supported by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 24: Couple feels supported
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels supported.
+            let couple_feels_supported_by_citizen = citizen_own_attributes.has(translate(language, "Partnership"))
+            attraction_percent_couple = couple_feels_supported_by_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_supported_by_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_supported_by_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels supported by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 25: Citizen feels delighted
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels supported.
+            let citizen_feels_delighted_by_couple = couple_own_attributes.has(translate(language, "Sympathy"))
+            attraction_percent_citizen = citizen_feels_delighted_by_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_delighted_by_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_delighted_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels delighted by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 26: Couple feels delighted
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels delighted.
+            let couple_feels_delighted_by_citizen = citizen_own_attributes.has(translate(language, "Sympathy"))
+            attraction_percent_couple = couple_feels_delighted_by_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_delighted_by_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_delighted_by_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels delighted by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 27: Citizen feels convinced
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels supported.
+            let citizen_feels_convinced_by_couple = couple_own_attributes.has(translate(language, "Charisma"))
+            attraction_percent_citizen = citizen_feels_convinced_by_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_feels_convinced_by_couple ? "bg-green-900" : "bg-gray-700"
+            status_message = citizen_feels_convinced_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels convinced by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 28: Couple feels convinced
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels delighted.
+            let couple_feels_convinced_by_citizen = citizen_own_attributes.has(translate(language, "Charisma"))
+            attraction_percent_couple = couple_feels_convinced_by_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_feels_convinced_by_citizen ? "bg-green-900" : "bg-gray-700"
+            status_message = couple_feels_convinced_by_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "feels convinced by"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 29: Citizen dislikes something
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if citizen feels supported.
+            let citizen_dislikes_something_of_couple = couple_own_attributes.has(citizen_hated_attribute)
+            attraction_percent_citizen = citizen_dislikes_something_of_couple ? breeding_stage.percent*1 : 0
+            accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = citizen_dislikes_something_of_couple ? "bg-red-900" : "bg-gray-700"
+            status_message = citizen_dislikes_something_of_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes something of"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_citizen){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_citizen.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${citizen.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_citizen.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            
+            //Stage 30: Couple feels convinced
+            stage++
+            breeding_stage = breeding_stages[stage-1]
+            //Evaluate if couple feels delighted.
+            let couple_dislikes_something_of_citizen = citizen_own_attributes.has(couple_hated_attribute)
+            attraction_percent_couple = couple_dislikes_something_of_citizen ? breeding_stage.percent*1 : 0
+            accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
+            accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
+            stage_accordion_bg_class = couple_dislikes_something_of_citizen ? "bg-red-900" : "bg-gray-700"
+            status_message = couple_dislikes_something_of_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            //header
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            b.create()
+            p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
+            s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
+            s1 = new element("span", `text-gray-300 ms-1` , [], p.getNode()); s1.create(); s1.appendContent(stage.toString())
+            s1 = new element("span", `text-gray-300`, [], p.getNode()); s1.create(); s1.appendContent(":")
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(couple.name.split(",")[0])
+            s1 = new element("span", `text-gray-300 ms-1 font-bold`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, breeding_stage.description))
+            s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
+            s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_couple >= 0 ? "+" : "") + attraction_percent_couple.toString() + "%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //body
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2.create()
+            p = new element("p", "", [], d2.getNode()); p.create();
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes something of"))
+            s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
+            p = new element("p", "flex justify-between", [], d2.getNode()); p.create();
+            s1 = new element("span", "", [], p.getNode()); s1.create()
+            s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
+            s = new element("span", "", [], s1.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", "ms-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), `breeding-stage-${stage}-status`); s.create(); s.appendContent(status_message)
+            p = new element("p", "", [], d2.getNode()); p.create();
+            if(attraction_percent_couple){
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction gained"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(attraction_percent_couple.toString() + "%")
+                s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(`[${couple.name.split(",")[0]} ${translate(language, "accumulates")}`)
+                s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(accumulative_percent_couple.toString() + "%")
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent("]")
+            } else {
+                s = new element("span", "text-red-400 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
+                s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
+            }
+            //Compute header results
+            document.getElementById(`accordion-relationship-${this.objectId}-stages-result`).classList.remove("hidden")
+            if(accumulative_percent >= 70){
+                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-viability`).innerHTML = translate(language, "have")
+                let relationship_grade = accumulative_percent <= 80 ? "a good" : (accumulative_percent <= 90 ? "an excellent" : "a wonderful")
+                document.getElementById(`accordion-relationship-${this.objectId}-stages-result`).querySelector(".hidden").classList.remove("hidden")
+                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-grade`).innerHTML = translate(language, relationship_grade)
+            } else {
+                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-viability`).innerHTML = translate(language, "cannot have")
+                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-grade`).innerHTML = translate(language, "a relationship, unfortunately.")
+            }
+            document.getElementById(`accordion-relationship-${this.objectId}-stages-result-attraction`).innerHTML = accumulative_percent + "%"
+            document.getElementById(`accordion-relationship-${this.objectId}-stages-result`).classList.add(accumulative_percent >= 70 ? "bg-green-900" : "bg-gray-800")
+            if(accumulative_percent < 70){
+                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-attraction`).classList.add("text-red-500")
+                document.querySelector(`#accordion-relationship-${this.objectId}-stages-result p:first-child`).classList.add("text-red-500")
+            }
+            document.getElementById(`relationship-${this.objectId}-attraction-group`).classList.add(accumulative_percent >= 70 ? "bg-green-700" : "bg-red-700")
+            document.getElementById(`relationship-${this.objectId}-attraction-icon`).classList.add(accumulative_percent >= 70 ? "fa-thumbs-up" : "fa-thumbs-down")
+            document.getElementById(`relationship-${this.objectId}-attraction-value`).innerHTML = accumulative_percent.toString()+"%"
+            
+            //Mutual knowledge process result
+            let parent_elem = document.querySelector(`#accordion-relationship-${this.objectId}-breeding-stages-body`)
+            let process_results = [], process_result_errors = []
+            let process_class = accumulative_percent >= 70 ? "bg-green-900" : "bg-red-800"
+            process_results[0] = accumulative_percent >= 70 ? "Successfully completed" : "Not completed"
+            process_result_errors[0] = accumulative_percent < 70 ? translate(language, "They both feel insufficient attraction") : false
+            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], parent_elem, `accordion-relationship-${this.objectId}-attraction-results`); d.create()
+            p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Process result"))
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", `ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(translate(language, process_results[0]))
+            if(process_result_errors[0]){
+                p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(process_result_errors[0])
+            }
+
+            //Build fertility process header
+            let parent_div = document.querySelector(`#accordion-relationship-${this.objectId}-breeding-processes`)
+            h2 = new element("h2", "mt-1", [], parent_div, `accordion-relationship-${this.objectId}-breeding-fertility-header`); h2.create()
+            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-breeding-fertility-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-breeding-fertility-body`}], h2.getNode())
+            b.create()
+            s = new element("span", "flex items-center w-full", [], b.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Fertility check process"))
+            s1 = new element("span", "grow flex justify-end", [], s.getNode()); s1.create()
+            s2 = new element("span", "px-1 border border-gray-300 text-white", [], s1.getNode(), `relationship-${this.objectId}-fertility-group`); s2.create()
+            i = new element("i", "fa font-bold", [], s2.getNode(), `relationship-${this.objectId}-fertility-icon`); i.create();
+            //s3 = new element("span", "font-bold", [], s2.getNode(), `relationship-${this.objectId}-fertility-value`); s3.create(); s3.appendContent("100%")
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            enable_accordion_click(b.getNode())
+            //Build fertility process body
+            d1 = new element("div", "hidden p-1 border border-gray-900 bg-gray-500", [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-breeding-fertility-header`}], parent_div, `accordion-relationship-${this.objectId}-breeding-fertility-body`)
+            d1.create()
+            let citizen_has_fertility = citizen.fertility > 0
+            let citizen_class = citizen_has_fertility ? "text-green-500" : "text-red-500"
+            let couple_has_fertility = couple.fertility > 0
+            let couple_class = couple_has_fertility ? "text-green-500" : "text-red-500"
+            let both_have_fertility = citizen_has_fertility && couple_has_fertility
+            let woman_fertile
+            d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-levels`); d.create()
+            p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name)
+            p = new element("p", "px-1 mb-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility level"))
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, ":"))
+            s = new element("span", `ms-1 font-bold ${citizen_class}`, [], p.getNode()); s.create(); s.appendContent(citizen.fertility.toString())
+            p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name)
+            p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility level"))
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, ":"))
+            s = new element("span", `ms-1 font-bold ${couple_class}`, [], p.getNode()); s.create(); s.appendContent(couple.fertility.toString())
+            if(both_have_fertility){
+                d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-week`); d.create()
+                p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+                let woman = citizen.gender.charAt(0) == "F" ? citizen : couple
+                let woman_fertility_week = woman.fertilityWeek
+                let current_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
+                current_week = !current_week ? 4 : current_week
+                woman_fertile = woman_fertility_week == current_week
+                let woman_class = woman_fertile ? "text-green-500" : "text-red-500"
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(woman.name)
+                p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", `ms-1 font-bold ${woman_class}`, [], p.getNode()); s.create(); s.appendContent(woman_fertility_week.toString())
+                p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Month week"))
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                s = new element("span", `ms-1 font-bold ${woman_class}`, [], p.getNode()); s.create(); s.appendContent(current_week.toString())
+                if(current_week != woman_fertility_week) {
+                    process_result_errors[1] = woman.name + " " + translate(language, "is not fertile this week")
+                    let remaining_weeks = Math.abs(current_week - woman_fertility_week)
+                    s = new element("span", "ms-1 ", [], p.getNode()); s.create(); s.appendContent("(")
+                    s = new element("span", `ms-1`, [], p.getNode()); s.create(); s.appendContent(translate(language, "will be fertile in"))
+                    s = new element("span", `ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(remaining_weeks.toString())
+                    s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, "weeks"))
+                    s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(")")
+                }
+            } else {
+                process_result_errors[1] = translate(language, "Someone in the couple is not fertile enough")
+            }
+            if(woman_fertile && both_have_fertility){
+                document.querySelector(`#relationship-${this.objectId}-fertility-group`).classList.add("bg-green-900")
+                document.querySelector(`#relationship-${this.objectId}-fertility-icon`).classList.add("fa-thumbs-up")
+                process_results[1] = "Successfully completed"
+                process_class = "bg-green-800"
+            } else {
+                document.querySelector(`#relationship-${this.objectId}-fertility-group`).classList.add("bg-red-700")
+                document.querySelector(`#relationship-${this.objectId}-fertility-icon`).classList.add("fa-thumbs-down")
+                process_results[1] = "Not completed"
+                process_class = "bg-red-800"
+            }
+
+            //Fertility process result
+            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-results`); d.create()
+            p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Process result"))
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+            s = new element("span", `ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(translate(language, process_results[1]))
+            if(process_result_errors[1]){
+                p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+                s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(process_result_errors[1])
+            }
+
+            //Final results
+            parent_div = document.getElementById(`relationship-${this.objectId}-tryBreeding`)
+            let final_results = process_results[0] == "Successfully completed" && process_results[1] == "Successfully completed" ? "Breeding is possible" : "It is not possible for the couple to breed"
+            process_class = final_results != "Breeding is possible" ? "bg-red-800" : "bg-green-900"
+            d = new element("div", `ms-1 me-1 mb-1 ${process_class} p-1 flex justify-between border border-gray-800 bg-gray-600 text-white grow`, [], parent_div, `accordion-relationship-${this.objectId}-fertility-results`); d.create()
+            d1 = new element("div", `grow`, [], d.getNode()); d1.create()
+            p = new element("p", "px-1 w-full", [], d1.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Final result"))
+            p = new element("p", "px-1 w-full", [], d1.getNode()); p.create()
+            s = new element("span", `font-bold`, [], p.getNode()); s.create(); s.appendContent(translate(language, final_results))
+            if(final_results != "Breeding is possible"){
+                process_result_errors.forEach((error) => {
+                    p = new element("p", "px-1 mt-1 w-full", [], d1.getNode()); p.create()
+                    s = new element("li", "px-2", [], p.getNode()); s.create(); s.appendContent(error)
+                })
+            } else {
+                d1 = new element("div", `grow flex items-center`, [], d.getNode()); d1.create()
+                p = new element("p", "px-1 text-center w-full", [], d1.getNode()); p.create()
+                b = new element("button", "bg-gray-800 border border-gray-400 text-gray-200 grow m-2 p-2", [{"key":"type", "value":"button"}], p.getNode()); b.create(); b.appendContent(translate(language, "Start breeding"))            }
         }
         if(this.panelName == "newRule"){
             //Specific New Production Rule panel
@@ -1093,6 +3000,10 @@ let accordionBuildings = (update = false) => {
 let accordionCitizens = (amount = 10) => {
     let citizenBuilder = (index) => {
         citizens[index] = {}
+        citizens[index].father = null
+        citizens[index].mother = null
+        citizens[index].children = []
+        citizens[index].couple = null
         //Build citizen accordion header
         h2 = new element("h2", "notificationUnread", [], d.getNode(), "accordion-citizen-"+index+"-header"); h2.create()
         b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-citizen-"+index+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-citizen-"+index+"-body"}], h2.getNode())
@@ -1159,7 +3070,7 @@ let accordionCitizens = (amount = 10) => {
         p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         //Citizen's role
-        citizens[index].role = citizens[index].rolekey = ""
+        citizens[index].role = citizens[index].rolekey = "unassigned"
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent("Role")
         s.appendHTML(": ")
         s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), "citizen-"+index+"-role"); s1.create(); s1.appendContent("Unassigned")
@@ -1196,13 +3107,50 @@ let accordionCitizens = (amount = 10) => {
         s.appendHTML(": ")
         s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), "citizen-"+index+"-outfit"); s1.create(); s1.appendContent("No")
         s.appendHTML(".")
-         //Citizen's fertility
-         citizens[index].fertility = 0
+        //Citizen's fertility
+        citizens[index].fertility = 0
         s = new element("span", "", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent("Fertility")
         s.appendHTML(": ")
         s1 = new element("span", "font-bold", [], s.getNode(), "citizen-"+index+"-fertility"); s1.create()
         s.appendHTML(".")
+        //Citizen's relationships title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "citizen-"+index+"-relationships-title"); d2.create()
+        p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Relationships")
+        //Citizen's parents title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "citizen-"+index+"-parents-title"); d2.create()
+        p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Parents")
+        //Citizen's parents area
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), "citizen-"+index+"-parents"); d2.create()
+        p = new element("p", "empty ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}/*, {"key":"gender", "value":"f"}*/], s.getNode()); s1.create()
+        s1.appendContent("No information")
+        //Citizen's children title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "citizen-"+index+"-children-title"); d2.create()
+        p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Children")
+        //Citizen's children area
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), "citizen-"+index+"-children"); d2.create()
+        p = new element("p", "empty ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"m"}], s.getNode()); s1.create()
+        s1.appendContent("None")
+        //Citizen's couple title
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "citizen-"+index+"-couple-title"); d2.create()
+        p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Current couple")
+        //Citizen's couple area
+        d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), "citizen-"+index+"-couple"); d2.create()
+        p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+        s1.appendContent("None")
         //Citizen's actions title
         d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-600 text-xs", [], d1.getNode(), "citizen-"+index+"-actions-title"); d2.create()
         p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
@@ -1234,6 +3182,26 @@ let accordionCitizens = (amount = 10) => {
         citizenBuilder(i)
     }
 }
+let accordionRelationships = () => {
+    //Build relationships accordion
+    let parentElem = document.getElementById("accordion-menu")
+    //Build relationships accordion header
+    h2 = new element("h2", "mt-3", [], parentElem, "accordion-menu-relationships"); h2.create()
+    b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-relationships-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-relationships-body"}], h2.getNode())
+    b.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Relationships")
+    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+    //Build relationships accordion body
+    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-relationships"}], parentElem, "accordion-menu-relationships-body"); d1.create()
+    //Relationships area
+    d2 = new element("div", "py-1 pb-0 border border-gray-200 border-gray-700 bg-gray-500", [], d1.getNode(), "citizen-relationships"); d2.create()
+    p = new element("p", "empty ms-1 mt-1 mb-2 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+    s1.appendContent("Not defined (Make couples in Citizen's panel)")
+}
+
 let get_citizen_by_index = (citizen_index) => {
     return citizens[citizen_index]
 }
@@ -1243,6 +3211,45 @@ let modal_citizen_info = (e) => {
     citizen.modalStyle = "small"
     modalPopup(citizen.name, "ViewCitizenInfo", citizen)
     modal.show()
+}
+let show_citizen_attributes = (e) => {
+    let parent_h2 = e.target.closest("h2")
+    if(e.target.classList.contains("fa-down")){
+        let citizen_index = e.target.getAttribute("data-index")
+        let citizen = get_citizen_by_index(citizen_index)
+        let own_attribute_1 = citizen.attributes[0]
+        let own_attribute_1_class = attributesColors["EN"][translate("EN", own_attribute_1, gender="", format="", changeLanguage=false)]
+        let own_attribute_2 = citizen.attributes[1]
+        let own_attribute_2_class = attributesColors["EN"][translate("EN", own_attribute_2, gender="", format="", changeLanguage=false)]
+        let own_attribute_3 = citizen.attributes[2]
+        let own_attribute_3_class = attributesColors["EN"][translate("EN", own_attribute_3, gender="", format="", changeLanguage=false)]
+        let wished_attribute_1 = citizen.wishedAttributes[0]
+        let wished_attribute_1_class = attributesColors["EN"][translate("EN", wished_attribute_1, gender="", format="", changeLanguage=false)]
+        let wished_attribute_2 = citizen.wishedAttributes[1]
+        let wished_attribute_2_class = attributesColors["EN"][translate("EN", wished_attribute_2, gender="", format="", changeLanguage=false)]
+        let wished_attribute_3 = citizen.wishedAttributes[2]
+        let wished_attribute_3_class = attributesColors["EN"][translate("EN", wished_attribute_3, gender="", format="", changeLanguage=false)]
+        let hated_attribute = citizen.hatedAttribute
+        let hated_attribute_class = attributesColors["EN"][translate("EN", hated_attribute, gender="", format="", changeLanguage=false)]
+        d = new element("div", "attributes p-1 bg-gray-500 border border-gray-700", [], parent_h2); d.create()
+        p = new element("p", "grow p-1 flex items-center gap-2", [], d.getNode()); p.create()
+        i = new element("i", "text-sm fa fa-circle-user", [], p.getNode()); i.create()
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${own_attribute_1_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(own_attribute_1)
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${own_attribute_2_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(own_attribute_2)
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${own_attribute_3_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(own_attribute_3)
+        p = new element("p", "grow p-1 flex items-center gap-2", [], d.getNode()); p.create()
+        i = new element("i", "text-sm fa fa-heart", [], p.getNode()); i.create()
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${wished_attribute_1_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(wished_attribute_1)
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${wished_attribute_2_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(wished_attribute_2)
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${wished_attribute_3_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(wished_attribute_3)
+        p = new element("p", "grow p-1 flex items-center gap-2", [], d.getNode()); p.create()
+        i = new element("i", "text-sm fa fa-ban", [], p.getNode()); i.create()
+        s = new element("span", `px-1 font-bold text-xs border border-gray-800 ${hated_attribute_class} bg-gray-600`, [], p.getNode()); s.create(); s.appendContent(hated_attribute)
+    } else {
+        parent_h2.querySelector(".attributes").remove()
+    }
+    e.target.classList.toggle("fa-down")
+    e.target.classList.toggle("fa-up")
 }
 let show_active_production_rules = () => {
     let show_workers_assigned = (parent_div, workers_label, rule_id, req_index) => {
@@ -1983,16 +3990,19 @@ let modalPopup = (modalTitle, modalType, modalData = {}) => {
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent(translate(language, "Atributos propios"))
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         modalData.attributes.forEach((attribute) => {
-            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors[language][attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
+            let eng_attribute = translate("EN", attribute, gender = "", formatResult = "", changeLanguage = false)
+            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
         })
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributos deseados")
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         modalData.wishedAttributes.forEach((attribute) => {
-            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors[language][attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
+            let eng_attribute = translate("EN", attribute, gender = "", formatResult = "", changeLanguage = false)
+            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
         })
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributo no deseado")
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
-        s = new element("span", `mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors[language][modalData.hatedAttribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
+        let eng_attribute = translate("EN", modalData.hatedAttribute, gender = "", formatResult = "", changeLanguage = false)
+        s = new element("span", `mt-1 px-2 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
     //Build modal pop up structure

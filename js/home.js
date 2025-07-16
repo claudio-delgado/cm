@@ -217,6 +217,15 @@ let lifeInterval = setInterval(() => {
                     })
                 }
             })
+            //Update month week in every relationship, and fertility week color if necessary
+            document.querySelectorAll("p.fertility").forEach((elem) => {
+                let fertility_week = elem.querySelector(".fertility-week.value").innerHTML
+                let month_week = document.getElementById("currentWeek").innerHTML
+                elem.querySelector(".fertility-week.month-week").innerHTML = month_week
+                if(fertility_week == month_week){
+                    elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.toggle("text-green-500"))
+                }
+            })
         }
         //clearInterval(lifeInterval)
     }
@@ -710,19 +719,29 @@ let getRandomAttributes = (language, amount = 3, excludeThis = []) => {
     }
     return citizenAttributes
 }
+//For each citizen in memory, fill its features with random values.
 let fillCitizenInfo = () => {
-    //Cargar atributos propios aleatorios para los 10 habitantes.
-    //Generar también edades aletatorias.
+    //Load random own attributes values for all 10 citizens.
+    //Generate random ages too.
     let attributeGroups = JSON.parse(JSON.stringify(attributes[language]))
     let citizenOwnAttributes = [], citizenWishedAttributes = [], citizenHatedAttribute
-    let citizenBirthweeks, citizenFertility, citizenWeekOfDeath
+    let citizenBirthweeks, citizenFertility, citizenFertilityWeek, citizenWeekOfDeath
     //Iterate over each citizen
     for(h=1; h<=citizensAmount; h++){
-        citizenBirthweeks = /*1092*/0+ Math.floor(Math.random() * (3800-0)/*(1820-1092)*/)
+        //Set id.
+        citizens[h].id = h
+        //Set unassigned role
+        citizens[h].role = "unassigned"
+        //Random ages in adult ranges.
+        citizenBirthweeks = 1092+ Math.floor(Math.random() * (1820-1092)) //Random ages only adults
+        //citizenBirthweeks = 0+ Math.floor(Math.random() * (3800-0)) //Random ages in all ranges
+        //citizenBirthweeks = 729 + Math.floor(Math.random() * (3300-729)) //Random ages from teens on (not so ancient)
         citizenWeekOfDeath = 3120 + Math.floor(Math.random() * (4420-3120))
         citizens[h].deathWeek = citizenWeekOfDeath
         citizenFertility = 10 + Math.floor(Math.random() * 90)
+        citizenFertilityWeek = citizens[h].gender.charAt(0) == "F" ? 1 + Math.floor(Math.random() * 4) : null
         citizens[h].fertility = citizenFertility
+        citizens[h].fertilityWeek = 1//citizenFertilityWeek
         citizenOwnAttributes = getRandomAttributes(language)
         citizens[h].attributes = citizenOwnAttributes
         citizenWishedAttributes = getRandomAttributes(language)
@@ -759,6 +778,7 @@ addNews("Welcome")
 accordionColony()
 accordionBuildings()
 accordionCitizens(citizensAmount)
+accordionRelationships()
 accordion_landforms()
 accordionExpeditions()
 
@@ -926,7 +946,303 @@ let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists
         modal.show()
     }
 }
-
+//Relationship citizen manipulation
+let add_parent_to_citizen = (a_parent, a_citizen, type = "mother") => {
+    if(type == "father") citizens[a_citizen.id].father = a_parent.id
+    if(type == "mother") citizens[a_citizen.id].mother = a_parent.id
+    //Add parents to specific panel.
+    if(document.querySelector(`#citizen-${a_citizen.id}-parents p.empty`) != undefined){
+        //Remove "None" message.
+        document.querySelector(`#citizen-${a_citizen.id}-parents p.empty`).remove()
+    }
+    if(document.querySelector(`#citizen-${a_citizen.id}-parents p.${type}`) != undefined){
+        //Remove previous parent. (It will be replaced by new one)
+        document.querySelector(`#citizen-${a_citizen.id}-parents p.${type}`).remove()
+    }
+    let parents_div = document.querySelector(`#citizen-${a_citizen.id}-parents`)
+    //Add parent.
+    p = new element("p", `${type} ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], parents_div); p.create()
+    h2 = new element("h2", "grow", [], p.getNode()); h2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    s = new element("span", "", [], d2.getNode()); s.create()
+    let gender_class = a_parent.gender.charAt(0) == "F" ? "venus" : "mars"
+    let gender_color = a_parent.gender.charAt(0) == "F" ? "red" : "blue"
+    i = new element("i", `fa fa-${gender_class} text-${gender_color}-500`, [], s.getNode()); i.create()
+    s1 = new element("span", `font-bold bg-gray-600 border border-gray-500 text-${gender_color}-400 px-1 ms-1`, [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
+    s1.appendContent(translate(language, type, "", "capitalized"))
+    s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_parent.name)
+    s = new element("span", "", [], d2.getNode()); s.create()
+    i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_parent.id}], s.getNode(), `parent-${a_parent.id}-view-info`); i.create()
+    i.getNode().addEventListener("click", modal_citizen_info)
+}
+let add_child_to_citizen = (a_child, a_citizen) => {
+    citizens[a_citizen.id].children.push(a_child.id)
+    //Add child to specific panel.
+    if(document.querySelector(`#citizen-${a_citizen.id}-children p.empty`) != undefined){
+        //Remove "None" message.
+        document.querySelector(`#citizen-${a_citizen.id}-children p.empty`).remove()
+    }
+    let children_div = document.querySelector(`#citizen-${a_citizen.id}-children`)
+    //Add child.
+    p = new element("p", "ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], children_div); p.create()
+    h2 = new element("h2", "grow", [], p.getNode()); h2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    s = new element("span", "", [], d2.getNode()); s.create()
+    let gender_class = a_child.gender.charAt(0) == "F" ? "venus" : "mars"
+    let gender_color = a_child.gender.charAt(0) == "F" ? "red" : "blue"
+    i = new element("i", `fa fa-${gender_class} text-${gender_color}-500`, [], s.getNode()); i.create()
+    let child_type = a_child.gender.charAt(0) == "F" ? "Daughter" : "Son"
+    s1 = new element("span", `font-bold bg-gray-600 border border-gray-500 text-${gender_color}-400 px-1 ms-1`, [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
+    s1.appendContent(translate(language, child_type, "", "capitalized"))
+    s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_child.name)
+    s = new element("span", "", [], d2.getNode()); s.create()
+    i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_child.id}], s.getNode(), `child-${a_child.id}-view-info`); i.create()
+    i.getNode().addEventListener("click", modal_citizen_info)
+}
+let cancel_relationship = (e) => {
+    let citizen_id = e.target.getAttribute("data-citizen-id")
+    let couple_id = citizens[citizen_id].couple
+    //Remove couple citizens from memory array.
+    citizens[citizen_id].couple = null
+    citizens[couple_id].couple = null
+    //Remove couple citizens from both panels.
+    //Panel citizen's couple
+    let couple_div = document.querySelector(`#citizen-${citizen_id}-couple`)
+    couple_div.querySelector("p").remove()
+    p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], couple_div); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+    s1.appendContent(translate(language, "None", "f", "capitalized"))
+    //Panel couples's couple
+    couple_div = document.querySelector(`#citizen-${couple_id}-couple`)
+    couple_div.querySelector("p").remove()
+    p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], couple_div); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+    s1.appendContent(translate(language, "None", "f", "capitalized"))
+    //Remove relationship if it exists.
+    document.querySelectorAll(`[data-citizen-1="${citizen_id}"], [data-citizen-2="${citizen_id}"]`).forEach((elem) => {
+        elem.remove()
+        let relationships_div = document.getElementById("citizen-relationships")
+        //If no relationships left, show "Not defined" message.
+        if(!relationships_div.children.length){
+            p = new element("p", "empty ms-1 mt-1 mb-2 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], relationships_div); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+            s1.appendContent(translate(language, "Not defined (Make couples in Citizen's panel)"))
+        }
+    })
+}
+let try_breeding = (e) => {
+    let relationship_index = e.target.closest("button").id.split("-")[1]
+    let objectData = {"language": language, "gender": gender, "parentId": `#accordion-relationship-${relationship_index}-body`}
+    //Build panel
+    let tryBreedingPanel = new panel("tryBreeding", objectData, "relationship", relationship_index, "actions")
+    tryBreedingPanel.hidePreviousOptions()
+    tryBreedingPanel.buildPanel()
+    currently_used_panel = tryBreedingPanel
+}
+let assign_couple_to_citizen = (e) => {
+    let couple_id = e.target.id.split("-")[2]
+    //Mark assign icon.
+    document.getElementById(`couple-citizen-${couple_id}-assign`).classList.remove("fa-square")
+    document.getElementById(`couple-citizen-${couple_id}-assign`).classList.add("text-base", "text-green-400", "fa-square-check")
+    setTimeout(() => {
+        let citizen_id = e.target.closest(".searchCouple").id.split("-")[1]
+        add_couple_to_citizen(citizens[couple_id], citizens[citizen_id])
+        //Remove all candidates from panel.
+        currently_used_panel.removePanel()
+        currently_used_panel.showPreviousOptions()
+    }, "500")
+}
+let add_couple_to_citizen = (a_couple, a_citizen) => {
+    citizens[a_citizen.id].couple = a_couple.id
+    citizens[a_couple.id].couple = a_citizen.id
+    //Add couple to specific citizen panel.
+    if(document.querySelector(`#citizen-${a_citizen.id}-couple p.empty`) != undefined){
+        //Remove "None" message.
+        document.querySelector(`#citizen-${a_citizen.id}-couple p.empty`).remove()
+    }
+    let couple_div = document.querySelector(`#citizen-${a_citizen.id}-couple`)
+    //Add couple to citizen.
+    p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
+    h2 = new element("h2", "grow", [], p.getNode(), `#citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    s = new element("span", "", [], d2.getNode()); s.create()
+    let couple_gender_class = a_couple.gender.charAt(0) == "F" ? "venus" : "mars"
+    let couple_gender_color = a_couple.gender.charAt(0) == "F" ? "red" : "blue"
+    i = new element("i", `fa fa-${couple_gender_class} text-${couple_gender_color}-500`, [], s.getNode()); i.create()
+    s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_couple.name)
+    s = new element("span", "", [], d2.getNode()); s.create()
+    i = new element("i", "fa fa-eye me-2", [{"key":"data-index", "value":a_couple.id}], s.getNode(), `couple-${a_couple.id}-view-info`); i.create()
+    i.getNode().addEventListener("click", modal_citizen_info)
+    i = new element("i", "fa fa-ban", [{"key":"data-citizen-id", "value":a_couple.id}], s.getNode(), `couple-${a_couple.id}-cancel-relationship`); i.create()
+    i.getNode().addEventListener("click", cancel_relationship)
+    //Add citizen as couple to specific couple panel.
+    if(document.querySelector(`#citizen-${a_couple.id}-couple p.empty`) != undefined){
+        //Remove "None" message.
+        document.querySelector(`#citizen-${a_couple.id}-couple p.empty`).remove()
+    }
+    couple_div = document.querySelector(`#citizen-${a_couple.id}-couple`)
+    //Add citizen to couple.
+    p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
+    h2 = new element("h2", "grow", [], p.getNode()); h2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    s = new element("span", "", [], d2.getNode()); s.create()
+    let citizen_is_woman = a_citizen.gender.charAt(0) == "F"
+    let couple_is_woman = !citizen_is_woman
+    let citizen_gender_class = citizen_is_woman ? "venus" : "mars"
+    let citizen_gender_color = citizen_is_woman ? "red" : "blue"
+    i = new element("i", `fa fa-${citizen_gender_class} text-${citizen_gender_color}-500`, [], s.getNode()); i.create()
+    s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_citizen.name)
+    s = new element("span", "", [], d2.getNode()); s.create()
+    i = new element("i", "fa fa-eye me-2", [{"key":"data-index", "value":a_citizen.id}], s.getNode(), `couple-${a_citizen.id}-view-info`); i.create()
+    i.getNode().addEventListener("click", modal_citizen_info)
+    i = new element("i", "fa fa-ban", [{"key":"data-citizen-id", "value":a_citizen.id}], s.getNode(), `couple-${a_citizen.id}-cancel-relationship`); i.create()
+    i.getNode().addEventListener("click", cancel_relationship)
+    
+    //Build relationship.
+    //Check if there is no relationship yet.
+    let relationships_div = document.querySelector("#citizen-relationships")
+    let relationship_index = 1
+    if(![undefined, null].includes(relationships_div.querySelector("p.empty"))){
+        //Remove "None" message.
+        relationships_div.querySelector("p.empty").remove()
+    } else {
+        relationship_index = relationships_div.querySelectorAll("div").length + 1
+    }
+    //Build new relationship accordion.
+    d = new element("div", "mx-1 mb-1", [{"key":"data-accordion","value":"collapse"}, {"key":"data-citizen-1","value":a_citizen.id}, {"key":"data-citizen-2","value":a_couple.id}], relationships_div, `accordion-relationship-${relationship_index}`); d.create()
+    h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${relationship_index}-title`); h2.create()
+    b = new element("button", "text-xs unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 border border-gray-700 text-gray-400 hover:bg-gray-100 hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${relationship_index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${relationship_index}-body`}], h2.getNode())
+    b.create()
+    s = new element("span", "flex items-center", [], b.getNode()); s.create(); 
+    i = new element("i", `fa fa-${citizen_gender_class} text-${citizen_gender_color}-400`, [], s.getNode()); i.create(); 
+    s1 = new element("span", `ms-1 font-bold text-${citizen_gender_color}-400`, [], s.getNode()); s1.create(); s1.appendContent(a_citizen.name.split(",")[0])
+    s1 = new element("span", "ms-2 text-gray-300", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "y"))
+    i = new element("i", `ms-2 fa fa-${couple_gender_class} text-${couple_gender_color}-400`, [], s.getNode()); i.create(); 
+    s1 = new element("span", `ms-1 font-bold text-${couple_gender_color}-400`, [], s.getNode()); s1.create(); s1.appendContent(a_couple.name.split(",")[0])
+    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+    //Build new relationship accordion body
+    d1 = new element("div", "hidden text-xs text-gray-200 border border-gray-800 bg-gray-600", [{"key":"aria-labelledby","value":`accordion-relationship-${relationship_index}-title`}], d.getNode(), `accordion-relationship-${relationship_index}-body`); d1.create()
+    //Citizen's information
+    d2 = new element("div", "mt-1 mb-1 mx-1 px-2 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
+    p = new element("p", "flex", [], d2.getNode()); p.create()
+    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) == "F" ? "she is" : "he is", "", "capitalized"))
+    s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(a_citizen.name)
+    p = new element("p", "fertility flex items-center text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility", "", "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    let fertility_color = a_citizen.fertility >= 70 ? "text-green-500" : (a_citizen.fertility >= 45 ? "text-yellow-500" : (a_citizen.fertility >= 25 ? "text-orange-500" : (a_citizen.fertility >= 10 ? "text-red-400" : ("text-red-500"))))
+    s = new element("span", `fertility ms-1 font-bold ${fertility_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.fertility.toString())
+    if(citizen_is_woman){
+        let month_week = (document.getElementById("currentWeek").innerHTML*1 % 4) ? document.getElementById("currentWeek").innerHTML*1 % 4 : 4
+        let comparison_icon = month_week == a_citizen.fertilityWeek ? "fa-equals" : "fa-not-equal"
+        let fertility_class = month_week == a_citizen.fertilityWeek ? "text-green-500" : ""
+        s = new element("span", "me-1", [], p.getNode()); s.create(); s.appendContent(",")
+        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week", "", "capitalized"))
+        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
+        s = new element("span", `fertility-week ${fertility_class} value ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(a_citizen.fertilityWeek.toString())
+        i = new element("i", `fertility-week mx-1 ${fertility_class} fa ${comparison_icon}`, [], p.getNode()); i.create()
+        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week", "", "capitalized"))
+        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
+        s = new element("span", `fertility-week ${fertility_class} month-week ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(month_week.toString())
+    }
+    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
+    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) == "F" ? "her attributes are" : "his attributes are", a_citizen.gender.charAt(0), "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
+    text_color = attributesColors[language][a_citizen.attributes[0]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[0])
+    text_color = attributesColors[language][a_citizen.attributes[1]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[1])
+    text_color = attributesColors[language][a_citizen.attributes[2]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[2])
+    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) == "F" ? "her wished attributes are" : "his wished attributes are", a_citizen.gender.charAt(0), "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
+    text_color = attributesColors[language][a_citizen.wishedAttributes[0]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[0])
+    text_color = attributesColors[language][a_citizen.wishedAttributes[1]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[1])
+    text_color = attributesColors[language][a_citizen.wishedAttributes[2]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[2])
+    p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes attribute", "", "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    text_color = attributesColors[language][a_citizen.hatedAttribute]
+    s = new element("span", `ms-1 px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.hatedAttribute)
+    //Couple's information
+    d2 = new element("div", "mt-1 mb-1 mx-1 px-2 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
+    p = new element("p", "flex", [], d2.getNode()); p.create()
+    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "and", "", "capitalized"))
+    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, !couple_is_woman ? "he is" : "she is"))
+    s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(a_couple.name)   
+    p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility", "", "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    fertility_color = a_couple.fertility >= 70 ? "text-green-500" : (a_couple.fertility >= 45 ? "text-yellow-500" : (a_couple.fertility >= 25 ? "text-orange-500" : (a_couple.fertility >= 10 ? "text-red-400" : ("text-red-500"))))
+    s = new element("span", `fertility ms-1 font-bold ${fertility_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertility.toString())
+    if(couple_is_woman){
+        let month_week = (document.getElementById("currentWeek").innerHTML*1 % 4) ? document.getElementById("currentWeek").innerHTML*1 % 4 : 4
+        let comparison_icon = month_week == a_couple.fertilityWeek ? "fa-equals" : "fa-not-equal"
+        let fertility_class = month_week == a_couple.fertilityWeek ? "text-green-500" : ""
+        s = new element("span", "me-1", [], p.getNode()); s.create(); s.appendContent(",")
+        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week", "", "capitalized"))
+        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
+        s = new element("span", `fertility-week ${fertility_class} value ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertilityWeek.toString())
+        i = new element("i", `fertility-week mx-1 ${fertility_class} fa ${comparison_icon}`, [], p.getNode()); i.create()
+        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week", "", "capitalized"))
+        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
+        s = new element("span", `fertility-week ${fertility_class} month-week ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(month_week.toString())
+    }
+    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
+    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, couple_is_woman ? "her attributes are" : "his attributes are", a_couple.gender.charAt(0), "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
+    text_color = attributesColors[language][a_couple.attributes[0]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[0])
+    text_color = attributesColors[language][a_couple.attributes[1]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[1])
+    text_color = attributesColors[language][a_couple.attributes[2]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[2])
+    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, couple_is_woman ? "her wished attributes are" : "his wished attributes are", a_couple.gender.charAt(0), "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
+    text_color = attributesColors[language][a_couple.wishedAttributes[0]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[0])
+    text_color = attributesColors[language][a_couple.wishedAttributes[1]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[1])
+    text_color = attributesColors[language][a_couple.wishedAttributes[2]]
+    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[2])
+    p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes attribute", "", "capitalized"))
+    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+    text_color = attributesColors[language][a_couple.hatedAttribute]
+    s = new element("span", `ms-1 px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.hatedAttribute)
+    enable_accordion_click(b.getNode())
+    //Actions available
+    //Title
+    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), `relationship-${relationship_index}-actions-title`); d2.create()
+    p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+    //Area
+    d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), `relationship-${relationship_index}-actions`); d2.create()
+    p = new element("p", "flex w-100 justify-between p-1 gap-1 text-gray-300", [], d2.getNode()); p.create()
+    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `relationship-${relationship_index}-reproduce`); b.create()
+    s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Try breeding"))
+    b.getNode().addEventListener("click", try_breeding)
+    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `relationship-${relationship_index}-breakup`); b.create()
+    s = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"data-citizen-id", "value":a_citizen.id}], b.getNode()); s.create(); s.appendContent(translate(language, "Break up relationship"))
+    b.getNode().addEventListener("click", cancel_relationship)
+}
 
 let handleToggleHorse = (e) => {
     e.target.removeEventListener("click", handleToggleHorse)
@@ -1189,7 +1505,38 @@ let handleToggleWorker = (e) => {
     assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 8;
     assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
-    /**/
+    //Test familiar relationship between citizens
+    /*
+    add_parent_to_citizen(citizens[6], citizens[1], "father")   //6 padre de 1
+    add_child_to_citizen(citizens[1], citizens[6])              //1 hija de 6
+    add_parent_to_citizen(citizens[6], citizens[7], "father")   //6 padre de 7
+    add_child_to_citizen(citizens[7], citizens[6])              //7 hijo de 6
+    add_parent_to_citizen(citizens[3], citizens[1], "mother")   //3 madre de 1
+    add_child_to_citizen(citizens[1], citizens[3])              //1 hija de 3
+    add_parent_to_citizen(citizens[3], citizens[7], "mother")   //3 madre de 7
+    add_child_to_citizen(citizens[7], citizens[3])              //7 hijo de 3
+    add_parent_to_citizen(citizens[2], citizens[6])             //2 madre de 6
+    add_child_to_citizen(citizens[6], citizens[2])              //6 hijo de 2
+    add_parent_to_citizen(citizens[2], citizens[4])             //2 madre de 4
+    add_child_to_citizen(citizens[4], citizens[2])              //4 hija de 2
+    add_parent_to_citizen(citizens[2], citizens[9])             //2 madre de 9
+    add_child_to_citizen(citizens[9], citizens[2])              //9 hijo de 2
+    add_parent_to_citizen(citizens[4], citizens[5])             //4 madre de 5
+    add_child_to_citizen(citizens[5], citizens[4])              //5 hija de 4
+    add_parent_to_citizen(citizens[8], citizens[5], "father")   //8 padre de 5
+    add_child_to_citizen(citizens[5], citizens[8])              //5 hija de 8
+    add_couple_to_citizen(citizens[3], citizens[6])             //3 pareja de 6
+    */
+    /*
+             --- 9h
+             |
+             --- 4m
+        2m --|   |------> 5m
+             |   8h
+             --- 6h   --- 1m
+                 |--->|    
+                 3m   --- 7h
+    */
     //daysPassed = 6
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

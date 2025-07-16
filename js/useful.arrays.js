@@ -1604,4 +1604,37 @@ var water_reservoirs = {
     }
 }
 
-var citizens = []
+var breeding_stages = [
+    {"stage": 1, "description": "Strong interest of", "percent": "50"}, //45 40
+    {"stage": 2, "description": "Strong interest of", "percent": "50"}, //45 40
+    {"stage": 3, "description": "Big love of", "percent": "40"}, //30 
+    {"stage": 4, "description": "Big love of", "percent": "40"}, //30
+    {"stage": 5, "description": "Great passion of", "percent": "30"}, //25
+    {"stage": 6, "description": "Great passion of", "percent": "30"}, //25
+    {"stage": 7, "description": "Compatibility of", "percent": "10"}, //5
+    {"stage": 8, "description": "Compatibility of", "percent": "10"}, //5
+    {"stage": 9, "description": "Is too young", "percent": {0: "2.5", 1: "-8", 2: "-14", 3: "-21"}}, //-6 -12 -15
+    {"stage": 10, "description": "Is too young", "percent": {0: "2.5", 1: "-8", 2: "-14", 3: "-21"}}, //-6 -12 -15
+    {"stage": 11, "description": "Is too old", "percent": {0: "2.5", 1: "-5", 2: "-9", 3: "-14"}}, //-3 -7 -10
+    {"stage": 12, "description": "Is too old", "percent": {0: "2.5", 1: "-5", 2: "-9", 3: "-14"}}, //-3 -7 -10
+    {"stage": 13, "description": "They feel age difference"},
+    
+    {"stage": 14, "description": "Great admiration of", "percent": "20"}, //15 20
+    {"stage": 15, "description": "Great admiration of", "percent": "20"}, //15 20
+    {"stage": 16, "description": "Physical attraction of", "percent": {2: "15", 3: "40"}},
+    {"stage": 17, "description": "Physical attraction of", "percent": {2: "15", 3: "40"}},
+    {"stage": 18, "description": "Mental attraction of", "percent": {2: "12", 3: "35"}},
+    {"stage": 19, "description": "Mental attraction of", "percent": {2: "12", 3: "35"}},
+    {"stage": 20, "description": "They feel things in common", "percent": {1: "5", 2: "15", 3: "35"}},
+    
+    {"stage": 21, "description": "Feels protected", "percent": "25"}, //20 15
+    {"stage": 22, "description": "Feels protected", "percent": "25"}, //20 15
+    {"stage": 23, "description": "Feels supported", "percent": "30"}, //25 20
+    {"stage": 24, "description": "Feels supported", "percent": "30"}, //25 20
+    {"stage": 25, "description": "Feels delighted", "percent": "40"}, //35 30 //encantado/a
+    {"stage": 26, "description": "Feels delighted", "percent": "40"}, //35 30
+    {"stage": 27, "description": "Feels convinced", "percent": "50"}, //50 40
+    {"stage": 28, "description": "Feels convinced", "percent": "50"}, //50 40
+    {"stage": 29, "description": "Dislikes something", "percent": "-25"}, //-30 -35
+    {"stage": 30, "description": "Dislikes something", "percent": "-25"}, //-30 -35
+]

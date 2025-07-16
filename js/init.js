@@ -1,5 +1,6 @@
 //Long term global variables
 var language = "ES", citizensAmount, citizensFemaleAmount, citizensMaleAmount
+var citizens = []
 var daysPassed = 0, dayPassed = weekPassed = false, searchingZone = zoneSearched = lifeStarted = false
 var colony_water_reservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0, huntingMountDiscovered = false
 var wagonsAmount, horsesAmount
@@ -8,6 +9,7 @@ var rule_last_id = 0
 //Constants
 const zoneSearchHoursNeeded = 1
 const minimalExpeditionDuration = 0 //In game hours
+const same_age_in_relationship_attraction_percent = 5
 //Expeditionaries xp gain
 const resourcesExpeditionSuccessXPGain = 1
 const resourcesExpeditionFailXPGain = 0.25
@@ -17,6 +19,7 @@ const ruinsExpeditionFailXPGain = 0.1
 var showModalZoneSearched = true
 //Temporary global variables
 var citizenIndex, expeditionIndex = 1, rule_id = 1
+var currently_used_panel
 
 //Ruins expedition resource or product loots probabilities
 var ruinsExpeditionResourcesFoundProbability = 0.6, ruinsExpeditionProductsFoundProbability = 0.4

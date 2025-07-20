@@ -136,7 +136,7 @@ let naming = {
                 "La eficaz", "Ébano", "Espina", "Eclipse", "La eficaz", "La eficiente", "Elania", "La elegante", "La encantadora", 
                 "Enigma", "La enorme", "La entusiasta", "Equidna", "Eriza", "Escarlata", "Escorpiona", "La escritora", "Escultura", 
                 "Esfera", "Esmeralda", "Espejo", "La espléndida", "Estaño", "La estoica", "Estrella", "La estudiosa", "Eucalipto",
-                "El eterno", "La extraordinaria", "Fábula", "La fabulosa", "Faisán", "La famosa", "La fanática", "La fantástica", 
+                "La eterna",, "La extraordinaria", "Fábula", "La fabulosa", "Faisán", "La famosa", "La fanática", "La fantástica", 
                 "Felicidad", "Felina", "La feroz", "Fiesta", "La filósofa", "Flamenca", "Flor", "Flúor", "Foco", "Fogata", "Fósforo",
                 "La frágil", "Frambuesa", "La frenética", "Fresa", "Fresia", "Fresno", "Frontera", "Frutilla", "Fucsia", "Fuego", 
                 "La fuerte", "Galaxia", "Galia", "La ganadora", "Gardenia", "Garza", "Gatuna", "Gaviota", "La generosa", "La gentil", 
@@ -177,7 +177,7 @@ let naming = {
                 "El eficaz", "Ébano", "Espino", "Eclipse", "El eficaz", "El eficiente", "Elanio", "El elegante", "El encantador", 
                 "Enigma", "El enorme", "El entusiasta", "Equidna", "Erizo", "Escarlata", "Escorpión", "El escritor", "Escultura", 
                 "Esfera", "Esmeralda", "Espejo", "El espléndido", "Estaño", "El estoico", "Estrella", "El estudioso", "Eucalipto", 
-                "La eterna", "El extraordinario", "Fábula", "El fabuloso", "Faisán", "El famoso", "El fanático", "El fantástico", 
+                "El eterno", "El extraordinario", "Fábula", "El fabuloso", "Faisán", "El famoso", "El fanático", "El fantástico", 
                 "Felicidad", "Felino", "El feroz", "Fiesta", "El filósofo", "Flamenco", "Flor", "Flúor", "Foca", "Fogata", "Fósforo",
                 "El frágil", "Frambuesa", "El frenético", "Fresa", "Fresia", "Fresno", "Frontera", "Frutilla", "Fucsia", "Fuego",
                 "El fuerte", "Galaxia", "Galio", "El ganador", "Gardenia", "Garza", "Gatuno", "Gaviota", "El generoso", "El gentil", 
@@ -1638,3 +1638,11 @@ var breeding_stages = [
     {"stage": 29, "description": "Dislikes something", "percent": "-25"}, //-30 -35
     {"stage": 30, "description": "Dislikes something", "percent": "-25"}, //-30 -35
 ]
+
+//Pregnancy object template.
+const pregnancy = {
+    "mother": 0, //id of pregnant citizen
+    "father": 0, //id of male citizen
+    "remaining_weeks": 39, //each week passed, the value decreases. When 0, the pregnancy object is erased.
+    "children": 1 //amount of children to be born. It's likely to be 1, but could be 2 or 3.
+}

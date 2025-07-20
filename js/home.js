@@ -68,166 +68,316 @@ let searchZone = (e) => {
 }
 
 let lifeInterval = setInterval(() => {
-    if(lifeStarted || searchingZone){
+    let currentYear = currentWeek = currentDay = currentHour = 0
+    //Zone searched
+    const zone_searched_actions = () => {
+        searchingZone = false
+        lifeStarted = true
+        //Remove search zone button from Colony's available actions
+        document.querySelector("#colony-actions > p > button").remove()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], document.querySelector("#colony-actions > p")); s.create(); s.appendContent(translate(language, "No actions available"))
+        //Remove warnings
+        document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.remove() })
+        //Update initial stock
+        loadInitialRandomGoods()
+        //Update initial shelter capacity
+        buildings.shelter["campaign tent"] = 5
+        s1 = document.querySelector("#colonyShelterCapacityInfo")
+        s1.classList.remove("text-red-400")
+        s1.classList.add("text-green-400")
+        document.querySelector("#shelterCapacityIcon").remove()
+        document.querySelector("#colonyShelterCapacity").innerHTML = shelterCapacities["campaign tent"] * buildings.shelter["campaign tent"]
+        s1.innerHTML+= " ("
+        s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent("Occupation")
+        s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
+        s1.innerHTML+= ")"
+        i = new element("i", "ms-1 fa fa-face-smile", [], s1, "shelterCapacityIcon"); i.create()
+        //Update initial buildings
+        updateColony()
+        if(showModalZoneSearched) { 
+            modalPopup("Zone researched!", "ZoneSearched") 
+            modal.show()
+        }
+        //Update all water bearers and fishermen status (from "assigned" to "working")
+        document.querySelectorAll('[data-status="assigned"]').forEach((citizenStatus) => {
+            let citizenIndex = citizenStatus.id.split("-")[1]
+            if(["waterbearing", "fishing"].includes(document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role"))){
+                citizenStatus.innerHTML = translate(language, "Working")
+                citizens[citizenIndex].status = "working"
+            }
+        })
+        //Update possible actions blocked by not having searched the zone previously.
+        if(document.querySelectorAll(".newExpedition .assignedWorkers .assignedWorker").length){
+            //If there were expeditionaries assigned to an expedition, add button to start it.
+            document.getElementById("newExpeditionNoActions").classList.add("hidden")
+            document.querySelector("#expeditionStart").classList.remove("hidden")
+        }
+    }
+    //Hour passed
+    const move_time = () => {
         //Update hours.
-        let currentHour = Number(document.querySelector("#currentHour").innerText)
+        currentHour = Number(document.querySelector("#currentHour").innerText)
         currentHour = ((currentHour < 23 ? currentHour+1 : 0)+"").padStart(2, "0")
         document.querySelector("#currentHour").innerText = currentHour
         //Daily flag
         dayPassed = (currentHour == "00")
         //Update days.
         daysPassed+= (dayPassed ? 1 : 0)
-        let currentDay = Number(document.querySelector("#currentDay").innerText)
+        currentDay = Number(document.querySelector("#currentDay").innerText)
         currentDay = 1 + (daysPassed % 7)
         document.querySelector("#currentDay").innerText = currentDay
         //Update weeks.
-        let currentWeek = Number(document.querySelector("#currentWeek").innerText)
+        currentWeek = Number(document.querySelector("#currentWeek").innerText)
         currentWeek = 1 + (Math.floor(daysPassed / 7) % 52)
         //Weekly flag
         weekPassed = dayPassed && Math.floor(daysPassed / 7) == daysPassed / 7
         document.querySelector("#currentWeek").innerText = currentWeek
         document.querySelector("#passedWeeks").innerText = Math.floor(daysPassed / 7)
         //Update years.
-        let currentYear = Number(document.querySelector("#currentYear").innerText)
+        currentYear = Number(document.querySelector("#currentYear").innerText)
         currentYear = 1 + Math.floor(daysPassed / 364)
+        //Yearly flag
+        yearPassed = dayPassed && Math.floor(daysPassed / 364) == daysPassed / 364
         document.querySelector("#currentYear").innerText = currentYear
+    }
+    //Day passed
+    const update_all_citizens_xp = () => {
+        //Update citizens xp
+        //Update permanently assigned water bearers or fishermen
+        document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
+            let citizenIndex = citizen.id.split("-")[1]
+            //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
+            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
+                let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
+                document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
+                    elem.setAttribute("data-xp", newXP.toFixed(5))
+                    elem.innerText = Math.floor(newXP)
+                    if(elem.innerText > 0 && elem.classList.contains("hidden")){
+                        elem.classList.remove("hidden")
+                    }
+                })
+                citizens[citizenIndex].xp = newXP
+            }
+        })
+    }
+    const update_fish_and_water_assigned_workers = () => {
+        //Update permanently assigned water bearers or fishermen
+        document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
+            let citizenIndex = citizen.id.split("-")[1]
+            //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
+            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
+                let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
+                document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
+                    elem.setAttribute("data-xp", newXP.toFixed(5))
+                    elem.innerText = Math.floor(newXP)
+                    if(elem.innerText > 0 && elem.classList.contains("hidden")){
+                        elem.classList.remove("hidden")
+                    }
+                })
+                citizens[citizenIndex].xp = newXP
+            }
+        })
+    }
+    const update_resource_extractions = () => {
+        //Update resource extractions
+        let dailyWaterGained = document.querySelector("#colony-water-income").innerText * 1 - document.querySelector("#colony-water-consumption").innerText * 1
+        document.querySelectorAll("#colony-water-stock").forEach((value) => {
+            value.innerText = value.innerText * 1 + (dailyWaterGained)
+        })
+        let dailyFoodGained = document.querySelector("#colony-food-income").innerText * 1 - document.querySelector("#colony-food-consumption").innerText * 1
+        document.querySelectorAll("#colony-food-stock").forEach((value) => {
+            value.innerText = value.innerText * 1 + (dailyFoodGained)
+        })
+    }
+    const update_running_productions = () => {
+        //Update running productions
+        product_rules_defined.forEach((product_rule, product_index) => {
+            if(product_rule.status == "running"){
+                let rule_object = product_rule.object
+                //Check if requirements are currently fulfilled.
+                let requirement_fulfilled = true
+                product_rule.rule_definition.requirements.forEach((req) => {
+                    if(!req.consumable){
+                        if(req.type == "citizen"){
+                            req.workers.forEach((citizen_index) => {
+                                requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].rolekey == req.role)
+                            })
+                        }
+                    } else {
+                        //Check if product or resource quantity needed is available.
+                    }
+                })
+                if(!requirement_fulfilled){
+                    product_rules[product_index].status = "suspended"
+                } else {
+                    //Update product stock with new value.
+                    stockValues.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
+                    stockValues.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
+                    stockDisplayed.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
+                    stockDisplayed.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
+                    updateStock()
+                }
+            }
+        })
+    }
+    //Week passed
+    const update_pregnacies_remaining_weeks = () => {
+        //Update pregnancy remaining weeks for all pregnancies.
+        pregnancies.forEach((pregnancy) => {
+            pregnancy.remaining_weeks = Math.max(0, pregnancy.remaining_weeks - 1)
+            document.querySelector(`#citizen-${pregnancy.mother}-pregnancy-weeks`).innerHTML = pregnancy.remaining_weeks                
+            if(!pregnancy.remaining_weeks){
+                //Pregnancy is over. Child or children are to be born.
+                //1) Change mother status from "pregnant" to "idle".
+                document.getElementById(`citizen-${pregnancy.mother}-status`).setAttribute("data-status", "idle")
+                document.getElementById(`citizen-${pregnancy.mother}-status`).innerHTML = translate(language, "idle")
+                citizens[pregnancy.mother].status = "idle"
+                //Hide pregnancy remaining weeks for the current mother.
+                document.getElementById(`citizen-${pregnancy.mother}-status`).parentElement.querySelectorAll(".pregnant").forEach((element) => element.classList.add("hidden"))
+                //2) Reduce father and mother's fertility, based on his and her current children.
+                let father_children = citizens[pregnancy.father].children.length
+                let mother_children = citizens[pregnancy.mother].children.length
+                //Decrement father's fertility in memory and screen (set 0 if negative)
+                citizens[pregnancy.father].fertility = Math.max(citizens[pregnancy.father].fertility - (father_children + pregnancy.children), 0)
+                document.getElementById(`citizen-${pregnancy.father}-fertility`).innerHTML = citizens[pregnancy.father].fertility
+                //Decrement mother's fertility in memory and screen (set 0 if negative)
+                citizens[pregnancy.mother].fertility = Math.max(citizens[pregnancy.mother].fertility - (mother_children + pregnancy.children), 0)
+                document.getElementById(`citizen-${pregnancy.mother}-fertility`).innerHTML = citizens[pregnancy.mother].fertility
+                //Loop all born babies
+                for(let citizen_index = 1; citizen_index <= pregnancy.children; citizen_index++){
+                    //3) Create a new baby citizen and fill his or her info.
+                    let born_citizen = to_be_born_citizen = {}
+                    //4) Assign mother and father to new baby citizen.
+                    to_be_born_citizen.father = pregnancy.father
+                    to_be_born_citizen.mother = pregnancy.mother
+                    born_citizen = build_citizen(true, undefined, to_be_born_citizen)
+                }
+                //5) Remove pregnancy from memory.
+                pregnancies = pregnancies.filter(a_pregnancy => !(a_pregnancy.father == pregnancy.father && a_pregnancy.mother == pregnancy.mother))
+            }
+        })
+    }
+    const update_month_week = () => {
+        //Update month week in every breeding attempt panel (also fertility week color)
+        document.querySelectorAll("p.fertility.woman").forEach((elem) => {
+            let fertility_week = elem.querySelector(".fertility-week.value").innerHTML
+            let month_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
+            month_week = !month_week ? 4 : month_week
+            elem.querySelector(".fertility-week.month-week").innerHTML = month_week
+            if(fertility_week == month_week){
+                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-gray-300"))
+                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-green-500"))
+                elem.querySelector(".fertility-week.week-comparison").classList.add("fa-equals")
+                elem.querySelector(".fertility-week.week-comparison").classList.remove("fa-not-equal")
+            } else {
+                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-green-500"))
+                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-gray-300"))
+                elem.querySelector(".fertility-week.week-comparison").classList.add("fa-not-equal")
+                elem.querySelector(".fertility-week.week-comparison").classList.remove("fa-equals")
+            }
+        })
+    }
+    const close_breeding_panels = () => {
+        document.querySelectorAll(".tryBreeding").forEach((elem) => {
+            //Get relationship index from id.
+            let relationship_id = elem.id.split("-")[1]
+            //Remove panel divs.
+            document.querySelector(`#relationship-${relationship_id}-tryBreeding-title`).remove()
+            document.querySelector(`#relationship-${relationship_id}-tryBreeding`).remove()
+            //Show previous hidden actions.
+            document.querySelector(`#relationship-${relationship_id}-actions`).classList.remove("hidden")
+            document.querySelector(`#relationship-${relationship_id}-actions-title`).classList.remove("hidden")
+        })
+    }
+    const update_all_citizens_age = () => {
+        //Update citizens age
+        document.querySelectorAll("#accordion-citizens .citizen-properties").forEach((value) => {
+            let citizenYearsAge = document.querySelector("#citizen-"+value.dataset.index+"-ageYears")
+            let citizenWeeksAge = document.querySelector("#citizen-"+value.dataset.index+"-ageWeeks")
+            let previousAge = citizenYearsAge.innerText*1
+            let iconPreviousAge = ageIcons(previousAge)
+            citizenWeeksAge.innerText = (citizenWeeksAge.innerText*1 + 1) % 52
+            citizenYearsAge.innerText = citizenYearsAge.innerText*1 + (citizenWeeksAge.innerText*1 == 0 ? 1 : 0)
+            let iconCurrentAge = ageIcons(citizenYearsAge.innerText)
+            //Check if age icons must change...
+            if(iconPreviousAge != iconCurrentAge){
+                document.querySelectorAll("#citizen-"+citizenIndex+"-age-icon").forEach((elem) => {
+                    elem.classList.remove(iconPreviousAge)
+                    elem.classList.add(iconCurrentAge)
+                })
+            }
+        })
+    }
+    //Year passed
+    const decrease_all_citizens_fertility = () => {
+        //Decrease all citizen's fertility if aged >= 21
+        citizens.forEach((citizen) => {
+            citizen.fertility = citizen.ageYears >= 21 ? Math.max(citizen.fertility - 1, 0) : citizen.fertility
+            document.getElementById(`citizen-${citizen.id}-fertility`).innerHTML = citizen.fertility
+            if(!citizen.fertility) document.getElementById(`citizen-${citizen.id}-fertility`).classList.add("text-red-500")
+        })
+    }
+
+    if(lifeStarted || searchingZone){
+        
+        //Hour passed
+        move_time()
+        
         //Zone searched flag
         zoneSearched = currentYear == 1 && currentWeek == 1 && currentDay == 1 && currentHour == zoneSearchHoursNeeded
+        
         //Perform updating tasks inside game panels that involve hourly changes
         //Process countdowns
         processCountdowns()
-        //Perform updating tasks inside game panels that involve daily changes
-        //Efectuar tareas de actualización de partes del juego que involucren avances diarios.
+        
+        //Perform updating tasks inside game panels that involve daily, weekly or yearly changes
+        //Efectuar tareas de actualización de partes del juego que involucren avances diarios, semanales o anuales.
         //console.log("y"+currentYear+"w"+currentWeek+"d"+currentDay+"h"+currentHour+", daysPassed: "+daysPassed+" dayPassed: "+dayPassed+", weekPassed: "+weekPassed)
+        
         if(zoneSearched){
-            searchingZone = false
-            lifeStarted = true
-            //Remove search zone button from Colony's available actions
-            document.querySelector("#colony-actions > p > button").remove()
-            s = new element("span", "", [{"key":"data-i18n", "value":""}], document.querySelector("#colony-actions > p")); s.create(); s.appendContent(translate(language, "No actions available"))
-            //Remove warnings
-            document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.remove() })
-            //Update initial stock
-            loadInitialRandomGoods()
-            //Update initial shelter capacity
-            buildings.shelter["campaign tent"] = 5
-            s1 = document.querySelector("#colonyShelterCapacityInfo")
-            s1.classList.remove("text-red-400")
-            s1.classList.add("text-green-400")
-            document.querySelector("#shelterCapacityIcon").remove()
-            document.querySelector("#colonyShelterCapacity").innerHTML = shelterCapacities["campaign tent"] * buildings.shelter["campaign tent"]
-            s1.innerHTML+= " ("
-            s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent("Occupation")
-            s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
-            s1.innerHTML+= ")"
-            i = new element("i", "ms-1 fa fa-face-smile", [], s1, "shelterCapacityIcon"); i.create()
-            //Update initial buildings
-            updateColony()
-            if(showModalZoneSearched) { 
-                modalPopup("Zone researched!", "ZoneSearched") 
-                modal.show()
-            }
-            //Update all water bearers and fishermen status (from "assigned" to "working")
-            document.querySelectorAll('[data-status="assigned"]').forEach((citizenStatus) => {
-                let citizenIndex = citizenStatus.id.split("-")[1]
-                if(["waterbearing", "fishing"].includes(document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role"))){
-                    citizenStatus.innerHTML = translate(language, "Working")
-                    citizens[citizenIndex].status = "working"
-                }
-            })
-            //Update possible actions blocked by not having searched the zone previously.
-            if(document.querySelectorAll(".newExpedition .assignedWorkers .assignedWorker").length){
-                //If there were expeditionaries assigned to an expedition, add button to start it.
-                document.getElementById("newExpeditionNoActions").classList.add("hidden")
-                document.querySelector("#expeditionStart").classList.remove("hidden")
-            }
+            zone_searched_actions()
         }
+
         if(dayPassed){
+            
             //Update citizens xp
+            update_all_citizens_xp()
+            
             //Update permanently assigned water bearers or fishermen
-            document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
-                let citizenIndex = citizen.id.split("-")[1]
-                //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
-                if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
-                    let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
-                    document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
-                        elem.setAttribute("data-xp", newXP.toFixed(5))
-                        elem.innerText = Math.floor(newXP)
-                        if(elem.innerText > 0 && elem.classList.contains("hidden")){
-                            elem.classList.remove("hidden")
-                        }
-                    })
-                    citizens[citizenIndex].xp = newXP
-                }
-            })
+            update_fish_and_water_assigned_workers()
+            
             //Update resource extractions
-            let dailyWaterGained = document.querySelector("#colony-water-income").innerText * 1 - document.querySelector("#colony-water-consumption").innerText * 1
-            document.querySelectorAll("#colony-water-stock").forEach((value) => {
-                value.innerText = value.innerText * 1 + (dailyWaterGained)
-            })
-            let dailyFoodGained = document.querySelector("#colony-food-income").innerText * 1 - document.querySelector("#colony-food-consumption").innerText * 1
-            document.querySelectorAll("#colony-food-stock").forEach((value) => {
-                value.innerText = value.innerText * 1 + (dailyFoodGained)
-            })
+            update_resource_extractions()
+
             //Update running productions
-            product_rules_defined.forEach((product_rule, product_index) => {
-                if(product_rule.status == "running"){
-                    let rule_object = product_rule.object
-                    //Check if requirements are currently fulfilled.
-                    let requirement_fulfilled = true
-                    product_rule.rule_definition.requirements.forEach((req) => {
-                        if(!req.consumable){
-                            if(req.type == "citizen"){
-                                req.workers.forEach((citizen_index) => {
-                                    requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].rolekey == req.role)
-                                })
-                            }
-                        } else {
-                            //Check if product or resource quantity needed is available.
-                        }
-                    })
-                    if(!requirement_fulfilled){
-                        product_rules[product_index].status = "suspended"
-                    } else {
-                        //Update product stock with new value.
-                        stockValues.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                        stockValues.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                        stockDisplayed.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                        stockDisplayed.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                        updateStock()
-                    }
-                }
-            })
+            update_running_productions()
+
         }
+
         if(weekPassed){
+            
             //Update citizens age
-            document.querySelectorAll("#accordion-citizens .citizen-properties").forEach((value) => {
-                let citizenYearsAge = document.querySelector("#citizen-"+value.dataset.index+"-ageYears")
-                let citizenWeeksAge = document.querySelector("#citizen-"+value.dataset.index+"-ageWeeks")
-                let previousAge = citizenYearsAge.innerText*1
-                let iconPreviousAge = ageIcons(previousAge)
-                citizenWeeksAge.innerText = (citizenWeeksAge.innerText*1 + 1) % 52
-                citizenYearsAge.innerText = citizenYearsAge.innerText*1 + (citizenWeeksAge.innerText*1 == 0 ? 1 : 0)
-                let iconCurrentAge = ageIcons(citizenYearsAge.innerText)
-                //Check if age icons must change...
-                if(iconPreviousAge != iconCurrentAge){
-                    document.querySelectorAll("#citizen-"+citizenIndex+"-age-icon").forEach((elem) => {
-                        elem.classList.remove(iconPreviousAge)
-                        elem.classList.add(iconCurrentAge)
-                    })
-                }
-            })
-            //Update month week in every relationship, and fertility week color if necessary
-            document.querySelectorAll("p.fertility").forEach((elem) => {
-                let fertility_week = elem.querySelector(".fertility-week.value").innerHTML
-                let month_week = document.getElementById("currentWeek").innerHTML
-                elem.querySelector(".fertility-week.month-week").innerHTML = month_week
-                if(fertility_week == month_week){
-                    elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.toggle("text-green-500"))
-                }
-            })
+            update_all_citizens_age()
+
+            //If Try breeding panels are open, close them.
+            //This is because if the week changed, those panels must be reloaded to reflect changes of current month week.
+            //Find all "Try breeding" open panels.
+            close_breeding_panels()
+            
+            //Update month week in every breeding attempt panel (also fertility week color)
+            update_month_week()
+            
+            //Update pregnancy remaining weeks for all pregnancies.
+            update_pregnacies_remaining_weeks()
+
         }
-        //clearInterval(lifeInterval)
+
+        if(yearPassed){
+
+            //Decrease all citizen's fertility if aged >= 21
+            decrease_all_citizens_fertility()
+
+        }
     }
 }, 1790);
 
@@ -625,11 +775,11 @@ let citizenDescription = (gender, birthWeeks, language, texts, attributes, gende
     if(language == "EN" && !(texts == "She is a" || texts == "He is a")) { connector = " or " }
     //Check citizen age
     switch(true){
-        case birthWeeks <= 260: noun = (gen == "F" ? "beba" : "bebé"); break
-        case birthWeeks > 260 && birthWeeks <= 728: noun = (gen == "F" ? "nena" : "nene"); break
-        case birthWeeks > 728 && birthWeeks <= 1092: noun = (gen == "F" ? "chica" : "chico"); break
-        case birthWeeks > 1092 && birthWeeks <= 3380: noun = (gen == "F" ? "mujer" : "hombre"); break
-        case birthWeeks > 3380: noun = (gen == "F" ? "anciana" : "anciano"); break
+        case birthWeeks <= 311: noun = (gen == "F" ? "beba" : "bebé"); break
+        case birthWeeks > 311 && birthWeeks <= 727: noun = (gen == "F" ? "nena" : "nene"); break
+        case birthWeeks > 727 && birthWeeks <= 1091: noun = (gen == "F" ? "chica" : "chico"); break
+        case birthWeeks > 1091 && birthWeeks <= 3379: noun = (gen == "F" ? "mujer" : "hombre"); break
+        case birthWeeks > 3379: noun = (gen == "F" ? "anciana" : "anciano"); break
     }
     noun = translate(language, noun)
     if(language == "EN"){
@@ -651,18 +801,68 @@ let citizenDescription = (gender, birthWeeks, language, texts, attributes, gende
     }
     return text
 }
-let updateCitizenDescription = (citizenIndex, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
+let updateCitizenDescription = (citizenIndex, gender, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
     let descriptionText1 = {"ES" : {"F": "Ella es una", "M": "El es un"}, "EN" : {"F": "She is a", "M": "He is a"}}
     let descriptionText2 = {"ES" : {"F": "A ella le gusta un", "M": "A él le gusta una"}, "EN" : {"F": "She likes a", "M": "He likes a"}}
     let descriptionText3 = {"ES" : {"F": "Ella prefiere que no sea", "M": "Él prefiere que no sea"}, "EN" : {"F": "She prefers a no", "M": "He prefers a no"}}
-    citizenBio = citizenDescription(h<=5 ? "Femenine" : "Masculine", birthWeeks, language, (h<=5 ? descriptionText1[language]["F"] : descriptionText1[language]["M"]), citizenOwnAttributes, language=="ES" ? "left" : "right")+"."
+    let other_gender = gender == "Femenine" ? "Masculine" : "Femenine"
+    citizenBio = citizenDescription(gender, birthWeeks, language, descriptionText1[language][gender.charAt(0)], citizenOwnAttributes, language=="ES" ? "left" : "right")+"."
     //Only show possible future partner features if he or she is no baby.
-    if(birthWeeks > 260){
-        citizenBio+= "</br>"+citizenDescription(h<=5 ? "Masculine" : "Femenine", birthWeeks, language, (h<=5 ? descriptionText2[language]["F"] : descriptionText2[language]["M"]), citizenWishedAttributes, language=="ES" ? "left" : "right")+".</br>"
-        citizenBio+= citizenDescription(h<=5 ? "Masculine" : "Femenine", birthWeeks, language, (h<=5 ? descriptionText3[language]["F"] : descriptionText3[language]["M"]), citizenHatedAttribute, language=="ES" ? "none" : "right")
+    if(birthWeeks >= 728){
+        citizenBio+= "</br>"+citizenDescription(other_gender, birthWeeks, language, descriptionText2[language][gender.charAt(0)], citizenWishedAttributes, language=="ES" ? "left" : "right")+".</br>"
+        citizenBio+= citizenDescription(other_gender, birthWeeks, language, descriptionText3[language][gender.charAt(0)], citizenHatedAttribute, language=="ES" ? "none" : "right")
     }
     //Place description in citizen's description panel, removing previous one if existed.
     document.querySelector("#citizen-"+citizenIndex+"-description").innerHTML = "\""+citizenBio+"\""
+}
+let set_random_name = (language, gender = ["Femenine", "Masculine"][Math.floor(Math.random()*2)], exclusion_set = false) => {
+    let female_names, male_names, female_families, male_families
+    //Cut all excluded names and families.
+    if(exclusion_set){
+        let set_exclusion_names_female = new Set(exclusion_set.names.female)
+        if(female_names.length > set_exclusion_names_female.length){
+            let set_female_names = new Set(naming['names'][language]['F'])
+            let set_allowed_female_names = set_female_names.difference(set_exclusion_names_female)
+            female_names = [...set_allowed_female_names]
+        }
+        let set_exclusion_names_male = new Set(exclusion_set.names.male)
+        if(male_names.length > set_exclusion_names_male.length){
+            let set_male_names = new Set(naming['names'][language]['M'])
+            let set_allowed_male_names = set_male_names.difference(set_exclusion_names_male)
+            male_names = [...set_allowed_male_names]
+        }
+        let set_exclusion_families_female = new Set(exclusion_set.families.female)
+        if(female_families.length > set_exclusion_families_female.length){
+            let set_female_families = new Set(naming['families'][language]['F'])
+            let set_allowed_female_families = set_female_families.difference(set_exclusion_families_female)
+            female_families = [...set_allowed_female_families]
+        }
+        let set_exclusion_families_male = new Set(exclusion_set.families.male)
+        if(male_families.length > set_exclusion_families_male.length){
+            let set_male_families = new Set(naming['families'][language]['M'])
+            let set_allowed_male_families = set_male_families.difference(set_exclusion_families_male)
+            male_families = [...set_allowed_male_families]
+        }
+    } else {
+        female_names = naming['names'][language]['F']
+        male_names = naming['names'][language]['M']
+        female_families = naming['families'][language]['F']
+        male_families = naming['families'][language]['M']
+    }
+    let name = family = ""
+    //Define random name
+    if(gender == "Femenine" || gender.charAt(0) == "F"){
+        name = female_names[Math.floor(Math.random() * female_names.length)]
+    } else {
+        name = male_names[Math.floor(Math.random() * male_names.length)]
+    }
+    //Define random family name
+    if(gender == "Femenine" || gender.charAt(0) == "F"){
+        family = female_families[Math.floor(Math.random() * female_families.length)]
+    } else {
+        family = male_families[Math.floor(Math.random() * male_families.length)]
+    }
+    return name + ", " + family
 }
 let setRandomNames = (language) => {
     //Assign random names for all citizens
@@ -749,7 +949,7 @@ let fillCitizenInfo = () => {
         citizenHatedAttribute = getRandomAttributes(language, 1, citizenWishedAttributes)
         citizens[h].hatedAttribute = citizenHatedAttribute[0]
         //Update description
-        updateCitizenDescription(h, citizenBirthweeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute)
+        updateCitizenDescription(h, (h<5 ? "Femenine" : "Masculine"), citizenBirthweeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute)
         //Ubicar edad en panel de habitante actual
         let birthweek = Math.floor(-citizenBirthweeks), ageYears = Math.floor(citizenBirthweeks/52), ageWeeks = citizenBirthweeks % 52
         citizens[h].birthWeek = birthweek
@@ -770,6 +970,27 @@ let fillCitizenInfo = () => {
         document.querySelector("#citizen-"+h+"-properties").setAttribute("data-deathweek", citizenWeekOfDeath) 
     }
 }
+let custom_accordion = (header_element_id = null, body_element_id = null, callback = () => {}) => {
+    let header_element = document.getElementById(header_element_id) != undefined ? document.getElementById(header_element_id) : null
+    let body_element = document.getElementById(body_element_id) != undefined ? document.getElementById(body_element_id) : null
+    if(header_element != null && body_element != null){
+        header_element.querySelectorAll(".clickable").forEach((elem) => {
+            elem.addEventListener("click", (e) => {
+                let collapsable = e.target.closest(".clickable").querySelector("i.collapsable")
+                e.target.closest(".clickable").classList.toggle("bg-gray-900")
+                e.target.closest(".clickable").classList.toggle("bg-gray-800")
+                collapsable.classList.toggle("fa-chevron-down")
+                collapsable.classList.toggle("fa-chevron-up")
+                body_element.classList.toggle("hidden")
+                if(collapsable.classList.contains("fa-chevron-up")){
+                    callback(body_element)
+                }
+            })
+        })
+    } else {
+        console.log("Error while trying to attach custom accordion events")
+    }
+}
 
 initColonyInfo()
 
@@ -782,9 +1003,9 @@ accordionRelationships()
 accordion_landforms()
 accordionExpeditions()
 
-fillCitizenInfo()
+//fillCitizenInfo()
 translateAll(language)
-setRandomNames(language)
+//setRandomNames(language)
 
 enableNotificationEvents()
 
@@ -891,23 +1112,23 @@ let toggle_assignable_worker = (e) => {
     }
     
 }
-let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
+let assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
     //Check if citizen is idle or busy.
-    if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "idle"){
+    if(document.querySelector("#citizen-"+citizen_id+"-status").getAttribute("data-status") == "idle"){
         //Check previous role if exists.
-        previousRole = document.querySelector("#citizen-"+citizenIndex+"-role").getAttribute("data-role")
+        previousRole = document.querySelector("#citizen-"+citizen_id+"-role").getAttribute("data-role")
         //If citizen have had another role previously, change all panels in which the role was involved
         if(previousRole != translate(language, "Unassigned")){ 
-            post_conditions_changing_role(previousRole, citizenIndex) 
+            post_conditions_changing_role(previousRole, citizen_id) 
         }
         //Update role in Citizen's info.
-        document.querySelector("#citizen-"+citizenIndex+"-role").innerText = roleText
-        document.querySelector("#citizen-"+citizenIndex+"-role").setAttribute("data-role", rolekey)
-        citizens[citizenIndex].role = roleText
-        citizens[citizenIndex].rolekey = rolekey
+        document.querySelector("#citizen-"+citizen_id+"-role").innerText = roleText
+        document.querySelector("#citizen-"+citizen_id+"-role").setAttribute("data-role", rolekey)
+        citizens[citizen_id].role = roleText
+        citizens[citizen_id].rolekey = rolekey
         //Update role icon in Citizen's info.
-        document.querySelector("#citizen-"+citizenIndex+"-role-icon").classList.remove("hidden")
-        document.querySelector("#citizen-"+citizenIndex+"-role-icon").classList = "text-green-500 fa me-1 fa-"+roleIcon
+        document.querySelector("#citizen-"+citizen_id+"-role-icon").classList.remove("hidden")
+        document.querySelector("#citizen-"+citizen_id+"-role-icon").classList = "text-green-500 fa me-1 fa-"+roleIcon
         if(assignRolePanelExists){
             assignRolePanel.removePanel()
             assignRolePanel.showPreviousOptions()
@@ -915,21 +1136,21 @@ let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists
         //New role is "Water bearer"?
         if(["waterbearing", "fishing"].includes(rolekey)){
             //Add citizen to Water Reservoir Assignable workers.
-            add_assignable_worker_to_mount(citizenIndex, "waterReservoir")
+            add_assignable_worker_to_mount(citizen_id, "waterReservoir")
             //Add behavior when clicking selecting box. Toggle color from gray to green and process efects in other panels.
-            document.getElementById("waterReservoir-citizen-"+citizenIndex+"-assign").addEventListener("click", 
+            document.getElementById("waterReservoir-citizen-"+citizen_id+"-assign").addEventListener("click", 
                 toggle_assignable_worker
             )
             /*
-            document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "waterReservoir")
-            document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
+            document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "waterReservoir")
+            document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
             */
         }       
         if(rolekey == "expeditioning"){
             if(document.querySelector("#expeditions-newExpedition") != null){
-                addAvailableWorkerToExpedition(citizenIndex, "newExpedition")
-                document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
-                document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
+                addAvailableWorkerToExpedition(citizen_id, "newExpedition")
+                document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "newExpedition")
+                document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
             }
         }
         /*
@@ -947,6 +1168,30 @@ let assign_role_to_citizen = (rolekey, roleText, roleIcon, assignRolePanelExists
     }
 }
 //Relationship citizen manipulation
+const draw_parents_of_citizen = (a_citizen) => {
+    let parents_div = document.querySelector(`#citizen-${a_citizen.id}-parents`)
+    parents_div.querySelectorAll("p").forEach((elem) => elem.remove())
+    //Add parent.
+    let parents = [], type
+    if(a_citizen.father != null){ parents.push(citizens[a_citizen.father])} 
+    if(a_citizen.mother != null){ parents.push(citizens[a_citizen.mother])} 
+    parents.forEach((a_parent) => {
+        type = a_parent.gender.charAt(0) == "F" ? "mother" : "father"
+        p = new element("p", `${type} ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], parents_div); p.create()
+        h2 = new element("h2", "grow", [], p.getNode()); h2.create()
+        d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+        s = new element("span", "", [], d2.getNode()); s.create()
+        let gender_class = a_parent.gender.charAt(0) == "F" ? "venus" : "mars"
+        let gender_color = a_parent.gender.charAt(0) == "F" ? "red" : "blue"
+        i = new element("i", `fa fa-${gender_class} text-${gender_color}-500`, [], s.getNode()); i.create()
+        s1 = new element("span", `font-bold bg-gray-600 border border-gray-500 text-${gender_color}-400 px-1 ms-1`, [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
+        s1.appendContent(translate(language, type, "", "capitalized"))
+        s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_parent.name)
+        s = new element("span", "", [], d2.getNode()); s.create()
+        i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_parent.id}], s.getNode(), `parent-${a_parent.id}-view-info`); i.create()
+        i.getNode().addEventListener("click", modal_citizen_info)
+    })
+}
 let add_parent_to_citizen = (a_parent, a_citizen, type = "mother") => {
     if(type == "father") citizens[a_citizen.id].father = a_parent.id
     if(type == "mother") citizens[a_citizen.id].mother = a_parent.id
@@ -975,6 +1220,28 @@ let add_parent_to_citizen = (a_parent, a_citizen, type = "mother") => {
     i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_parent.id}], s.getNode(), `parent-${a_parent.id}-view-info`); i.create()
     i.getNode().addEventListener("click", modal_citizen_info)
 }
+const draw_children_of_citizen = (a_citizen) => {
+    let children_div = document.querySelector(`#citizen-${a_citizen.id}-children`)
+    children_div.querySelectorAll("p").forEach((elem) => elem.remove())
+    for(let index = 0; index < a_citizen.children.length; index++){
+        let a_child = citizens[a_citizen.children[index]]
+        //Add child.
+        p = new element("p", "ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], children_div); p.create()
+        h2 = new element("h2", "grow", [], p.getNode()); h2.create()
+        d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+        s = new element("span", "", [], d2.getNode()); s.create()
+        let gender_class = a_child.gender.charAt(0) == "F" ? "venus" : "mars"
+        let gender_color = a_child.gender.charAt(0) == "F" ? "red" : "blue"
+        i = new element("i", `fa fa-${gender_class} text-${gender_color}-500`, [], s.getNode()); i.create()
+        let child_type = a_child.gender.charAt(0) == "F" ? "Daughter" : "Son"
+        s1 = new element("span", `font-bold bg-gray-600 border border-gray-500 text-${gender_color}-400 px-1 ms-1`, [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
+        s1.appendContent(translate(language, child_type, "", "capitalized"))
+        s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_child.name)
+        s = new element("span", "", [], d2.getNode()); s.create()
+        i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_child.id}], s.getNode(), `child-${a_child.id}-view-info`); i.create()
+        i.getNode().addEventListener("click", modal_citizen_info)
+    }
+}
 let add_child_to_citizen = (a_child, a_citizen) => {
     citizens[a_citizen.id].children.push(a_child.id)
     //Add child to specific panel.
@@ -1000,28 +1267,11 @@ let add_child_to_citizen = (a_child, a_citizen) => {
     i.getNode().addEventListener("click", modal_citizen_info)
 }
 let cancel_relationship = (e) => {
-    let citizen_id = e.target.getAttribute("data-citizen-id")
+    let citizen_id = e.target.closest("button").getAttribute("data-citizen-id")
     let couple_id = citizens[citizen_id].couple
     //Remove couple citizens from memory array.
     citizens[citizen_id].couple = null
     citizens[couple_id].couple = null
-    //Remove couple citizens from both panels.
-    //Panel citizen's couple
-    let couple_div = document.querySelector(`#citizen-${citizen_id}-couple`)
-    couple_div.querySelector("p").remove()
-    p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], couple_div); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
-    s1.appendContent(translate(language, "None", "f", "capitalized"))
-    //Panel couples's couple
-    couple_div = document.querySelector(`#citizen-${couple_id}-couple`)
-    couple_div.querySelector("p").remove()
-    p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], couple_div); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
-    s1.appendContent(translate(language, "None", "f", "capitalized"))
     //Remove relationship if it exists.
     document.querySelectorAll(`[data-citizen-1="${citizen_id}"], [data-citizen-2="${citizen_id}"]`).forEach((elem) => {
         elem.remove()
@@ -1037,10 +1287,10 @@ let cancel_relationship = (e) => {
     })
 }
 let try_breeding = (e) => {
-    let relationship_index = e.target.closest("button").id.split("-")[1]
-    let objectData = {"language": language, "gender": gender, "parentId": `#accordion-relationship-${relationship_index}-body`}
+    let current_relationship_id = e.target.closest("button").id.split("-")[1]
+    let objectData = {"language": language, "parentId": `#accordion-relationship-${current_relationship_id}-body`}
     //Build panel
-    let tryBreedingPanel = new panel("tryBreeding", objectData, "relationship", relationship_index, "actions")
+    let tryBreedingPanel = new panel("tryBreeding", objectData, "relationship", current_relationship_id, "actions")
     tryBreedingPanel.hidePreviousOptions()
     tryBreedingPanel.buildPanel()
     currently_used_panel = tryBreedingPanel
@@ -1057,6 +1307,30 @@ let assign_couple_to_citizen = (e) => {
         currently_used_panel.removePanel()
         currently_used_panel.showPreviousOptions()
     }, "500")
+}
+const draw_couple_of_citizen = (a_citizen) => {
+    let couple_div = document.querySelector(`#citizen-${a_citizen.id}-couple`)
+    couple_div.querySelectorAll("p").forEach((elem) => elem.remove())
+    let a_couple = citizens[a_citizen.couple]
+    //Add couple to citizen.
+    p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
+    h2 = new element("h2", "grow", [], p.getNode(), `#citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    s = new element("span", "", [], d2.getNode()); s.create()
+    let couple_gender_class = a_couple.gender.charAt(0) == "F" ? "venus" : "mars"
+    let couple_gender_color = a_couple.gender.charAt(0) == "F" ? "red" : "blue"
+    i = new element("i", `fa fa-${couple_gender_class} text-${couple_gender_color}-500`, [], s.getNode()); i.create()
+    s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_couple.name)
+    s = new element("span", "", [], d2.getNode()); s.create()
+    i = new element("i", "fa fa-eye me-2", [{"key":"data-index", "value":a_couple.id}], s.getNode(), `couple-${a_couple.id}-view-info`); i.create()
+    i.getNode().addEventListener("click", modal_citizen_info)
+    i = new element("i", "fa fa-ban", [{"key":"data-citizen-id", "value":a_couple.id}], s.getNode(), `couple-${a_couple.id}-cancel-relationship`); i.create()
+    i.getNode().addEventListener("click", cancel_relationship)
+    //Add citizen as couple to specific couple panel.
+    if(document.querySelector(`#citizen-${a_couple.id}-couple p.empty`) != undefined){
+        //Remove "None" message.
+        document.querySelector(`#citizen-${a_couple.id}-couple p.empty`).remove()
+    }
 }
 let add_couple_to_citizen = (a_couple, a_citizen) => {
     citizens[a_citizen.id].couple = a_couple.id
@@ -1107,17 +1381,14 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
     //Build relationship.
     //Check if there is no relationship yet.
     let relationships_div = document.querySelector("#citizen-relationships")
-    let relationship_index = 1
     if(![undefined, null].includes(relationships_div.querySelector("p.empty"))){
         //Remove "None" message.
         relationships_div.querySelector("p.empty").remove()
-    } else {
-        relationship_index = relationships_div.querySelectorAll("div").length + 1
     }
     //Build new relationship accordion.
-    d = new element("div", "mx-1 mb-1", [{"key":"data-accordion","value":"collapse"}, {"key":"data-citizen-1","value":a_citizen.id}, {"key":"data-citizen-2","value":a_couple.id}], relationships_div, `accordion-relationship-${relationship_index}`); d.create()
-    h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${relationship_index}-title`); h2.create()
-    b = new element("button", "text-xs unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 border border-gray-700 text-gray-400 hover:bg-gray-100 hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${relationship_index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${relationship_index}-body`}], h2.getNode())
+    d = new element("div", "mx-1 mb-1", [{"key":"data-accordion","value":"collapse"}, {"key":"data-citizen-1","value":a_citizen.id}, {"key":"data-citizen-2","value":a_couple.id}], relationships_div, `accordion-relationship-${relationship_id}`); d.create()
+    h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${relationship_id}-title`); h2.create()
+    b = new element("button", "text-xs unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 border border-gray-700 text-gray-400 hover:bg-gray-100 hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${relationship_id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${relationship_id}-body`}], h2.getNode())
     b.create()
     s = new element("span", "flex items-center", [], b.getNode()); s.create(); 
     i = new element("i", `fa fa-${citizen_gender_class} text-${citizen_gender_color}-400`, [], s.getNode()); i.create(); 
@@ -1127,13 +1398,14 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
     s1 = new element("span", `ms-1 font-bold text-${couple_gender_color}-400`, [], s.getNode()); s1.create(); s1.appendContent(a_couple.name.split(",")[0])
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build new relationship accordion body
-    d1 = new element("div", "hidden text-xs text-gray-200 border border-gray-800 bg-gray-600", [{"key":"aria-labelledby","value":`accordion-relationship-${relationship_index}-title`}], d.getNode(), `accordion-relationship-${relationship_index}-body`); d1.create()
+    d1 = new element("div", "hidden text-xs text-gray-200 border border-gray-800 bg-gray-600", [{"key":"aria-labelledby","value":`accordion-relationship-${relationship_id}-title`}], d.getNode(), `accordion-relationship-${relationship_id}-body`); d1.create()
     //Citizen's information
     d2 = new element("div", "mt-1 mb-1 mx-1 px-2 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
     p = new element("p", "flex", [], d2.getNode()); p.create()
     s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) == "F" ? "she is" : "he is", "", "capitalized"))
     s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(a_citizen.name)
-    p = new element("p", "fertility flex items-center text-gray-400", [], d2.getNode()); p.create()
+    let woman_class = citizen_is_woman ? "woman" : ""
+    p = new element("p", `fertility ${woman_class} flex items-center text-gray-400`, [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility", "", "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
     let fertility_color = a_citizen.fertility >= 70 ? "text-green-500" : (a_citizen.fertility >= 45 ? "text-yellow-500" : (a_citizen.fertility >= 25 ? "text-orange-500" : (a_citizen.fertility >= 10 ? "text-red-400" : ("text-red-500"))))
@@ -1146,7 +1418,7 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
         s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week", "", "capitalized"))
         s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
         s = new element("span", `fertility-week ${fertility_class} value ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(a_citizen.fertilityWeek.toString())
-        i = new element("i", `fertility-week mx-1 ${fertility_class} fa ${comparison_icon}`, [], p.getNode()); i.create()
+        i = new element("i", `fertility-week mx-1 ${fertility_class} week-comparison fa ${comparison_icon}`, [], p.getNode()); i.create()
         s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week", "", "capitalized"))
         s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
         s = new element("span", `fertility-week ${fertility_class} month-week ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(month_week.toString())
@@ -1183,11 +1455,12 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
     s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "and", "", "capitalized"))
     s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, !couple_is_woman ? "he is" : "she is"))
     s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(a_couple.name)   
-    p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
+    woman_class = couple_is_woman ? "woman" : ""
+    p = new element("p", "fertility flex items-center text-gray-400", [], d2.getNode()); p.create()
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility", "", "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
     fertility_color = a_couple.fertility >= 70 ? "text-green-500" : (a_couple.fertility >= 45 ? "text-yellow-500" : (a_couple.fertility >= 25 ? "text-orange-500" : (a_couple.fertility >= 10 ? "text-red-400" : ("text-red-500"))))
-    s = new element("span", `fertility ms-1 font-bold ${fertility_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertility.toString())
+    s = new element("span", `fertility ${woman_class} ms-1 font-bold ${fertility_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertility.toString())
     if(couple_is_woman){
         let month_week = (document.getElementById("currentWeek").innerHTML*1 % 4) ? document.getElementById("currentWeek").innerHTML*1 % 4 : 4
         let comparison_icon = month_week == a_couple.fertilityWeek ? "fa-equals" : "fa-not-equal"
@@ -1196,7 +1469,7 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
         s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week", "", "capitalized"))
         s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
         s = new element("span", `fertility-week ${fertility_class} value ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertilityWeek.toString())
-        i = new element("i", `fertility-week mx-1 ${fertility_class} fa ${comparison_icon}`, [], p.getNode()); i.create()
+        i = new element("i", `fertility-week mx-1 ${fertility_class} week-comparison fa ${comparison_icon}`, [], p.getNode()); i.create()
         s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week", "", "capitalized"))
         s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
         s = new element("span", `fertility-week ${fertility_class} month-week ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(month_week.toString())
@@ -1230,18 +1503,20 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
     enable_accordion_click(b.getNode())
     //Actions available
     //Title
-    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), `relationship-${relationship_index}-actions-title`); d2.create()
+    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), `relationship-${relationship_id}-actions-title`); d2.create()
     p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
     //Area
-    d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), `relationship-${relationship_index}-actions`); d2.create()
+    d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), `relationship-${relationship_id}-actions`); d2.create()
     p = new element("p", "flex w-100 justify-between p-1 gap-1 text-gray-300", [], d2.getNode()); p.create()
-    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `relationship-${relationship_index}-reproduce`); b.create()
+    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `relationship-${relationship_id}-reproduce`); b.create()
     s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Try breeding"))
     b.getNode().addEventListener("click", try_breeding)
-    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `relationship-${relationship_index}-breakup`); b.create()
-    s = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"data-citizen-id", "value":a_citizen.id}], b.getNode()); s.create(); s.appendContent(translate(language, "Break up relationship"))
+    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [{"key":"data-citizen-id", "value":a_citizen.id}], p.getNode(), `relationship-${relationship_id}-breakup`); b.create()
+    s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Break up relationship"))
     b.getNode().addEventListener("click", cancel_relationship)
+    //Increase relationship_id for next relationship.
+    relationship_id++
 }
 
 let handleToggleHorse = (e) => {
@@ -1486,27 +1761,33 @@ let handleToggleWorker = (e) => {
 
 //Testing functionality
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
-    searchingZone = true
-    //Avoid modal pop up when zone searched
-    showModalZoneSearched = false
+
+const test_pregnancy_status = () => {
+    //Testing pregnancy status
+    citizens[1].status = "pregnant"
+    document.querySelector("#citizen-1-status").setAttribute("data-status", "pregnant")
+    document.querySelector("#citizen-1-status").innerHTML = translate(language, "Pregnant")
+    document.querySelectorAll("#citizen-1-properties .pregnant").forEach((elem) => elem.classList.remove("hidden"))
+}
+const test_citizen_fishing_roles = () => {
     //Assign role to citizen 1 & 6 manually
     citizenIndex = 1;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 2;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 3;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "f"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "f"), "fish", false)
     citizenIndex = 4;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
     citizenIndex = 6;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 7;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "m"), "fish", false)
     citizenIndex = 8;
-    assign_role_to_citizen("fishing", translate(language, "Fisher", "m"), "fish", false)
+    assign_role_to_citizen(citizenIndex, "fishing", translate(language, "Fisher", "m"), "fish", false)
+}
+const test_familiar_relationships = () => {
     //Test familiar relationship between citizens
-    /*
     add_parent_to_citizen(citizens[6], citizens[1], "father")   //6 padre de 1
     add_child_to_citizen(citizens[1], citizens[6])              //1 hija de 6
     add_parent_to_citizen(citizens[6], citizens[7], "father")   //6 padre de 7
@@ -1526,7 +1807,6 @@ let handleToggleWorker = (e) => {
     add_parent_to_citizen(citizens[8], citizens[5], "father")   //8 padre de 5
     add_child_to_citizen(citizens[5], citizens[8])              //5 hija de 8
     add_couple_to_citizen(citizens[3], citizens[6])             //3 pareja de 6
-    */
     /*
              --- 9h
              |
@@ -1537,7 +1817,40 @@ let handleToggleWorker = (e) => {
                  |--->|    
                  3m   --- 7h
     */
-    //daysPassed = 6
+}
+const test_build_new_citizen = () => {
+    let new_citizen = {}
+    new_citizen.id = citizens.length
+    new_citizen.father = 6
+    new_citizen.mother = 1
+    new_citizen.children = []
+    new_citizen.couple = null
+    new_citizen.role = new_citizen.rolekey = "unassigned"
+    new_citizen.birthWeek = document.getElementById("passedWeeks").innerHTML*1 - 780 //Just born assumed
+    new_citizen.birthWeeks = 780 //Weeks already lived.
+    new_citizen.ageYears = 15 //Just born assumed
+    new_citizen.ageWeeks = 0 //Just born assumed
+    new_citizen.status = "idle"
+    new_citizen.gender = ["Femenine", "Masculine"][Math.floor(Math.random()*2)]
+    new_citizen.name = set_random_name(language, new_citizen.gender)
+    new_citizen.xp = 0
+    new_citizen.leftHand = new_citizen.rightHand = ""
+    new_citizen.outfit = "No"
+    new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
+    build_citizen(translation = true, new_citizen.id, new_citizen)
+    //build_citizen(translation = true, undefined, undefined)
+}
+
+searchingZone = true
+//Avoid modal pop up when zone searched
+showModalZoneSearched = false
+
+//test_citizen_fishing_roles()
+//test_pregnancy_status()
+//text_familiary_relationships()
+test_build_new_citizen()
+add_couple_to_citizen(citizens[1], citizens[6])             //1 pareja de 6
+//daysPassed = 5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1555,7 +1868,7 @@ document.querySelectorAll(".assignRole").forEach((value) => {
         //For each button with an assignable role, add a click event
         document.querySelectorAll(".assignableRole").forEach((valueButton) => {
             valueButton.addEventListener("click", (e) => {
-                assign_role_to_citizen(e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
+                assign_role_to_citizen(citizenIndex, e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
             })
         })
     })

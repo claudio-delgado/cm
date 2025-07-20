@@ -41,41 +41,41 @@ class panel{
         
         //Build title div.
         //--Build div, add paragraph
-        d1 = new element("div", "border border-gray-300 border-gray-800 bg-gray-900 text-gray-200 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName+"-title")
+        d1 = new element("div", `${this.panelName}-title border border-gray-300 border-gray-800 bg-gray-900 text-gray-200 text-xs`, [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName+"-title")
         d1.create()
-        p = new element("p", "flex justify-between items-center p-1 ps-2 text-xs "+paragraphBg, [], d1.getNode())
+        p = new element("p", "flex justify-between items-center p-1 ps-2 text-xs", [], d1.getNode())
         p.create()
-
+        let changeLanguage
         //--Build span with icon before. Set general panel features.
         switch(this.panelName){
             case "assignRole": 
                 i = new element("i", "me-2 fa "+panelClasses.assignRole.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.assignRole.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", gender="", format="", changeLanguage=false))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", "", "", changeLanguage=false))
                 paragraphBg = panelClasses.assignRole.bg
                 break
             case "searchCouple": 
                 i = new element("i", "me-2 fa "+panelClasses.searchCouple.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.searchCouple.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", gender="", format="", changeLanguage=false))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", "", "", changeLanguage=false))
                 paragraphBg = panelClasses.searchCouple.bg
                 break
             case "tryBreeding": 
                 i = new element("i", "me-2 fa "+panelClasses.tryBreeding.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.tryBreeding.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Try breeding", gender="", "", false) : translate("EN", "Intentar reproducción", gender="", format="", changeLanguage=false))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Try breeding", "", "", false) : translate("EN", "Intentar reproducción", "", "", changeLanguage=false))
                 paragraphBg = panelClasses.tryBreeding.bg
                 break
             case "newExpedition": 
                 i = new element("i", "me-2 fa "+panelClasses.newExpedition.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", gender="", format="", changeLanguage=false))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", "", "", changeLanguage=false))
                 paragraphBg = panelClasses.newExpedition.bg
                 break
             case "newRule": 
                 i = new element("i", "me-2 fa "+panelClasses.newProductionRule.i, [], p.getNode()); i.create()
                 s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], p.getNode())
-                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New production rule", gender="", format="", changeLanguage=false) : translate("EN", "Nueva regla de producción", gender="", format="", changeLanguage=false))
+                s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New production rule", "", "", changeLanguage=false) : translate("EN", "Nueva regla de producción", "", "", changeLanguage=false))
                 paragraphBg = panelClasses.newExpedition.bg
                 break
         }
@@ -120,7 +120,7 @@ class panel{
                     divSpecificParagraphButton[index].innerHTML = iElement + buttonText
                     divSpecificParagraphButton[index].setAttribute("data-icon", value.icon)
                     divSpecificParagraphButton[index].setAttribute("data-rolekey", value.key)
-                    generalRole = typeof value["EN"][gender] != "undefined" ? value["EN"][gender].replaceAll(" ","") : value["EN"].replaceAll(" ","")
+                    generalRole = typeof value["EN"][this.data.gender] != "undefined" ? value["EN"][this.data.gender].replaceAll(" ","") : value["EN"].replaceAll(" ","")
                 }
                 isDisabled = currentRole != null && value.key == currentRole
                 buttonColours = isDisabled ? "border-gray-500 bg-gray-700 text-gray-400" : "border-green-700 bg-green-900 text-white"
@@ -1115,7 +1115,7 @@ class panel{
             attributes["EN"].forEach((attribute_class) => {
                 if(attribute_class.name == "Physical"){
                     couple.attributes.forEach((attribute) => {
-                        couple_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                        couple_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
                 }
             })
@@ -1173,7 +1173,7 @@ class panel{
             attributes["EN"].forEach((attribute_class) => {
                 if(attribute_class.name == "Physical"){
                     citizen.attributes.forEach((attribute) => {
-                        citizen_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                        citizen_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
                 }
             })
@@ -1231,7 +1231,7 @@ class panel{
             attributes["EN"].forEach((attribute_class) => {
                 if(attribute_class.name == "Mentals"){
                     couple.attributes.forEach((attribute) => {
-                        couple_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                        couple_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
                 }
             })
@@ -1289,7 +1289,7 @@ class panel{
             attributes["EN"].forEach((attribute_class) => {
                 if(attribute_class.name == "Mentals"){
                     citizen.attributes.forEach((attribute) => {
-                        citizen_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, gender="", "", false)) ? 1 : 0
+                        citizen_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
                 }
             })
@@ -1964,6 +1964,9 @@ class panel{
             let couple_class = couple_has_fertility ? "text-green-500" : "text-red-500"
             let both_have_fertility = citizen_has_fertility && couple_has_fertility
             let woman_fertile
+            d = new element("div", "p-1 border border-gray-800 bg-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-levels-title`); d.create()
+            p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Citizen's fertility levels"))
             d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-levels`); d.create()
             p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name)
@@ -1978,31 +1981,46 @@ class panel{
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, ":"))
             s = new element("span", `ms-1 font-bold ${couple_class}`, [], p.getNode()); s.create(); s.appendContent(couple.fertility.toString())
             if(both_have_fertility){
+                d = new element("div", "p-1 border border-gray-800 bg-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-week-title`); d.create()
+                p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Breeding viability"))
                 d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-week`); d.create()
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
                 let woman = citizen.gender.charAt(0) == "F" ? citizen : couple
-                let woman_fertility_week = woman.fertilityWeek
+                let woman_fertility_week
                 let current_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
                 current_week = !current_week ? 4 : current_week
-                woman_fertile = woman_fertility_week == current_week
-                let woman_class = woman_fertile ? "text-green-500" : "text-red-500"
+                let woman_class
                 s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(woman.name)
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
-                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week"))
-                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-                s = new element("span", `ms-1 font-bold ${woman_class}`, [], p.getNode()); s.create(); s.appendContent(woman_fertility_week.toString())
+                if(woman.status != "pregnant"){
+                    woman_fertility_week = woman.fertilityWeek
+                    woman_fertile = woman_fertility_week == current_week
+                    woman_class = woman_fertile ? "text-green-500" : "text-red-500"
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week"))
+                    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                    s = new element("span", `ms-1 font-bold ${woman_class}`, [], p.getNode()); s.create(); s.appendContent(woman_fertility_week.toString())
+                } else {
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Current status"))
+                    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
+                    s = new element("span", `ms-1 font-bold text-red-500`, [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Pregnant"))
+                }
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
-                s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Month week"))
+                s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week"))
                 s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
                 s = new element("span", `ms-1 font-bold ${woman_class}`, [], p.getNode()); s.create(); s.appendContent(current_week.toString())
                 if(current_week != woman_fertility_week) {
-                    process_result_errors[1] = woman.name + " " + translate(language, "is not fertile this week")
-                    let remaining_weeks = Math.abs(current_week - woman_fertility_week)
-                    s = new element("span", "ms-1 ", [], p.getNode()); s.create(); s.appendContent("(")
-                    s = new element("span", `ms-1`, [], p.getNode()); s.create(); s.appendContent(translate(language, "will be fertile in"))
-                    s = new element("span", `ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(remaining_weeks.toString())
-                    s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, "weeks"))
-                    s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(")")
+                    if(woman.status != "pregnant"){
+                        process_result_errors[1] = woman.name + " " + translate(language, "is not fertile this week")
+                        let remaining_weeks = current_week > woman_fertility_week ? 4 - current_week + woman_fertility_week : woman_fertility_week - current_week
+                        s = new element("span", "ms-1 ", [], p.getNode()); s.create(); s.appendContent("(")
+                        s = new element("span", `ms-1`, [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "will be fertile in"))
+                        s = new element("span", `ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(remaining_weeks.toString())
+                        s = new element("span", "ms-1 font-bold", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "weeks"))
+                        s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(")")
+                    } else {
+                        process_result_errors[1] = woman.name + " " + translate(language, "is already pregnant")
+                    }
                 }
             } else {
                 process_result_errors[1] = translate(language, "Someone in the couple is not fertile enough")
@@ -2042,13 +2060,49 @@ class panel{
             s = new element("span", `font-bold`, [], p.getNode()); s.create(); s.appendContent(translate(language, final_results))
             if(final_results != "Breeding is possible"){
                 process_result_errors.forEach((error) => {
-                    p = new element("p", "px-1 mt-1 w-full", [], d1.getNode()); p.create()
-                    s = new element("li", "px-2", [], p.getNode()); s.create(); s.appendContent(error)
+                    if(error){
+                        p = new element("p", "px-1 mt-1 w-full", [], d1.getNode()); p.create()
+                        s = new element("li", "px-2", [], p.getNode()); s.create(); s.appendContent(error)
+                    }
                 })
             } else {
                 d1 = new element("div", `grow flex items-center`, [], d.getNode()); d1.create()
                 p = new element("p", "px-1 text-center w-full", [], d1.getNode()); p.create()
-                b = new element("button", "bg-gray-800 border border-gray-400 text-gray-200 grow m-2 p-2", [{"key":"type", "value":"button"}], p.getNode()); b.create(); b.appendContent(translate(language, "Start breeding"))            }
+                b = new element("button", "bg-gray-800 border border-gray-400 text-gray-200 grow m-2 p-2", [{"key":"type", "value":"button"}], p.getNode()); b.create(); b.appendContent(translate(language, "Start breeding"))
+                b.getNode().addEventListener("click", (e) => {
+                    //Create pregnancy.
+                    let woman = citizen.gender.charAt(0) == "F" ? citizen : couple
+                    let man = citizen.gender.charAt(0) == "M" ? citizen : couple
+                    //1) Decide if it was a single baby, twins or three kids.
+                    let fertility_sum = citizens[man.id].fertility + citizens[woman.id].fertility
+                    let children_to_be_born = pregnancy_amount_of_babies(fertility_sum)
+                    //2) Create pregnancy object (from template), fill it, and add it to pregnancies set.
+                    let a_pregnancy = JSON.parse(JSON.stringify(pregnancy))
+                    a_pregnancy.father = man.id
+                    a_pregnancy.mother = woman.id
+                    a_pregnancy.remaining_weeks = 1//39
+                    a_pregnancy.children = children_to_be_born
+                    pregnancies.push(a_pregnancy)
+                    //3) Change woman status to "pregnant".
+                    citizens[woman.id].status = "pregnant"
+                    document.getElementById(`citizen-${woman.id}-status`).setAttribute("data-status", "pregnant")
+                    document.getElementById(`citizen-${woman.id}-status`).innerHTML = translate(language, "pregnant")
+                    //Show remaining weeks next to status.
+                    document.getElementById(`citizen-${woman.id}-pregnancy-weeks`).innerHTML = a_pregnancy.remaining_weeks
+                    document.getElementById(`citizen-${woman.id}-status`).closest("div").querySelectorAll(".pregnant.hidden").forEach((elem) => {
+                        elem.classList.remove("hidden")
+                    })
+                    //Remove breeding panel.
+                    //Get relationship index from panel div id.
+                    let relationship_id = e.target.closest(".tryBreeding").id.split("-")[1]
+                    //Remove panel divs.
+                    document.querySelector(`#relationship-${relationship_id}-tryBreeding-title`).remove()
+                    document.querySelector(`#relationship-${relationship_id}-tryBreeding`).remove()
+                    //Show previous hidden actions.
+                    document.querySelector(`#relationship-${relationship_id}-actions`).classList.remove("hidden")
+                    document.querySelector(`#relationship-${relationship_id}-actions-title`).classList.remove("hidden")
+                })
+            }
         }
         if(this.panelName == "newRule"){
             //Specific New Production Rule panel
@@ -2214,7 +2268,7 @@ class panel{
                     d.create()
                     //Any horses in stock?
                     if(stockDisplayed.products.EN.horse*1){
-                        for(h=0; h<stockDisplayed.products.EN.horse*1; h++){
+                        for(let h=0; h<stockDisplayed.products.EN.horse*1; h++){
                             addAvailableHorseToExpedition().addEventListener("click", handleToggleHorse)
                         }
                     } else {
@@ -2997,6 +3051,311 @@ let accordionBuildings = (update = false) => {
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("There are no buildings in your colony!")
     }
 }
+let build_citizen = (needs_translation = false, id = 0, citizen = false) => {
+    let new_citizen = {}
+    let accordion_citizens = document.getElementById("accordion-citizens")
+    let build_citizen_accordion_header = () => {
+        let accordion_citizens = document.getElementById("accordion-citizens")
+        h2 = new element("h2", "notificationUnread", [], accordion_citizens, `accordion-citizen-${id}-header`); h2.create()
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-citizen-${id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-citizen-${id}-body`}], h2.getNode())
+        b.create()
+        s = new element("span", "", [], b.getNode()); s.create()
+        s1 = new element("span", "new text-xs px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
+        s1.create(); s1.appendContent("NEW")
+        //Add icons to name
+        let citizen_gender = new_citizen.gender != undefined ? new_citizen.gender : undefined
+        let citizen_gender_icon_class = citizen_gender != undefined ? (citizen_gender == "Femenine" ? "fa-venus text-red-500" : "fa-mars text-blue-500") : "hidden"
+        let citizen_age_icon_class = new_citizen.ageYears != undefined 
+                                            ?  (new_citizen.ageYears <= 5 ? "fa-baby" 
+                                                    :   (new_citizen.ageYears < 15 ? "fa-child"
+                                                        :   (new_citizen.ageYears < 21 ? "fa-person-walking"
+                                                            :   (new_citizen.ageYears < 50 ? "fa-person"
+                                                                :   (new_citizen.ageYears < 65 ? "fa-person" : "fa-person-cane")
+                                                                )
+                                                            )
+                                                        )
+                                                )
+                                            : "hidden fa"
+        let citizen_role_icon_class = "hidden"
+        if(citizen.role != undefined){
+            roleIcons.forEach((role) => {
+                if(role.key == new_citizen.role){
+                    citizen_role_icon_class = `fa-${role.icon}`
+                }
+            })
+        }
+        i = new element("i", `me-1 fa ${citizen_gender_icon_class}`, [], s.getNode(), `citizen-${id}-gender-icon`); i.create()
+        i = new element("i", `me-1 fa text-white ${citizen_age_icon_class}`, [], s.getNode(), `citizen-${id}-age-icon`); i.create()
+        i = new element("i", `me-1 fa ${citizen_role_icon_class}`, [], s.getNode(), `citizen-${id}-role-icon`); i.create()
+        s1 = new element("span", "hidden rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), `citizen-${id}-xp-icon`); s1.create(); s1.appendContent(new_citizen.xp.toString())
+        s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode(), `citizen-${id}-name`); s1.create(); s1.appendContent(new_citizen.name)
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+    }
+    let build_citizen_accordion_body = () => {
+        let show_first_line = (d2) => {
+            p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            //Citizen's gender
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Gender" : translate(language, "Gender"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), `citizen-${id}-gender`); s1.create(); s1.appendContent(!needs_translation ? new_citizen.gender : translate(language, new_citizen.gender))
+            s.appendHTML(".")
+            //Citizen's status
+            s = new element("span", "", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Status" : translate(language, "Status"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""},{"key":"data-status", "value":new_citizen.status}], s.getNode(), `citizen-${id}-status`); s1.create(); s1.appendContent(!needs_translation ? "Idle" : translate(language, "Idle"))
+            s.appendHTML(".")
+            if(new_citizen.gender.charAt(0) == "F"){
+                s1 = new element("span", "pregnant hidden ms-1", [], s.getNode()); s1.create(); s1.appendContent("(")
+                s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "weeks" : translate(language, "weeks"))
+                s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(":")
+                s1 = new element("span", "pregnant pregnancy-weeks hidden ms-1 font-bold", [{"key":"data-remaining-weeks", "value":""}], s.getNode(), `citizen-${id}-pregnancy-weeks`); s1.create()
+                s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(")")
+            }
+        }
+        let show_second_line = (d2) => {
+            p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            //Citizen's birthweek
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Birth week" : translate(language, "Birth week"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [], s.getNode(), `citizen-${id}-birthWeek`); s1.create(); s1.appendContent(new_citizen.birthWeek.toString())
+            s.appendHTML(".")
+            //Citizen's age
+            s = new element("span", "", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Age" : translate(language, "Age"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [], s.getNode(), `citizen-${id}-ageYears`); s1.create(); s1.appendContent(new_citizen.ageYears.toString())
+            s1 = new element("span", "ms-1", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "years" : translate(language, "years"))
+            s.appendHTML(", ")
+            s1 = new element("span", "font-bold", [], s.getNode(), `citizen-${id}-ageWeeks`); s1.create(); s1.appendContent(new_citizen.ageWeeks.toString())
+            s1 = new element("span", "ms-1", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "weeks" : translate(language, "weeks"))
+        }
+        let show_third_line = (d2) => {
+            p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            //Citizen's role
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Role" : translate(language, "Role"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), `citizen-${id}-role`); s1.create(); s1.appendContent(!needs_translation ? "Unassigned" : translate(language, "Unassigned"))
+            s.appendHTML(".")
+            //Citizen's experience
+            s = new element("span", "", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Experience" : translate(language, "Experience"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-xp", "value":"0"}], s.getNode(), `citizen-${id}-xp`); s1.create(); s1.appendContent(new_citizen.xp.toString())
+            s.appendHTML(".")
+        }
+        let show_forth_line = (d2) => {
+            p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            //Citizen's left hand
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Left hand" : translate(language, "Left hand"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"f"}], s.getNode(), `citizen-${id}-leftHand`); s1.create(); s1.appendContent(!needs_translation ? "Empty" : translate(language, "Empty", "f"))
+            s.appendHTML(".")
+            //Citizen's right hand
+            s = new element("span", "", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Right hand" : translate(language, "Right hand"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"f"}], s.getNode(), `citizen-${id}-rightHand`); s1.create(); s1.appendContent(!needs_translation ? "Empty" : translate(language, "Empty", "f"))
+            s.appendHTML(".")
+        }
+        let show_fifth_line = (d2) => {
+            p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create()
+            //Citizen's outfit
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Outfit" : translate(language, "Outfit"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), `citizen-${id}-outfit`); s1.create(); s1.appendContent(!needs_translation ? new_citizen.outfit : translate(language, new_citizen.outfit))
+            s.appendHTML(".")
+            //Citizen's fertility
+            s = new element("span", "", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Fertility" : translate(language, "Fertility"))
+            s.appendHTML(": ")
+            s1 = new element("span", "font-bold", [], s.getNode(), `citizen-${id}-fertility`); s1.create(); s1.appendContent(new_citizen.fertility.toString())
+            s.appendHTML(".")
+        }
+        let show_relationships = (d1) => {
+            const build_relationships = (body_div) => {
+                body_div.innerHTML = ""
+                //Citizen's parents title
+                d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], body_div, `citizen-${id}-parents-title`); d2.create()
+                p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
+                s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Parents"))
+                //Citizen's parents area
+                d2 = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], body_div, `citizen-${id}-parents`); d2.create()
+                p = new element("p", "empty ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
+                s1.appendContent(translate(language, "None", "m"))
+                if(citizens[id].father || citizens[id].mother){
+                    draw_parents_of_citizen(citizens[id])
+                }
+                //Citizen's children title
+                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-600 text-xs`, [], body_div, `citizen-${id}-children-title`); d2.create()
+                p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
+                s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Children"))
+                //Citizen's children area
+                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-500 text-xs`, [], body_div, `citizen-${id}-children`); d2.create()
+                p = new element("p", "empty ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"m"}], s.getNode()); s1.create()
+                s1.appendContent(translate(language, "None", "m"))
+                if(citizens[id].children.length){
+                    draw_children_of_citizen(citizens[id])
+                }
+                //Citizen's couple title
+                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-600 text-xs`, [], body_div, `citizen-${id}-couple-title`); d2.create()
+                p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
+                s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Current couple"))
+                //Citizen's couple area
+                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-500 text-xs`, [], body_div, `citizen-${id}-couple`); d2.create()
+                p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], d2.getNode()); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+                s1.appendContent(translate(language, "None", "f"))
+                if(citizens[id].couple != null){
+                    draw_couple_of_citizen(citizens[id])
+                }
+            }
+            let visible_teen_class = new_citizen.ageYears >= 14 ? "" : "hidden"
+            d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), `citizen-${id}-relationships-title`); d2.create()
+            //Citizen's relationships title
+            p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "grow", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Relationships of" : translate(language, "Relationships of"))
+            s1 = new element("span", "ms-1 text-xs text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(citizens[id].name.split(",")[0])
+            i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+            //Citizen's relationships
+            d3 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), `citizen-${id}-relationships-body`); d3.create()
+            custom_accordion(`citizen-${id}-relationships-title`, `citizen-${id}-relationships-body`, build_relationships)
+        }
+        let show_actions_available = (d1) => {
+            let build_actions_available = (body_div) => {
+                let citizen_id = body_div.id.split("-")[1]
+                let citizen_can_search_couple = citizens[citizen_id] && citizens[citizen_id].ageYears >= 14
+                let citizen_can_get_role_assigned = citizens[citizen_id] && citizens[citizen_id].ageYears >= 6 && citizens[citizen_id].status != "pregnant"
+                //Remove all contents of body_div
+                body_div.innerHTML = ""
+                p = new element("p", "flex w-100 justify-between gap-2 p-1 text-gray-500 dark:text-gray-400", [], body_div); p.create()
+                if(citizen_can_search_couple){
+                    b = new element("button", "searchCouple text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `searchCouple-${citizen_id}`); b.create()
+                    i = new element("i", "fa fa-venus-mars me-2", [], b.getNode()); i.create()
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Search a couple"))
+                    b.getNode().addEventListener("click", function(e){
+                        let objectData = {"language": language, "gender": new_citizen.gender, "parentId": `#accordion-citizen-${citizen_id}-body`}
+                        //Build assign role panel
+                        searchCouplePanel = new panel("searchCouple", objectData, "citizen", citizen_id, "actions")
+                        searchCouplePanel.hidePreviousOptions()
+                        searchCouplePanel.buildPanel()
+                    })
+                }
+                if(citizen_can_get_role_assigned){
+                    b = new element("button", "assignRole text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `assignRole-${citizen_id}`); b.create()
+                    i = new element("i", "fa fa-handshake-simple me-2", [], b.getNode()); i.create()
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Assign a role"))
+                    b.getNode().addEventListener("click", function(e){
+                        let objectData = {"language": language, "gender": new_citizen.gender.charAt(0), "parentId": `#accordion-citizen-${citizen_id}-body`}
+                        //Build assign role panel
+                        assignRolePanel = new panel("assignRole", objectData, "citizen", citizen_id, "actions")
+                        assignRolePanel.hidePreviousOptions()
+                        assignRolePanel.buildPanel()
+                        //For each button with an assignable role, add a click event
+                        document.querySelectorAll(".assignableRole").forEach((valueButton) => {
+                            valueButton.addEventListener("click", (e) => {
+                                assign_role_to_citizen(citizen_id, e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
+                            })
+                        })
+                    })
+                }
+                if(!citizen_can_search_couple && !citizen_can_get_role_assigned) {
+                    s = new element("span", "text-white", [], p.getNode()); s.create()
+                    i = new element("i", "fa fa-light fa-empty-set mx-1", [], s.getNode()); i.create()
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create(); 
+                    s1.appendContent(translate(language, "None", "f"))
+                }
+            }
+            //Citizen's actions title
+            d2 = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), `citizen-${id}-actions-title`); d2.create()
+            p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
+            s = new element("span", "grow", [], p.getNode()); s.create()
+            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Actions available for" : translate(language, "Actions available for"))
+            s1 = new element("span", "ms-1 text-xs text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(citizens[id].name.split(",")[0])
+            i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+            //Citizen's actions
+            d2 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), `citizen-${id}-actions`); d2.create()
+            custom_accordion(`citizen-${id}-actions-title`, `citizen-${id}-actions`, build_actions_available)
+        }
+
+        d1 = new element("div", "hidden citizen mb-1 bg-gray-600", [{"key":"aria-labelledby","value":`accordion-citizen-${id}-header`}], accordion_citizens, `accordion-citizen-${id}-body`); d1.create()
+        //Citizen's description
+        citizens[id].attributes = (new_citizen.attributes == undefined) ? getRandomAttributes(language) : new_citizen.attributes
+        citizens[id].wishedAttributes = (new_citizen.wishedAttributes == undefined) ? getRandomAttributes(language) : new_citizen.wishedAttributes
+        citizens[id].hatedAttribute = (new_citizen.hatedAttribute == undefined) ? getRandomAttributes(language, 1, new_citizen.wishedAttributes)[0] : new_citizen.hatedAttribute
+        d2 = new element("div", "p-1 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+        p = new element("p", "ms-1 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode(), `citizen-${id}-description`); s.create()
+        //Update description
+        updateCitizenDescription(id, new_citizen.gender, new_citizen.birthWeeks, citizens[id].attributes, citizens[id].wishedAttributes, [citizens[id].hatedAttribute])
+        //Citizen's properties title
+        d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode()); d2.create()
+        p = new element("p", "p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "text-xs text-gray-200", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(!needs_translation ? "Properties of" : translate(language, "Properties of"))
+        s = new element("span", "ms-1 text-xs text-gray-200", [], p.getNode()); s.create(); s.appendContent(citizens[id].name.split(",")[0])
+        //Citizen's properties
+        d2 = new element("div", "citizen-properties p-1 border border-gray-800 bg-gray-600 text-xs", [{"key":"data-index", "value":id}], d1.getNode(), `citizen-${id}-properties`); d2.create()
+        show_first_line(d2) //First line of citizen attributes.
+        show_second_line(d2) //Second line of citizen attributes.
+        show_third_line(d2) //Third line of citizen attributes.
+        show_forth_line(d2) //Forth line of citizen attributes.
+        show_fifth_line(d2) //Fifth line of citizen attributes
+        show_relationships(d1) //Show all relationships panels for citizen.
+        show_actions_available(d1)
+    }
+    //Check if id was provided, otherwise get the first available.
+    id = !id && (!citizen || citizen.id == undefined) ? citizens.length : id
+    new_citizen.id = id
+    new_citizen.gender = !citizen || citizen.gender == undefined || citizen.gender == null ? ["Femenine", "Masculine"][Math.floor(Math.random()*2)] : citizen.gender
+    new_citizen.name = !citizen || citizen.name == undefined || citizen.name == null ? set_random_name(language, new_citizen.gender) : citizen.name
+    new_citizen.father = !citizen || citizen.father == undefined || citizen.father == null ? null : citizen.father
+    new_citizen.mother = !citizen || citizen.mother == undefined || citizen.mother == null ? null : citizen.mother
+    new_citizen.children = !citizen || citizen.children == undefined || citizen.children == null ? [] : citizen.children
+    new_citizen.couple = !citizen || citizen.couple == undefined || citizen.couple == null ? null : citizen.couple
+    new_citizen.role = !citizen || citizen.role == undefined || citizen.role == null ? "unassigned" : citizen.role
+    new_citizen.rolekey = !citizen || citizen.rolekey == undefined || citizen.rolekey == null ? "unassigned" : citizen.rolekey
+    new_citizen.birthWeek = !citizen || citizen.birthWeek == undefined || citizen.birthWeek == null ? document.getElementById("passedWeeks").innerHTML*1 : citizen.birthWeek
+    new_citizen.birthWeeks = !citizen || citizen.birthWeeks == undefined || citizen.birthWeeks == null ? 0 : citizen.birthWeeks
+    new_citizen.ageYears = !citizen || citizen.ageYears == undefined || citizen.ageYears == null ? 0 : citizen.ageYears
+    new_citizen.ageWeeks = !citizen || citizen.ageWeeks == undefined || citizen.ageWeeks == null ? 0 : citizen.ageWeeks
+    new_citizen.status = !citizen || citizen.status == undefined || citizen.status == null ? "idle" : citizen.status
+    new_citizen.xp = !citizen || citizen.xp == undefined || citizen.xp == null ? 0 : citizen.xp
+    new_citizen.leftHand = !citizen || citizen.leftHand == undefined || citizen.leftHand == null ? "" : citizen.leftHand
+    new_citizen.rightHand = !citizen || citizen.rightHand == undefined || citizen.rightHand == null ? "" : citizen.rightHand
+    new_citizen.outfit = !citizen || citizen.outfit == undefined || citizen.outfit == null ? "No" : citizen.outfit
+    new_citizen.fertilityWeek = (!citizen || citizen.fertilityWeek == undefined || citizen.fertilityWeek == null) ? (new_citizen.gender == "Femenine" ? 1 + Math.floor(Math.random() * 4) : null) : citizen.fertilityWeek
+    new_citizen.fertility = !citizen || citizen.fertility == undefined || citizen.fertility == null ? 10 + Math.floor(Math.random() * 91) : citizen.fertility
+    new_citizen.weekOfDeath = !citizen || citizen.weekOfDeath == undefined || citizen.weekOfDeath == null ? 3120 + Math.floor(Math.random() * (4420-3120)) : citizen.weekOfDeath
+    citizens[id] = new_citizen
+    //Build citizen accordion header
+    build_citizen_accordion_header()
+    //Build citizen accordion body
+    build_citizen_accordion_body()
+    if(new_citizen.father) { 
+        add_parent_to_citizen(citizens[new_citizen.father], citizens[new_citizen.id], "father") 
+        add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.father])
+    }
+    if(new_citizen.mother) { 
+        add_parent_to_citizen(citizens[new_citizen.mother], citizens[new_citizen.id], "mother") 
+        add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.mother])
+    }
+    enable_accordion_click(document.querySelector(`#accordion-citizen-${new_citizen.id}-header button`))
+    return new_citizen
+}
 let accordionCitizens = (amount = 10) => {
     let citizenBuilder = (index) => {
         citizens[index] = {}
@@ -3046,6 +3405,11 @@ let accordionCitizens = (amount = 10) => {
         s.appendHTML(": ")
         s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""},{"key":"data-status", "value":"idle"}], s.getNode(), "citizen-"+index+"-status"); s1.create(); s1.appendContent("Idle")
         s.appendHTML(".")
+        s1 = new element("span", "pregnant hidden ms-1", [], s.getNode()); s1.create(); s1.appendContent("(")
+        s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "weeks"))
+        s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(":")
+        s1 = new element("span", "pregnant pregnancy-weeks hidden ms-1 font-bold", [{"key":"data-remaining-weeks", "value":""}], s.getNode(), "citizen-"+index+"-pregnancy-weeks"); s1.create()
+        s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(")")
         //Second line
         p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
@@ -3179,7 +3543,48 @@ let accordionCitizens = (amount = 10) => {
     d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-citizens"); d.create()
     for(let i = 1; i<=amount; i++){
-        citizenBuilder(i)
+        let new_citizen = {}
+        new_citizen.id = i
+        //Set relationship attributes null.
+        new_citizen.father = null
+        new_citizen.mother = null
+        new_citizen.children = []
+        new_citizen.couple = null
+        //Set role as unassigned
+        new_citizen.role = new_citizen.rolekey = "unassigned"
+        //Set aging attributes
+        //Set total weeks already lived by citizen (weeks age)
+        let citizenBirthweeks = 1092+ Math.floor(Math.random() * (1820-1092)) //Random ages only adults
+        //citizenBirthweeks = 0+ Math.floor(Math.random() * (3800-0)) //Random ages in all ranges
+        //citizenBirthweeks = 729 + Math.floor(Math.random() * (3300-729)) //Random ages from teens on (not so ancient)
+        new_citizen.birthWeeks = 780 //Weeks already lived.
+        //Set current game week in which citizen was born.
+        new_citizen.birthWeek = document.getElementById("passedWeeks").innerHTML*1 - citizenBirthweeks
+        //Set citizen age in years.
+        new_citizen.ageYears = Math.floor(citizenBirthweeks / 52)
+        //Set how many weeks has passed having the same age.
+        new_citizen.ageWeeks = citizenBirthweeks % 52
+        //Set week of citizen's future death
+        new_citizen.deathWeek = 3120 + Math.floor(Math.random() * (4420-3120))
+        //Set status to idle.
+        new_citizen.status = "idle"
+        //Set first half citizens as female and the rest as male.
+        new_citizen.gender = i <= Math.ceil(amount / 2) ? "Femenine" : "Masculine"
+        new_citizen.name = set_random_name(language, new_citizen.gender)
+        new_citizen.xp = 0
+        //Set own attributes, wished attributes and hated attributes (this last must not be a wished attribute)
+        new_citizen.attributes = getRandomAttributes(language)
+        new_citizen.wishedAttributes = getRandomAttributes(language)
+        new_citizen.hatedAttribute = getRandomAttributes(language, 1, new_citizen.wishedAttributes)[0]
+        //Left and right hand empty, no outfit.
+        new_citizen.leftHand = new_citizen.rightHand = ""
+        new_citizen.outfit = "No"
+        //Set fertility issues.
+        new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
+        new_citizen.fertilityWeek = new_citizen.gender == "Femenine" ? 1 /*+ Math.floor(Math.random() * 4)*/ : null
+
+        build_citizen(translation = false, new_citizen.id, new_citizen)
+        //citizenBuilder(i)
     }
 }
 let accordionRelationships = () => {
@@ -3218,19 +3623,19 @@ let show_citizen_attributes = (e) => {
         let citizen_index = e.target.getAttribute("data-index")
         let citizen = get_citizen_by_index(citizen_index)
         let own_attribute_1 = citizen.attributes[0]
-        let own_attribute_1_class = attributesColors["EN"][translate("EN", own_attribute_1, gender="", format="", changeLanguage=false)]
+        let own_attribute_1_class = attributesColors["EN"][translate("EN", own_attribute_1, "", "", changeLanguage=false)]
         let own_attribute_2 = citizen.attributes[1]
-        let own_attribute_2_class = attributesColors["EN"][translate("EN", own_attribute_2, gender="", format="", changeLanguage=false)]
+        let own_attribute_2_class = attributesColors["EN"][translate("EN", own_attribute_2, "", "", changeLanguage=false)]
         let own_attribute_3 = citizen.attributes[2]
-        let own_attribute_3_class = attributesColors["EN"][translate("EN", own_attribute_3, gender="", format="", changeLanguage=false)]
+        let own_attribute_3_class = attributesColors["EN"][translate("EN", own_attribute_3, "", "", changeLanguage=false)]
         let wished_attribute_1 = citizen.wishedAttributes[0]
-        let wished_attribute_1_class = attributesColors["EN"][translate("EN", wished_attribute_1, gender="", format="", changeLanguage=false)]
+        let wished_attribute_1_class = attributesColors["EN"][translate("EN", wished_attribute_1, "", "", changeLanguage=false)]
         let wished_attribute_2 = citizen.wishedAttributes[1]
-        let wished_attribute_2_class = attributesColors["EN"][translate("EN", wished_attribute_2, gender="", format="", changeLanguage=false)]
+        let wished_attribute_2_class = attributesColors["EN"][translate("EN", wished_attribute_2, "", "", changeLanguage=false)]
         let wished_attribute_3 = citizen.wishedAttributes[2]
-        let wished_attribute_3_class = attributesColors["EN"][translate("EN", wished_attribute_3, gender="", format="", changeLanguage=false)]
+        let wished_attribute_3_class = attributesColors["EN"][translate("EN", wished_attribute_3, "", "", changeLanguage=false)]
         let hated_attribute = citizen.hatedAttribute
-        let hated_attribute_class = attributesColors["EN"][translate("EN", hated_attribute, gender="", format="", changeLanguage=false)]
+        let hated_attribute_class = attributesColors["EN"][translate("EN", hated_attribute, "", "", changeLanguage=false)]
         d = new element("div", "attributes p-1 bg-gray-500 border border-gray-700", [], parent_h2); d.create()
         p = new element("p", "grow p-1 flex items-center gap-2", [], d.getNode()); p.create()
         i = new element("i", "text-sm fa fa-circle-user", [], p.getNode()); i.create()
@@ -3990,18 +4395,18 @@ let modalPopup = (modalTitle, modalType, modalData = {}) => {
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent(translate(language, "Atributos propios"))
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         modalData.attributes.forEach((attribute) => {
-            let eng_attribute = translate("EN", attribute, gender = "", formatResult = "", changeLanguage = false)
+            let eng_attribute = translate("EN", attribute, "", formatResult = "", changeLanguage = false)
             s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
         })
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributos deseados")
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         modalData.wishedAttributes.forEach((attribute) => {
-            let eng_attribute = translate("EN", attribute, gender = "", formatResult = "", changeLanguage = false)
+            let eng_attribute = translate("EN", attribute, "", formatResult = "", changeLanguage = false)
             s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
         })
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributo no deseado")
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
-        let eng_attribute = translate("EN", modalData.hatedAttribute, gender = "", formatResult = "", changeLanguage = false)
+        let eng_attribute = translate("EN", modalData.hatedAttribute, "", formatResult = "", changeLanguage = false)
         s = new element("span", `mt-1 px-2 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }

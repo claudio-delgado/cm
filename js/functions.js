@@ -184,3 +184,26 @@ let citizens_are_siblings = (a_citizen, another_citizen) => {
     let a_citizen_and_another_are_siblings_by_mother = a_citizen_siblings_by_mother.includes(another_citizen.id)
     return a_citizen_and_another_are_siblings_by_father || a_citizen_and_another_are_siblings_by_mother
 }
+//Citizen pregnancy
+//Calculate randomly how many babies will be born after a pregnancy, based on the sum of fertility levels of the parents.
+let pregnancy_amount_of_babies = (fertility_sum) => {
+    let random_value = Math.random()
+    if(fertility_sum >= 150){
+        return random_value <= 0.45 ? 1 : (random_value <= 0.45 + 0.33 ? 2 : 3)
+    }
+    if(120 <= fertility_sum && fertility_sum < 150){
+        return random_value <= 0.52 ? 1 : (random_value <= 0.52 + 0.3 ? 2 : 3)
+    }
+    if(90 <= fertility_sum && fertility_sum < 120){
+        return random_value <= 0.6 ? 1 : (random_value <= 0.6 + 0.25 ? 2 : 3)
+    }
+    if(50 <= fertility_sum && fertility_sum < 90){
+        return random_value <= 0.7 ? 1 : (random_value <= 0.7 + 0.2 ? 2 : 3)
+    }
+    if(25 <= fertility_sum && fertility_sum < 50){
+        return random_value <= 0.8 ? 1 : (random_value <= 0.8 + 0.13 ? 2 : 3)
+    }
+    if(fertility_sum < 25){
+        return random_value <= 0.9 ? 1 : (random_value <= 0.9 + 0.07 ? 2 : 3)
+    }
+}

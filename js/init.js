@@ -1,7 +1,7 @@
 //Long term global variables
 var language = "ES", citizensAmount, citizensFemaleAmount, citizensMaleAmount
-var citizens = []
-var daysPassed = 0, dayPassed = weekPassed = false, searchingZone = zoneSearched = lifeStarted = false
+var citizens = [], pregnancies = []
+var daysPassed = 0, dayPassed = weekPassed = yearPassed = false, searchingZone = zoneSearched = lifeStarted = false
 var colony_water_reservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0, huntingMountDiscovered = false
 var wagonsAmount, horsesAmount
 var colonyScore, colonyLifeQuality
@@ -18,7 +18,7 @@ const ruinsExpeditionFailXPGain = 0.1
 //User configuration variables
 var showModalZoneSearched = true
 //Temporary global variables
-var citizenIndex, expeditionIndex = 1, rule_id = 1
+var citizenIndex, expeditionIndex = 1, rule_id = 1, relationship_id = 1
 var currently_used_panel
 
 //Ruins expedition resource or product loots probabilities

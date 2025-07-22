@@ -1,3 +1,4 @@
+
 let expeditionRequiredTime = (expeditionType, succesfullExpeditions, horsesAssigned, maxXp = 0, avgXp = 0) => {
     //Returns the amount of ingame hours needed for an expedition.
     //It dependes on the current already succesfull expeditions done, mounted expeditionaries assigned and expeditionaries xp.

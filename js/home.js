@@ -919,57 +919,6 @@ let getRandomAttributes = (language, amount = 3, excludeThis = []) => {
     }
     return citizenAttributes
 }
-//For each citizen in memory, fill its features with random values.
-let fillCitizenInfo = () => {
-    //Load random own attributes values for all 10 citizens.
-    //Generate random ages too.
-    let attributeGroups = JSON.parse(JSON.stringify(attributes[language]))
-    let citizenOwnAttributes = [], citizenWishedAttributes = [], citizenHatedAttribute
-    let citizenBirthweeks, citizenFertility, citizenFertilityWeek, citizenWeekOfDeath
-    //Iterate over each citizen
-    for(h=1; h<=citizensAmount; h++){
-        //Set id.
-        citizens[h].id = h
-        //Set unassigned role
-        citizens[h].role = "unassigned"
-        //Random ages in adult ranges.
-        citizenBirthweeks = 1092+ Math.floor(Math.random() * (1820-1092)) //Random ages only adults
-        //citizenBirthweeks = 0+ Math.floor(Math.random() * (3800-0)) //Random ages in all ranges
-        //citizenBirthweeks = 729 + Math.floor(Math.random() * (3300-729)) //Random ages from teens on (not so ancient)
-        citizenWeekOfDeath = 3120 + Math.floor(Math.random() * (4420-3120))
-        citizens[h].deathWeek = citizenWeekOfDeath
-        citizenFertility = 10 + Math.floor(Math.random() * 90)
-        citizenFertilityWeek = citizens[h].gender.charAt(0) == "F" ? 1 + Math.floor(Math.random() * 4) : null
-        citizens[h].fertility = citizenFertility
-        citizens[h].fertilityWeek = 1//citizenFertilityWeek
-        citizenOwnAttributes = getRandomAttributes(language)
-        citizens[h].attributes = citizenOwnAttributes
-        citizenWishedAttributes = getRandomAttributes(language)
-        citizens[h].wishedAttributes = citizenWishedAttributes
-        citizenHatedAttribute = getRandomAttributes(language, 1, citizenWishedAttributes)
-        citizens[h].hatedAttribute = citizenHatedAttribute[0]
-        //Update description
-        updateCitizenDescription(h, (h<5 ? "Femenine" : "Masculine"), citizenBirthweeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute)
-        //Ubicar edad en panel de habitante actual
-        let birthweek = Math.floor(-citizenBirthweeks), ageYears = Math.floor(citizenBirthweeks/52), ageWeeks = citizenBirthweeks % 52
-        citizens[h].birthWeek = birthweek
-        document.querySelector("#citizen-"+h+"-birthWeek").innerText = birthweek
-        citizens[h].ageYears = ageYears
-        document.querySelector("#citizen-"+h+"-ageYears").innerText = ageYears
-        citizens[h].ageWeeks = ageWeeks
-        document.querySelector("#citizen-"+h+"-ageWeeks").innerText = ageWeeks
-        //Define age icon according to citizen's weekage
-        iconGroup = "fa"; ageColour = "text-white"
-        ageClass = (ageYears <= 5 ? "fa-baby" : (ageYears < 15 ? "fa-child" : (ageYears < 21 ? "fa-person-walking" : (ageYears < 50 ? "fa-person" : (ageYears < 65 ? "fa-person" : "fa-person-cane"))))); 
-        document.querySelector("#citizen-"+h+"-age-icon").classList.remove("hidden")
-        document.querySelector("#citizen-"+h+"-age-icon").classList.add(iconGroup, ageClass, ageColour)
-        //Ubicar fertilidad en panel de habitante actual
-        document.querySelector("#citizen-"+h+"-fertility").innerHTML = citizenFertility
-        attributeGroups = JSON.parse(JSON.stringify(attributes[language]))
-        //Add week of death as attribute.
-        document.querySelector("#citizen-"+h+"-properties").setAttribute("data-deathweek", citizenWeekOfDeath) 
-    }
-}
 let custom_accordion = (header_element_id = null, body_element_id = null, callback = () => {}) => {
     let header_element = document.getElementById(header_element_id) != undefined ? document.getElementById(header_element_id) : null
     let body_element = document.getElementById(body_element_id) != undefined ? document.getElementById(body_element_id) : null
@@ -1002,10 +951,7 @@ accordionCitizens(citizensAmount)
 accordionRelationships()
 accordion_landforms()
 accordionExpeditions()
-
-//fillCitizenInfo()
 translateAll(language)
-//setRandomNames(language)
 
 enableNotificationEvents()
 
@@ -1853,39 +1799,5 @@ add_couple_to_citizen(citizens[1], citizens[6])             //1 pareja de 6
 //daysPassed = 5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//Panel Citizens - Action: Assign Role
-document.querySelectorAll(".assignRole").forEach((value) => {
-    value.addEventListener("click", function(e){
-        //Get citizen & gender
-        citizenIndex = e.target.id ? e.target.id.match(/\d+/g)[0] : e.target.parentElement.id.match(/\d+/g)[0]
-        gender = document.querySelector("#citizen-"+citizenIndex+"-gender-icon").classList.contains("fa-venus") ? "F" : "M"
-        let objectData = {"language": language, "gender": gender, "parentId": "#accordion-citizen-"+citizenIndex+"-body"}
-        //Build assign role panel
-        assignRolePanel = new panel("assignRole", objectData, "citizen", citizenIndex, "actions")
-        assignRolePanel.hidePreviousOptions()
-        assignRolePanel.buildPanel()
-        //For each button with an assignable role, add a click event
-        document.querySelectorAll(".assignableRole").forEach((valueButton) => {
-            valueButton.addEventListener("click", (e) => {
-                assign_role_to_citizen(citizenIndex, e.target.getAttribute("data-rolekey"), e.target.innerText, e.target.getAttribute("data-icon"))
-            })
-        })
-    })
-})
-
-//Panel Citizens - Action: Search couple
-document.querySelectorAll(".searchCouple").forEach((value) => {
-    value.addEventListener("click", function(e){
-        //Get citizen & gender
-        citizenIndex = e.target.id ? e.target.id.match(/\d+/g)[0] : e.target.parentElement.id.match(/\d+/g)[0]
-        gender = document.querySelector("#citizen-"+citizenIndex+"-gender-icon").classList.contains("fa-venus") ? "F" : "M"
-        let objectData = {"language": language, "gender": gender, "parentId": "#accordion-citizen-"+citizenIndex+"-body"}
-        //Build assign role panel
-        searchCouplePanel = new panel("searchCouple", objectData, "citizen", citizenIndex, "actions")
-        searchCouplePanel.hidePreviousOptions()
-        searchCouplePanel.buildPanel()
-    })
-})
 
 document.querySelector("#searchZone").addEventListener("click", searchZone)

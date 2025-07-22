@@ -3108,7 +3108,7 @@ let build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             s.appendHTML(".")
             if(new_citizen.gender.charAt(0) == "F"){
                 s1 = new element("span", "pregnant hidden ms-1", [], s.getNode()); s1.create(); s1.appendContent("(")
-                s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "weeks" : translate(language, "weeks"))
+                s1 = new element("span", "pregnant hidden", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "weeks" : translate(language, "weeks"))
                 s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(":")
                 s1 = new element("span", "pregnant pregnancy-weeks hidden ms-1 font-bold", [{"key":"data-remaining-weeks", "value":""}], s.getNode(), `citizen-${id}-pregnancy-weeks`); s1.create()
                 s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(")")

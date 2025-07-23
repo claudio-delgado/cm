@@ -2742,7 +2742,7 @@ let accordionColony = () => {
         s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colonyShelterCapacity"); s2.create(); s2.appendContent(shelterCapacity)
         if(buildings.shelter["campaign tent"]){
             s1.appendHTML("(")
-            s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Occupation")
+            s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Occupation"))
             s2 = new element("span", "font-bold", [], s1.getNode(), "colonyShelterOccupation"); s2.create(); s2.appendContent(shelterCapacityOccupation)
             s1.appendHTML(")")
         }
@@ -3001,6 +3001,9 @@ let addBuilding = (index, type, parentElement) => {
     s = new element("span", "font-bold p-0.5 px-1 rounded bg-red-500 text-white", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fire hazard"))
 }
 let accordionBuildings = (update = false) => {
+    const new_building = (e) => {
+
+    }
     //Build buildings accordion
     let parentElem = document.getElementById("accordion-menu")
     //Build buildings accordion header
@@ -3050,6 +3053,19 @@ let accordionBuildings = (update = false) => {
         i = new element("i", "fa fa-empty-set me-1", [], p.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("There are no buildings in your colony!")
     }
+    //Actions available
+    //Title
+    let parent_div = document.getElementById("accordion-menu-buildings-body")
+    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], parent_div, `buildings-actions-title`); d2.create()
+    p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+    //Area
+    d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], parent_div, `buildings-actions`); d2.create()
+    p = new element("p", "flex w-100 justify-between p-1 gap-1 text-gray-300", [], d2.getNode()); p.create()
+    b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `buildings-actions-new`); b.create()
+    i = new element("i", "fa fa-trowel", [], b.getNode()); i.create()
+    s = new element("span", "ms-2", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Build new building"))
+    b.getNode().addEventListener("click", new_building)
 }
 let build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     let new_citizen = {}

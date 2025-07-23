@@ -88,7 +88,7 @@ let lifeInterval = setInterval(() => {
         document.querySelector("#shelterCapacityIcon").remove()
         document.querySelector("#colonyShelterCapacity").innerHTML = shelterCapacities["campaign tent"] * buildings.shelter["campaign tent"]
         s1.innerHTML+= " ("
-        s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent("Occupation")
+        s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent(translate(language, "Occupation"))
         s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
         s1.innerHTML+= ")"
         i = new element("i", "ms-1 fa fa-face-smile", [], s1, "shelterCapacityIcon"); i.create()
@@ -849,19 +849,25 @@ let set_random_name = (language, gender = ["Femenine", "Masculine"][Math.floor(M
         female_families = naming['families'][language]['F']
         male_families = naming['families'][language]['M']
     }
-    let name = family = ""
+    let name = family = "", random_value, random_index
     //Define random name
     if(gender == "Femenine" || gender.charAt(0) == "F"){
-        name = female_names[Math.floor(Math.random() * female_names.length)]
+        random_value = Math.random(), random_index = Math.floor(random_value * female_names.length)
+        name = female_names[random_index]
     } else {
-        name = male_names[Math.floor(Math.random() * male_names.length)]
+        let random_value = Math.random(), random_index = Math.floor(random_value * male_names.length)
+        name = male_names[random_index]
     }
+    if(name == undefined) debugger
     //Define random family name
     if(gender == "Femenine" || gender.charAt(0) == "F"){
-        family = female_families[Math.floor(Math.random() * female_families.length)]
+        random_value = Math.random(), random_index = Math.floor(random_value * female_families.length)
+        family = female_families[random_index]
     } else {
-        family = male_families[Math.floor(Math.random() * male_families.length)]
+        random_value = Math.random(), random_index = Math.floor(random_value * male_families.length)
+        family = male_families[random_index]
     }
+    if(family == undefined) debugger
     return name + ", " + family
 }
 let setRandomNames = (language) => {

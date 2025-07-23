@@ -132,6 +132,7 @@ var translationObject = {
     "bronze doubloon":{"ES":"doblón de bronce"},
     "bronze foundry":{"ES":"fundición de bronce"},
     "bronze ingot":{"ES":"lingote de bronce"},
+    "Build new building":{"ES":"Construir nuevo edificio"},
     "Buildings":{"ES":"Edificios"},
     "Buscarle una pareja":{"EN":"Search a couple"},
     "caballo":{"EN":"horse"}, "caballos":{"EN":"horses"},
@@ -270,8 +271,8 @@ var translationObject = {
     "dislikes something of":{"ES":"no tolera algo de"},
     "Dissapointment":{"ES":"Decepción"},
     "Dissatisfaction":{"ES":"Disconformidad"},
-    "Discovered":{"ES":{"F":"Descubierta", "M":"Descubierto"}},
-    "Discovered in":{"ES":{"F":"Descubierta en", "M":"Descubierto en"}},
+    "Discovered":{"ES":{"f":"Descubierta", "m":"Descubierto"}},
+    "Discovered in":{"ES":{"f":"Descubierta en", "m":"Descubierto en"}},
     "doblón de bronce":{"EN":"bronze doubloon"},
     "doblón de oro":{"EN":"gold doubloon"},
     "doblón de plata":{"EN":"silver doubloon"},
@@ -365,7 +366,7 @@ var translationObject = {
     "Filtrar por granularidad":{"EN":"Filter by granularity"},
     "Final result":{"ES":"Resultado final"},
     "Fire hazard":{"ES":"Riesgo de fuego"},
-    "fisher":{"ES":{"F":"pescadora", "M":"pescador", "N":"pescador/a"}},
+    "fisher":{"ES":{"f":"pescadora", "m":"pescador", "n":"pescador/a"}},
     "fishing net":{"ES":"red de pesca"},
     "fishing rod":{"ES":"caña de pescar"},
     "food":{"ES":"alimento"},
@@ -608,6 +609,7 @@ var translationObject = {
     "Nueva pareja: Seleccionar un/a candidato/a":{"EN":"New couple: Select a candidate"},
     "NUEVO":{"EN":"NEW"}, "NUEVA":{"EN":"NEW"},
     "Nueva regla de producción":{"EN":"New production rule"},
+    "Construir nuevo edificio":{"EN":"Build new building"},
     "nuez":{"EN":"nut"},
     "nut":{"ES":"nuez"},
     "Occupation":{"ES":"Ocupación"},
@@ -987,7 +989,6 @@ var translationObject = {
     "vase":{"ES":"vasija"},
     "vasija":{"EN":"vase"},
     "Ver todas":{"EN":"View all"}, "Ver todos":{"EN":"View all"},
-    /*"vestimenta":{"EN":"outfit"},*/
     "Versión no gráfica alfa":{"EN":"Non graphical alpha version"},
     "Vestimenta":{"EN":"Outfit"},
     "Viabilidad de reproducción":{"EN":"Breeding viability"},
@@ -1053,6 +1054,7 @@ var translationObject = {
 
 const translate = function(aLanguage, phrase, gender = "", formatResult = "", changeLanguage = true) {
     language = changeLanguage ? aLanguage : language
+    gender = gender.toLowerCase()
     try{
         //Format result = capitalized | lowercase | uppercase
         let phraseLowerDetected = typeof(translationObject[phrase.toLowerCase()]) != "undefined"
@@ -1064,20 +1066,20 @@ const translate = function(aLanguage, phrase, gender = "", formatResult = "", ch
         let phraseLowerLangGenderDetected = phraseLowerLangDetected && typeof(translationObject[phrase.toLowerCase()][aLanguage][gender]) != "undefined"
         let phraseUpperLangGenderDetected = phraseUpperLangDetected && typeof(translationObject[phrase.toUpperCase()][aLanguage][gender]) != "undefined"
         let phraseCapitalizedLangGenderDetected = phraseCapitalizedLangDetected && typeof(translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage][gender]) != "undefined"
-        gender = gender=="" ? "N" : gender
+        gender = gender=="" ? "n" : gender
         let translatedPhrase =
             phraseLowerLangDetected ? 
                 phraseLowerLangGenderDetected ?
                     translationObject[phrase.toLowerCase()][aLanguage][gender]
-                : (translationObject[phrase.toLowerCase()][aLanguage]["N"] != undefined ? translationObject[phrase.toLowerCase()][aLanguage]["N"] : translationObject[phrase.toLowerCase()][aLanguage])
+                : (translationObject[phrase.toLowerCase()][aLanguage]["n"] != undefined ? translationObject[phrase.toLowerCase()][aLanguage]["n"] : translationObject[phrase.toLowerCase()][aLanguage])
             :   phraseUpperLangDetected ?
                     phraseUpperLangGenderDetected ?
                         translationObject[phrase.toUpperCase()][aLanguage][gender]
-                    : (translationObject[phrase.toUpperCase()][aLanguage]["N"] != undefined ? translationObject[phrase.toUpperCase()][aLanguage]["N"] : translationObject[phrase.toUpperCase()][aLanguage])
+                    : (translationObject[phrase.toUpperCase()][aLanguage]["n"] != undefined ? translationObject[phrase.toUpperCase()][aLanguage]["n"] : translationObject[phrase.toUpperCase()][aLanguage])
                 :   phraseCapitalizedLangDetected ?
                         phraseCapitalizedLangGenderDetected ?
                             translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage][gender]
-                        : (translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["N"] != undefined ? translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["N"] : translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage])
+                        : (translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] != undefined ? translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] : translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage])
                     : phrase
                 
         if(formatResult == "capitalized"){

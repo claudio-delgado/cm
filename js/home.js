@@ -759,7 +759,7 @@ const endActiveExpedition = (expeditionType) => {
     let d = document.getElementById("active-expeditions-area")
     //If no other active expedition, show empty text.
     if(!d.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], d); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], d); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
@@ -1011,7 +1011,7 @@ const toggle_assignable_worker = (e) => {
         e.target.closest("h2").classList.toggle("unassigned")
         e.target.closest("h2").classList.toggle("assigned")
         e.target.closest("div").classList.toggle("bg-green-800")
-        e.target.closest("div").classList.toggle("dark:border-green-600")
+        e.target.closest("div").classList.toggle("border-green-600")
         e.target.closest("div").querySelector("span > span:last-child").classList.toggle("text-white")
         e.target.previousSibling.classList.toggle("text-green-400")
     }
@@ -1045,7 +1045,7 @@ const toggle_assignable_worker = (e) => {
                     elem.remove()
                     //Check if there is no more assignable worker in the panel
                     if(!assignable_workers_div.children.length){
-                        p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], assignable_workers_div); p.create()
+                        p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-200", [], assignable_workers_div); p.create()
                         s = new element("span", "", [], p.getNode()); s.create()
                         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
@@ -1225,9 +1225,17 @@ const cancel_relationship = (e) => {
     //Remove couple citizens from memory array.
     citizens[citizen_id].couple = null
     citizens[couple_id].couple = null
-    //Remove couple button in citizen's panel couple.
-    let couple_button = document.querySelector(`#citizen-${citizen_id}-couple-${couple_id}`)
-    if(couple_button != null) couple_button.remove()
+   
+    //Remove couple citizen from panel.
+    //Panel citizen's couple
+    let couple_div = document.querySelector(`#citizen-${citizen_id}-couple`)
+    couple_div.querySelector("p").remove()
+    p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], couple_div); p.create()
+    s = new element("span", "", [], p.getNode()); s.create()
+    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+    s1.appendContent(translate(language, "None", "f", "capitalized"))
+
     //Remove relationship if it exists.
     document.querySelectorAll(`[data-citizen-1="${citizen_id}"], [data-citizen-2="${citizen_id}"]`).forEach((elem) => {
         elem.remove()
@@ -1459,7 +1467,7 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     enable_accordion_click(b.getNode())
     //Actions available
     //Title
-    d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), `relationship-${relationship_id}-actions-title`); d2.create()
+    d2 = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), `relationship-${relationship_id}-actions-title`); d2.create()
     p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
     //Area

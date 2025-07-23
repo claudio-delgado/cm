@@ -4378,14 +4378,14 @@ const enable_accordion_click = (accordion_item_button) => {
             accordion_item_body.classList.remove('hidden');
             target.setAttribute('aria-expanded', 'true');
             target.children[1].classList.remove("rotate-180")
-            target.classList.remove("text-gray-500", "dark:text-gray-400")
-            target.classList.add("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
+            target.classList.remove("text-gray-500", "text-gray-400")
+            target.classList.add("bg-gray-100", "bg-gray-800", "text-gray-900", "text-white")
         } else { //Trying to collapse accordion item
             accordion_item_body.classList.add('hidden');
             target.setAttribute('aria-expanded', 'false');
             target.children[1].classList.add("rotate-180")
-            target.classList.remove("bg-gray-100", "dark:bg-gray-800", "text-gray-900", "dark:text-white")
-            target.classList.add("text-gray-500", "dark:text-gray-400")
+            target.classList.remove("bg-gray-100", "bg-gray-800", "text-gray-900", "text-white")
+            target.classList.add("text-gray-500", "text-gray-400")
         }
     }
     if(accordion_item_button.classList.contains("unattached-click")){
@@ -4686,7 +4686,7 @@ const add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     let currentCitizenRole = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
     h2id = `${mount_class}-assignable-citizen-${citizen_index}`
     h2 = new element("h2", "assignable-worker unassigned", [{"key":"data-role", "value":currentCitizenRole}], parent_elem, h2id); h2.create()
-    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs bg-gray-700 font-medium border border-gray-900 gap-3 text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
     //Gender citizen icon
@@ -4766,7 +4766,7 @@ const deassignWorkerToMount = (citizenIndex, mountClass) => {
     }
     //If no available workers, then show "no available workers" text
     if(!parentAssigned.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentAssigned); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
@@ -4783,14 +4783,14 @@ const add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => 
         let parentDiv = elem.parentElement
         elem.remove()
         if(!parentDiv.children.length){
-            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentDiv); p.create()
+            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentDiv); p.create()
             s = new element("span", "", [], p.getNode()); s.create()
             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
             s.appendHTML(translate(language, "No workers available"))
         }
     })
     h2 = new element("h2", "grow assignedWorker", [], parentElem, "assigned-citizen-"+citizen_index); h2.create()
-    d = new element("div", "flex items-center justify-between w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+    d = new element("div", "flex items-center justify-between w-full py-2 px-2 text-xs bg-gray-900 font-medium border border-gray-700 gap-3 text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
     //Gender citizen icon
@@ -4821,7 +4821,7 @@ const add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) =
     let rule_index = parent_elem.id.split("-")[1], requirement_index = parent_elem.id.split("-")[3]
     h2id = `rule-${rule_index}-requirement-${requirement_index}-assignable-citizen-${citizen_index}`
     h2 = new element("h2", "assignable-worker unassigned", [], parent_elem, h2id); h2.create()
-    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-gray-400 bg-gray-700 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-900 gap-3 text-gray-500 dark:text-gray-400", [], h2.getNode())
+    d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs bg-gray-700 font-medium border border-gray-900 gap-3 text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
     //Gender citizen icon
@@ -4869,7 +4869,7 @@ const addAssignedHorseToExpedition = (horseElement) => {
     horseElement.querySelectorAll("i")[1].classList.add("fa-minus")
     //If no more available objects, then show "No other objects available" text
     if(!parentAvailable.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAvailable); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentAvailable); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No other objects available"))
@@ -4902,7 +4902,7 @@ const addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     citizens[citizenIndex].status = "assigned"
     //If no more available workers, then show "no available workers" text
     if(!parentAvailable.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAvailable); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentAvailable); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
@@ -4927,7 +4927,7 @@ const addAssignedWorkerToMount = (citizenIndex, mountClass) => {
         elem.remove()
         if(!parentElem.querySelectorAll("h2").length){
             //Show no workers available message.
-            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentElem); p.create()
+            p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentElem); p.create()
             s = new element("span", "", [], p.getNode()); s.create()
             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
             s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
@@ -4959,7 +4959,7 @@ const addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     }
     //If no more available workers, then show "no available workers" text
     if(!parentAvailable.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAvailable); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentAvailable); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers available"))
@@ -4982,7 +4982,7 @@ const deassignHorseToExpedition = (horseElement) => {
     horseElement.querySelectorAll("i")[1].classList.add("fa-plus")
     //If no assigned workers, then show "no workers assigned" text
     if(!parentAssigned.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentAssigned); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
@@ -5012,7 +5012,7 @@ const deassignWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     citizens[citizenIndex].status = "idle"
     //If no available workers, then show "no available workers" text
     if(!parentAssigned.children.length){
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-500 dark:text-gray-200", [], parentAssigned); p.create()
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parentAssigned); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))

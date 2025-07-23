@@ -1219,11 +1219,15 @@ const add_child_to_citizen = (a_child, a_citizen) => {
     i.getNode().addEventListener("click", modal_citizen_info)
 }
 const cancel_relationship = (e) => {
-    let citizen_id = e.target.closest("button").getAttribute("data-citizen-id")
+    //Check if target belongs to a button or a div.
+    let citizen_id = e.target.closest("button") != null ? e.target.closest("button").getAttribute("data-citizen-id") : e.target.closest("div").getAttribute("data-citizen-id")
     let couple_id = citizens[citizen_id].couple
     //Remove couple citizens from memory array.
     citizens[citizen_id].couple = null
     citizens[couple_id].couple = null
+    //Remove couple button in citizen's panel couple.
+    let couple_button = document.querySelector(`#citizen-${citizen_id}-couple-${couple_id}`)
+    if(couple_button != null) couple_button.remove()
     //Remove relationship if it exists.
     document.querySelectorAll(`[data-citizen-1="${citizen_id}"], [data-citizen-2="${citizen_id}"]`).forEach((elem) => {
         elem.remove()
@@ -1267,7 +1271,7 @@ const draw_couple_of_citizen = (a_citizen) => {
     //Add couple to citizen.
     p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
     h2 = new element("h2", "grow", [], p.getNode(), `#citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
-    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [{"key":"data-citizen-id", "value":a_citizen.id}], h2.getNode()); d2.create()
     s = new element("span", "", [], d2.getNode()); s.create()
     let couple_gender_class = a_couple.gender.charAt(0) == "F" ? "venus" : "mars"
     let couple_gender_color = a_couple.gender.charAt(0) == "F" ? "red" : "blue"
@@ -1296,7 +1300,7 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     //Add couple to citizen.
     p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
     h2 = new element("h2", "grow", [], p.getNode(), `#citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
-    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [{"key":"data-citizen-id", "value":a_couple.id}], h2.getNode()); d2.create()
     s = new element("span", "", [], d2.getNode()); s.create()
     let couple_gender_class = a_couple.gender.charAt(0) == "F" ? "venus" : "mars"
     let couple_gender_color = a_couple.gender.charAt(0) == "F" ? "red" : "blue"
@@ -1316,7 +1320,7 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     //Add citizen to couple.
     p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
     h2 = new element("h2", "grow", [], p.getNode()); h2.create()
-    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [{"key":"data-citizen-id", "value":a_citizen.id}], h2.getNode()); d2.create()
     s = new element("span", "", [], d2.getNode()); s.create()
     let citizen_is_woman = a_citizen.gender.charAt(0) == "F"
     let couple_is_woman = !citizen_is_woman

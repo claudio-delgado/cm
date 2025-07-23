@@ -1,6 +1,6 @@
 //See init.js to check global variables and constants.
 
-let initColonyInfo = () => {
+const initColonyInfo = () => {
     language = "ES", colonyScore = 0, colonyLifeQuality = 10
     citizensAmount = 10, citizensFemaleAmount = 5, citizensMaleAmount = 5
     daysPassed = 0, dayPassed = false, weekPassed = false
@@ -8,7 +8,7 @@ let initColonyInfo = () => {
     //colony_water_reservoir = water_reservoirs[Math.floor(Math.random() * water_reservoirs.length)].name
     colony_water_reservoir = Object.keys(water_reservoirs)[Math.floor(Math.random() * Object.keys(water_reservoirs).length)]
 }
-let loadInitialRandomGoods = () => {
+const loadInitialRandomGoods = () => {
     stockValues.resources["EN"]["stone"]+= 800 + Math.floor(Math.random() * (1000 - 800))
     stockValues.resources["ES"][translate(language, "stone")] = stockValues.resources["EN"]["stone"]
     stockValues.resources["EN"]["gravel"]+= 800 + Math.floor(Math.random() * (1000 - 800))
@@ -29,7 +29,7 @@ let loadInitialRandomGoods = () => {
     stockValues.products["ES"][translate(language, "hay")] = stockValues.products["EN"]["hay"]
     stockDisplayed = JSON.parse(JSON.stringify(stockValues))
 }
-let colonySatisfaction = (lifeQuality, population) => {
+const colonySatisfaction = (lifeQuality, population) => {
     let satisfaction = {}
     if(lifeQuality >= population){
         if(lifeQuality >= 1.5 * population){
@@ -60,14 +60,14 @@ let colonySatisfaction = (lifeQuality, population) => {
     }
     return satisfaction
 }
-let searchZone = (e) => {
+const searchZone = (e) => {
     document.querySelector("#searchZone > span").innerText = translate(language, "Your citizens are searching the zone...")
     document.querySelector("#searchZone > i").classList.add("fa-beat")
     searchingZone = true
     e.target.removeEventListener("click", searchZone)
 }
 
-let lifeInterval = setInterval(() => {
+const lifeInterval = setInterval(() => {
     let currentYear = currentWeek = currentDay = currentHour = 0
     //Zone searched
     const zone_searched_actions = () => {
@@ -381,7 +381,7 @@ let lifeInterval = setInterval(() => {
     }
 }, 1790);
 
-let processCountdowns = () => {
+const processCountdowns = () => {
     let hours, days, weeks, years
     document.querySelectorAll(".countdownTime").forEach((elem) => {
         let idArray = elem.querySelector("span:first-child").id.split("-")
@@ -510,7 +510,7 @@ let processCountdowns = () => {
     })
 }
 
-let endActiveExpedition = (expeditionType) => {
+const endActiveExpedition = (expeditionType) => {
     let mountResourceFound, ruinsFound = true
     let loot //For ruins expedition.
     let expeditionariesAssigned = 0
@@ -766,7 +766,7 @@ let endActiveExpedition = (expeditionType) => {
     }
 }
 
-let citizenDescription = (gender, birthWeeks, language, texts, attributes, genderPlacement) => {
+const citizenDescription = (gender, birthWeeks, language, texts, attributes, genderPlacement) => {
     let textAttr = "", prefix = "", gen = (gender == "Femenine" || gender == "Femenino" ? "F" : "M"), adjective = "", text = ""
     let connector, noun
     if(language == "ES" && (texts == "Ella es una" || texts == "El es un")) { connector = " y " }
@@ -801,7 +801,7 @@ let citizenDescription = (gender, birthWeeks, language, texts, attributes, gende
     }
     return text
 }
-let updateCitizenDescription = (citizenIndex, gender, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
+const updateCitizenDescription = (citizenIndex, gender, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
     let descriptionText1 = {"ES" : {"F": "Ella es una", "M": "El es un"}, "EN" : {"F": "She is a", "M": "He is a"}}
     let descriptionText2 = {"ES" : {"F": "A ella le gusta un", "M": "A él le gusta una"}, "EN" : {"F": "She likes a", "M": "He likes a"}}
     let descriptionText3 = {"ES" : {"F": "Ella prefiere que no sea", "M": "Él prefiere que no sea"}, "EN" : {"F": "She prefers a no", "M": "He prefers a no"}}
@@ -815,7 +815,7 @@ let updateCitizenDescription = (citizenIndex, gender, birthWeeks, citizenOwnAttr
     //Place description in citizen's description panel, removing previous one if existed.
     document.querySelector("#citizen-"+citizenIndex+"-description").innerHTML = "\""+citizenBio+"\""
 }
-let set_random_name = (language, gender = ["Femenine", "Masculine"][Math.floor(Math.random()*2)], exclusion_set = false) => {
+const set_random_name = (language, gender = ["Femenine", "Masculine"][Math.floor(Math.random()*2)], exclusion_set = false) => {
     let female_names, male_names, female_families, male_families
     //Cut all excluded names and families.
     if(exclusion_set){
@@ -870,7 +870,7 @@ let set_random_name = (language, gender = ["Femenine", "Masculine"][Math.floor(M
     if(family == undefined) debugger
     return name + ", " + family
 }
-let setRandomNames = (language) => {
+const setRandomNames = (language) => {
     //Assign random names for all citizens
     var femaleNames = naming['names'][language]['F']
     var maleNames = naming['names'][language]['M']
@@ -901,7 +901,7 @@ let setRandomNames = (language) => {
         //"<i id='citizen-"+i+"-gender-icon' class='text-red-500 fa fa-venus me-1'></i><i id='citizen-"+i+"-role-icon' class='text-green-500 hidden fa me-1'></i></i><span class='text-yellow-500 border border-yellow-500 rounded px-1 me-1'>2</span>"+
     }
 }
-let getRandomAttributes = (language, amount = 3, excludeThis = []) => {
+const getRandomAttributes = (language, amount = 3, excludeThis = []) => {
     let attributeGroups = JSON.parse(JSON.stringify(attributes[language]))
     //Excluir los atributos necesarios.
     attributeGroups.forEach(function(valueA, indexA){
@@ -925,7 +925,7 @@ let getRandomAttributes = (language, amount = 3, excludeThis = []) => {
     }
     return citizenAttributes
 }
-let custom_accordion = (header_element_id = null, body_element_id = null, callback = () => {}) => {
+const custom_accordion = (header_element_id = null, body_element_id = null, callback = () => {}) => {
     let header_element = document.getElementById(header_element_id) != undefined ? document.getElementById(header_element_id) : null
     let body_element = document.getElementById(body_element_id) != undefined ? document.getElementById(body_element_id) : null
     if(header_element != null && body_element != null){
@@ -961,7 +961,7 @@ translateAll(language)
 
 enableNotificationEvents()
 
-let process_worker_assignation = (citizen_index, assigned_where) => {
+const process_worker_assignation = (citizen_index, assigned_where) => {
     //Perform particular tasks according to the nature of new citizen's assignation.
     let citizen_role = document.querySelector("#citizen-"+citizen_index+"-role").getAttribute("data-role")
     if(assigned_where == "waterReservoir"){
@@ -983,7 +983,7 @@ let process_worker_assignation = (citizen_index, assigned_where) => {
         
     }
 }
-let process_worker_deassignation = (citizen_index, deassigned_from_where) => {
+const process_worker_deassignation = (citizen_index, deassigned_from_where) => {
     //Perform particular tasks according to the nature of new citizen's deassignation.
     let citizen_role = document.querySelector("#citizen-"+citizen_index+"-role").getAttribute("data-role")
     if(deassigned_from_where == "waterReservoir"){
@@ -1002,7 +1002,7 @@ let process_worker_deassignation = (citizen_index, deassigned_from_where) => {
         }
     }
 }
-let toggle_assignable_worker = (e) => {
+const toggle_assignable_worker = (e) => {
     let toggle_panel_aspect = () => {
         //Change citizen panel aspect.
         e.target.classList.toggle("text-green-400")
@@ -1064,7 +1064,7 @@ let toggle_assignable_worker = (e) => {
     }
     
 }
-let assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
+const assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
     //Check if citizen is idle or busy.
     if(document.querySelector("#citizen-"+citizen_id+"-status").getAttribute("data-status") == "idle"){
         //Check previous role if exists.
@@ -1144,7 +1144,7 @@ const draw_parents_of_citizen = (a_citizen) => {
         i.getNode().addEventListener("click", modal_citizen_info)
     })
 }
-let add_parent_to_citizen = (a_parent, a_citizen, type = "mother") => {
+const add_parent_to_citizen = (a_parent, a_citizen, type = "mother") => {
     if(type == "father") citizens[a_citizen.id].father = a_parent.id
     if(type == "mother") citizens[a_citizen.id].mother = a_parent.id
     //Add parents to specific panel.
@@ -1194,7 +1194,7 @@ const draw_children_of_citizen = (a_citizen) => {
         i.getNode().addEventListener("click", modal_citizen_info)
     }
 }
-let add_child_to_citizen = (a_child, a_citizen) => {
+const add_child_to_citizen = (a_child, a_citizen) => {
     citizens[a_citizen.id].children.push(a_child.id)
     //Add child to specific panel.
     if(document.querySelector(`#citizen-${a_citizen.id}-children p.empty`) != undefined){
@@ -1218,7 +1218,7 @@ let add_child_to_citizen = (a_child, a_citizen) => {
     i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_child.id}], s.getNode(), `child-${a_child.id}-view-info`); i.create()
     i.getNode().addEventListener("click", modal_citizen_info)
 }
-let cancel_relationship = (e) => {
+const cancel_relationship = (e) => {
     let citizen_id = e.target.closest("button").getAttribute("data-citizen-id")
     let couple_id = citizens[citizen_id].couple
     //Remove couple citizens from memory array.
@@ -1238,7 +1238,7 @@ let cancel_relationship = (e) => {
         }
     })
 }
-let try_breeding = (e) => {
+const try_breeding = (e) => {
     let current_relationship_id = e.target.closest("button").id.split("-")[1]
     let objectData = {"language": language, "parentId": `#accordion-relationship-${current_relationship_id}-body`}
     //Build panel
@@ -1247,7 +1247,7 @@ let try_breeding = (e) => {
     tryBreedingPanel.buildPanel()
     currently_used_panel = tryBreedingPanel
 }
-let assign_couple_to_citizen = (e) => {
+const assign_couple_to_citizen = (e) => {
     let couple_id = e.target.id.split("-")[2]
     //Mark assign icon.
     document.getElementById(`couple-citizen-${couple_id}-assign`).classList.remove("fa-square")
@@ -1284,7 +1284,7 @@ const draw_couple_of_citizen = (a_citizen) => {
         document.querySelector(`#citizen-${a_couple.id}-couple p.empty`).remove()
     }
 }
-let add_couple_to_citizen = (a_couple, a_citizen) => {
+const add_couple_to_citizen = (a_couple, a_citizen) => {
     citizens[a_citizen.id].couple = a_couple.id
     citizens[a_couple.id].couple = a_citizen.id
     //Add couple to specific citizen panel.
@@ -1471,7 +1471,7 @@ let add_couple_to_citizen = (a_couple, a_citizen) => {
     relationship_id++
 }
 
-let handleToggleHorse = (e) => {
+const handleToggleHorse = (e) => {
     e.target.removeEventListener("click", handleToggleHorse)
     if(e.target.classList.contains("fa-plus")){
         addAssignedHorseToExpedition(e.target.closest("h2"))
@@ -1524,7 +1524,7 @@ let handleToggleHorse = (e) => {
     e.target.addEventListener("click", handleToggleHorse)
 }
 //Assignment and deassignment of workers in differnte panels (landforms and new expedition)
-let handleToggleWorker = (e) => {
+const handleToggleWorker = (e) => {
     let handleStartExpedition = (event) => {
         event.target.removeEventListener("click", handleStartExpedition)
         let expeditionType = event.target.closest("button#expeditionStart").getAttribute("data-type")

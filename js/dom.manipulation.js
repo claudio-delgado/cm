@@ -2329,7 +2329,7 @@ class element{
 }
 
 //Build home accordions structure
-let accordionNews = () => {
+const accordionNews = () => {
     //Build news accordion
     let parentElem = document.getElementById("accordion-menu")
     //Build news accordion header
@@ -2345,7 +2345,7 @@ let accordionNews = () => {
     d2 = new element("div", "py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-news"); d.create()
 }
-let addNews = (notificationType = "ZoneSearched", newsData) => {
+const addNews = (notificationType = "ZoneSearched", newsData) => {
     let d = document.querySelector("#accordion-news")
     let newsIndex = document.querySelectorAll("#accordion-news h2").length + 1
     //Build notification #newsIndex accordion body
@@ -2532,7 +2532,7 @@ let addNews = (notificationType = "ZoneSearched", newsData) => {
     document.querySelector("#newsNotifications").hidden = false
     enableNotificationEvents()
 }
-let addColonyStockFilters = (stockType = "resources", action = "none", value = null) => {
+const addColonyStockFilters = (stockType = "resources", action = "none", value = null) => {
     let parentElem = document.getElementById(stockType+"StockFilterPanel")
     //Delete previous filter contents.
     document.querySelectorAll("#"+stockType+"StockFilterPanel > *").forEach((elem) => elem.remove())
@@ -2661,7 +2661,7 @@ let addColonyStockFilters = (stockType = "resources", action = "none", value = n
         }
     }
 }
-let accordionColony = () => {
+const accordionColony = () => {
     let d, d1, parentElem = document.getElementById("accordion-menu")
     let buildColonyAccordion = () => {
         //Build colony accordion header
@@ -2955,7 +2955,7 @@ let accordionColony = () => {
     buildStock()
     buildActionsAvailable()
 }
-let addBuilding = (index, type, parentElement) => {
+const addBuilding = (index, type, parentElement) => {
     //Build building 1 - 1 accordion header
     h2 = new element("h2", "notificationUnread", [], parentElement, "accordion-building-1-"+index+"-header"); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium rtl:text-right border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-1-"+index+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-1-"+index+"-body"}], h2.getNode(), "accordion-building-1-"+index)
@@ -3000,7 +3000,7 @@ let addBuilding = (index, type, parentElement) => {
     p = new element("p", "ms-1 mb-1 text-xs text-gray-500 dark:text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "font-bold p-0.5 px-1 rounded bg-red-500 text-white", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fire hazard"))
 }
-let accordionBuildings = (update = false) => {
+const accordionBuildings = (update = false) => {
     const new_building = (e) => {
 
     }
@@ -3067,7 +3067,7 @@ let accordionBuildings = (update = false) => {
     s = new element("span", "ms-2", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Build new building"))
     b.getNode().addEventListener("click", new_building)
 }
-let build_citizen = (needs_translation = false, id = 0, citizen = false) => {
+const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     let new_citizen = {}
     let accordion_citizens = document.getElementById("accordion-citizens")
     let build_citizen_accordion_header = () => {
@@ -3372,7 +3372,7 @@ let build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     enable_accordion_click(document.querySelector(`#accordion-citizen-${new_citizen.id}-header button`))
     return new_citizen
 }
-let accordionCitizens = (amount = 10) => {
+const accordionCitizens = (amount = 10) => {
     let citizenBuilder = (index) => {
         citizens[index] = {}
         citizens[index].father = null
@@ -3603,7 +3603,7 @@ let accordionCitizens = (amount = 10) => {
         //citizenBuilder(i)
     }
 }
-let accordionRelationships = () => {
+const accordionRelationships = () => {
     //Build relationships accordion
     let parentElem = document.getElementById("accordion-menu")
     //Build relationships accordion header
@@ -3623,17 +3623,17 @@ let accordionRelationships = () => {
     s1.appendContent("Not defined (Make couples in Citizen's panel)")
 }
 
-let get_citizen_by_index = (citizen_index) => {
+const get_citizen_by_index = (citizen_index) => {
     return citizens[citizen_index]
 }
-let modal_citizen_info = (e) => {
+const modal_citizen_info = (e) => {
     let citizen_index = e.target.getAttribute("data-index")
     let citizen = get_citizen_by_index(citizen_index)
     citizen.modalStyle = "small"
     modalPopup(citizen.name, "ViewCitizenInfo", citizen)
     modal.show()
 }
-let show_citizen_attributes = (e) => {
+const show_citizen_attributes = (e) => {
     let parent_h2 = e.target.closest("h2")
     if(e.target.classList.contains("fa-down")){
         let citizen_index = e.target.getAttribute("data-index")
@@ -3672,7 +3672,7 @@ let show_citizen_attributes = (e) => {
     e.target.classList.toggle("fa-down")
     e.target.classList.toggle("fa-up")
 }
-let show_active_production_rules = () => {
+const show_active_production_rules = () => {
     let show_workers_assigned = (parent_div, workers_label, rule_id, req_index) => {
         let remove_requirement_workers = (e) => {
             document.querySelector(`#active-rule-${rule_id}-requirement-${req_index}-assigned-title`).remove()
@@ -3821,7 +3821,7 @@ let show_active_production_rules = () => {
         })
     })
 }
-let new_rule_click_requirement = (click_target, requirement, elem) => {
+const new_rule_click_requirement = (click_target, requirement, elem) => {
     let rule_index
     let toggle_save_new_rule_panel = (div, rule_index) => {
         let click_save_rule = (e) => {
@@ -4016,7 +4016,7 @@ let new_rule_click_requirement = (click_target, requirement, elem) => {
 }
 //Display all rule requirements
 //Receives: rule as object, rule_index as id, clicked_product as DOM element, current_mount
-let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_mount = false) => {
+const new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_mount = false) => {
     let get_product_name_parent = (requirement) => {
         if(!requirement.consumable){
             sid = `rule-${rule_index}-requirement-${requirement.index}`
@@ -4079,7 +4079,7 @@ let new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_
     s1.appendContent(translate(language, clicked_product, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
     enable_accordion_click(b.getNode())
 }
-let new_rule_iterate_all_product_available_rules = (clicked_product, current_mount) => {
+const new_rule_iterate_all_product_available_rules = (clicked_product, current_mount) => {
     let location_product_rules = product_rules[clicked_product].rules
     //Iterate over all rules for that selected product.
     //Build product rules accordions with a rule inside.
@@ -4101,7 +4101,7 @@ let new_rule_iterate_all_product_available_rules = (clicked_product, current_mou
         rule_index++
     })
 }
-let accordion_landforms = () => {
+const accordion_landforms = () => {
     let build_actions_available = () => {
         //Actions available
         d2 = new element("div", "border border-gray-300 dark:border-gray-800 dark:bg-gray-500 text-xs", [], d1.getNode(), "active-production-rules-actions-title"); d2.create()
@@ -4254,7 +4254,7 @@ let accordion_landforms = () => {
     build_landforms_accordion()
     build_actions_available()
 }
-let accordionExpeditions = () => {
+const accordionExpeditions = () => {
     let d
     let buildActionsAvailable = () => {
         //Actions available
@@ -4323,7 +4323,7 @@ let accordionExpeditions = () => {
     buildActionsAvailable()
 }
 //Build modal popup
-let modalPopup = (modalTitle, modalType, modalData = {}) => {
+const modalPopup = (modalTitle, modalType, modalData = {}) => {
     let parent = document.getElementById("modalBody")
     //Adjust style if it's a functional modal or information modal.
     if(modalData.modalStyle == "small"){
@@ -4433,7 +4433,7 @@ let modalPopup = (modalTitle, modalType, modalData = {}) => {
     if(modalType == "RoleCitizenBusy"){ popupCannotChangeRole() }
     if(modalType == "ViewCitizenInfo"){ popupViewCitizenInfo() }
 }
-let buildActiveExpedition = (parentElem, expeditionData = {}) => {
+const buildActiveExpedition = (parentElem, expeditionData = {}) => {
     //Build current active expeditions
     //Remove "No active expeditions" text if exists.
     if(document.querySelector("#"+parentElem.id+" > p") != null){
@@ -4526,7 +4526,7 @@ let buildActiveExpedition = (parentElem, expeditionData = {}) => {
     })
 }
 //Enable accordion button click event
-let enable_accordion_click = (accordion_item_button) => {
+const enable_accordion_click = (accordion_item_button) => {
     let handle_accordion_click = (e) => {
         const target = e.target.closest("button")
         const accordion_item_body = document.querySelector(target.getAttribute('data-accordion-target'))
@@ -4561,7 +4561,7 @@ let enable_accordion_click = (accordion_item_button) => {
         accordion_item_button.classList.remove("unattached-click")
     }
 }
-let enableNotificationEvents = () => {
+const enableNotificationEvents = () => {
     let notificationHandler = (e) => {
         e.target.closest("h2").removeEventListener('click', notificationHandler)
         //Remove notification unread class and icon
@@ -4582,7 +4582,7 @@ let enableNotificationEvents = () => {
         value.addEventListener('click', notificationHandler)
     })
 }
-let addLandform = (landformType = "hunting") => {
+const addLandform = (landformType = "hunting") => {
     let d = document.querySelector("#accordion-landforms")
     let landformIndex = document.querySelectorAll("#accordion-landforms h2").length + 1
     let landformTitle
@@ -4646,7 +4646,7 @@ let addLandform = (landformType = "hunting") => {
     s1 = new element("span", "a", [{"key":"data-i18n","value":""}, {"key":"gender","value":"F"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "F"))
 
 }
-let updateStock = () => {
+const updateStock = () => {
     //Update resources
     let parentElement = document.getElementById("resources-stock-list")
     document.querySelectorAll("#resources-stock-list p").forEach((elem) => elem.remove())
@@ -4706,7 +4706,7 @@ let updateStock = () => {
     }
 }
 //Change stock resources or products order from ASC to DESC or viceversa, and display results on Colony panel.
-let toggleSortStock = (type = "resources") => {
+const toggleSortStock = (type = "resources") => {
     let reversed = {}
     Object.keys(stockDisplayed[type][language])
         .reverse()
@@ -4726,7 +4726,7 @@ let toggleSortStock = (type = "resources") => {
     updateStock()
 }
 //Update accordions structure
-let updateColony = (event = "zoneSearched") => {
+const updateColony = (event = "zoneSearched") => {
     //Check for new buildings
     //Check if there is no building in the colony
     let noCampaignTents = typeof buildings.shelter == "undefined" || typeof buildings.shelter["campaign tent"] == "undefined" || !buildings.shelter["campaign tent"]
@@ -4774,7 +4774,7 @@ let updateColony = (event = "zoneSearched") => {
     }
 }
 //Change all panels in which the role and citizen were involved
-let post_conditions_changing_role = (previous_role, citizen_index) => {
+const post_conditions_changing_role = (previous_role, citizen_index) => {
     let loop_citizen_index
     document.querySelectorAll(".assignable-workers > h2.assignable-worker.unassigned").forEach((elem) => {
         loop_citizen_index = elem.id.split("-")[3]
@@ -4794,7 +4794,7 @@ let post_conditions_changing_role = (previous_role, citizen_index) => {
     })
 }
 //For any new expedition: Add available worker (expeditionary)
-let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
+const addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     let parentElem = document.querySelector("."+newExpeditionClass+" .availableWorkers")
     //Remove "no available workers" text, if exists
     if(document.querySelector("."+newExpeditionClass+" .availableWorkers .empty")!=null){
@@ -4824,7 +4824,7 @@ let addAvailableWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     i = new element("i", "text-sm fa fa-plus", [], s.getNode(), "citizen-"+citizenIndex+"-assign"); i.create()
 }
 //For any mount discovered: Add available worker
-let addAvailableHorseToExpedition = () => {
+const addAvailableHorseToExpedition = () => {
     let parentElem = document.querySelector(".newExpedition .availableObjects")
     //Remove "no available objects" text, if exists
     if(document.querySelector(".newExpedition .availableObjects .empty")!=null){
@@ -4843,7 +4843,7 @@ let addAvailableHorseToExpedition = () => {
     return i.getNode()
 }
 //For any mount discovered: Add assignable worker as permanent
-let add_assignable_worker_to_mount = (citizen_index, mount_class) => {
+const add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     //Parent div in which to hang structure.
     let parent_elem = document.querySelector(`.${mount_class} .assignable-workers`)
     //Remove "no available workers" text, if exists
@@ -4896,7 +4896,7 @@ let add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     })*/
 }
 //For certain mount discovered: Remove (Deassign) assigned worker
-let deassignWorkerToMount = (citizenIndex, mountClass) => {
+const deassignWorkerToMount = (citizenIndex, mountClass) => {
     let parentAssigned = document.querySelector("."+mountClass+" .assignedWorkers")
     let parentAvailable = document.querySelector("."+mountClass+" .availableWorkers")
     //Remove "no available workers" text, if exists
@@ -4941,7 +4941,7 @@ let deassignWorkerToMount = (citizenIndex, mountClass) => {
     }
 }
 //For any new production rule: Add available worker
-let add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => {
+const add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => {
     //Remove "no assigned workers" text, if exists
     if(parent_elem.querySelector(".empty")!=null){
         parent_elem.querySelector(".empty").remove()
@@ -4981,7 +4981,7 @@ let add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => {
     i = new element("i", "text-sm fa fa-minus", [], s.getNode(), "citizen-"+citizen_index+"-deassign"); i.create()
 }
 //For any new production worker rule: Add assignable worker
-let add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) => {
+const add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) => {
     //Remove "no available workers" text, if exists
     if(parent_elem.querySelector(".empty") != null){
         parent_elem.querySelector(".empty").remove()
@@ -5021,7 +5021,7 @@ let add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) => 
     i = new element("i", "text-sm fa-regular fa-square", [{"key":"data-group", "value":"production-rule"}, {"key":"data-rule", "value":rule_index}, {"key":"data-requirement", "value":requirement_index}], s.getNode(), iid); i.create()
 }
 //For certain new expedition: Add assigned horse
-let addAssignedHorseToExpedition = (horseElement) => {
+const addAssignedHorseToExpedition = (horseElement) => {
     let parentAssigned = document.querySelector(".newExpedition .assignedWorkers")
     let parentAvailable = document.querySelector(".newExpedition .availableObjects")
     //Remove "no assigned workers" text, if exists
@@ -5044,7 +5044,7 @@ let addAssignedHorseToExpedition = (horseElement) => {
     }
 }
 //For certain new expedition: Add assigned worker (expeditionary)
-let addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
+const addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     let parentAssigned = document.querySelector("."+newExpeditionClass+" .assignedWorkers")
     let parentAvailable = document.querySelector("."+newExpeditionClass+" .availableWorkers")
     //Remove "no assigned workers" text, if exists
@@ -5077,7 +5077,7 @@ let addAssignedWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     }
 }
 //For certain mount discovered: Add assigned worker
-let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
+const addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     let parentAssigned = document.querySelector("."+mountClass+" .assignedWorkers")
     let parentAvailable = document.querySelector("."+mountClass+" .availableWorkers")
     //Remove "no assigned workers" text, if exists
@@ -5134,7 +5134,7 @@ let addAssignedWorkerToMount = (citizenIndex, mountClass) => {
     }
 }
 //For certain new expedition: Remove (Deassign) assigned horse
-let deassignHorseToExpedition = (horseElement) => {
+const deassignHorseToExpedition = (horseElement) => {
     let parentAssigned = document.querySelector(".newExpedition .assignedWorkers")
     let parentAvailable = document.querySelector(".newExpedition .availableObjects")
     //Remove "No other objects available" text, if exists
@@ -5157,7 +5157,7 @@ let deassignHorseToExpedition = (horseElement) => {
     }
 }
 //For certain new expedition: Remove (Deassign) assigned worker
-let deassignWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
+const deassignWorkerToExpedition = (citizenIndex, newExpeditionClass) => {
     let parentAssigned = document.querySelector("."+newExpeditionClass+" .assignedWorkers")
     let parentAvailable = document.querySelector("."+newExpeditionClass+" .availableWorkers")
     //Remove "no available workers" text, if exists

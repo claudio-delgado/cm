@@ -93,13 +93,16 @@ class panel{
             if(this.panelName == "newExpedition"){
                 //Make assigned expeditionaries or army available restoring status of all of them.
                 document.querySelectorAll(".assignedWorkers h2").forEach((citizen) => {
-                    let citizen_index = citizen.id.split("-")[2]
-                    document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((status) => {
-                        status.setAttribute("data-status", "idle")
-                        status.innerText = translate(language, "idle")
-                    })
-                    //Change global citizens array
-                    citizens[citizen_index].status = "idle"
+                    //Check if assigned object is a worker or a horse...
+                    if(citizen.id){
+                        let citizen_index = citizen.id.split("-")[2]
+                        document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((status) => {
+                            status.setAttribute("data-status", "idle")
+                            status.innerText = translate(language, "idle")
+                        })
+                        //Change global citizens array
+                        citizens[citizen_index].status = "idle"
+                    }
                 })
             }
             this.removePanel()
@@ -2545,33 +2548,40 @@ const addColonyStockFilters = (stockType = "resources", action = "none", value =
     document.querySelectorAll("#"+stockType+"StockFilterPanel > *").forEach((elem) => elem.remove())
     s = new element("span", "flex grow", [], parentElem); s.create()
     //View all button
-    b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "showAllResourcesStock"); b.create()
-    i = new element("i", "fa fa-database me-2", [], b.getNode()); i.create()
+    let button_id = `showAll${stockType.charAt(0).toUpperCase()+stockType.slice(1)}Stock`
+    let disabled = stockType == "buildingParts"
+    b = new element("button", `p-1 mx-2 text-xs grow button border border-gray-400 ${disabled ? "text-gray-900 bg-gray-500" : "text-white bg-gray-800"}`, [{"key":"type","value":"button"}], s.getNode(), button_id); b.create()
+    i = new element("i", `fa fa-${disabled ? "ban" : "database"} me-2`, [], b.getNode()); i.create()
     s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], b.getNode()); s1.create(); s1.appendContent(translate(language, "View all", "m"))
-    b.getNode().addEventListener("click", (e) => {
-        stockDisplayed = []
-        stockDisplayed = JSON.parse(JSON.stringify(stockValues))
-        //Indicate what is being displayed.
-        document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All resources from stock")
-        addColonyStockFilters(stockType)
-        updateStock()
-    })
-    //Filter button
-    b = new element("button", "p-1 mx-2 text-xs grow button border text-white border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "showFilterResourcesStock"); b.create()
-    i = new element("i", "fa fa-filters me-2", [], b.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(translate(language, "Filter"))
-    if(["filter", "filterCategory", "filterGranularity"].includes(action)){
-        //Disable filter button.
-        b.getNode().classList.remove("text-white", "border-gray-400", "bg-gray-800")
-        b.getNode().classList.add("text-gray-400", "border-gray-500", "bg-gray-600")
-    } else {
-        //Enable filter button.
-        b.getNode().classList.remove("text-white", "border-gray-400", "bg-gray-800")
-        b.getNode().classList.remove("text-gray-400", "border-gray-500", "bg-gray-600")
-        b.getNode().classList.add("text-white", "border-gray-400", "bg-gray-800")
+    if(!disabled){
         b.getNode().addEventListener("click", (e) => {
-            addColonyStockFilters(stockType, "filter")
+            stockDisplayed = []
+            stockDisplayed = JSON.parse(JSON.stringify(stockValues))
+            //Indicate what is being displayed.
+            let object_type = (stockType == "buildingParts" ? "building parts" : stockType)
+            document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, `All ${object_type} from stock`)
+            addColonyStockFilters(stockType)
+            updateStock()
         })
+    }
+    //Filter button
+    b = new element("button", `p-1 mx-2 text-xs grow button border border-gray-400 ${disabled ? "text-gray-900 bg-gray-500" : "text-white bg-gray-800"}`, [{"key":"type","value":"button"}], s.getNode(), "showFilterResourcesStock"); b.create()
+    i = new element("i", `fa fa-${disabled ? "ban" : "filters"} me-2`, [], b.getNode()); i.create()
+    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(translate(language, "Filter"))
+    if(!disabled){
+        if(["filter", "filterCategory", "filterGranularity"].includes(action)){
+            //Disable filter button.
+            b.getNode().classList.remove("text-white", "border-gray-400", "bg-gray-800")
+            b.getNode().classList.add("text-gray-400", "border-gray-500", "bg-gray-600")
+        } else {
+            //Enable filter button.
+            b.getNode().classList.remove("text-white", "border-gray-400", "bg-gray-800")
+            b.getNode().classList.remove("text-gray-400", "border-gray-500", "bg-gray-600")
+            b.getNode().classList.add("text-white", "border-gray-400", "bg-gray-800")
+            b.getNode().addEventListener("click", (e) => {
+                addColonyStockFilters(stockType, "filter")
+            })
+        }
     }
     //Sort/order button.
     b = new element("button", "p-1 mx-2 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"}], s.getNode(), "order"+stockType.charAt(0).toUpperCase()+stockType.slice(1)+"Stock"); b.create()
@@ -2897,7 +2907,7 @@ const accordionColony = () => {
                 s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
             }
         })
-        //Add last margin
+        //Add next margin
         p = new element("p", "", [], d3.getNode()); p.create()
         s = new element("span", "bottomMargin flex pt-2 grow bg-gray-500 border border-gray-500", [], p.getNode()); s.create()
         //Manufactured products
@@ -2933,6 +2943,44 @@ const accordionColony = () => {
                 s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
             }
         })
+
+        //Add next margin
+        p = new element("p", "", [], d3.getNode()); p.create()
+        s = new element("span", "bottomMargin flex pt-2 grow bg-gray-500 border border-gray-500", [], p.getNode()); s.create()
+        //Manufactured building parts
+        d4 = new element("div", "p-0 m-0", [], d3.getNode(), "building-parts-stock"); d4.create()
+        p = new element("p", "pb-0 text-xs text-gray-400", [], d4.getNode()); p.create()
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "ps-2 py-2 grow flex-none bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Manufactured building parts")
+        //Stock list filters
+        p = new element("p", "border border-gray-500 py-1 text-xs text-white bg-gray-600", [], d4.getNode(), "buildingPartsStockFilterPanel"); p.create()
+        addColonyStockFilters("buildingParts")
+        //Show current filter / order applied.
+        p = new element("p", "flex justify-between border border-gray-500 py-1 text-xs text-white bg-gray-600", [], d4.getNode(), "buildingPartsStockShowing"); p.create()
+        s = new element("span", "flex ms-2", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Showing"))
+        s1.appendHTML(":")
+        s1 = new element("span", "ms-2 font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), "buildingPartsStockShowingInfo"); s1.create()
+        s1.appendContent(translate(language, "All building parts from stock"))
+        count = 0
+        ds = new element("div", "p-0 m-0", [], d4.getNode(), "building-parts-stock-list"); ds.create()
+        Object.keys(stockDisplayed["building parts"][language]).forEach(part => {
+            if(stockDisplayed["building parts"][language][part]){
+                let pt = (!count++ ? "pt-2" : "pt-0")
+                p = new element("p", "buildingPartStock pb-0 text-xs text-gray-400", [], ds.getNode()); p.create()
+                s = new element("span", "flex", [], p.getNode()); s.create()
+                s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+                s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(part)
+                s1.appendHTML(": ")
+                formatedPart = part.replaceAll(" ", "")
+                s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
+                let stockValue = stockDisplayed["building parts"][language][part].toString()
+                s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedPart+"-stock"); s2.create(); s2.appendContent(stockValue)
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
+            }
+        })
+
         //Add last margin
         p = new element("p", "", [], d3.getNode()); p.create()
         s = new element("span", "bottomMargin flex pt-2 grow bg-gray-500 border border-gray-500", [], p.getNode()); s.create()
@@ -3944,7 +3992,7 @@ const accordion_landforms = () => {
         //Landform's actions
         d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "active-production-rules-actions"); d2.create()
         p = new element("p", "flex w-100 justify-between p-1 text-gray-500 text-gray-300", [], d2.getNode()); p.create()
-        b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
+        b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
         i = new element("i", "fa fa-search me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New production rule")
         b.getNode().addEventListener("click", (e) => {
@@ -4539,21 +4587,17 @@ const updateStock = () => {
 }
 //Change stock resources or products order from ASC to DESC or viceversa, and display results on Colony panel.
 const toggleSortStock = (type = "resources") => {
+    let object_type = (type == "buildingParts" ? "building parts" : type)
     let reversed = {}
-    Object.keys(stockDisplayed[type][language])
+    Object.keys(stockDisplayed[object_type][language])
         .reverse()
         .forEach((value, key) => {
-            reversed[value] = stockDisplayed[type][language][value]
+            reversed[value] = stockDisplayed[object_type][language][value]
         })
-    stockDisplayed[type][language] = reversed
+    stockDisplayed[object_type][language] = reversed
     //Change order icon on the sorting button.
-    if(type=="resources"){
-        document.querySelector("#orderResourcesStock i").classList.toggle("fa-arrow-down-wide-short")
-        document.querySelector("#orderResourcesStock i").classList.toggle("fa-arrow-down-short-wide")
-    } else {
-        document.querySelector("#orderProductsStock i").classList.toggle("fa-arrow-down-wide-short")
-        document.querySelector("#orderProductsStock i").classList.toggle("fa-arrow-down-short-wide")
-    }
+    document.querySelector(`#order${type.charAt(0).toUpperCase()+type.slice(1)}Stock i`).classList.toggle("fa-arrow-down-wide-short")
+    document.querySelector(`#order${type.charAt(0).toUpperCase()+type.slice(1)}Stock i`).classList.toggle("fa-arrow-down-short-wide")
     //Update stock list in the DOM
     updateStock()
 }

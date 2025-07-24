@@ -1,4 +1,4 @@
-var translationObject = {
+const translation_object = {
     "'s age:":{"ES":" tiene:"},
     "a good":{"ES":"una buena"},
     "a lake":{"ES":"un lago"},
@@ -135,7 +135,9 @@ var translationObject = {
     "bronze ingot":{"ES":"lingote de bronce"},
     "Build new building":{"ES":"Construir nuevo edificio"},
     "Buildings":{"ES":"Edificios"},
+    "Building parts":{"ES":"Partes de construcción"},
     "Buscarle una pareja":{"EN":"Search a couple"},
+    "By location": {"ES":"Por ubicación"},
     "caballo":{"EN":"horse"}, "caballos":{"EN":"horses"},
     "cabbage":{"ES":"repollo"},
     "cabra":{"EN":"goat"},
@@ -646,6 +648,7 @@ var translationObject = {
     "Pareja":{"EN":"Couple"},
     "Pareja actual":{"EN":"Current couple"},
     "Parents":{"ES":"Padres"},
+    "Partes de construcción":{"EN":"Building parts"},
     "Partes de construcción manufacturadas":{"EN":"Manufactured building parts"},
     "Partió en":{"EN":"Departed in"},
     "Partnership":{"ES":"Compañerismo"},
@@ -692,6 +695,7 @@ var translationObject = {
     "por pescador/a":{"EN":"per fisherman"},
     "por habitante":{"EN":"per citizen"},
     "Por favor, lee la notificación que recibiste en el panel \"Noticias Recientes\" para ver el reporte del descubrimiento de tus habitantes.":{"EN":"Please, read the notification you received in your News panel to check the report of your citizen's research."},
+    "Por ubicación": {"ES":"By location"},
     "potatoe":{"ES":"papa"},
     "Power":{"ES":"Poder"},
     "Pregnant":{"ES":"Embarazada"},
@@ -700,10 +704,12 @@ var translationObject = {
     "Process result":{"ES":"Resultado del proceso"},
     "Probabilidad de descubrir monte":{"EN":"Mount discovery probability"},
     "Producción":{"EN":"Production"},
+    "Producciones":{"EN":"Productions"},
     "Product":{"ES":"Producto"},
     "Production":{"ES":"Producción"},
     "Production rule":{"ES":"Regla de producción"},
     "Production rule for":{"ES":"Regla de producción para"},
+    "Productions":{"ES":"Producciones"},
     "Producto":{"EN":"Product"},
     "Productos manufacturados":{"EN":"Manufactured products"},
     "Properties":{"ES":"Propiedades"},
@@ -1061,29 +1067,29 @@ const translate = function(aLanguage, phrase, gender = "", formatResult = "", ch
     gender = gender.toLowerCase()
     try{
         //Format result = capitalized | lowercase | uppercase
-        let phraseLowerDetected = typeof(translationObject[phrase.toLowerCase()]) != "undefined"
-        let phraseUpperDetected = typeof(translationObject[phrase.toUpperCase()]) != "undefined"
-        let phraseCapitalizedDetected = typeof(translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)]) != "undefined"
-        let phraseLowerLangDetected = phraseLowerDetected && typeof(translationObject[phrase.toLowerCase()][aLanguage]) != "undefined"
-        let phraseUpperLangDetected = phraseUpperDetected && typeof(translationObject[phrase.toUpperCase()][aLanguage]) != "undefined"
-        let phraseCapitalizedLangDetected = phraseCapitalizedDetected && typeof(translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]) != "undefined"
-        let phraseLowerLangGenderDetected = phraseLowerLangDetected && typeof(translationObject[phrase.toLowerCase()][aLanguage][gender]) != "undefined"
-        let phraseUpperLangGenderDetected = phraseUpperLangDetected && typeof(translationObject[phrase.toUpperCase()][aLanguage][gender]) != "undefined"
-        let phraseCapitalizedLangGenderDetected = phraseCapitalizedLangDetected && typeof(translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage][gender]) != "undefined"
+        let phraseLowerDetected = typeof(translation_object[phrase.toLowerCase()]) != "undefined"
+        let phraseUpperDetected = typeof(translation_object[phrase.toUpperCase()]) != "undefined"
+        let phraseCapitalizedDetected = typeof(translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)]) != "undefined"
+        let phraseLowerLangDetected = phraseLowerDetected && typeof(translation_object[phrase.toLowerCase()][aLanguage]) != "undefined"
+        let phraseUpperLangDetected = phraseUpperDetected && typeof(translation_object[phrase.toUpperCase()][aLanguage]) != "undefined"
+        let phraseCapitalizedLangDetected = phraseCapitalizedDetected && typeof(translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]) != "undefined"
+        let phraseLowerLangGenderDetected = phraseLowerLangDetected && typeof(translation_object[phrase.toLowerCase()][aLanguage][gender]) != "undefined"
+        let phraseUpperLangGenderDetected = phraseUpperLangDetected && typeof(translation_object[phrase.toUpperCase()][aLanguage][gender]) != "undefined"
+        let phraseCapitalizedLangGenderDetected = phraseCapitalizedLangDetected && typeof(translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage][gender]) != "undefined"
         gender = gender=="" ? "n" : gender
         let translatedPhrase =
             phraseLowerLangDetected ? 
                 phraseLowerLangGenderDetected ?
-                    translationObject[phrase.toLowerCase()][aLanguage][gender]
-                : (translationObject[phrase.toLowerCase()][aLanguage]["n"] != undefined ? translationObject[phrase.toLowerCase()][aLanguage]["n"] : translationObject[phrase.toLowerCase()][aLanguage])
+                    translation_object[phrase.toLowerCase()][aLanguage][gender]
+                : (translation_object[phrase.toLowerCase()][aLanguage]["n"] != undefined ? translation_object[phrase.toLowerCase()][aLanguage]["n"] : translation_object[phrase.toLowerCase()][aLanguage])
             :   phraseUpperLangDetected ?
                     phraseUpperLangGenderDetected ?
-                        translationObject[phrase.toUpperCase()][aLanguage][gender]
-                    : (translationObject[phrase.toUpperCase()][aLanguage]["n"] != undefined ? translationObject[phrase.toUpperCase()][aLanguage]["n"] : translationObject[phrase.toUpperCase()][aLanguage])
+                        translation_object[phrase.toUpperCase()][aLanguage][gender]
+                    : (translation_object[phrase.toUpperCase()][aLanguage]["n"] != undefined ? translation_object[phrase.toUpperCase()][aLanguage]["n"] : translation_object[phrase.toUpperCase()][aLanguage])
                 :   phraseCapitalizedLangDetected ?
                         phraseCapitalizedLangGenderDetected ?
-                            translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage][gender]
-                        : (translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] != undefined ? translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] : translationObject[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage])
+                            translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage][gender]
+                        : (translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] != undefined ? translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] : translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage])
                     : phrase
                 
         if(formatResult == "capitalized"){
@@ -1101,9 +1107,9 @@ const translate = function(aLanguage, phrase, gender = "", formatResult = "", ch
     }
 }
 
-const translateAll = function (aLanguage) {
+const translate_all = function (aLanguage) {
     language = aLanguage
-    document.title = translationObject[document.title][aLanguage]
+    document.title = translation_object[document.title][aLanguage]
     let unTranslatedText = "", translatedText = ""
     document.querySelectorAll('[data-i18n]').forEach((value, key) => {
         unTranslatedText = value.hasAttribute("placeholder") ? value.placeholder : (value.innerText ? value.innerText : value.innerHTML)

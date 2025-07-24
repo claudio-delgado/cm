@@ -1,4 +1,4 @@
-let naming = {
+const naming = {
     names: {
         "EN":{
             "F": [
@@ -262,8 +262,7 @@ let naming = {
     }
 }
 
-
-let attributesColors = {
+const attributes_colors = {
     "EN" : {
         "Strength" : "text-orange-500", "Agility" : "text-orange-500", "Dexterity" : "text-orange-500",
         "Intelligence" : "text-sky-500", "Creativity" : "text-sky-500", "Cunning" : "text-sky-500",
@@ -275,7 +274,7 @@ let attributesColors = {
         "Valentía" : "text-green-500", "Carisma" : "text-green-500", "Simpatía" : "text-green-500", "Protección" : "text-green-500", "Compañerismo" : "text-green-500"
     }
 }
-let attributes = {
+const attributes = {
     "EN" : [
         {"name": "Physical", "attributes": ["Strength", "Agility", "Dexterity"]},
         {"name": "Mentals", "attributes": ["Intelligence", "Creativity", "Cunning"]},
@@ -287,11 +286,11 @@ let attributes = {
         {"name": "Personalidad", "color": "text-green-500", "attributes": ["Valentía", "Carisma", "Simpatía", "Protección", "Compañerismo"]},
     ]
 }
-let attributesAdjectives = {
+const attributes_adjectives = {
     "EN": {"Agility":"agile", "Strength":"strong", "Dexterity":"dexterous", "Intelligence":"smart", "Creativity":"creative", "Cunning":"cunning", "Sympathy":"easy going", "Charisma":"charismatic", "Protection":"protective", "Partnership":"good partner", "Bravery":"brave"},
     "ES": {"Agilidad":{"F":"ágil", "M":"ágil"}, "Fuerza":{"F":"fuerte", "M":"fuerte"}, "Destreza":{"F":"muy diestra", "M":"muy diestro"}, "Inteligencia":{"F":"inteligente", "M":"inteligente"}, "Creatividad":{"F":"creativa", "M":"creativo"}, "Astucia":{"F":"astuta", "M":"astuto"}, "Simpatía":{"F":"simpática", "M":"simpático"}, "Carisma":{"F":"carismática", "M":"carismático"}, "Protección":{"F":"protectora", "M":"protector"}, "Compañerismo":{"F":"compañera", "M":"compañero"}, "Valentía":{"F":"valiente", "M":"valiente"}}
 }
-let roleIcons = [ 
+const role_icons = [ 
     {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero", "N":"aguatero/a"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
     {"EN": "hunter", "ES": {"F": "cazadora", "M": "cazador"}, "key":"hunting", "icon": "deer"}, {"EN": "stone breaker", "ES": {"F": "picadora", "M": "picador"}, "key":"stonebreaking", "icon": "pickaxe"}, 
     {"EN": "constructor", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
@@ -302,7 +301,8 @@ let roleIcons = [
     {"EN": "banker", "ES": {"F": "banquera", "M": "banquero"}, "key":"bankery", "icon": "sack-dollar"}, {"EN": "academic", "ES": {"F": "académica", "M": "académico"}, "key":"researching", "icon": "graduation-cap"}, 
     {"EN": "merchant", "ES": "mercader", "key":"marketing", "icon": "store"}, {"EN": "expeditionary", "ES": {"F": "expedicionaria", "M": "expedicionario"}, "key":"expeditioning", "icon": "map-location-dot"}
 ]
-let personIcons = [
+const age_groups = ["baby", "child", "teen", "adult", "grown adult", "ancient"]
+const person_icons = [
     {"EN": "baby", "ES": {"F":"bebé", "M":"beba"}, "text":"xs", "icon": "baby"},
     {"EN": "child", "ES": {"M":"niño", "F":"niña"}, "text":"xs", "icon": "child"}, 
     {"EN": "teen", "ES": "adolescente", "text":"sm", "icon": "person-walking"},
@@ -312,7 +312,7 @@ let personIcons = [
     {"EN": "pregnant", "ES": "embarazada", "text":"xs", "icon": "person-pregnant"},
 ]
 //Important objects
-var wagonGoods = {
+var wagon_goods = {
     "resources": {
         "wooden trunk": 50,
         "water": 25,
@@ -329,7 +329,7 @@ var wagonGoods = {
         "rag": 250,
     }
 }
-var stockValues = {
+const stock_values = {
     "resources": {
         "EN": {
             "basalt": 0,
@@ -725,9 +725,9 @@ var stockValues = {
     }
 }
 //Stock to be displayed, ordered and filtered on screen. Must be a copy of the original.
-var stockDisplayed = JSON.parse(JSON.stringify(stockValues))
+var stock_displayed = JSON.parse(JSON.stringify(stock_values))
 //Stock classified by category and granularity.
-var stockClassified = {
+const stock_classified = {
     "resources":{
         "byCategory":{
             "category1":{
@@ -1551,7 +1551,7 @@ var stockClassified = {
     }
 }
 //Loot multipliers due to granularity of resource or product obtained.
-var granularityLootMultipliers = {
+const granularity_loot_multipliers = {
     "granularity1" : {"minMultiplier":1, "maxMultiplier":5},
     "granularity2" : {"minMultiplier":5, "maxMultiplier":10},
     "granularity3" : {"minMultiplier":10, "maxMultiplier":30},
@@ -1565,7 +1565,7 @@ var granularityLootMultipliers = {
     "category5": {"reductionCoeficient": 0.3},
     "category6": {"reductionCoeficient": 0.05},
 }
-let orderKeys = (unordered, order = "ASC") => {
+const order_keys = (unordered, order = "ASC") => {
     // Sorting the object by keys
     //In ascending way
     if(order == "ASC"){
@@ -1584,12 +1584,12 @@ let orderKeys = (unordered, order = "ASC") => {
         return (ordered)
     }
 }
-var buildings = {
+const buildings = {
     "shelter": {
        "campaign tent": 0
     }
 }
-var shelterCapacities = {
+const shelter_capacities = {
     "campaign tent": 3,
     "cottage": 10,
     "stoneHouse": 15,
@@ -1598,17 +1598,151 @@ var shelterCapacities = {
     "mansion": 80,
     "graveyard": 16
 }
-var mounts = {
+const mounts = {
     "Hunting mount": {"discovery-probability-1":"0.50"}, 
     "Stone mount": {"discovery-probability-1":"0.23", "discovery-probability-2":"0.45"}, 
     "Wood mount": {"discovery-probability-1":"0.15", "discovery-probability-2":"0.3"}, 
     "Clay mount": {"discovery-probability-1":"0.07", "discovery-probability-2":"0.15"},
     "Mine": {"discovery-probability-1":"0.05", "discovery-probability-2":"0.1"},
 }
-var location_products = {
+const location_products = {
     "waterReservoir":{
         "EN": ["perch", "carp", "trout", "salmon"],
         "ES": ["perca", "carpa", "trucha", "salmón"]
+    }
+}
+const categorized_products = {
+    "by location": {
+        "subcategories":
+            location_products
+    },
+    "building parts": {
+        "subcategories":{
+            "wooden": {
+                "ES": [
+                    "fogón",
+                    "pared de madera pequeña",
+                    "pared de madera mediana",
+                    "techo de madera mediano",
+                    "techo de madera grande",
+                    "piso de madera mediano",
+                    "cama pequeña",
+                    "cama grande",
+                    "mesa",
+                    "cerco",
+                    "cobertizo",
+                ],
+                "EN": [
+                    "bonfire",
+                    "small wooden wall",
+                    "medium wooden wall",
+                    "medium wooden roof",
+                    "big wooden roof",
+                    "medium wooden floor",
+                    "small bed",
+                    "big bed",
+                    "table",
+                    "fence",
+                    "shed",
+                ]
+            },
+            "stone made":{
+                "ES": [
+                    "pared de piedra pequeña",
+                    "pared de piedra mediana",
+                    "pared de piedra grande",
+                    "techo de piedra mediano",
+                    "techo de piedra grande",
+                    "piso de granito grande",
+                    "piso de mármol grande",
+                ],
+                "EN":[
+                    "small stone wall",
+                    "medium stone wall",
+                    "big stone wall",
+                    "medium stone roof",
+                    "big stone roof",
+                    "big granite floor",
+                    "big marble floor",
+                ]
+            },
+            "concrete made":{
+                "ES": [
+                    "pared de ladrillos pequeña",
+                    "pared de ladrillos mediana",
+                    "pared de ladrillos grande",
+                    "techo de tejas mediano",
+                    "techo de tejas grande",
+                    "piso de hormigón mediano",
+                    "piso de hormigón grande",
+                ],
+                "EN":[
+                    "small brick wall",
+                    "medium brick wall",
+                    "big brick wall",
+                    "medium roof",
+                    "big roof",
+                    "medium floor",
+                    "big floor",
+                ]
+            }
+        },
+        "collection":{
+            "ES": [
+                "fogón",
+                "pared de madera pequeña",
+                "pared de madera mediana",
+                "techo de madera mediano",
+                "techo de madera grande",
+                "piso de madera mediano",
+                "pared de piedra pequeña",
+                "pared de piedra mediana",
+                "pared de piedra grande",
+                "techo de piedra mediano",
+                "techo de piedra grande",
+                "pared de ladrillos pequeña",
+                "pared de ladrillos mediana",
+                "pared de ladrillos grande",
+                "techo de tejas mediano",
+                "techo de tejas grande",
+                "piso de hormigón mediano",
+                "piso de hormigón grande",
+                "piso de granito grande",
+                "piso de mármol grande",
+                "cama pequeña",
+                "cama grande",
+                "mesa",
+                "cerco",
+                "cobertizo",
+            ],
+            "EN": [
+                "bonfire",
+                "small wooden wall",
+                "medium wooden wall",
+                "medium wooden roof",
+                "big wooden roof",
+                "medium wooden floor",
+                "small stone wall",
+                "medium stone wall",
+                "big stone wall",
+                "medium stone roof",
+                "big stone roof",
+                "small brick wall",
+                "medium brick wall",
+                "big brick wall",
+                "medium roof",
+                "big roof",
+                "medium floor",
+                "big floor",
+                "big granite floor",
+                "big marble floor",
+                "small bed",
+                "big bed",
+                "table",
+                "fence",
+                "shed",
+            ]
+        }
     }
 }
 const product_rules = {
@@ -1680,7 +1814,7 @@ var product_rules_defined = [
     }
 ]
 product_rules_defined = []
-var water_reservoirs = {
+const water_reservoirs = {
     "Lake": {
         "daily-water-income":"10", 
         "daily-food-income":"5"
@@ -1699,7 +1833,7 @@ var water_reservoirs = {
     }
 }
 
-var breeding_stages = [
+const breeding_stages = [
     {"stage": 1, "description": "Strong interest of", "percent": "50"}, //45 40
     {"stage": 2, "description": "Strong interest of", "percent": "50"}, //45 40
     {"stage": 3, "description": "Big love of", "percent": "40"}, //30 

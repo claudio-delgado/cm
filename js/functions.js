@@ -1,5 +1,5 @@
 
-const expeditionRequiredTime = (expeditionType, succesfullExpeditions, horsesAssigned, maxXp = 0, avgXp = 0) => {
+const expedition_required_time = (expeditionType, succesfullExpeditions, horsesAssigned, maxXp = 0, avgXp = 0) => {
     //Returns the amount of ingame hours needed for an expedition.
     //It dependes on the current already succesfull expeditions done, mounted expeditionaries assigned and expeditionaries xp.
     let inGameTotalHours, inGameTotalDays, inGameTotalWeeks, inGameTotalYears
@@ -65,7 +65,7 @@ const expeditionRequiredTime = (expeditionType, succesfullExpeditions, horsesAss
     }
 }
 
-const expeditionProbability = (expeditionType, succesfullExpeditions, expeditionaries, maxXp = 0, avgXp = 0) => {
+const expedition_probability = (expeditionType, succesfullExpeditions, expeditionaries, maxXp = 0, avgXp = 0) => {
     //Returns the probability of finding a new mount in an expedition.
     //It dependes on the current already succesfull expeditions done, the amount of expeditionaries assigned, and their xp.
     let probability, lastExpeditionsFactor, expeditionariesFactor, XPFactor, avgXPFactor
@@ -91,13 +91,43 @@ const expeditionProbability = (expeditionType, succesfullExpeditions, expedition
     return probability
 }
 
-const expeditionCarriageCapacity = (expeditionaryXP, mountedExpeditionary) => {
+const expedition_carriage_capacity = (expeditionaryXP, mountedExpeditionary) => {
     return Math.ceil((expeditionaryXP / 10) + 1/2) + 2 * mountedExpeditionary
 }
+const age_index = (age) => age <= 5 ? 0 : (age <= 14 ? 1 : (age <= 21 ? 2 : (age <= 50 ? 3 : (age <= 65 ? 4 : 5))))
+const age_icons = (age) => person_icons[age_index(age)][language].icon
+const age_group = (age) => age_groups[age_index(age)][language].icon
 
-const ageIcons = (age) => {
-    let ageIndex = age <= 5 ? 0 : (age <= 14 ? 1 : (age <= 21 ? 2 : (age <= 50 ? 3 : (age <= 65 ? 4 : 5))))
-    return personIcons[ageIndex][language].icon
+const colony_satisfaction = (lifeQuality, population) => {
+    let satisfaction = {}
+    if(lifeQuality >= population){
+        if(lifeQuality >= 1.5 * population){
+            if(lifeQuality >= 2 * population){
+                satisfaction.word = "Extreme happiness"
+                satisfaction.icon = "face-laugh-squint" 
+                satisfaction.color = "text-green-400"
+            } else { 
+                satisfaction.word = "Happiness" 
+                satisfaction.icon = "face-laugh" 
+                satisfaction.color = "text-green-400"
+            }
+        } else {
+            satisfaction.word = "Satisfaction"
+            satisfaction.icon = "face-smile"
+            satisfaction.color = "text-green-400"
+        }
+    } else {
+        if(lifeQuality <= 0.5 * population){ 
+            satisfaction.word = "Dissapointment"
+            satisfaction.icon = "face-weary"
+            satisfaction.color = "text-red-400"
+        } else { 
+            satisfaction.word = "Dissatisfaction"
+            satisfaction.icon = "face-meh"
+            satisfaction.color = "text-yellow-400"
+        }
+    }
+    return satisfaction
 }
 
 //Gauss normal distribution function

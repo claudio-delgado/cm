@@ -9,505 +9,31 @@ const initColonyInfo = () => {
     colony_water_reservoir = Object.keys(water_reservoirs)[Math.floor(Math.random() * Object.keys(water_reservoirs).length)]
 }
 const loadInitialRandomGoods = () => {
-    stockValues.resources["EN"]["stone"]+= 800 + Math.floor(Math.random() * (1000 - 800))
-    stockValues.resources["ES"][translate(language, "stone")] = stockValues.resources["EN"]["stone"]
-    stockValues.resources["EN"]["gravel"]+= 800 + Math.floor(Math.random() * (1000 - 800))
-    stockValues.resources["ES"][translate(language, "gravel")] = stockValues.resources["EN"]["gravel"]
-    stockValues.resources["EN"]["clay"]+= 800 + Math.floor(Math.random() * (1000 - 800))
-    stockValues.resources["ES"][translate(language, "clay")] = stockValues.resources["EN"]["clay"]
-    stockValues.products["EN"]["wooden plank"]+= 1000 + Math.floor(Math.random() * (1200 - 1000))
-    stockValues.products["ES"][translate(language, "wooden plank")] = stockValues.products["EN"]["wooden plank"]
-    stockValues.products["EN"]["wooden plate"]+= 20 + Math.floor(Math.random() * (50 - 20))
-    stockValues.products["ES"][translate(language, "wooden plate")] = stockValues.products["EN"]["wooden plate"]
-    stockValues.products["EN"]["roof tile"]+= 400 + Math.floor(Math.random() * (800 - 400))
-    stockValues.products["ES"][translate(language, "roof tile")] = stockValues.products["EN"]["roof tile"]
-    stockValues.products["EN"]["brick"]+= 500 + Math.floor(Math.random() * (900 - 500))
-    stockValues.products["ES"][translate(language, "brick")] = stockValues.products["EN"]["brick"]
-    stockValues.products["EN"]["rag"]+= 600 + Math.floor(Math.random() * (800 - 600))
-    stockValues.products["ES"][translate(language, "rag")] = stockValues.products["EN"]["rag"]
-    stockValues.products["EN"]["hay"]+= 400 + Math.floor(Math.random() * (600 - 400))
-    stockValues.products["ES"][translate(language, "hay")] = stockValues.products["EN"]["hay"]
-    stockDisplayed = JSON.parse(JSON.stringify(stockValues))
-}
-const colonySatisfaction = (lifeQuality, population) => {
-    let satisfaction = {}
-    if(lifeQuality >= population){
-        if(lifeQuality >= 1.5 * population){
-            if(lifeQuality >= 2 * population){
-                satisfaction.word = "Extreme happiness"
-                satisfaction.icon = "face-laugh-squint" 
-                satisfaction.color = "text-green-400"
-            } else { 
-                satisfaction.word = "Happiness" 
-                satisfaction.icon = "face-laugh" 
-                satisfaction.color = "text-green-400"
-            }
-        } else {
-            satisfaction.word = "Satisfaction"
-            satisfaction.icon = "face-smile"
-            satisfaction.color = "text-green-400"
-        }
-    } else {
-        if(lifeQuality <= 0.5 * population){ 
-            satisfaction.word = "Dissapointment"
-            satisfaction.icon = "face-weary"
-            satisfaction.color = "text-red-400"
-        } else { 
-            satisfaction.word = "Dissatisfaction"
-            satisfaction.icon = "face-meh"
-            satisfaction.color = "text-yellow-400"
-        }
-    }
-    return satisfaction
+    stock_values.resources["EN"]["stone"]+= 800 + Math.floor(Math.random() * (1000 - 800))
+    stock_values.resources["ES"][translate(language, "stone")] = stock_values.resources["EN"]["stone"]
+    stock_values.resources["EN"]["gravel"]+= 800 + Math.floor(Math.random() * (1000 - 800))
+    stock_values.resources["ES"][translate(language, "gravel")] = stock_values.resources["EN"]["gravel"]
+    stock_values.resources["EN"]["clay"]+= 800 + Math.floor(Math.random() * (1000 - 800))
+    stock_values.resources["ES"][translate(language, "clay")] = stock_values.resources["EN"]["clay"]
+    stock_values.products["EN"]["wooden plank"]+= 1000 + Math.floor(Math.random() * (1200 - 1000))
+    stock_values.products["ES"][translate(language, "wooden plank")] = stock_values.products["EN"]["wooden plank"]
+    stock_values.products["EN"]["wooden plate"]+= 20 + Math.floor(Math.random() * (50 - 20))
+    stock_values.products["ES"][translate(language, "wooden plate")] = stock_values.products["EN"]["wooden plate"]
+    stock_values.products["EN"]["roof tile"]+= 400 + Math.floor(Math.random() * (800 - 400))
+    stock_values.products["ES"][translate(language, "roof tile")] = stock_values.products["EN"]["roof tile"]
+    stock_values.products["EN"]["brick"]+= 500 + Math.floor(Math.random() * (900 - 500))
+    stock_values.products["ES"][translate(language, "brick")] = stock_values.products["EN"]["brick"]
+    stock_values.products["EN"]["rag"]+= 600 + Math.floor(Math.random() * (800 - 600))
+    stock_values.products["ES"][translate(language, "rag")] = stock_values.products["EN"]["rag"]
+    stock_values.products["EN"]["hay"]+= 400 + Math.floor(Math.random() * (600 - 400))
+    stock_values.products["ES"][translate(language, "hay")] = stock_values.products["EN"]["hay"]
+    stock_displayed = JSON.parse(JSON.stringify(stock_values))
 }
 const searchZone = (e) => {
     document.querySelector("#searchZone > span").innerText = translate(language, "Your citizens are searching the zone...")
     document.querySelector("#searchZone > i").classList.add("fa-beat")
     searchingZone = true
     e.target.removeEventListener("click", searchZone)
-}
-
-const lifeInterval = setInterval(() => {
-    let currentYear = currentWeek = currentDay = currentHour = 0
-    //Zone searched
-    const zone_searched_actions = () => {
-        searchingZone = false
-        lifeStarted = true
-        //Remove search zone button from Colony's available actions
-        document.querySelector("#colony-actions > p > button").remove()
-        s = new element("span", "", [{"key":"data-i18n", "value":""}], document.querySelector("#colony-actions > p")); s.create(); s.appendContent(translate(language, "No actions available"))
-        //Remove warnings
-        document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.remove() })
-        //Update initial stock
-        loadInitialRandomGoods()
-        //Update initial shelter capacity
-        buildings.shelter["campaign tent"] = 5
-        s1 = document.querySelector("#colonyShelterCapacityInfo")
-        s1.classList.remove("text-red-400")
-        s1.classList.add("text-green-400")
-        document.querySelector("#shelterCapacityIcon").remove()
-        document.querySelector("#colonyShelterCapacity").innerHTML = shelterCapacities["campaign tent"] * buildings.shelter["campaign tent"]
-        s1.innerHTML+= " ("
-        s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent(translate(language, "Occupation"))
-        s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
-        s1.innerHTML+= ")"
-        i = new element("i", "ms-1 fa fa-face-smile", [], s1, "shelterCapacityIcon"); i.create()
-        //Update initial buildings
-        updateColony()
-        if(showModalZoneSearched) { 
-            modalPopup("Zone researched!", "ZoneSearched") 
-            modal.show()
-        }
-        //Update all water bearers and fishermen status (from "assigned" to "working")
-        document.querySelectorAll('[data-status="assigned"]').forEach((citizenStatus) => {
-            let citizenIndex = citizenStatus.id.split("-")[1]
-            if(["waterbearing", "fishing"].includes(document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role"))){
-                citizenStatus.innerHTML = translate(language, "Working")
-                citizens[citizenIndex].status = "working"
-            }
-        })
-        //Update possible actions blocked by not having searched the zone previously.
-        if(document.querySelectorAll(".newExpedition .assignedWorkers .assignedWorker").length){
-            //If there were expeditionaries assigned to an expedition, add button to start it.
-            document.getElementById("newExpeditionNoActions").classList.add("hidden")
-            document.querySelector("#expeditionStart").classList.remove("hidden")
-        }
-    }
-    //Hour passed
-    const move_time = () => {
-        //Update hours.
-        currentHour = Number(document.querySelector("#currentHour").innerText)
-        currentHour = ((currentHour < 23 ? currentHour+1 : 0)+"").padStart(2, "0")
-        document.querySelector("#currentHour").innerText = currentHour
-        //Daily flag
-        dayPassed = (currentHour == "00")
-        //Update days.
-        daysPassed+= (dayPassed ? 1 : 0)
-        currentDay = Number(document.querySelector("#currentDay").innerText)
-        currentDay = 1 + (daysPassed % 7)
-        document.querySelector("#currentDay").innerText = currentDay
-        //Update weeks.
-        currentWeek = Number(document.querySelector("#currentWeek").innerText)
-        currentWeek = 1 + (Math.floor(daysPassed / 7) % 52)
-        //Weekly flag
-        weekPassed = dayPassed && Math.floor(daysPassed / 7) == daysPassed / 7
-        document.querySelector("#currentWeek").innerText = currentWeek
-        document.querySelector("#passedWeeks").innerText = Math.floor(daysPassed / 7)
-        //Update years.
-        currentYear = Number(document.querySelector("#currentYear").innerText)
-        currentYear = 1 + Math.floor(daysPassed / 364)
-        //Yearly flag
-        yearPassed = dayPassed && Math.floor(daysPassed / 364) == daysPassed / 364
-        document.querySelector("#currentYear").innerText = currentYear
-    }
-    //Day passed
-    const update_all_citizens_xp = () => {
-        //Update citizens xp
-        //Update permanently assigned water bearers or fishermen
-        document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
-            let citizenIndex = citizen.id.split("-")[1]
-            //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
-            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
-                let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
-                document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
-                    elem.setAttribute("data-xp", newXP.toFixed(5))
-                    elem.innerText = Math.floor(newXP)
-                    if(elem.innerText > 0 && elem.classList.contains("hidden")){
-                        elem.classList.remove("hidden")
-                    }
-                })
-                citizens[citizenIndex].xp = newXP
-            }
-        })
-    }
-    const update_fish_and_water_assigned_workers = () => {
-        //Update permanently assigned water bearers or fishermen
-        document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
-            let citizenIndex = citizen.id.split("-")[1]
-            //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
-            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
-                let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
-                document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
-                    elem.setAttribute("data-xp", newXP.toFixed(5))
-                    elem.innerText = Math.floor(newXP)
-                    if(elem.innerText > 0 && elem.classList.contains("hidden")){
-                        elem.classList.remove("hidden")
-                    }
-                })
-                citizens[citizenIndex].xp = newXP
-            }
-        })
-    }
-    const update_resource_extractions = () => {
-        //Update resource extractions
-        let dailyWaterGained = document.querySelector("#colony-water-income").innerText * 1 - document.querySelector("#colony-water-consumption").innerText * 1
-        document.querySelectorAll("#colony-water-stock").forEach((value) => {
-            value.innerText = value.innerText * 1 + (dailyWaterGained)
-        })
-        let dailyFoodGained = document.querySelector("#colony-food-income").innerText * 1 - document.querySelector("#colony-food-consumption").innerText * 1
-        document.querySelectorAll("#colony-food-stock").forEach((value) => {
-            value.innerText = value.innerText * 1 + (dailyFoodGained)
-        })
-    }
-    const update_running_productions = () => {
-        //Update running productions
-        product_rules_defined.forEach((product_rule, product_index) => {
-            if(product_rule.status == "running"){
-                let rule_object = product_rule.object
-                //Check if requirements are currently fulfilled.
-                let requirement_fulfilled = true
-                product_rule.rule_definition.requirements.forEach((req) => {
-                    if(!req.consumable){
-                        if(req.type == "citizen"){
-                            req.workers.forEach((citizen_index) => {
-                                requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].rolekey == req.role)
-                            })
-                        }
-                    } else {
-                        //Check if product or resource quantity needed is available.
-                    }
-                })
-                if(!requirement_fulfilled){
-                    product_rules[product_index].status = "suspended"
-                } else {
-                    //Update product stock with new value.
-                    stockValues.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                    stockValues.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                    stockDisplayed.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                    stockDisplayed.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                    updateStock()
-                }
-            }
-        })
-    }
-    //Week passed
-    const update_pregnacies_remaining_weeks = () => {
-        //Update pregnancy remaining weeks for all pregnancies.
-        pregnancies.forEach((pregnancy) => {
-            pregnancy.remaining_weeks = Math.max(0, pregnancy.remaining_weeks - 1)
-            document.querySelector(`#citizen-${pregnancy.mother}-pregnancy-weeks`).innerHTML = pregnancy.remaining_weeks                
-            if(!pregnancy.remaining_weeks){
-                //Pregnancy is over. Child or children are to be born.
-                //1) Change mother status from "pregnant" to "idle".
-                document.getElementById(`citizen-${pregnancy.mother}-status`).setAttribute("data-status", "idle")
-                document.getElementById(`citizen-${pregnancy.mother}-status`).innerHTML = translate(language, "idle")
-                citizens[pregnancy.mother].status = "idle"
-                //Hide pregnancy remaining weeks for the current mother.
-                document.getElementById(`citizen-${pregnancy.mother}-status`).parentElement.querySelectorAll(".pregnant").forEach((element) => element.classList.add("hidden"))
-                //2) Reduce father and mother's fertility, based on his and her current children.
-                let father_children = citizens[pregnancy.father].children.length
-                let mother_children = citizens[pregnancy.mother].children.length
-                //Decrement father's fertility in memory and screen (set 0 if negative)
-                citizens[pregnancy.father].fertility = Math.max(citizens[pregnancy.father].fertility - (father_children + pregnancy.children), 0)
-                document.getElementById(`citizen-${pregnancy.father}-fertility`).innerHTML = citizens[pregnancy.father].fertility
-                //Decrement mother's fertility in memory and screen (set 0 if negative)
-                citizens[pregnancy.mother].fertility = Math.max(citizens[pregnancy.mother].fertility - (mother_children + pregnancy.children), 0)
-                document.getElementById(`citizen-${pregnancy.mother}-fertility`).innerHTML = citizens[pregnancy.mother].fertility
-                //Loop all born babies
-                for(let citizen_index = 1; citizen_index <= pregnancy.children; citizen_index++){
-                    //3) Create a new baby citizen and fill his or her info.
-                    let born_citizen = to_be_born_citizen = {}
-                    //4) Assign mother and father to new baby citizen.
-                    to_be_born_citizen.father = pregnancy.father
-                    to_be_born_citizen.mother = pregnancy.mother
-                    born_citizen = build_citizen(true, undefined, to_be_born_citizen)
-                }
-                //5) Remove pregnancy from memory.
-                pregnancies = pregnancies.filter(a_pregnancy => !(a_pregnancy.father == pregnancy.father && a_pregnancy.mother == pregnancy.mother))
-            }
-        })
-    }
-    const update_month_week = () => {
-        //Update month week in every breeding attempt panel (also fertility week color)
-        document.querySelectorAll("p.fertility.woman").forEach((elem) => {
-            let fertility_week = elem.querySelector(".fertility-week.value").innerHTML
-            let month_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
-            month_week = !month_week ? 4 : month_week
-            elem.querySelector(".fertility-week.month-week").innerHTML = month_week
-            if(fertility_week == month_week){
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-gray-300"))
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-green-500"))
-                elem.querySelector(".fertility-week.week-comparison").classList.add("fa-equals")
-                elem.querySelector(".fertility-week.week-comparison").classList.remove("fa-not-equal")
-            } else {
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-green-500"))
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-gray-300"))
-                elem.querySelector(".fertility-week.week-comparison").classList.add("fa-not-equal")
-                elem.querySelector(".fertility-week.week-comparison").classList.remove("fa-equals")
-            }
-        })
-    }
-    const close_breeding_panels = () => {
-        document.querySelectorAll(".tryBreeding").forEach((elem) => {
-            //Get relationship index from id.
-            let relationship_id = elem.id.split("-")[1]
-            //Remove panel divs.
-            document.querySelector(`#relationship-${relationship_id}-tryBreeding-title`).remove()
-            document.querySelector(`#relationship-${relationship_id}-tryBreeding`).remove()
-            //Show previous hidden actions.
-            document.querySelector(`#relationship-${relationship_id}-actions`).classList.remove("hidden")
-            document.querySelector(`#relationship-${relationship_id}-actions-title`).classList.remove("hidden")
-        })
-    }
-    const update_all_citizens_age = () => {
-        //Update citizens age
-        document.querySelectorAll("#accordion-citizens .citizen-properties").forEach((value) => {
-            let citizenYearsAge = document.querySelector("#citizen-"+value.dataset.index+"-ageYears")
-            let citizenWeeksAge = document.querySelector("#citizen-"+value.dataset.index+"-ageWeeks")
-            let previousAge = citizenYearsAge.innerText*1
-            let iconPreviousAge = ageIcons(previousAge)
-            citizenWeeksAge.innerText = (citizenWeeksAge.innerText*1 + 1) % 52
-            citizenYearsAge.innerText = citizenYearsAge.innerText*1 + (citizenWeeksAge.innerText*1 == 0 ? 1 : 0)
-            let iconCurrentAge = ageIcons(citizenYearsAge.innerText)
-            //Check if age icons must change...
-            if(iconPreviousAge != iconCurrentAge){
-                document.querySelectorAll("#citizen-"+citizenIndex+"-age-icon").forEach((elem) => {
-                    elem.classList.remove(iconPreviousAge)
-                    elem.classList.add(iconCurrentAge)
-                })
-            }
-        })
-    }
-    //Year passed
-    const decrease_all_citizens_fertility = () => {
-        //Decrease all citizen's fertility if aged >= 21
-        citizens.forEach((citizen) => {
-            citizen.fertility = citizen.ageYears >= 21 ? Math.max(citizen.fertility - 1, 0) : citizen.fertility
-            document.getElementById(`citizen-${citizen.id}-fertility`).innerHTML = citizen.fertility
-            if(!citizen.fertility) document.getElementById(`citizen-${citizen.id}-fertility`).classList.add("text-red-500")
-        })
-    }
-
-    if(lifeStarted || searchingZone){
-        
-        //Hour passed
-        move_time()
-        
-        //Zone searched flag
-        zoneSearched = currentYear == 1 && currentWeek == 1 && currentDay == 1 && currentHour == zoneSearchHoursNeeded
-        
-        //Perform updating tasks inside game panels that involve hourly changes
-        //Process countdowns
-        processCountdowns()
-        
-        //Perform updating tasks inside game panels that involve daily, weekly or yearly changes
-        //Efectuar tareas de actualización de partes del juego que involucren avances diarios, semanales o anuales.
-        //console.log("y"+currentYear+"w"+currentWeek+"d"+currentDay+"h"+currentHour+", daysPassed: "+daysPassed+" dayPassed: "+dayPassed+", weekPassed: "+weekPassed)
-        
-        if(zoneSearched){
-            zone_searched_actions()
-        }
-
-        if(dayPassed){
-            
-            //Update citizens xp
-            update_all_citizens_xp()
-            
-            //Update permanently assigned water bearers or fishermen
-            update_fish_and_water_assigned_workers()
-            
-            //Update resource extractions
-            update_resource_extractions()
-
-            //Update running productions
-            update_running_productions()
-
-        }
-
-        if(weekPassed){
-            
-            //Update citizens age
-            update_all_citizens_age()
-
-            //If Try breeding panels are open, close them.
-            //This is because if the week changed, those panels must be reloaded to reflect changes of current month week.
-            //Find all "Try breeding" open panels.
-            close_breeding_panels()
-            
-            //Update month week in every breeding attempt panel (also fertility week color)
-            update_month_week()
-            
-            //Update pregnancy remaining weeks for all pregnancies.
-            update_pregnacies_remaining_weeks()
-
-        }
-
-        if(yearPassed){
-
-            //Decrease all citizen's fertility if aged >= 21
-            decrease_all_citizens_fertility()
-
-        }
-    }
-}, 1790);
-
-const processCountdowns = () => {
-    let hours, days, weeks, years
-    document.querySelectorAll(".countdownTime").forEach((elem) => {
-        let idArray = elem.querySelector("span:first-child").id.split("-")
-        let prefix = idArray[0]+"-"+idArray[1]+"-"+idArray[2]
-        //Correct unit numbers (singulars and plurals) before processing values
-        hours = 1*elem.querySelector(".countdown.hours").innerText
-        elem.querySelector("#"+prefix+"-hoursText").innerText = hours == 1 ? "h" : "hs"
-        days = 1*elem.querySelector(".countdown.days").innerText
-        elem.querySelector("#"+prefix+"-daysText").innerText = days == 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
-        if(days){
-            elem.querySelector("#"+prefix+"-days").classList.remove("hidden")
-            elem.querySelector("#"+prefix+"-daysText").classList.remove("hidden")
-        } else {
-            elem.querySelector("#"+prefix+"-days").classList.add("hidden")
-            elem.querySelector("#"+prefix+"-daysText").classList.add("hidden")
-        }
-        weeks = 1*elem.querySelector(".countdown.weeks").innerText
-        elem.querySelector("#"+prefix+"-weeksText").innerText = weeks == 1 ? translate(language, "weeks").slice(0, -2)+"." : translate(language, "weeks")
-        if(weeks){
-            elem.querySelector("#"+prefix+"-weeks").classList.remove("hidden")
-            elem.querySelector("#"+prefix+"-weeksText").classList.remove("hidden")
-        } else {
-            elem.querySelector("#"+prefix+"-weeks").classList.add("hidden")
-            elem.querySelector("#"+prefix+"-weeksText").classList.add("hidden")
-        }
-        years = 1*elem.querySelector(".countdown.years").innerText
-        elem.querySelector("#"+prefix+"-yearsText").innerText = years == 1 ? translate(language, "years").slice(0, -1) : translate(language, "years")
-        if(years){
-            elem.querySelector("#"+prefix+"-years").classList.remove("hidden")
-            elem.querySelector("#"+prefix+"-yearsText").classList.remove("hidden")
-        } else {
-            elem.querySelector("#"+prefix+"-years").classList.add("hidden")
-            elem.querySelector("#"+prefix+"-yearsText").classList.add("hidden")
-        }
-        //If hours > 0 => decrement them
-        if(1*elem.querySelector(".countdown.hours").innerText){
-            //Decrement pending hours
-            hours = 1*elem.querySelector(".countdown.hours").innerText - 1
-            elem.querySelector(".countdown.hours").innerText = hours.toString().padStart(2, "0")
-            //Arrange unit number: singular or plural
-            elem.querySelector("#"+prefix+"-hoursText").innerText = hours == 1 ? "h" : "hs"
-        } else {
-            //hours == 00
-            //If days > 0 => decrement them
-            if(1*elem.querySelector(".countdown.days").innerText){
-                //Decrement pending days
-                days = 1*elem.querySelector(".countdown.days").innerText - 1
-                elem.querySelector(".countdown.days").innerText = days.toString()
-                //Hide days if they are 0 and both weeks and years are hidden
-                if(!days && elem.querySelector(".countdown.weeks").classList.contains("hidden")
-                        && elem.querySelector(".countdown.years").classList.contains("hidden")){
-                    elem.querySelector("#"+prefix+"-days").classList.add("hidden")
-                    elem.querySelector("#"+prefix+"-daysText").classList.add("hidden")
-                }
-                //Set hours to max value - 1 => hours = 23
-                hours = "23"
-                elem.querySelector(".countdown.hours").innerText = hours
-                //Arrange unit number: singular or plural
-                elem.querySelector("#"+prefix+"-daysText").innerText = days == 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
-            } else {
-                //days == 0 & hours == 00
-                //If weeks > 0 => decrement them
-                if(1*elem.querySelector(".countdown.weeks").innerText){
-                    //Decrement pending weeks
-                    weeks = 1*elem.querySelector(".countdown.weeks").innerText - 1
-                    elem.querySelector(".countdown.weeks").innerText = weeks.toString()
-                    //Hide weeks if they are 0 and years is hidden
-                    if(!weeks && elem.querySelector(".countdown.years").classList.contains("hidden")){
-                        elem.querySelector("#"+prefix+"-weeks").classList.add("hidden")
-                        elem.querySelector("#"+prefix+"-weeksText").classList.add("hidden")
-                    }
-                    //Set days to max value - 1 => days = 6
-                    elem.querySelector(".countdown.days").innerText = "6"
-                    //Set hours to max value - 1 => hours = 23
-                    elem.querySelector(".countdown.hours").innerText = "23"
-                    //Arrange unit number: singular or plural
-                    elem.querySelector("#"+prefix+"-weeksText").innerText = weeks == 1 ? translate(language, "weeks").slice(0, -2)+"." : translate(language, "weeks")
-                } else {
-                    //weeks = 0 & days == 0 & hours == 00
-                    //If years > 0 => decrement them
-                    if(1*elem.querySelector(".countdown.years").innerText){
-                        //Decrement pending years
-                        years = 1*elem.querySelector(".countdown.years").innerText - 1
-                        elem.querySelector(".countdown.years").innerText = years.toString()
-                        //Hide years if they are 0
-                        if(!years){
-                            elem.querySelector("#"+prefix+"-years").classList.add("hidden")
-                            elem.querySelector("#"+prefix+"-yearsText").classList.add("hidden")
-                        }
-                        //Set weeks to max value - 1 => weeks = 51
-                        elem.querySelector(".countdown.weeks").innerText = "51"
-                        //Set days to max value - 1 => days = 6
-                        elem.querySelector(".countdown.days").innerText = "6"
-                        //Set hours to max value - 1 => hours = 23
-                        elem.querySelector(".countdown.hours").innerText = "23"
-                        //Arrange unit number: singular or plural
-                        elem.querySelector("#"+prefix+"-yearsText").innerText = weeks == 1 ? translate(language, "years").slice(0, -1) : translate(language, "years")
-                    } else {
-                        //Remove countdown
-                        if(elem.classList.contains("activeExpedition")){
-                            let expeditionType = elem.closest(".accordion-active-expedition").querySelector("h2").classList.contains("resourcesExpedition") 
-                                                ? "resources"
-                                                : elem.closest(".accordion-active-expedition").querySelector("h2").classList.contains("ruinsExpedition") 
-                                                    ? "ruins"
-                                                    : "combat"
-                            endActiveExpedition(expeditionType)
-                        }
-                    }
-                }
-            }
-        }
-        if( !hours &&
-            elem.querySelector("#"+prefix+"-days").classList.contains("hidden") &&
-            elem.querySelector("#"+prefix+"-weeks").classList.contains("hidden") &&
-            elem.querySelector("#"+prefix+"-years").classList.contains("hidden")){
-            //Remove countdown
-            if(elem.classList.contains("activeExpedition")){
-                let expeditionType = elem.closest(".accordion-active-expedition").querySelector("h2").classList.contains("resourcesExpedition") 
-                                                ? "resources"
-                                                : elem.closest(".accordion-active-expedition").querySelector("h2").classList.contains("ruinsExpedition") 
-                                                    ? "ruins"
-                                                    : "combat"
-                endActiveExpedition(expeditionType)
-            }
-        }
-    })
 }
 
 const endActiveExpedition = (expeditionType) => {
@@ -546,7 +72,7 @@ const endActiveExpedition = (expeditionType) => {
     if(expeditionType == "resources"){
         //Calculate result of the expedition (mount discovered?)
         //Calculate probability of finding a new resources mount.
-        let mountDiscoveryProbability = expeditionProbability("of "+expeditionType, resourcesExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
+        let mountDiscoveryProbability = expedition_probability("of "+expeditionType, resourcesExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
         mountResourceFound = Math.random() < mountDiscoveryProbability       
         if(mountResourceFound){
             //Calculate type of mount discovered
@@ -568,7 +94,7 @@ const endActiveExpedition = (expeditionType) => {
     if(expeditionType == "ruins"){
         //Calculate result of the expedition (ancient ruin discovered?)
         //Calculate probability of finding a new ruin.
-        let ruinDiscoveryProbability = expeditionProbability("of "+expeditionType, ruinsExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
+        let ruinDiscoveryProbability = expedition_probability("of "+expeditionType, ruinsExpeditionsDone, expeditionariesAssigned, maxXP, avgXP)*1
         //ruinsFound = Math.random() < ruinDiscoveryProbability
         if(ruinsFound){
             loot = {}
@@ -576,7 +102,7 @@ const endActiveExpedition = (expeditionType) => {
                 //Calculate type of goods found by current expeditionary.
                 let goodsType = Math.random() < ruinsExpeditionProductsFoundProbability ? "products" : "resources"
                 //Calculate amount of loot for current expeditionary
-                let goodsLootAmount = expeditionCarriageCapacity(expeditionary.xp, expeditionary.mounted)
+                let goodsLootAmount = expedition_carriage_capacity(expeditionary.xp, expeditionary.mounted)
                 //Calculate category and granularity probability of goods found by current expeditionary.
                 let categoryProbability = Math.random()
                 let granularityProbability = Math.random()
@@ -605,22 +131,22 @@ const endActiveExpedition = (expeditionType) => {
                         categoryFound = !categoryFound && categoryProbability < currentProbability ? category + 1 : categoryFound
                     })
                     //Check if category found is available with resources for current mount. If not, get the closest lower one.
-                    while(stockClassified.resources.byMount[resourceMount]["category"+categoryFound] == undefined){
+                    while(stock_classified.resources.byMount[resourceMount]["category"+categoryFound] == undefined){
                         if(categoryFound == 1){
-                            categoryFound = Object.keys(stockClassified.resources.byMount[resourceMount])[0].toString().replace("category", "")*1
+                            categoryFound = Object.keys(stock_classified.resources.byMount[resourceMount])[0].toString().replace("category", "")*1
                         } else {
                             categoryFound--
                         }
                     }
                     //Obtain a random granularity for current mount and category resource.
-                    let resourceGranularityArray = Object.keys(stockClassified.resources.byMount[resourceMount]["category"+categoryFound])
+                    let resourceGranularityArray = Object.keys(stock_classified.resources.byMount[resourceMount]["category"+categoryFound])
                     let resourceGranularityIndex = Math.floor(granularityProbability * resourceGranularityArray.length)
                     let resourceGranularity = resourceGranularityArray[resourceGranularityIndex]
-                    let resourcesArray = stockClassified.resources.byMount[resourceMount]["category"+categoryFound][resourceGranularity]["EN"]
+                    let resourcesArray = stock_classified.resources.byMount[resourceMount]["category"+categoryFound][resourceGranularity]["EN"]
                     lootGood = resourcesArray[Math.floor(goodsProbability * resourcesArray.length)]
                     //Multiply loot according to granularity.
-                    let minValue = Math.ceil(granularityLootMultipliers[resourceGranularity].minMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
-                    let maxValue = Math.ceil(granularityLootMultipliers[resourceGranularity].maxMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
+                    let minValue = Math.ceil(granularity_loot_multipliers[resourceGranularity].minMultiplier * granularity_loot_multipliers["category"+categoryFound].reductionCoeficient)
+                    let maxValue = Math.ceil(granularity_loot_multipliers[resourceGranularity].maxMultiplier * granularity_loot_multipliers["category"+categoryFound].reductionCoeficient)
                     let randomGranularityMultiplicator = Math.random() / categoryFound
                     granularityRandomMultiplication = minValue + Math.floor(randomGranularityMultiplicator * (maxValue - minValue))
                 } else { //Current expeditionary looted products
@@ -672,23 +198,23 @@ const endActiveExpedition = (expeditionType) => {
                         categoryFound = !categoryFound && categoryProbability < currentProbability ? category + 1 : categoryFound
                     })
                     //Check if category found is available with products for current building. If not, get the closest lower one.
-                    if(stockClassified.products.byBuilding[building] == undefined) debugger
-                    while(stockClassified.products.byBuilding[building]["category"+categoryFound] == undefined){
+                    if(stock_classified.products.byBuilding[building] == undefined) debugger
+                    while(stock_classified.products.byBuilding[building]["category"+categoryFound] == undefined){
                         if(categoryFound == 1){
-                            categoryFound = Object.keys(stockClassified.products.byBuilding[building])[0].toString().replace("category", "")*1
+                            categoryFound = Object.keys(stock_classified.products.byBuilding[building])[0].toString().replace("category", "")*1
                         } else {
                             categoryFound--
                         }
                     }
                     //Obtain a random granularity for current building and category product.
-                    let productGranularityArray = Object.keys(stockClassified.products.byBuilding[building]["category"+categoryFound])
+                    let productGranularityArray = Object.keys(stock_classified.products.byBuilding[building]["category"+categoryFound])
                     let productGranularityIndex = Math.floor(granularityProbability * productGranularityArray.length)
                     let productGranularity = productGranularityArray[productGranularityIndex]
-                    let productsArray = stockClassified.products.byBuilding[building]["category"+categoryFound][productGranularity]["EN"]
+                    let productsArray = stock_classified.products.byBuilding[building]["category"+categoryFound][productGranularity]["EN"]
                     lootGood = productsArray[Math.floor(goodsProbability * productsArray.length)]
                     //Multiply loot according to granularity.
-                    let minValue = Math.ceil(granularityLootMultipliers[productGranularity].minMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
-                    let maxValue = Math.ceil(granularityLootMultipliers[productGranularity].maxMultiplier * granularityLootMultipliers["category"+categoryFound].reductionCoeficient)
+                    let minValue = Math.ceil(granularity_loot_multipliers[productGranularity].minMultiplier * granularity_loot_multipliers["category"+categoryFound].reductionCoeficient)
+                    let maxValue = Math.ceil(granularity_loot_multipliers[productGranularity].maxMultiplier * granularity_loot_multipliers["category"+categoryFound].reductionCoeficient)
                     let randomGranularityMultiplicator = Math.random() / categoryFound
                     granularityRandomMultiplication = minValue + Math.floor(randomGranularityMultiplicator * (maxValue - minValue))
                 }
@@ -725,9 +251,9 @@ const endActiveExpedition = (expeditionType) => {
     data.expeditionType = expeditionType
     if(expeditionType == "resources"){
         data.successfullExpedition = mountResourceFound
-        addNews("ResourcesExpeditionFinished", data)
+        add_news("ResourcesExpeditionFinished", data)
         if(mountResourceFound){
-            addLandform(data.mountResourceType.charAt(0).toLowerCase()+data.mountResourceType.slice(1))
+            add_landform(data.mountResourceType.charAt(0).toLowerCase()+data.mountResourceType.slice(1))
             resourcesExpeditionsDone++
             document.querySelector("#resourcesSuccessfullExpeditions").innerText = resourcesExpeditionsDone
         }
@@ -735,21 +261,21 @@ const endActiveExpedition = (expeditionType) => {
     if(expeditionType == "ruins"){
         data.successfullExpedition = ruinsFound
         data.loot = loot
-        addNews("RuinsExpeditionFinished", data)
+        add_news("RuinsExpeditionFinished", data)
         if(data.successfullExpedition){
             //Update stock with loot.
             Object.keys(loot).forEach((good) => {
-                if(stockValues.resources["EN"][good]!=undefined && stockValues.resources["EN"][good]!=null){
-                    stockValues.resources["EN"][good]+= loot[good]
-                    stockValues.resources["ES"][translate(language, good)] = stockValues.resources["EN"][good]
+                if(stock_values.resources["EN"][good]!=undefined && stock_values.resources["EN"][good]!=null){
+                    stock_values.resources["EN"][good]+= loot[good]
+                    stock_values.resources["ES"][translate(language, good)] = stock_values.resources["EN"][good]
                 }
-                if(stockValues.products["EN"][good]!=undefined && stockValues.products["EN"][good]!=null){
-                    stockValues.products["EN"][good]+= loot[good]
-                    stockValues.products["ES"][translate(language, good)] = stockValues.products["EN"][good]
+                if(stock_values.products["EN"][good]!=undefined && stock_values.products["EN"][good]!=null){
+                    stock_values.products["EN"][good]+= loot[good]
+                    stock_values.products["ES"][translate(language, good)] = stock_values.products["EN"][good]
                 }
             })
-            stockDisplayed = JSON.parse(JSON.stringify(stockValues))
-            updateStock()
+            stock_displayed = JSON.parse(JSON.stringify(stock_values))
+            update_stock()
             ruinsExpeditionsDone++
             document.querySelector("#ruinsSuccessfullExpeditions").innerText = ruinsExpeditionsDone
         }
@@ -785,17 +311,17 @@ const citizenDescription = (gender, birthWeeks, language, texts, attributes, gen
     if(language == "EN"){
         attributes.forEach(function(value, index){
             prefix = (index<2 ? (index ? ", " : " ") : connector)
-            adjective = attributesAdjectives[language][value]
-            textAttr+= prefix+"<strong class='"+attributesColors[language][value]+"'>"+adjective+"</strong>"
+            adjective = attributes_adjectives[language][value]
+            textAttr+= prefix+"<strong class='"+attributes_colors[language][value]+"'>"+adjective+"</strong>"
         })
         text+= texts+(genderPlacement=="left"?" "+noun:"")+" "+textAttr+(genderPlacement=="right"?" "+noun:"")
     }
     if(language == "ES"){
         attributes.forEach(function(value, index){
             prefix = (index<2 ? (index ? ", " : " ") : (value == "Inteligencia" && connector == " y " ? " e " : connector))
-            if(typeof attributesAdjectives[language][value] == "undefined") debugger
-            adjective = attributesAdjectives[language][value][gen]
-            textAttr+= prefix+"<strong class='"+attributesColors[language][value]+"'>"+adjective+"</strong>"
+            if(typeof attributes_adjectives[language][value] == "undefined") debugger
+            adjective = attributes_adjectives[language][value][gen]
+            textAttr+= prefix+"<strong class='"+attributes_colors[language][value]+"'>"+adjective+"</strong>"
         })
         text+= texts+(genderPlacement=="left"?" "+noun:"")+" "+textAttr+(genderPlacement=="right"?" "+noun:"")
     }
@@ -949,17 +475,18 @@ const custom_accordion = (header_element_id = null, body_element_id = null, call
 
 initColonyInfo()
 
-accordionNews()
-addNews("Welcome")
-accordionColony()
-accordionBuildings()
-accordionCitizens(citizensAmount)
-accordionRelationships()
+accordion_news()
+add_news("Welcome")
+accordion_colony()
+accordion_buildings()
+accordion_citizens(citizensAmount)
+accordion_relationships()
 accordion_landforms()
-accordionExpeditions()
-translateAll(language)
+accordion_expeditions()
+accordion_productions()
+translate_all(language)
 
-enableNotificationEvents()
+enable_notification_events()
 
 const process_worker_assignation = (citizen_index, assigned_where) => {
     //Perform particular tasks according to the nature of new citizen's assignation.
@@ -1100,7 +627,7 @@ const assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignR
         }       
         if(rolekey == "expeditioning"){
             if(document.querySelector("#expeditions-newExpedition") != null){
-                addAvailableWorkerToExpedition(citizen_id, "newExpedition")
+                add_available_worker_to_expedition(citizen_id, "newExpedition")
                 document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "newExpedition")
                 document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
             }
@@ -1109,13 +636,13 @@ const assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignR
         //Check if there is a new expedition panel opened to add expeditionary as available there.
         let availableWorkersPanel = document.querySelector("#newExpedition-available-workers .availableWorkers")
         if(availableWorkersPanel!=null){
-            addAvailableWorkerToExpedition(citizenIndex, "newExpedition")
+            add_available_worker_to_expedition(citizenIndex, "newExpedition")
             document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
             document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
         }
         */
     } else {
-        modalPopup("Can't change role", "RoleCitizenBusy")
+        modal_popup("Can't change role", "RoleCitizenBusy")
         modal.show()
     }
 }
@@ -1392,26 +919,26 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) == "F" ? "her attributes are" : "his attributes are", a_citizen.gender.charAt(0), "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
     p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributesColors[language][a_citizen.attributes[0]]
+    text_color = attributes_colors[language][a_citizen.attributes[0]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[0])
-    text_color = attributesColors[language][a_citizen.attributes[1]]
+    text_color = attributes_colors[language][a_citizen.attributes[1]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[1])
-    text_color = attributesColors[language][a_citizen.attributes[2]]
+    text_color = attributes_colors[language][a_citizen.attributes[2]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[2])
     p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) == "F" ? "her wished attributes are" : "his wished attributes are", a_citizen.gender.charAt(0), "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
     p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributesColors[language][a_citizen.wishedAttributes[0]]
+    text_color = attributes_colors[language][a_citizen.wishedAttributes[0]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[0])
-    text_color = attributesColors[language][a_citizen.wishedAttributes[1]]
+    text_color = attributes_colors[language][a_citizen.wishedAttributes[1]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[1])
-    text_color = attributesColors[language][a_citizen.wishedAttributes[2]]
+    text_color = attributes_colors[language][a_citizen.wishedAttributes[2]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[2])
     p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes attribute", "", "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    text_color = attributesColors[language][a_citizen.hatedAttribute]
+    text_color = attributes_colors[language][a_citizen.hatedAttribute]
     s = new element("span", `ms-1 px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.hatedAttribute)
     //Couple's information
     d2 = new element("div", "mt-1 mb-1 mx-1 px-2 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
@@ -1443,26 +970,26 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, couple_is_woman ? "her attributes are" : "his attributes are", a_couple.gender.charAt(0), "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
     p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributesColors[language][a_couple.attributes[0]]
+    text_color = attributes_colors[language][a_couple.attributes[0]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[0])
-    text_color = attributesColors[language][a_couple.attributes[1]]
+    text_color = attributes_colors[language][a_couple.attributes[1]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[1])
-    text_color = attributesColors[language][a_couple.attributes[2]]
+    text_color = attributes_colors[language][a_couple.attributes[2]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[2])
     p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, couple_is_woman ? "her wished attributes are" : "his wished attributes are", a_couple.gender.charAt(0), "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
     p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributesColors[language][a_couple.wishedAttributes[0]]
+    text_color = attributes_colors[language][a_couple.wishedAttributes[0]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[0])
-    text_color = attributesColors[language][a_couple.wishedAttributes[1]]
+    text_color = attributes_colors[language][a_couple.wishedAttributes[1]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[1])
-    text_color = attributesColors[language][a_couple.wishedAttributes[2]]
+    text_color = attributes_colors[language][a_couple.wishedAttributes[2]]
     s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[2])
     p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes attribute", "", "capitalized"))
     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    text_color = attributesColors[language][a_couple.hatedAttribute]
+    text_color = attributes_colors[language][a_couple.hatedAttribute]
     s = new element("span", `ms-1 px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.hatedAttribute)
     enable_accordion_click(b.getNode())
     //Actions available
@@ -1486,9 +1013,9 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
 const handleToggleHorse = (e) => {
     e.target.removeEventListener("click", handleToggleHorse)
     if(e.target.classList.contains("fa-plus")){
-        addAssignedHorseToExpedition(e.target.closest("h2"))
+        add_assigned_horse_to_expedition(e.target.closest("h2"))
     } else {
-        deassignHorseToExpedition(e.target.closest("h2"))
+        deassign_worker_to_expedition(e.target.closest("h2"))
     }
     //Check amount of citizens and horses already assigned.
     let expeditionariesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedWorker").length
@@ -1496,7 +1023,7 @@ const handleToggleHorse = (e) => {
     let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType span:last-child").getAttribute("data-type")
     if(expeditionariesAlreadyAssigned){
         //Calculate required expedition time.
-        let timeRequired = expeditionRequiredTime(expeditionType, expeditionType == "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
+        let timeRequired = expedition_required_time(expeditionType, expeditionType == "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
         //Update expedition required time.
         document.getElementById("newExpedition-required-info").classList.remove("hidden")
         document.querySelectorAll(".unknownTime").forEach((elem) => elem.classList.add("hidden"))
@@ -1581,7 +1108,7 @@ const handleToggleWorker = (e) => {
             expeditionData.crew.push(expeditionMember)
         })
         //Display active expedition with all its data
-        buildActiveExpedition(document.getElementById("active-expeditions-area"), expeditionData)
+        build_active_expedition(document.getElementById("active-expeditions-area"), expeditionData)
         //enableAccordions("#accordion-expedition-"+expeditionIndex+" [data-accordion-target]")
         //Remove new expedition panel.
         newExpeditionPanel.removePanel()
@@ -1603,18 +1130,18 @@ const handleToggleWorker = (e) => {
     let toggleAssignDeassign = () => {
         if(e.target.classList.contains("fa-plus")){
             if(mountPanel){
-                addAssignedWorkerToMount(citizenIndex, e.target.getAttribute("data-class"))
+                add_assigned_worker_to_mount(citizenIndex, e.target.getAttribute("data-class"))
             } else {
                 if(expeditionPanel) {
-                    addAssignedWorkerToExpedition(citizenIndex, e.target.getAttribute("data-class"))
+                    add_assigned_worker_to_expedition(citizenIndex, e.target.getAttribute("data-class"))
                 }
             }
         } else { //If worker is about to be dismissed, check if it has to be dismissed from a mount or a new expedition
             if(mountPanel){
-                deassignWorkerToMount(citizenIndex, e.target.getAttribute("data-class"))
+                deassign_worker_to_mount(citizenIndex, e.target.getAttribute("data-class"))
             } else {
                 if(expeditionPanel) {
-                    deassignWorkerToExpedition(citizenIndex, e.target.getAttribute("data-class"))
+                    deassign_worker_to_expedition(citizenIndex, e.target.getAttribute("data-class"))
                 }
             }
         }
@@ -1646,7 +1173,7 @@ const handleToggleWorker = (e) => {
         //Calculate probability of finding a new resources mount or ancient ruin.
         let discoveryProbability
         if(assignedExpeditionaries){
-            discoveryProbability = expeditionProbability(expeditionTypeInfo.type, (expeditionTypeInfo.type == "of resources") ? resourcesExpeditionsDone : ruinsExpeditionsDone, assignedExpeditionaries, maxXP, avgXP)*1
+            discoveryProbability = expedition_probability(expeditionTypeInfo.type, (expeditionTypeInfo.type == "of resources") ? resourcesExpeditionsDone : ruinsExpeditionsDone, assignedExpeditionaries, maxXP, avgXP)*1
         } else {
             discoveryProbability = 0
         }
@@ -1681,7 +1208,7 @@ const handleToggleWorker = (e) => {
         if(expeditionariesAlreadyAssigned /*&& expeditionariesAlreadyAssigned + horsesAlreadyAssigned*/){
             if(e.target.getAttribute("data-class") == "newExpedition"){
                 //Calculate required expedition time.
-                let timeRequired = expeditionRequiredTime(expeditionTypeInfo.type, expeditionTypeInfo.type == "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (assignedExpeditionaries <= horsesAlreadyAssigned) ? assignedExpeditionaries : 0)
+                let timeRequired = expedition_required_time(expeditionTypeInfo.type, expeditionTypeInfo.type == "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (assignedExpeditionaries <= horsesAlreadyAssigned) ? assignedExpeditionaries : 0)
                 //Update expedition required time.
                 document.getElementById("newExpedition-required-info").classList.remove("hidden")
                 document.querySelectorAll(".unknownTime").forEach((elem) => elem.classList.add("hidden"))

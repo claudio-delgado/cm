@@ -213,6 +213,7 @@ const translation_object = {
     "Cancel rule":{"ES":"Cancelar regla"},
     "Cancelar regla":{"EN":"Cancel rule"},
     "concrete":{"ES":"hormigón"},
+    "concrete made":{"ES":"de material"},
     "conejo":{"EN":"rabbit"},
     "Confirm rule":{"ES":"Confirmar regla"},
     "Confirmar regla":{"EN":"Confirm rule"},
@@ -252,6 +253,9 @@ const translation_object = {
     "days":{"ES":"días"},
     "De acuerdo":{"EN":"Ok"},
     "de combate":{"EN":"of combat"},
+    "de madera":{"EN":"wooden"},
+    "de material":{"EN":"concrete made"},
+    "de piedra":{"EN":"stone made"},
     "de recursos":{"EN":"of resources"},
     "de ruinas":{"EN":"of ruins"},
     "Decepción":{"EN":"Dissapointment"},
@@ -872,6 +876,7 @@ const translation_object = {
     "stone":{"ES":"piedra"},
     "stone breakers":{"ES":"picadores"},
     "Stone breakers assigned":{"ES":"Picadores/as asignados/as"},
+    "stone made":{"ES":"de piedra"},
     "Stone mount":{"ES":"Monte pedroso"},
     "strand":{"ES":"hebra"},
     "strap":{"ES":"correa"},
@@ -1032,6 +1037,7 @@ const translation_object = {
     "women":{"ES":"mujeres"},
     "wood":{"ES":"leño"},
     "Wood mount":{"ES":"Monte boscoso"},
+    "wooden":{"ES":"de madera"},
     "wooden chip":{"ES":"viruta"},
     "wooden piece":{"ES":"viga"},
     "wooden plank":{"ES":"madero"},
@@ -1130,7 +1136,8 @@ const translate_all = function (aLanguage) {
             value.innerText = !value.hasAttribute("placeholder") ? translatedText : ""
         }
         if(value.classList.contains("capital")){
-            value.style.textTransform = "capitalize"
+            //value.style.textTransform = "capitalize"
+            value.innerText = value.innerText.charAt(0).toUpperCase() + value.innerText.slice(1)
         }
         if(value.hasAttribute("plural")){
             value.innerText += value.getAttribute("plural")

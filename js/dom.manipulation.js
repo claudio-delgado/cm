@@ -1222,19 +1222,19 @@ const show_citizen_attributes = (e) => {
         let citizen_index = e.target.getAttribute("data-index")
         let citizen = get_citizen_by_index(citizen_index)
         let own_attribute_1 = citizen.attributes[0]
-        let own_attribute_1_class = attributesColors["EN"][translate("EN", own_attribute_1, "", "", changeLanguage=false)]
+        let own_attribute_1_class = attributes_colors["EN"][translate("EN", own_attribute_1, "", "", changeLanguage=false)]
         let own_attribute_2 = citizen.attributes[1]
-        let own_attribute_2_class = attributesColors["EN"][translate("EN", own_attribute_2, "", "", changeLanguage=false)]
+        let own_attribute_2_class = attributes_colors["EN"][translate("EN", own_attribute_2, "", "", changeLanguage=false)]
         let own_attribute_3 = citizen.attributes[2]
-        let own_attribute_3_class = attributesColors["EN"][translate("EN", own_attribute_3, "", "", changeLanguage=false)]
+        let own_attribute_3_class = attributes_colors["EN"][translate("EN", own_attribute_3, "", "", changeLanguage=false)]
         let wished_attribute_1 = citizen.wishedAttributes[0]
-        let wished_attribute_1_class = attributesColors["EN"][translate("EN", wished_attribute_1, "", "", changeLanguage=false)]
+        let wished_attribute_1_class = attributes_colors["EN"][translate("EN", wished_attribute_1, "", "", changeLanguage=false)]
         let wished_attribute_2 = citizen.wishedAttributes[1]
-        let wished_attribute_2_class = attributesColors["EN"][translate("EN", wished_attribute_2, "", "", changeLanguage=false)]
+        let wished_attribute_2_class = attributes_colors["EN"][translate("EN", wished_attribute_2, "", "", changeLanguage=false)]
         let wished_attribute_3 = citizen.wishedAttributes[2]
-        let wished_attribute_3_class = attributesColors["EN"][translate("EN", wished_attribute_3, "", "", changeLanguage=false)]
+        let wished_attribute_3_class = attributes_colors["EN"][translate("EN", wished_attribute_3, "", "", changeLanguage=false)]
         let hated_attribute = citizen.hatedAttribute
-        let hated_attribute_class = attributesColors["EN"][translate("EN", hated_attribute, "", "", changeLanguage=false)]
+        let hated_attribute_class = attributes_colors["EN"][translate("EN", hated_attribute, "", "", changeLanguage=false)]
         d = new element("div", "attributes p-1 bg-gray-500 border border-gray-700", [], parent_h2); d.create()
         p = new element("p", "grow p-1 flex items-center gap-2", [], d.getNode()); p.create()
         i = new element("i", "text-sm fa fa-circle-user", [], p.getNode()); i.create()
@@ -1909,26 +1909,41 @@ const accordion_productions = () => {
         parentElem = d.getNode()
         Object.keys(categorized_products).forEach((category, index) => {
             let category_name = category.charAt(0).toUpperCase()+category.slice(1)
-            //Build productions accordion header
+            //Build productions categories accordion header
             h2 = new element("h2", `${index ? "mt-1" : ""}`, [], parentElem, `accordion-productions-category-${index+1}`); h2.create()
             b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-body`}], h2.getNode())
             b.create()
             s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(category_name)
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-            //Build productions accordion body
+            //Build productions categories accordion body
             d1 = new element("div", "border border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parentElem, `accordion-productions-category-${index+1}-body`); d1.create()
             let subcategories = categorized_products[category]["subcategories"]
+            d = new element("div", "mx-1 border border-gray-700", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
             Object.keys(subcategories).forEach((subcategory, s_index) => {
                 //Format certain subcategories.
-                subcategory = subcategory == "waterReservoir" ? "Water reservoir" : subcategory
-                //Build productions accordion header
-                h2 = new element("h2", "my-1", [], d1.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}`); h2.create()
+                let translatable_subcategory = subcategory == "waterReservoir" ? "Water reservoir" : subcategory
+                //Build productions subcategories accordion header
+                h2 = new element("h2", "my-1", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}`); h2.create()
                 b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-body`}], h2.getNode())
                 b.create()
-                s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(subcategory)
+                s = new element("span", "capital", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translatable_subcategory)
                 b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-                //Build productions accordion body
-                d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d1.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
+                //Build productions subcategories accordion body
+                d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
+                
+                let products = categorized_products[category]["subcategories"][subcategory][language]
+                d = new element("div", "mx-1 border border-gray-700", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), `accordion-productions-category-${index+1}-subcategory-${s_index+1}-products`); d.create()
+                products.forEach((product, p_index) => {
+                    //Build productions products accordion header
+                    h2 = new element("h2", "my-1", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}`); h2.create()
+                    b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`}], h2.getNode())
+                    b.create()
+                    s = new element("span", "capital", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(product)
+                    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                    //Build productions products accordion body
+                    d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`); d2.create()
+                    p = new element("p", "flex justify-between text-sm pt-1 text-gray-400", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("blabla")
+                })
             })
         })
     }
@@ -1966,22 +1981,24 @@ const accordion_productions = () => {
 //Build modal popup
 const modal_popup = (modalTitle, modalType, modalData = {}) => {
     let parent = document.getElementById("modalBody")
-    //Adjust style if it's a functional modal or information modal.
-    if(modalData.modalStyle == "small"){
-        document.querySelector("#modalTitle").classList.remove("text-xl")
-        document.querySelector("#modalTitle").classList.add("text-base")
-        document.querySelector("#modalTitle").parentElement.classList.remove("p-4", "py-2", "ps-4")
-        document.querySelector("#modalTitle").parentElement.classList.add("py-2", "ps-4")
-        document.querySelector("#modalBody").classList.remove("p-4", "py-1", "px-4")
-        document.querySelector("#modalBody").classList.add("py-1", "px-4")
-    } else {
-        document.querySelector("#modalTitle").classList.remove("text-base")
-        document.querySelector("#modalTitle").classList.add("text-xl")
-        document.querySelector("#modalTitle").parentElement.classList.remove("text-base", "py-2", "ps-4", "p-4")
-        document.querySelector("#modalTitle").parentElement.classList.add("text-xl", "p-4")
-        document.querySelector("#modalBody").classList.remove("py-1", "px-4", "p-4")
-        document.querySelector("#modalBody").classList.add("p-4")
-    }/**/
+    const format_popup = () => {
+        //Adjust style if it's a functional modal or information modal.
+        if(modalData.modalStyle == "small"){
+            document.querySelector("#modalTitle").classList.remove("text-xl")
+            document.querySelector("#modalTitle").classList.add("text-base")
+            document.querySelector("#modalTitle").parentElement.classList.remove("p-4", "py-2", "ps-4")
+            document.querySelector("#modalTitle").parentElement.classList.add("py-2", "ps-4")
+            document.querySelector("#modalBody").classList.remove("p-4", "py-1", "px-4")
+            document.querySelector("#modalBody").classList.add("py-1", "px-4")
+        } else {
+            document.querySelector("#modalTitle").classList.remove("text-base")
+            document.querySelector("#modalTitle").classList.add("text-xl")
+            document.querySelector("#modalTitle").parentElement.classList.remove("text-base", "py-2", "ps-4", "p-4")
+            document.querySelector("#modalTitle").parentElement.classList.add("text-xl", "p-4")
+            document.querySelector("#modalBody").classList.remove("py-1", "px-4", "p-4")
+            document.querySelector("#modalBody").classList.add("p-4")
+        }
+    }
     parent.innerHTML = ""
     let popupCannotChangeRole = () => {
         p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
@@ -2053,20 +2070,21 @@ const modal_popup = (modalTitle, modalType, modalData = {}) => {
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         modalData.attributes.forEach((attribute) => {
             let eng_attribute = translate("EN", attribute, "", formatResult = "", changeLanguage = false)
-            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
+            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributes_colors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
         })
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributos deseados")
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         modalData.wishedAttributes.forEach((attribute) => {
             let eng_attribute = translate("EN", attribute, "", formatResult = "", changeLanguage = false)
-            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
+            s = new element("span", `grow mt-1 px-1 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributes_colors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, attribute, "", "uppercase"))
         })
         p = new element("p", "mt-1 text-sm", [], d.getNode()); p.create(); p.appendContent("Atributo no deseado")
         p = new element("p", "gap-3 flex justify-between", [], d.getNode()); p.create()
         let eng_attribute = translate("EN", modalData.hatedAttribute, "", formatResult = "", changeLanguage = false)
-        s = new element("span", `mt-1 px-2 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributesColors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
+        s = new element("span", `mt-1 px-2 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributes_colors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
+    format_popup()
     //Build modal pop up structure
     document.getElementById("modalTitle").innerHTML = translate(language, modalTitle)
     //Build popup body

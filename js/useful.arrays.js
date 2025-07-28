@@ -302,6 +302,14 @@ const role_icons = [
     {"EN": "merchant", "ES": "mercader", "key":"marketing", "icon": "store"}, {"EN": "expeditionary", "ES": {"F": "expedicionaria", "M": "expedicionario"}, "key":"expeditioning", "icon": "map-location-dot"}
 ]
 const age_groups = ["baby", "child", "teen", "adult", "grown adult", "ancient"]
+const age_week_limits = {
+    "baby":{"min":0, "max":311}, 
+    "child":{"min":312, "max":727}, 
+    "teen":{"min":728, "max":1091},
+    "adult":{"min":1092, "max":2651},
+    "grown adult":{"min":2652, "max":3379},
+    "ancient":{"min":3380, "max":null},
+}
 const person_icons = [
     {"EN": "baby", "ES": {"F":"bebé", "M":"beba"}, "text":"xs", "icon": "baby"},
     {"EN": "child", "ES": {"M":"niño", "F":"niña"}, "text":"xs", "icon": "child"}, 
@@ -1746,53 +1754,66 @@ const categorized_products = {
     }
 }
 const product_rules = {
-    "perch": {
-        "rules": [{
-            "requirements": [
-                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
-                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
-                 "workers": [], "tools": []},
-            ],
-            "result": {"quantity": 1, "score": 1/200},
-        }]
-    },
     "carp": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
                  "workers": [], "tools": []},
             ],
-            "result": {"quantity": 0.5, "score": 1/300},
+            "result": {"quantity": 0.5, "duration_type": "constant", "duration": 1, "score": 1/300},
         }]
     },
-    "trout": {
+    "perch": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
                  "workers": [], "tools": []},
             ],
-            "result": {"quantity": 0.2, "score": 1/400},
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 1, "score": 1/200},
         }]
     },
     "salmon": {
         "rules": [
         {
             "requirements": [
-                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 1, "consumable": false,
                  "workers": [], "tools": ["fishing rod"]},
             ],
-            "result": {"quantity": 1, "score": 1/600},
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 1, "score": 1/600},
         },
         {
             "requirements": [
-                {"index": 1, "object": "Water reservoir", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 1, "consumable": false,
                  "workers": [], "tools": ["fishing net"]},
             ],
-            "result": {"quantity": 5, "score": 1/600},
+            "result": {"quantity": 5, "duration_type": "constant", "duration": 1, "score": 1/600},
+        }]
+    },
+    "trout": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "workers": [], "tools": []},
+            ],
+            "result": {"quantity": 0.2, "duration_type": "constant", "duration": 1, "score": 1/400},
+        }]
+    },
+    "shed": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "constructor", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "tools": []},
+                {"index": 2, "object": "wood", "type": "product", "quantity": 80, "consumable": true},
+                {"index": 3, "object": "stone", "type": "product", "quantity": 80, "consumable": true},
+                {"index": 4, "object": "hammer", "type": "product", "quantity": 8, "consumable": true},
+                {"index": 5, "object": "nail", "type": "product", "quantity": 140, "consumable": true},
+            ],
+            "result": {"quantity": 1, "duration_type": "formula", "duration":"construction_duration", "score": 1/2},
         }]
     },
 }

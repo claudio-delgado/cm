@@ -238,3 +238,45 @@ const pregnancy_amount_of_babies = (fertility_sum) => {
         return random_value <= 0.9 ? 1 : (random_value <= 0.9 + 0.07 ? 2 : 3)
     }
 }
+
+//Building parts or products coeficients.
+const age_group_by_birthweeks = (birthweeks) => {
+    let result = ""
+    Object.keys(age_week_limits).forEach((group) => {
+        result = age_week_limits[group].min <= birthWeeks && birthWeeks <= age_week_limits[group].max ? group : result
+    })
+    return result
+}
+const age_coeficient = (a_citizen) => {
+    let age_group = age_group_by_birthweeks(a_citizen.birthWeeks)
+    return ["adult"].includes(age_group) ? 1 :(["teen", "grown adult"].includes(age_group) ? 0.5 :((["child", "ancient"].includes(age_group) ? 0.2 :0)))
+}
+const log_base = (base, x) => {
+    return Math.log(x) / Math.log(base)
+}
+const xp_coeficient = (a_citizen) => {
+    return 1 + ((3/2) * Math.log_base(3/2, a_citizen.xp + 1))
+}
+const attributes_coeficient = (a_citizen) => {
+    let strong_citizen = a_citizen.attributes.includes(translate(language, "strength"))
+    let dexterous_citizen = a_citizen.attributes.includes(translate(language, "dexterity"))
+    let agile_citizen = a_citizen.attributes.includes(translate(language, "agility"))
+    let smart_citizen = a_citizen.attributes.includes(translate(language, "intelligence"))
+    let cunning_citizen = a_citizen.attributes.includes(translate(language, "cunning"))
+    return strong_citizen ? 1.5 : (dexterous_citizen ? 1.4 : (agile_citizen ? 1.2 : (smart_citizen || cunning_citizen ? 1.1 : 1)))
+}
+const construction_coeficient = (citizens_array) => {
+    let result = 0
+    citizens_array.forEach((loop_citizen) => {
+        result += age_coeficient(loop_citizen) * xp_coeficient(loop_citizen) * attributes_coeficient(loop_citizen)
+    })
+    return result
+}
+const construction_duration = (citizens_array) => {
+    let denominator = 0
+    citizens_array.forEach((loop_citizen) => {
+        denominator += age_coeficient(loop_citizen)
+    })
+    return 1 / denominator
+}
+//Formula invoques a function

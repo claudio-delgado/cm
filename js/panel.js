@@ -22,8 +22,12 @@ class panel{
     hidePreviousOptions(){
         this.previousPanel = document.querySelector("#"+this.previousOptionsPanelId)
         this.previousPanelTitle = document.querySelector("#"+this.previousOptionsPanelId+"-title")
-        this.previousPanel.classList.remove("hidden"); this.previousPanel.classList.add("hidden")
-        this.previousPanelTitle.classList.remove("hidden"); this.previousPanelTitle.classList.add("hidden")
+        if(this.previousPanel != null){
+            this.previousPanel.classList.remove("hidden"); this.previousPanel.classList.add("hidden")
+        }
+        if(this.previousPanelTitle != null){
+            this.previousPanelTitle.classList.remove("hidden"); this.previousPanelTitle.classList.add("hidden")
+        }
     }
     showPreviousOptions(){
         this.previousPanel = document.querySelector("#"+this.previousOptionsPanelId)
@@ -2118,19 +2122,65 @@ class panel{
             //Specific New Production Rule panel
             p.create(); p.getNode().id = "new-rule-title"
             s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent("Selecciona un producto")
-            p = new element("p", "flex py-1 w-100 justify-between items-center flex-wrap p-1 text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
+            p = new element("p", "flex w-100 justify-between items-center flex-wrap p-1 pb-0 text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
             let iElement, buttonText = "", buttonColours = ""
-            let products = location_products[this.data.location]["EN"]
-            products.forEach((product, index) => {
-                divSpecificParagraphButton[index] = document.createElement("button")
-                iElement = "<i class='fa fa-plus me-2'></i>"
-                buttonText = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
-                divSpecificParagraphButton[index].innerHTML = iElement + buttonText
-                buttonColours = "border-blue-600 bg-blue-900 text-white"
-                divSpecificParagraphButton[index].classList = "rule_product text-xs capitalize "+(index+1 < products.length ? "grow " : "")+"p-2 py-1 me-1 mb-1 button border "+buttonColours
-                divSpecificParagraphButton[index].setAttribute("data-product", product)
-                p.appendContent(divSpecificParagraphButton[index])
-            })
+            let products
+            if(this.data.location){
+                products = location_products[this.data.location]["EN"]
+                products.forEach((product, index) => {
+                    divSpecificParagraphButton[index] = document.createElement("button")
+                    iElement = "<i class='fa fa-plus me-2'></i>"
+                    buttonText = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
+                    divSpecificParagraphButton[index].innerHTML = iElement + buttonText
+                    buttonColours = "border-blue-600 bg-blue-900 text-white"
+                    divSpecificParagraphButton[index].classList = "rule_product text-xs capitalize "+(index+1 < products.length ? "grow " : "")+"p-2 py-1 me-1 mb-1 button border "+buttonColours
+                    divSpecificParagraphButton[index].setAttribute("data-product", product)
+                    p.appendContent(divSpecificParagraphButton[index])
+                })
+            } else {
+                //Build products category accordions
+                let parent_elem = d1.getNode()//document.querySelector(this.data.parentId)
+                Object.keys(categorized_products).forEach((category, index) => {
+                    let category_name = category.charAt(0).toUpperCase()+category.slice(1)
+                    //Build productions categories accordion header
+                    h2 = new element("h2", `${index ? "mt-1" : ""}`, [], parent_elem, `accordion-productions-category-${index+1}`); h2.create()
+                    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-body`}], h2.getNode())
+                    b.create()
+                    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, category_name))
+                    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                    enable_accordion_click(b.getNode())
+                    //Build productions categories accordion body
+                    d1 = new element("div", "border-b border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parent_elem, `accordion-productions-category-${index+1}-body`); d1.create()
+                    let subcategories = categorized_products[category]["subcategories"]
+                    d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
+                    Object.keys(subcategories).forEach((subcategory, s_index) => {
+                        //Format certain subcategories.
+                        let translatable_subcategory = subcategory == "waterReservoir" ? "Water reservoir" : subcategory
+                        //Build productions subcategories accordion header
+                        h2 = new element("h2", "my-1", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}`); h2.create()
+                        b = new element("button", "unattached-click p-1 flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-body`}], h2.getNode())
+                        b.create()
+                        s = new element("span", "capital", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, translatable_subcategory))
+                        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                        enable_accordion_click(b.getNode())
+                        //Build productions subcategories accordion body
+                        d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
+                        let products = categorized_products[category]["subcategories"][subcategory][language]
+                        d1 = new element("div", "mx-1 border border-gray-700", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), `accordion-productions-category-${index+1}-subcategory-${s_index+1}-products`); d1.create()
+                        products.forEach((product, p_index) => {
+                            //Build productions products accordion header
+                            h2 = new element("h2", "my-1", [], d1.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}`); h2.create()
+                            b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`}], h2.getNode())
+                            b.create()
+                            s = new element("span", "capital", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(product)
+                            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                            //Build productions products accordion body
+                            d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}`}], d1.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`); d2.create()
+                            p = new element("p", "flex justify-between text-sm pt-1 text-gray-400", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("blabla")
+                        })
+                    })
+                })
+            }
         }
         if(this.panelName == "newExpedition"){
             //Specific New Expedition panel

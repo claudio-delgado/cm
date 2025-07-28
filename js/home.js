@@ -465,6 +465,8 @@ const custom_accordion = (header_element_id = null, body_element_id = null, call
                 body_element.classList.toggle("hidden")
                 if(collapsable.classList.contains("fa-chevron-up")){
                     callback(body_element)
+                } else {
+                    body_element.innerHTML = ""
                 }
             })
         })

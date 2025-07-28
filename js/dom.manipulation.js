@@ -1695,7 +1695,7 @@ const accordion_landforms = () => {
         d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "active-production-rules-actions"); d2.create()
         p = new element("p", "flex w-100 justify-between p-1 text-gray-500 text-gray-300", [], d2.getNode()); p.create()
         b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
-        i = new element("i", "fa fa-search me-2", [], b.getNode()); i.create()
+        i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New production rule")
         b.getNode().addEventListener("click", (e) => {
             let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}
@@ -1904,62 +1904,86 @@ const accordion_expeditions = () => {
     build_actions_available()
 }
 const accordion_productions = () => {
-    const build_product_category_accordions = () => {
-        //Build products category accordions
-        parentElem = d.getNode()
-        Object.keys(categorized_products).forEach((category, index) => {
-            let category_name = category.charAt(0).toUpperCase()+category.slice(1)
-            //Build productions categories accordion header
-            h2 = new element("h2", `${index ? "mt-1" : ""}`, [], parentElem, `accordion-productions-category-${index+1}`); h2.create()
-            b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-body`}], h2.getNode())
-            b.create()
-            s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(category_name)
-            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-            //Build productions categories accordion body
-            d1 = new element("div", "border border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parentElem, `accordion-productions-category-${index+1}-body`); d1.create()
-            let subcategories = categorized_products[category]["subcategories"]
-            d = new element("div", "mx-1 border border-gray-700", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
-            Object.keys(subcategories).forEach((subcategory, s_index) => {
-                //Format certain subcategories.
-                let translatable_subcategory = subcategory == "waterReservoir" ? "Water reservoir" : subcategory
-                //Build productions subcategories accordion header
-                h2 = new element("h2", "my-1", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}`); h2.create()
-                b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-body`}], h2.getNode())
-                b.create()
-                s = new element("span", "capital", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translatable_subcategory)
-                b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-                //Build productions subcategories accordion body
-                d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
-                
-                let products = categorized_products[category]["subcategories"][subcategory][language]
-                d = new element("div", "mx-1 border border-gray-700", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), `accordion-productions-category-${index+1}-subcategory-${s_index+1}-products`); d.create()
-                products.forEach((product, p_index) => {
-                    //Build productions products accordion header
-                    h2 = new element("h2", "my-1", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}`); h2.create()
-                    b = new element("button", "flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`}], h2.getNode())
-                    b.create()
-                    s = new element("span", "capital", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(product)
-                    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-                    //Build productions products accordion body
-                    d2 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-product-${p_index+1}-body`); d2.create()
-                    p = new element("p", "flex justify-between text-sm pt-1 text-gray-400", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent("blabla")
-                })
+    const build_active_rules_panel = () => {
+        const build_active_rules = (body_div) => {
+            //Production's active rules
+            let index = 0
+            product_rules_defined.forEach((product_rule, p_index) => {
+                index = p_index + 1
+                //let parent_elem = document.getElementById("productions")
+                d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], body_div, `product-rule-${index}-title`); d.create()
+                //Active rules title
+                p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
+                s = new element("span", "grow", [], p.getNode()); s.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(product_rule.object)
+                s1 = new element("span", "ms-1 text-xs text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(citizens[id].name.split(",")[0])
+                i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+                //Active rules panel
+                d1 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d.getNode(), `product-rule-${index}-body`); d1.create()
+                custom_accordion(`product-rule-${index}-title`, `product-rule-${index}-body`, build_product_rule)
             })
-        })
+            if(!index){
+                //body_div.innerHTML = ""
+                p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], body_div); p.create()
+                s = new element("span", "", [], p.getNode()); s.create()
+                i = new element("p", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+                s1.appendContent(translate(language, "None", "f"))
+            }
+        }
+        //Active rules already defined and running.
+        let parent_elem = document.getElementById("productions")
+        //Active rules title
+        let d = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-active-rules-title"); d.create()
+        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Active production rules")
+        i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+        //Active rules panel
+        d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-active-rules-body`); d1.create()
+        custom_accordion(`productions-active-rules-title`, `productions-active-rules-body`, build_active_rules)
     }
-    const build_actions_available = () => {
+    const build_actions_available_panel = () => {
+        const build_actions_available = (body_div) => {
+            p = new element("p", "flex w-100 justify-between text-gray-500 text-gray-300", [], body_div); p.create()
+            b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
+            i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "New production rule"))
+            b.getNode().addEventListener("click", (e) => {
+                let object_data = {"language": language, "parentId": `#productions`, "location": ""}
+                //Build new production rule panel
+                let new_production_rule_panel = new panel("newRule", object_data, "productions", false, "actions")
+                new_production_rule_panel.hidePreviousOptions()
+
+                new_production_rule_panel.buildPanel()
+                /*
+                //For each button with a product rule, add a click event
+                document.querySelectorAll(".rule_product").forEach((button) => {
+                    button.addEventListener("click", (e) => {
+                        let clicked_product = e.target.closest("button").getAttribute("data-product")
+                        //Remove product buttons.
+                        document.querySelectorAll("#new-rule-title, #new-rule-products").forEach((elem) => elem.remove())
+                        let current_mount = "Water reservoir"
+                        //Iterate over all manufacturable products in a water reservoir
+                        location_products["waterReservoir"]["EN"].forEach((location_product) => {
+                            if(location_product == clicked_product){
+                                new_rule_iterate_all_product_available_rules(clicked_product, current_mount)
+                            }
+                        })
+                    })
+                })
+                */
+            })
+        }
         //Actions available
-        let parent_elem = document.getElementById("accordion-menu-productions-body")
-        d2 = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-actions-title"); d2.create()
-        p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
-        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Actions available")
-        i = new element("i", "mt-0 text-base fa fa-times invisible font-bold", [], p.getNode()); i.create()
-        //Production's actions
-        d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], parent_elem, "productions-actions"); d2.create()
-        p = new element("p", "flex w-100 justify-between p-1 text-gray-500 text-gray-300", [], d2.getNode()); p.create()
-        b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
-        i = new element("i", "fa fa-search me-2", [], b.getNode()); i.create()
-        s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New production rule")
+        let parent_elem = document.getElementById("productions")
+        //Active rules title
+        let d = new element("div", "mt-1 border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-actions-title"); d.create()
+        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+        i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+        //Active rules panel
+        d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-actions`); d1.create()
+        custom_accordion(`productions-actions-title`, `productions-actions`, build_actions_available)
     }
     //Build productions accordion
     let d1
@@ -1972,11 +1996,12 @@ const accordion_productions = () => {
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build productions accordion body
     d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-productions"}], parentElem, "accordion-menu-productions-body"); d1.create()
-    d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
+    d2 = new element("div", "py-1 border border-gray-700 bg-gray-600", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1 ", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "productions"); d.create()
     
-    build_product_category_accordions()  
-    build_actions_available()
+    //build_product_category_accordions()  
+    build_active_rules_panel()
+    build_actions_available_panel()
 }
 //Build modal popup
 const modal_popup = (modalTitle, modalType, modalData = {}) => {

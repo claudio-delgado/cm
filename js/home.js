@@ -1359,7 +1359,7 @@ searchingZone = true
 //Avoid modal pop up when zone searched
 showModalZoneSearched = false
 
-//test_citizen_fishing_roles()
+test_citizen_fishing_roles()
 //test_pregnancy_status()
 //text_familiary_relationships()
 test_build_new_citizen()

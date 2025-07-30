@@ -114,7 +114,7 @@ class panel{
         })
 
         //Build specific panel
-        d1 = new element("div", this.panelName+" p-1 border border-gray-900 bg-gray-500 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
+        d1 = new element("div", this.panelName+" p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
         p = new element("p", "flex py-1 w-100 gap-1 justify-between items-center flex-wrap p-1 text-gray-300", [], d1.getNode());
         let divSpecificParagraphButton = []
         if(this.panelName == "assignRole"){
@@ -2151,7 +2151,7 @@ class panel{
                     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
                     enable_accordion_click(b.getNode())
                     //Build productions categories accordion body
-                    d1 = new element("div", "border-b border-gray-800 bg-gray-600 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parent_elem, `accordion-productions-category-${index+1}-body`); d1.create()
+                    d1 = new element("div", "border-b border-s border-e border-gray-800 bg-gray-600 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parent_elem, `accordion-productions-category-${index+1}-body`); d1.create()
                     let subcategories = categorized_products[category]["subcategories"]
                     d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
                     Object.keys(subcategories).forEach((subcategory, s_index) => {

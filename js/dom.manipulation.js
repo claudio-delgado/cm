@@ -1319,15 +1319,17 @@ const show_active_production_rules = (parent_div) => {
     //Remove active production rules
     parent_div.querySelectorAll("div").forEach((elem) => elem.remove())
     //Add all active production rules
+    let rules_found = 0
     product_rules_defined.forEach((rule) => {
+        rules_found++
         //Current rule accordion
         d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.id}`); d.create()
         //Current rule accordion header
         h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-active-rule-${rule.id}-header`); h2.create()
-        b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
-        s1 = new element("span", "font-bold text-sm", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1 = new element("span", "font-bold text-xs", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
         s1.appendContent(translate(language, "Rule")); s1.appendHTML(` ${rule.id} -`)
         s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
         s1.appendContent(`${translate(language, "Product")}:`)
@@ -1335,7 +1337,7 @@ const show_active_production_rules = (parent_div) => {
         s1.appendHTML(`${translate(language, rule.object, "", "uppercase")}`)
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Current rule accordion body
-        d1 = new element("div", "hidden p-1 border border-gray-800 bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], d.getNode(), `accordion-active-rule-${rule.id}-body`); d1.create()
+        d1 = new element("div", "hidden p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], d.getNode(), `accordion-active-rule-${rule.id}-body`); d1.create()
         p = new element("p", "ms-1 mb-1 text-xs text-white", [], d1.getNode()); p.create()
         s1 = new element("span", "", [], p.getNode()); s1.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s.create(); s.appendContent(translate(language, "Status"))
@@ -1403,6 +1405,12 @@ const show_active_production_rules = (parent_div) => {
             }
         })
     })
+    if(!rules_found){
+        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], parent_div); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f", "capitalized"))
+    }
 }
 const new_rule_click_requirement = (click_target, requirement, elem) => {
     let rule_index
@@ -1448,13 +1456,17 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
             /*document.querySelector("#active-production-rules-newRule-title").remove()
             document.querySelector("#active-production-rules-newRule").remove()*/
             b.getNode().removeEventListener("click", click_save_rule)
-            show_active_production_rules(e.target.closest("div.newRule").parentElement.querySelector(".active-production-rules"))
+            //show_active_production_rules(e.target.closest("div.newRule").parentElement.querySelector(".active-production-rules"))
             e.target.closest(".newRule").previousSibling.remove()
             e.target.closest(".newRule").remove()
+            /*
             //Build new production rule panel
-            let object_data = {"language": language, "parentId": `#${elem_div_id}`, "location": "waterReservoir"}
+            let object_data = {"language": language, "parentId": `#${elem_div_id}`, "location": ""}
             let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
             new_production_rule_panel.showPreviousOptions()
+            */
+            document.querySelector("#productions-actions-title").remove()
+            build_actions_available_panel()
         }
 
         pid = `rule-${rule_index}-requirement-${requirement.index}-available-actions-title`
@@ -1906,19 +1918,63 @@ const accordion_expeditions = () => {
     
     build_actions_available()
 }
+const build_actions_available_panel = () => {
+    const build_actions_available_subpanel = (body_div) => {
+        p = new element("p", "flex w-100 justify-between text-gray-500 text-gray-300", [], body_div); p.create()
+        b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
+        i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "New production rule"))
+        b.getNode().addEventListener("click", (e) => {
+            let object_data = {"language": language, "parentId": `#productions`, "location": ""}
+            //Build new production rule panel
+            let new_production_rule_panel = new panel("newRule", object_data, "productions", false, "actions")
+            new_production_rule_panel.hidePreviousOptions()
+            new_production_rule_panel.buildPanel()
+            /*
+            //For each button with a product rule, add a click event
+            document.querySelectorAll(".rule_product").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    let clicked_product = e.target.closest("button").getAttribute("data-product")
+                    //Remove product buttons.
+                    document.querySelectorAll("#new-rule-title, #new-rule-products").forEach((elem) => elem.remove())
+                    let current_mount = "Water reservoir"
+                    //Iterate over all manufacturable products in a water reservoir
+                    location_products["waterReservoir"]["EN"].forEach((location_product) => {
+                        if(location_product == clicked_product){
+                            new_rule_iterate_all_product_available_rules(clicked_product, current_mount)
+                        }
+                    })
+                })
+            })
+            */
+        })
+    }
+    //Actions available
+    let parent_elem = document.getElementById("productions")
+    //Active rules title
+    let d = new element("div", "mt-1 border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-actions-title"); d.create()
+    p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d.getNode()); p.create()
+    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+    i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+    //Active rules panel
+    d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-actions`); d1.create()
+    custom_accordion(`productions-actions-title`, `productions-actions`, build_actions_available_subpanel)
+}
+
 const accordion_productions = () => {
     const build_active_rules_panel = () => {
         const build_active_rules = (body_div) => {
+            const build_product_rule = () => {}
             //Production's active rules
             let index = 0
-            product_rules_defined.forEach((product_rule, p_index) => {
+            show_active_production_rules(document.querySelector("#productions-active-rules-body"))
+            /*product_rules_defined.forEach((product_rule, p_index) => {
                 index = p_index + 1
                 d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], body_div, `product-rule-${index}-title`); d.create()
                 //Active rules title
                 p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
                 s = new element("span", "grow", [], p.getNode()); s.create()
                 s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, product_rule.object, "", "capitalized"))
-                s1 = new element("span", "ms-1 text-xs text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(citizens[id].name.split(",")[0])
                 i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
                 //Active rules panel
                 d1 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d.getNode(), `product-rule-${index}-body`); d1.create()
@@ -1931,7 +1987,7 @@ const accordion_productions = () => {
                 i = new element("p", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                 s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
                 s1.appendContent(translate(language, "None", "f"))
-            }
+            }*/
         }
         //Active rules already defined and running.
         let parent_elem = document.getElementById("productions")
@@ -1943,49 +1999,6 @@ const accordion_productions = () => {
         //Active rules panel
         d1 = new element("div", "active-production-rules hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-active-rules-body`); d1.create()
         custom_accordion(`productions-active-rules-title`, `productions-active-rules-body`, build_active_rules)
-    }
-    const build_actions_available_panel = () => {
-        const build_actions_available = (body_div) => {
-            p = new element("p", "flex w-100 justify-between text-gray-500 text-gray-300", [], body_div); p.create()
-            b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
-            i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
-            s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "New production rule"))
-            b.getNode().addEventListener("click", (e) => {
-                let object_data = {"language": language, "parentId": `#productions`, "location": ""}
-                //Build new production rule panel
-                let new_production_rule_panel = new panel("newRule", object_data, "productions", false, "actions")
-                new_production_rule_panel.hidePreviousOptions()
-
-                new_production_rule_panel.buildPanel()
-                /*
-                //For each button with a product rule, add a click event
-                document.querySelectorAll(".rule_product").forEach((button) => {
-                    button.addEventListener("click", (e) => {
-                        let clicked_product = e.target.closest("button").getAttribute("data-product")
-                        //Remove product buttons.
-                        document.querySelectorAll("#new-rule-title, #new-rule-products").forEach((elem) => elem.remove())
-                        let current_mount = "Water reservoir"
-                        //Iterate over all manufacturable products in a water reservoir
-                        location_products["waterReservoir"]["EN"].forEach((location_product) => {
-                            if(location_product == clicked_product){
-                                new_rule_iterate_all_product_available_rules(clicked_product, current_mount)
-                            }
-                        })
-                    })
-                })
-                */
-            })
-        }
-        //Actions available
-        let parent_elem = document.getElementById("productions")
-        //Active rules title
-        let d = new element("div", "mt-1 border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-actions-title"); d.create()
-        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d.getNode()); p.create()
-        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
-        i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
-        //Active rules panel
-        d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-actions`); d1.create()
-        custom_accordion(`productions-actions-title`, `productions-actions`, build_actions_available)
     }
     //Build productions accordion
     let d1
@@ -2867,8 +2880,4 @@ const deassign_worker_to_expedition = (citizenIndex, newExpeditionClass) => {
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No workers assigned"))
     }
-}
-
-const build_product_rules_panel = () => {
-    
 }

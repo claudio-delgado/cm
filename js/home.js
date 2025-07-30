@@ -474,6 +474,27 @@ const custom_accordion = (header_element_id = null, body_element_id = null, call
         console.log("Error while trying to attach custom accordion events")
     }
 }
+const rule_product_selection = (paragraph, location = false) => {
+    paragraph.querySelectorAll(".rule_product").forEach((button) => {
+        button.addEventListener("click", (e) => {
+            let clicked_product = e.target.closest("button").getAttribute("data-product")
+            let parent_div = e.target.closest("div")
+            //Remove product buttons.
+            parent_div.querySelectorAll("p").forEach((elem) => elem.remove())
+            if(location){
+                let current_mount = location === "waterReservoir" ? "Water reservoir" : location
+                //Iterate over all manufacturable products in a water reservoir
+                location_products[location]["EN"].forEach((location_product) => {
+                    if(location_product == clicked_product){
+                        new_rule_iterate_all_product_available_rules(parent_div, clicked_product, current_mount)
+                    }
+                })
+            } else {
+                new_rule_iterate_all_product_available_rules(parent_div, clicked_product)
+            }
+        })
+    })
+}
 
 initColonyInfo()
 

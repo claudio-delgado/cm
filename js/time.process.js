@@ -143,11 +143,11 @@ const life_interval = setInterval(() => {
                     product_rules[product_index].status = "suspended"
                 } else {
                     //Update product stock with new value.
-                    stockValues.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                    stockValues.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
+                    stock_values.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
+                    stock_values.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
                     stock_displayed.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
                     stock_displayed.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                    updateStock()
+                    update_stock()
                 }
             }
         })

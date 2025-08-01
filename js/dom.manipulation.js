@@ -996,7 +996,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                 }
             }
             let visible_teen_class = new_citizen.ageYears >= 14 ? "" : "hidden"
-            d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), `citizen-${id}-relationships-title`); d2.create()
+            d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`citizen-${id}-relationships-body`}, {"key":"data-group", "value":`citizen-${id}-custom-accordion`}], d1.getNode(), `citizen-${id}-relationships-title`); d2.create()
             //Citizen's relationships title
             p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
             s = new element("span", "grow", [], p.getNode()); s.create()
@@ -1005,7 +1005,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
             //Citizen's relationships
             d3 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), `citizen-${id}-relationships-body`); d3.create()
-            custom_accordion(`citizen-${id}-relationships-title`, `citizen-${id}-relationships-body`, build_relationships)
+            custom_accordion(`citizen-${id}-relationships-title`, build_relationships)
         }
         let show_actions_available = (d1) => {
             let build_actions_available = (body_div) => {
@@ -1053,7 +1053,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                 }
             }
             //Citizen's actions title
-            d2 = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), `citizen-${id}-actions-title`); d2.create()
+            d2 = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`citizen-${id}-actions`}, {"key":"data-group", "value":`citizen-${id}-custom-accordion`}], d1.getNode(), `citizen-${id}-actions-title`); d2.create()
             p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
             s = new element("span", "grow", [], p.getNode()); s.create()
             s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Actions available for" : translate(language, "Actions available for"))
@@ -1061,7 +1061,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             i = new element("i", "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
             //Citizen's actions
             d2 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), `citizen-${id}-actions`); d2.create()
-            custom_accordion(`citizen-${id}-actions-title`, `citizen-${id}-actions`, build_actions_available)
+            custom_accordion(`citizen-${id}-actions-title`, build_actions_available)
         }
 
         d1 = new element("div", "hidden citizen mb-1 bg-gray-600", [{"key":"aria-labelledby","value":`accordion-citizen-${id}-header`}], accordion_citizens, `accordion-citizen-${id}-body`); d1.create()
@@ -1479,21 +1479,12 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                 })
             })
             product_rules_defined.push(rule_created)
-            let elem_div_id = e.target.closest(".newRule").parentElement.id
-            /*document.querySelector("#active-production-rules-newRule-title").remove()
-            document.querySelector("#active-production-rules-newRule").remove()*/
             b.getNode().removeEventListener("click", click_save_rule)
-            //show_active_production_rules(e.target.closest("div.newRule").parentElement.querySelector(".active-production-rules"))
+            let custom_accordions_div = e.target.closest(".newRule").previousSibling.previousSibling
             e.target.closest(".newRule").previousSibling.remove()
             e.target.closest(".newRule").remove()
-            /*
-            //Build new production rule panel
-            let object_data = {"language": language, "parentId": `#${elem_div_id}`, "location": ""}
-            let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
-            new_production_rule_panel.showPreviousOptions()
-            */
-            document.querySelector("#productions-actions-title").remove()
-            build_actions_available_panel()
+            //document.querySelector("#productions-actions-title").remove()
+            build_actions_available_panel(custom_accordions_div)
         }
 
         pid = `rule-${rule_index}-requirement-${requirement.index}-available-actions-title`
@@ -1726,17 +1717,41 @@ const new_rule_iterate_all_product_available_rules = (parent_div, clicked_produc
     })
 }
 const accordion_landforms = () => {
-    let build_active_rules = () => {
+    let build_active_rules = (parent_elem) => {
         //Active rules title
-        d2 = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), "landform-1-active-production-rules-title"); d2.create()
-        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
+        d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`landform-1-active-production-rules`}, {"key":"data-group", "value":`landform-1-custom-accordion`}], parent_elem, "landform-1-active-production-rules-title"); d2.create()
+        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Active production rules")
         i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
         //Active rules panel
-        d3 = new element("div", "active-production-rules hidden p-1 bg-gray-500 border-b border-gray-800 text-xs", [], d1.getNode(), `landform-1-active-production-rules`); d3.create()
-        custom_accordion(`landform-1-active-production-rules-title`, `landform-1-active-production-rules`, build_active_production_rules)
+        d3 = new element("div", "active-production-rules hidden p-1 bg-gray-500 border-b border-gray-800 text-xs", [], d2.getNode(), `landform-1-active-production-rules`); d3.create()
+        custom_accordion(`landform-1-active-production-rules-title`, build_active_production_rules)
     }
-    let build_actions_available = () => {
+    let build_actions_available = (parent_elem) => {
+        const build_actions_available_subpanel = (body_div) => {
+            p = new element("p", "flex w-100 justify-between text-gray-500 text-gray-300", [], body_div); p.create()
+            b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
+            i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "New production rule"))
+            b.getNode().addEventListener("click", (e) => {
+                let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}
+                //Build new production rule panel
+                let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
+                new_production_rule_panel.hidePreviousOptions()
+                new_production_rule_panel.buildPanel()
+                //For each button with a product rule, add a click event
+                rule_product_selection(p.getNode(), "waterReservoir")
+            })
+        }
+        //Actions available title
+        let d = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":"active-production-rules-actions"}, {"key":"data-group", "value":`landform-1-custom-accordion`}], parent_elem,  "active-production-rules-actions-title"); d.create()
+        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+        i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
+        //Actions available body
+        d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), "active-production-rules-actions"); d1.create()
+        custom_accordion("active-production-rules-actions-title", build_actions_available_subpanel)
+        /*
         //Actions available
         d2 = new element("div", "border border-gray-800 mt-1 bg-gray-500 text-xs", [], d1.getNode(), "active-production-rules-actions-title"); d2.create()
         p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
@@ -1756,21 +1771,8 @@ const accordion_landforms = () => {
             new_production_rule_panel.buildPanel()
             //For each button with a product rule, add a click event
             rule_product_selection(p.getNode(), "waterReservoir")
-            /*document.querySelectorAll(".rule_product").forEach((button) => {
-                button.addEventListener("click", (e) => {
-                    let clicked_product = e.target.closest("button").getAttribute("data-product")
-                    //Remove product buttons.
-                    document.querySelectorAll("#new-rule-title, #new-rule-products").forEach((elem) => elem.remove())
-                    let current_mount = "Water reservoir"
-                    //Iterate over all manufacturable products in a water reservoir
-                    location_products["waterReservoir"]["EN"].forEach((location_product) => {
-                        if(location_product == clicked_product){
-                            new_rule_iterate_all_product_available_rules(clicked_product, current_mount)
-                        }
-                    })
-                })
-            })*/
         })
+        */
     }
     let build_landforms_accordion = () => {
         //Build landforms accordion
@@ -1874,10 +1876,11 @@ const accordion_landforms = () => {
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"n"}], s.getNode()); s1.create(); s1.appendContent("None")
         
+        d4 = new element("div", "", [], d1.getNode(), "landform_productions"); d4.create()
         //Active rules already defined and running.
-        build_active_rules()
-        build_actions_available()
-    /*    
+        build_active_rules(d4.getNode())
+        build_actions_available(d4.getNode())
+        /*    
         //Build Active Production Rules title
         d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "landform-1-active-production-rules-title")
         d2.create();
@@ -1960,7 +1963,7 @@ const accordion_expeditions = () => {
     
     build_actions_available()
 }
-const build_actions_available_panel = () => {
+const build_actions_available_panel = (parent_elem) => {
     const build_actions_available_subpanel = (body_div) => {
         p = new element("p", "flex w-100 justify-between text-gray-500 text-gray-300", [], body_div); p.create()
         b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
@@ -1972,35 +1975,16 @@ const build_actions_available_panel = () => {
             let new_production_rule_panel = new panel("newRule", object_data, "productions", false, "actions")
             new_production_rule_panel.hidePreviousOptions()
             new_production_rule_panel.buildPanel()
-            /*
-            //For each button with a product rule, add a click event
-            document.querySelectorAll(".rule_product").forEach((button) => {
-                button.addEventListener("click", (e) => {
-                    let clicked_product = e.target.closest("button").getAttribute("data-product")
-                    //Remove product buttons.
-                    document.querySelectorAll("#new-rule-title, #new-rule-products").forEach((elem) => elem.remove())
-                    let current_mount = "Water reservoir"
-                    //Iterate over all manufacturable products in a water reservoir
-                    location_products["waterReservoir"]["EN"].forEach((location_product) => {
-                        if(location_product == clicked_product){
-                            new_rule_iterate_all_product_available_rules(clicked_product, current_mount)
-                        }
-                    })
-                })
-            })
-            */
         })
     }
     //Actions available
-    let parent_elem = document.getElementById("productions")
-    //Active rules title
-    let d = new element("div", "mt-1 border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-actions-title"); d.create()
-    p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d.getNode()); p.create()
+    let d = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":"productions-actions"}, {"key":"data-group", "value":`productions-custom-accordion`}], parent_elem, "productions-actions-title"); d.create()
+    p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
     i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
-    //Active rules panel
+    //Actiions available panel
     d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-actions`); d1.create()
-    custom_accordion(`productions-actions-title`, `productions-actions`, build_actions_available_subpanel)
+    custom_accordion(`productions-actions-title`, build_actions_available_subpanel)
 }
 const build_active_production_rules = (body_div) => {
     //Check if it is a landform panel or general production panel.
@@ -2010,40 +1994,20 @@ const build_active_production_rules = (body_div) => {
     let location = set_location.size ? [...set_location][0] : false
     //Production's active rules
     let index = 0
-    show_active_production_rules(location,/*document.querySelector("#productions-active-rules-body")*/body_div)
-    /*product_rules_defined.forEach((product_rule, p_index) => {
-        index = p_index + 1
-        d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], body_div, `product-rule-${index}-title`); d.create()
-        //Active rules title
-        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
-        s = new element("span", "grow", [], p.getNode()); s.create()
-        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, product_rule.object, "", "capitalized"))
-        i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
-        //Active rules panel
-        d1 = new element("div", "hidden border border-gray-800 bg-gray-500 text-xs", [], d.getNode(), `product-rule-${index}-body`); d1.create()
-        custom_accordion(`product-rule-${index}-title`, `product-rule-${index}-body`, build_product_rule)
-    })
-    if(!index){
-        //body_div.innerHTML = ""
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], body_div); p.create()
-        s = new element("span", "", [], p.getNode()); s.create()
-        i = new element("p", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-        s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
-        s1.appendContent(translate(language, "None", "f"))
-    }*/
+    show_active_production_rules(location, body_div)
 }
 const accordion_productions = () => {
     const build_active_rules_panel = () => {
         //Active rules already defined and running.
         let parent_elem = document.getElementById("productions")
         //Active rules title
-        let d = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], parent_elem, "productions-active-rules-title"); d.create()
-        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d.getNode()); p.create()
+        let d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":"productions-active-rules-body"}, {"key":"data-group", "value":`productions-custom-accordion`}], parent_elem, "productions-active-rules-title"); d.create()
+        p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Active production rules")
         i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
         //Active rules panel
         d1 = new element("div", "active-production-rules hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-active-rules-body`); d1.create()
-        custom_accordion(`productions-active-rules-title`, `productions-active-rules-body`, build_active_production_rules)
+        custom_accordion(`productions-active-rules-title`, build_active_production_rules)
     }
     //Build productions accordion
     let d1
@@ -2061,7 +2025,7 @@ const accordion_productions = () => {
     
     //build_product_category_accordions()  
     build_active_rules_panel()
-    build_actions_available_panel()
+    build_actions_available_panel(document.getElementById("productions"))
 }
 //Build modal popup
 const modal_popup = (modalTitle, modalType, modalData = {}) => {

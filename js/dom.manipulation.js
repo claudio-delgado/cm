@@ -1542,9 +1542,22 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                 document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
                 document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
                 document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-green-700", "border-green-500")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-green-700", "border-green-500")
-                document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("fulfilled", "bg-green-700", "border-green-500")
+                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("fulfilled", "bg-green-700", "border-green-500")
+                //Check if all requirements were fulfilled.
+                let requirements_fulfilled = 0
+                e.target.closest("h2").parentElement.parentElement.querySelectorAll(".rule-requirement").forEach((elem) => {
+                    if(elem.classList.contains("fulfilled")){
+                        requirements_fulfilled++
+                    }
+                })
+                if(requirements_fulfilled === e.target.parentElement.querySelectorAll(".rule-requirement").length){
+                    document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-green-700", "border-green-500")
+                    document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
+                } else {
+                    document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-green-700", "border-green-500")
+                    document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
+                }
                 //Update result quantity
                 let result_product_label = document.querySelector(`#rule-${rule_index}-result`).innerText
                 let result_array = result_product_label.split(" x ")
@@ -1634,13 +1647,14 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
 //Receives: rule as object, rule_index as id, clicked_product as DOM element, current_mount
 const new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_mount = false) => {
     const get_product_name_parent = (requirement) => {
+        sid = `rule-${rule_index}-requirement-${requirement.index}`
+        s = new element("span", "flex items-center", [], p.getNode(), sid); s.create()
         if(!requirement.consumable){
-            sid = `rule-${rule_index}-requirement-${requirement.index}`
-            s = new element("span", "flex items-center", [], p.getNode(), sid); s.create()
+            //Leftmost square brackets
             i1 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square", [], s.getNode()); i1.create()
             i2 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square-right", [], s.getNode());
-            return s.getNode()
-        } else return p.getNode()
+        }// else return p.getNode()
+        return s.getNode()
     }
     //Iterate over al requirements for that rule.
     p = new element("p", "flex justify-start flex-wrap w-100 p-1 text-gray-300", [], d1.getNode()); p.create()
@@ -1652,8 +1666,20 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
         product_name_parent = get_product_name_parent(requirement)
         //Create span with product name, add square brackets in case it's not consumable
         //Check if current requirement is fulfilled.
-        let location_requirement_fulfilled = (requirement.object == current_mount)
-        let bg_class = location_requirement_fulfilled ? "border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
+        let location_requirement_fulfilled = (requirement.type == "location" && requirement.object == current_mount)
+        let requirement_fulfilled = location_requirement_fulfilled
+        if(requirement.type == "product"){
+            let resources_objects = Object.keys(stock_values["resources"]["EN"])
+            let products_objects = Object.keys(stock_values["products"]["EN"])
+            let building_parts_objects = Object.keys(stock_values["building parts"]["EN"])
+            let manufactured_category = resources_objects.includes(requirement.object) ? "resources" : 
+                                        (products_objects.includes(requirement.object) ? "products" :
+                                         (building_parts_objects.includes(requirement.object) ? "building parts" : ""))
+            let category_objects = Object.keys(stock_values[manufactured_category]["EN"])
+            let product_requirement_fulfilled = (requirement.type == "product" && category_objects.includes(requirement.object) && stock_values[manufactured_category]["EN"][requirement.object] >= requirement.quantity)
+            requirement_fulfilled ||= product_requirement_fulfilled
+        }
+        let bg_class = requirement_fulfilled ? "border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
         sid = `rule-${rule_index}-requirement-${requirement_index}`+(product_name_parent == p.getNode() ? "" : "-name")
         s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
         let requirement_object_name = translate(language, requirement.object, "", "capitalized")
@@ -1669,10 +1695,12 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
         //Show requirement name and quantity
         s.appendContent(requirement_object_name)
         s.appendHTML(` x ${requirement.quantity}`)
-        if(!location_requirement_fulfilled){
+        if(!requirement_fulfilled){
             sid = `rule-${rule_index}-requirement-${requirement_index}-update`
-            s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
-            i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
+            if(requirement.type == "citizen"){
+                s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
+                i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
+            }
             //Add click event to requirement arrow button.
             document.querySelectorAll(".unaccomplished").forEach((elem) => {
                 elem.addEventListener("click", (e) => {
@@ -1681,6 +1709,7 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
                 })
             })
         }
+        //Rightmost square brackets
         if(!requirement.consumable){ i2.create()}
         if(requirement_index < requirements_quantity){
             i = new element("i", "text-lg p-1 mb-0 fa fa-plus", [], p.getNode()); i.create()

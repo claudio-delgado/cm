@@ -2121,7 +2121,7 @@ class panel{
         if(this.panelName == "newRule"){
             //Specific New Production Rule panel
             p.create(); p.getNode().id = "new-rule-title"
-            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
+            s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
             s.appendHTML(":")
             let iElement, buttonText = "", buttonColours = ""
             let products
@@ -2169,11 +2169,21 @@ class panel{
                         let products = categorized_products[category]["subcategories"][subcategory]["EN"]
                         d1 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), `accordion-productions-category-${index+1}-subcategory-${s_index+1}-products`); d1.create()
                         p = new element("p", "flex gap-1 w-100 justify-between items-center flex-wrap text-gray-300", [], d1.getNode()); p.create()
+                        let products_found = 0
                         products.forEach((product, p_index) => {
-                            b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}], p.getNode()); b.create()
-                            i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
-                            s = new element("span", "", [], b.getNode()); s.create(); s.appendContent(translate(language, product))
+                            if(product_rules[product]){
+                                b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}], p.getNode()); b.create()
+                                i = new element("i", "fa fa-plus me-1", [], b.getNode()); i.create()
+                                s = new element("span", "", [], b.getNode()); s.create(); s.appendContent(translate(language, product, "", "capitalized"))
+                                products_found++
+                            }
                         })
+                        if(!products_found){
+                            p.getNode().classList.add("empty")
+                            s = new element("span", "font-bold text-gray-900", [], p.getNode()); s.create()
+                            i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+                            s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"m"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "m", "capitalized"))
+                        }
                         //Check product selection and build rule scheme panel.
                         //First check if product comes from a location.
                         let current_mount = (category == "by location") ? subcategory : false

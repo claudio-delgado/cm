@@ -1107,13 +1107,13 @@ const translate = function(aLanguage, phrase, gender = "", formatResult = "", ch
                         : (translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] != undefined ? translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage]["n"] : translation_object[phrase.charAt(0).toUpperCase()+phrase.slice(1)][aLanguage])
                     : phrase
                 
-        if(formatResult == "capitalized"){
+        if(formatResult === "capitalized"){
             return translatedPhrase.charAt(0).toUpperCase() + translatedPhrase.slice(1)
         }
-        if(formatResult == "lowercase"){
+        if(formatResult === "lowercase"){
             return translatedPhrase.toLowerCase()
         }
-        if(formatResult == "uppercase"){
+        if(formatResult === "uppercase"){
             return translatedPhrase.toUpperCase()
         }
         return translatedPhrase
@@ -1128,17 +1128,17 @@ const translate_all = function (aLanguage) {
     let unTranslatedText = "", translatedText = ""
     document.querySelectorAll('[data-i18n]').forEach((value, key) => {
         unTranslatedText = value.hasAttribute("placeholder") ? value.placeholder : (value.innerText ? value.innerText : value.innerHTML)
-        formatResult = (unTranslatedText == unTranslatedText.toLowerCase() 
+        formatResult = (unTranslatedText === unTranslatedText.toLowerCase() 
                             ? "lowercase"
-                            : (unTranslatedText == unTranslatedText.toUpperCase() 
+                            : (unTranslatedText === unTranslatedText.toUpperCase() 
                                 ? "uppercase"
-                                : (unTranslatedText == unTranslatedText.charAt(0).toUpperCase()+unTranslatedText.slice(1) 
+                                : (unTranslatedText === unTranslatedText.charAt(0).toUpperCase()+unTranslatedText.slice(1) 
                                     ? "capitalize"
                                     : ""
                                 )
                             ))
         translatedText = translate(aLanguage, unTranslatedText, value.hasAttribute("gender") ? value.getAttribute("gender") : "", formatResult)
-        if(value.tagName == "CANVAS"){
+        if(value.tagName === "CANVAS"){
             captchaGen(translatedText)
         } else {
             value.placeholder = value.hasAttribute("placeholder") ? translatedText : ""

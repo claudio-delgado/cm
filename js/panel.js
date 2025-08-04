@@ -52,31 +52,31 @@ class panel{
                 case "assignRole": 
                     i = new element("i", "me-2 fa "+panelClasses.assignRole.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.assignRole.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", "", "", changeLanguage=false))
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", "", "", changeLanguage=false))
                     paragraphBg = panelClasses.assignRole.bg
                     break
                 case "searchCouple": 
                     i = new element("i", "me-2 fa "+panelClasses.searchCouple.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.searchCouple.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", "", "", changeLanguage=false))
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", "", "", changeLanguage=false))
                     paragraphBg = panelClasses.searchCouple.bg
                     break
                 case "tryBreeding": 
                     i = new element("i", "me-2 fa "+panelClasses.tryBreeding.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.tryBreeding.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "Try breeding", "", "", false) : translate("EN", "Intentar reproducción", "", "", changeLanguage=false))
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "Try breeding", "", "", false) : translate("EN", "Intentar reproducción", "", "", changeLanguage=false))
                     paragraphBg = panelClasses.tryBreeding.bg
                     break
                 case "newExpedition": 
                     i = new element("i", "me-2 fa "+panelClasses.newExpedition.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", "", "", changeLanguage=false))
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", "", "", changeLanguage=false))
                     paragraphBg = panelClasses.newExpedition.bg
                     break
                 case "newRule": 
                     i = new element("i", "me-2 fa "+panelClasses.newProductionRule.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language == "ES" ? translate("ES", "New production rule", "", "", changeLanguage=false) : translate("EN", "Nueva regla de producción", "", "", changeLanguage=false))
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New production rule", "", "", changeLanguage=false) : translate("EN", "Nueva regla de producción", "", "", changeLanguage=false))
                     paragraphBg = panelClasses.newExpedition.bg
                     break
             }
@@ -94,7 +94,7 @@ class panel{
         //Build close icon to the right
         i = new element("i", "mt-0 me-1 text-base fa fa-times font-bold", [], paragraph); i.create()
         i.getNode().addEventListener("click", (e) => {
-            if(this.panelName == "newExpedition"){
+            if(this.panelName === "newExpedition"){
                 //Make assigned expeditionaries or army available restoring status of all of them.
                 document.querySelectorAll(".assignedWorkers h2").forEach((citizen) => {
                     //Check if assigned object is a worker or a horse...
@@ -117,7 +117,7 @@ class panel{
         d1 = new element("div", this.panelName+" p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
         p = new element("p", "flex py-1 w-100 gap-1 justify-between items-center flex-wrap p-1 text-gray-300", [], d1.getNode());
         let divSpecificParagraphButton = []
-        if(this.panelName == "assignRole"){
+        if(this.panelName === "assignRole"){
             //Specific Assign Role panel
             p.create()
             let currentRole = document.querySelector("#"+this.objectName+"-"+this.objectId+"-role").getAttribute("data-role")
@@ -136,14 +136,14 @@ class panel{
                     divSpecificParagraphButton[index].setAttribute("data-rolekey", value.key)
                     generalRole = typeof value["EN"][this.data.gender] != "undefined" ? value["EN"][this.data.gender].replaceAll(" ","") : value["EN"].replaceAll(" ","")
                 }
-                isDisabled = currentRole != null && value.key == currentRole
+                isDisabled = currentRole != null && value.key === currentRole
                 buttonColours = isDisabled ? "border-gray-500 bg-gray-700 text-gray-400" : "border-green-700 bg-green-900 text-white"
                 divSpecificParagraphButton[index].classList = generalRole+" assignableRole text-xs capitalize "+(index+1 < role_icons.length ? "grow " : "")+"p-2 me-1 mb-1 button border "+buttonColours
                 divSpecificParagraphButton[index].disabled = isDisabled
                 p.appendContent(divSpecificParagraphButton[index])
             })
         }
-        if(this.panelName == "searchCouple"){
+        if(this.panelName === "searchCouple"){
             //Specific Search couple panel
             p.create()
             let citizen_id = this.objectId*1
@@ -151,7 +151,7 @@ class panel{
             citizen.id = citizen_id
             let citizen_parents = get_citizen_parents(citizen)
             let citizen_is_old_enough = citizen.ageYears >= 15
-            let citizen_is_single = citizen.couple == null
+            let citizen_is_single = citizen.couple === null
             let candidates_count = 0
             if(citizen_is_old_enough && citizen_is_single){
                 citizens.forEach((candidate, candidate_id) => {
@@ -160,7 +160,7 @@ class panel{
                     let candidate_has_different_gender = candidate.gender != citizen.gender
                     let age_difference_within_limits = Math.abs(citizen.ageYears - candidate.ageYears) < 40
                     let candidate_is_old_enough = candidate.ageYears >= 15
-                    let candidate_is_single = candidate.couple == null
+                    let candidate_is_single = candidate.couple === null
                     //Current citizen found is a possible candidate or simply discard him/her?
                     if(candidate_and_citizen_differents && candidate_has_different_gender && age_difference_within_limits 
                         && candidate_is_old_enough && candidate_is_single){
@@ -195,8 +195,8 @@ class panel{
                             h2 = new element("h2", "grow selectable-couple", [], p.getNode(), `couple-citizen-${candidate_id}`); h2.create()
                             d = new element("div", "flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-900 gap-3 text-gray-400", [], h2.getNode()); d.create()
                             s = new element("span", "", [], d.getNode()); s.create()
-                            let gender_class = candidate.gender == "Femenine" ? "fa-venus" : "fa-mars"
-                            let gender_color_class = candidate.gender == "Femenine" ? "text-red-500" : "text-blue-500"
+                            let gender_class = candidate.gender === "Femenine" ? "fa-venus" : "fa-mars"
+                            let gender_color_class = candidate.gender === "Femenine" ? "text-red-500" : "text-blue-500"
                             i = new element("i", `me-1 fa ${gender_class} ${gender_color_class}`, [], s.getNode(), `couple-citizen-${candidate_id}-gender-icon`); i.create()
                             let age_class = (candidate.ageYears <= 5 ? "fa-baby" : (candidate.ageYears < 15 ? "fa-child" : (candidate.ageYears < 21 ? "fa-person-walking" : (candidate.ageYears < 50 ? "fa-person" : (candidate.ageYears < 65 ? "fa-person" : "fa-person-cane"))))); 
                             i = new element("i", `me-1 fa ${age_class} text-white`, [], s.getNode(), `couple-citizen-${candidate_id}-age-icon`); i.create()
@@ -222,7 +222,7 @@ class panel{
                 s1 = new element("span", "", [{"key": "data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No candidates available"))
             }
         }
-        if(this.panelName == "tryBreeding"){
+        if(this.panelName === "tryBreeding"){
             //Specific Try breeding panel.
             p.create()
             let stage = 0, attraction_percent_citizen = 0, attraction_percent_couple = 0, accumulative_percent = 0
@@ -497,7 +497,7 @@ class panel{
             stage++
             breeding_stage = breeding_stages[stage-1]
             //Evaluate passion of citizen.
-            let citizen_passionate_with_couple = citizen_wished_attributes.intersection(couple_own_attributes).size == 3
+            let citizen_passionate_with_couple = citizen_wished_attributes.intersection(couple_own_attributes).size === 3
             attraction_percent_citizen = citizen_passionate_with_couple ? breeding_stage.percent*1 : 0
             accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
@@ -547,7 +547,7 @@ class panel{
             stage++
             breeding_stage = breeding_stages[stage-1]
             //Evaluate passion of couple.
-            let couple_passionate_with_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size == 3
+            let couple_passionate_with_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size === 3
             attraction_percent_couple = couple_passionate_with_citizen ? breeding_stage.percent*1 : 0
             accumulative_percent_couple += attraction_percent_couple; accumulative_percent_couple = Math.max(accumulative_percent_couple, 0)
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
@@ -1127,7 +1127,7 @@ class panel{
             //Evaluate if citizen feels physically attracted to couple.
             let couple_physical_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
-                if(attribute_class.name == "Physical"){
+                if(attribute_class.name === "Physical"){
                     couple.attributes.forEach((attribute) => {
                         couple_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
@@ -1185,7 +1185,7 @@ class panel{
             //Evaluate if couple feels physically attracted to citizen.
             let citizen_physical_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
-                if(attribute_class.name == "Physical"){
+                if(attribute_class.name === "Physical"){
                     citizen.attributes.forEach((attribute) => {
                         citizen_physical_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
@@ -1243,7 +1243,7 @@ class panel{
             //Evaluate if citizen feels mentally attracted to couple.
             let couple_mental_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
-                if(attribute_class.name == "Mentals"){
+                if(attribute_class.name === "Mentals"){
                     couple.attributes.forEach((attribute) => {
                         couple_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
@@ -1301,7 +1301,7 @@ class panel{
             //Evaluate if couple feels mentally attracted to citizen.
             let citizen_mental_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
-                if(attribute_class.name == "Mentals"){
+                if(attribute_class.name === "Mentals"){
                     citizen.attributes.forEach((attribute) => {
                         citizen_mental_attributes+= attribute_class.attributes.includes(translate("EN", attribute, "", "", false)) ? 1 : 0
                     })
@@ -2000,7 +2000,7 @@ class panel{
                 s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Breeding viability"))
                 d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-week`); d.create()
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
-                let woman = citizen.gender.charAt(0) == "F" ? citizen : couple
+                let woman = citizen.gender.charAt(0) === "F" ? citizen : couple
                 let woman_fertility_week
                 let current_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
                 current_week = !current_week ? 4 : current_week
@@ -2009,7 +2009,7 @@ class panel{
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
                 if(woman.status != "pregnant"){
                     woman_fertility_week = woman.fertilityWeek
-                    woman_fertile = woman_fertility_week == current_week
+                    woman_fertile = woman_fertility_week === current_week
                     woman_class = woman_fertile ? "text-green-500" : "text-red-500"
                     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week"))
                     s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
@@ -2064,7 +2064,7 @@ class panel{
 
             //Final results
             parent_div = document.getElementById(`relationship-${this.objectId}-tryBreeding`)
-            let final_results = process_results[0] == "Successfully completed" && process_results[1] == "Successfully completed" ? "Breeding is possible" : "It is not possible for the couple to breed"
+            let final_results = process_results[0] === "Successfully completed" && process_results[1] === "Successfully completed" ? "Breeding is possible" : "It is not possible for the couple to breed"
             process_class = final_results != "Breeding is possible" ? "bg-red-800" : "bg-green-900"
             d = new element("div", `ms-1 me-1 mb-1 ${process_class} p-1 flex justify-between border border-gray-800 bg-gray-600 text-white grow`, [], parent_div, `accordion-relationship-${this.objectId}-fertility-results`); d.create()
             d1 = new element("div", `grow`, [], d.getNode()); d1.create()
@@ -2085,8 +2085,8 @@ class panel{
                 b = new element("button", "bg-gray-800 border border-gray-400 text-gray-200 grow m-2 p-2", [{"key":"type", "value":"button"}], p.getNode()); b.create(); b.appendContent(translate(language, "Start breeding"))
                 b.getNode().addEventListener("click", (e) => {
                     //Create pregnancy.
-                    let woman = citizen.gender.charAt(0) == "F" ? citizen : couple
-                    let man = citizen.gender.charAt(0) == "M" ? citizen : couple
+                    let woman = citizen.gender.charAt(0) === "F" ? citizen : couple
+                    let man = citizen.gender.charAt(0) === "M" ? citizen : couple
                     //1) Decide if it was a single baby, twins or three kids.
                     let fertility_sum = citizens[man.id].fertility + citizens[woman.id].fertility
                     let children_to_be_born = pregnancy_amount_of_babies(fertility_sum)
@@ -2118,7 +2118,7 @@ class panel{
                 })
             }
         }
-        if(this.panelName == "newRule"){
+        if(this.panelName === "newRule"){
             //Specific New Production Rule panel
             p.create(); p.getNode().id = "new-rule-title"
             s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
@@ -2156,7 +2156,7 @@ class panel{
                     d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
                     Object.keys(subcategories).forEach((subcategory, s_index) => {
                         //Format certain subcategories.
-                        let translatable_subcategory = subcategory == "waterReservoir" ? "Water reservoir" : subcategory
+                        let translatable_subcategory = subcategory === "waterReservoir" ? "Water reservoir" : subcategory
                         //Build productions subcategories accordion header
                         h2 = new element("h2", s_index ? "mt-1 mb-0" : "m-0", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}`); h2.create()
                         b = new element("button", "unattached-click p-1 flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-body`}], h2.getNode())
@@ -2165,7 +2165,7 @@ class panel{
                         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
                         enable_accordion_click(b.getNode())
                         //Build productions subcategories accordion body
-                        d2 = new element("div", "p-1 border-s border-e border-b border-gray-800 bg-gray-500 hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
+                        d2 = new element("div", "p-1 border-s border-e border-b border-gray-800 bg-gray-400 hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
                         let products = categorized_products[category]["subcategories"][subcategory]["EN"]
                         d1 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), `accordion-productions-category-${index+1}-subcategory-${s_index+1}-products`); d1.create()
                         p = new element("p", "flex gap-1 w-100 justify-between items-center flex-wrap text-gray-300", [], d1.getNode()); p.create()
@@ -2186,13 +2186,13 @@ class panel{
                         }
                         //Check product selection and build rule scheme panel.
                         //First check if product comes from a location.
-                        let current_mount = (category == "by location") ? subcategory : false
+                        let current_mount = (category === "by location") ? subcategory : false
                         rule_product_selection(p.getNode(), current_mount)
                     })
                 })
             }
         }
-        if(this.panelName == "newExpedition"){
+        if(this.panelName === "newExpedition"){
             //Specific New Expedition panel
             p.create()
             //Build type of expedition options
@@ -2212,7 +2212,7 @@ class panel{
                     let type = e.target.getAttribute("data-type")
                     let background = e.target.classList.contains("bg-blue-800") ? "blue" : (e.target.classList.contains("bg-green-800") ? "green" : "red")
                     document.querySelectorAll(".expeditionType button").forEach((button) => button.classList.add("hidden"))
-                    let typeText = "Expedition to "+(e.target.getAttribute("data-type") == "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") == "of ruins" ? "discover ruins" : "attack other colonies"))
+                    let typeText = "Expedition to "+(e.target.getAttribute("data-type") === "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") === "of ruins" ? "discover ruins" : "attack other colonies"))
                     s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""},{"key":"data-type", "value":e.target.getAttribute("data-type")}], s.getNode())
                     s1.create(); s1.appendContent(translate(language, typeText))
                     //Build needed time text
@@ -2268,11 +2268,11 @@ class panel{
                     s2 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "None", "f"))
 
                     //Build workers/army assigned title
-                    let assignedType = type == "of combat" ? "army" : "workers"
+                    let assignedType = type === "of combat" ? "army" : "workers"
                     d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType+"-title")
                     d.create()
                     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
-                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned "+(assignedType == "workers" ? "expeditionaries" : assignedType)))
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned "+(assignedType === "workers" ? "expeditionaries" : assignedType)))
                     //Build workers assigned panel
                     d = new element("div", "assigned"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType)
                     d.create()
@@ -2280,12 +2280,12 @@ class panel{
                     s = new element("span", "", [], p.getNode()); s.create()
                     i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                    s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" assigned"))
+                    s1.create(); s1.appendContent(translate(language, "No "+(assignedType === "workers" ? "expeditionaries" : assignedType)+" assigned"))
                     //Build available workers/army title
                     d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType+"-title")
                     d.create()
                     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
-                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available "+(assignedType == "workers" ? "expeditionaries" : assignedType)))
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available "+(assignedType === "workers" ? "expeditionaries" : assignedType)))
                     //Build available workers/army panel
                     d = new element("div", "available"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType)
                     d.create()
@@ -2296,7 +2296,7 @@ class panel{
                             document.querySelectorAll("[data-role=\"expeditioning\"]").forEach((citizen) => {
                                 let citizen_index = citizen.id.split("-")[1]
                                 document.querySelectorAll("#citizen-"+citizen_index+"-status").forEach((elem) => {
-                                    if(elem.getAttribute("data-status") == "idle"){
+                                    if(elem.getAttribute("data-status") === "idle"){
                                         add_available_worker_to_expedition(citizen_index, "newExpedition")
                                         document.getElementById("citizen-"+citizen_index+"-assign").setAttribute("data-class", "newExpedition")
                                         document.getElementById("citizen-"+citizen_index+"-assign").addEventListener("click", handleToggleWorker)
@@ -2310,7 +2310,7 @@ class panel{
                                 s = new element("span", "", [], p.getNode()); s.create()
                                 i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                                 s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                                s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" available"))
+                                s1.create(); s1.appendContent(translate(language, "No "+(assignedType === "workers" ? "expeditionaries" : assignedType)+" available"))
                             }
                         } else {
                             //Add "No workers/army available" text.
@@ -2318,7 +2318,7 @@ class panel{
                             s = new element("span", "", [], p.getNode()); s.create()
                             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                             s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                            s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" available"))
+                            s1.create(); s1.appendContent(translate(language, "No "+(assignedType === "workers" ? "expeditionaries" : assignedType)+" available"))
                         }
                     } else {
                         //Add "No army available" text.
@@ -2326,7 +2326,7 @@ class panel{
                         s = new element("span", "", [], p.getNode()); s.create()
                         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); 
-                        s1.create(); s1.appendContent(translate(language, "No "+(assignedType == "workers" ? "expeditionaries" : assignedType)+" available"))
+                        s1.create(); s1.appendContent(translate(language, "No "+(assignedType === "workers" ? "expeditionaries" : assignedType)+" available"))
                     }
                     //Build available other objects title
                     d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-available-objects-title")

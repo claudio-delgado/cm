@@ -6,13 +6,13 @@ const expedition_required_time = (expeditionType, succesfullExpeditions, horsesA
     let inGameClockYears, inGameClockWeeksD, inGameClockDaysD, inGameClockHours
     let realTotalDays, realTotalHours, realTotalMinutes, realTotalSeconds
     let realClockDays, realClockHoursD, realClockMinutesD, realClockSeconds
-    if(expeditionType == "of resources"){
+    if(expeditionType === "of resources"){
         let lastExpeditionsFactor = (Math.pow(2, succesfullExpeditions + 1) + 2)
         let horsesFactor = (2*horsesAssigned + 1)
         let XPFactor = maxXp / 2 + avgXp / 5
         inGameTotalHours = minimalExpeditionDuration + (lastExpeditionsFactor / (horsesFactor + XPFactor))
     } else {
-        if(expeditionType == "of ruins"){
+        if(expeditionType === "of ruins"){
             let lastExpeditionsFactor = (2 * Math.pow(succesfullExpeditions, 3) + 2 * Math.pow(succesfullExpeditions, 2) + 140 * (succesfullExpeditions + 1))
             let horsesAndXPFactor = 100 * (horsesAssigned + 1 + maxXp / 5 + avgXp / 20)
             inGameTotalHours = minimalExpeditionDuration + lastExpeditionsFactor / horsesAndXPFactor
@@ -69,7 +69,7 @@ const expedition_probability = (expeditionType, succesfullExpeditions, expeditio
     //Returns the probability of finding a new mount in an expedition.
     //It dependes on the current already succesfull expeditions done, the amount of expeditionaries assigned, and their xp.
     let probability, lastExpeditionsFactor, expeditionariesFactor, XPFactor, avgXPFactor
-    if(expeditionType == "of resources"){
+    if(expeditionType === "of resources"){
         lastExpeditionsFactor = (succesfullExpeditions + 1)
         XPFactor = (-1 / (maxXp + 1)) + 1
         avgXPFactor = (-1 / (avgXp + 1)) + 1
@@ -78,7 +78,7 @@ const expedition_probability = (expeditionType, succesfullExpeditions, expeditio
         let probability3rdTerm = ((3 / 10) - (3 * expeditionaries / (10 * expeditionaries + 10))) * avgXPFactor
         probability = (probability1stTerm + probability2ndTerm + probability3rdTerm).toFixed(3)
     } else {
-        if(expeditionType == "of ruins"){
+        if(expeditionType === "of ruins"){
             lastExpeditionsFactor = 1 / (succesfullExpeditions + 3)
             expeditionariesFactor = (2 * (expeditionaries - 1)) / (10 * expeditionaries + 20)
             XPFactor = (4 * maxXp) / (10 * maxXp + 20)

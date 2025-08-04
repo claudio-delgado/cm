@@ -52,7 +52,7 @@ const life_interval = setInterval(() => {
         currentHour = ((currentHour < 23 ? currentHour+1 : 0)+"").padStart(2, "0")
         document.querySelector("#currentHour").innerText = currentHour
         //Daily flag
-        dayPassed = (currentHour == "00")
+        dayPassed = (currentHour === "00")
         //Update days.
         daysPassed+= (dayPassed ? 1 : 0)
         currentDay = Number(document.querySelector("#currentDay").innerText)
@@ -62,14 +62,14 @@ const life_interval = setInterval(() => {
         currentWeek = Number(document.querySelector("#currentWeek").innerText)
         currentWeek = 1 + (Math.floor(daysPassed / 7) % 52)
         //Weekly flag
-        weekPassed = dayPassed && Math.floor(daysPassed / 7) == daysPassed / 7
+        weekPassed = dayPassed && Math.floor(daysPassed / 7) === daysPassed / 7
         document.querySelector("#currentWeek").innerText = currentWeek
         document.querySelector("#passedWeeks").innerText = Math.floor(daysPassed / 7)
         //Update years.
         currentYear = Number(document.querySelector("#currentYear").innerText)
         currentYear = 1 + Math.floor(daysPassed / 364)
         //Yearly flag
-        yearPassed = dayPassed && Math.floor(daysPassed / 364) == daysPassed / 364
+        yearPassed = dayPassed && Math.floor(daysPassed / 364) === daysPassed / 364
         document.querySelector("#currentYear").innerText = currentYear
     }
     //Day passed
@@ -79,7 +79,7 @@ const life_interval = setInterval(() => {
         document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
             let citizenIndex = citizen.id.split("-")[1]
             //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
-            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
+            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") === "working"){
                 let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
                 document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
                     elem.setAttribute("data-xp", newXP.toFixed(5))
@@ -97,7 +97,7 @@ const life_interval = setInterval(() => {
         document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
             let citizenIndex = citizen.id.split("-")[1]
             //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
-            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") == "working"){
+            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") === "working"){
                 let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
                 document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
                     elem.setAttribute("data-xp", newXP.toFixed(5))
@@ -124,15 +124,15 @@ const life_interval = setInterval(() => {
     const update_running_productions = () => {
         //Update running productions
         product_rules_defined.forEach((product_rule, product_index) => {
-            if(product_rule.status == "running"){
+            if(product_rule.status === "running"){
                 let rule_object = product_rule.object
                 //Check if requirements are currently fulfilled.
                 let requirement_fulfilled = true
                 product_rule.rule_definition.requirements.forEach((req) => {
                     if(!req.consumable){
-                        if(req.type == "citizen"){
+                        if(req.type === "citizen"){
                             req.workers.forEach((citizen_index) => {
-                                requirement_fulfilled &&= (citizens[citizen_index].status == "working" && citizens[citizen_index].rolekey == req.role)
+                                requirement_fulfilled &&= (citizens[citizen_index].status === "working" && citizens[citizen_index].rolekey === req.role)
                             })
                         }
                     } else {
@@ -185,7 +185,7 @@ const life_interval = setInterval(() => {
                     born_citizen = build_citizen(true, undefined, to_be_born_citizen)
                 }
                 //5) Remove pregnancy from memory.
-                pregnancies = pregnancies.filter(a_pregnancy => !(a_pregnancy.father == pregnancy.father && a_pregnancy.mother == pregnancy.mother))
+                pregnancies = pregnancies.filter(a_pregnancy => !(a_pregnancy.father === pregnancy.father && a_pregnancy.mother === pregnancy.mother))
             }
         })
     }
@@ -196,7 +196,7 @@ const life_interval = setInterval(() => {
             let month_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
             month_week = !month_week ? 4 : month_week
             elem.querySelector(".fertility-week.month-week").innerHTML = month_week
-            if(fertility_week == month_week){
+            if(fertility_week === month_week){
                 elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-gray-300"))
                 elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-green-500"))
                 elem.querySelector(".fertility-week.week-comparison").classList.add("fa-equals")
@@ -229,7 +229,7 @@ const life_interval = setInterval(() => {
             let previousAge = citizenYearsAge.innerText*1
             let iconPreviousAge = age_icons(previousAge)
             citizenWeeksAge.innerText = (citizenWeeksAge.innerText*1 + 1) % 52
-            citizenYearsAge.innerText = citizenYearsAge.innerText*1 + (citizenWeeksAge.innerText*1 == 0 ? 1 : 0)
+            citizenYearsAge.innerText = citizenYearsAge.innerText*1 + (citizenWeeksAge.innerText*1 === 0 ? 1 : 0)
             let iconCurrentAge = age_icons(citizenYearsAge.innerText)
             //Check if age icons must change...
             if(iconPreviousAge != iconCurrentAge){
@@ -256,7 +256,7 @@ const life_interval = setInterval(() => {
         move_time()
         
         //Zone searched flag
-        zoneSearched = currentYear == 1 && currentWeek == 1 && currentDay == 1 && currentHour == zoneSearchHoursNeeded
+        zoneSearched = currentYear === 1 && currentWeek === 1 && currentDay === 1 && currentHour*1 === zoneSearchHoursNeeded
         
         //Perform updating tasks inside game panels that involve hourly changes
         //Process countdowns
@@ -327,7 +327,7 @@ const processCountdowns = () => {
     }
     const days_toggle_visibility = (elem) => {
         days = 1*elem.querySelector(".countdown.days").innerText
-        elem.querySelector("#"+prefix+"-daysText").innerText = days == 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
+        elem.querySelector("#"+prefix+"-daysText").innerText = days === 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
         if(days){
             elem.querySelector("#"+prefix+"-days").classList.remove("hidden")
             elem.querySelector("#"+prefix+"-daysText").classList.remove("hidden")
@@ -338,7 +338,7 @@ const processCountdowns = () => {
     }
     const weeks_toggle_visibility = (elem) => {
         weeks = 1*elem.querySelector(".countdown.weeks").innerText
-        elem.querySelector("#"+prefix+"-weeksText").innerText = weeks == 1 ? translate(language, "weeks").slice(0, -2)+"." : translate(language, "weeks")
+        elem.querySelector("#"+prefix+"-weeksText").innerText = weeks === 1 ? translate(language, "weeks").slice(0, -2)+"." : translate(language, "weeks")
         if(weeks){
             elem.querySelector("#"+prefix+"-weeks").classList.remove("hidden")
             elem.querySelector("#"+prefix+"-weeksText").classList.remove("hidden")
@@ -349,7 +349,7 @@ const processCountdowns = () => {
     }
     const years_toggle_visibility = (elem) => {
         years = 1*elem.querySelector(".countdown.years").innerText
-        elem.querySelector("#"+prefix+"-yearsText").innerText = years == 1 ? translate(language, "years").slice(0, -1) : translate(language, "years")
+        elem.querySelector("#"+prefix+"-yearsText").innerText = years === 1 ? translate(language, "years").slice(0, -1) : translate(language, "years")
         if(years){
             elem.querySelector("#"+prefix+"-years").classList.remove("hidden")
             elem.querySelector("#"+prefix+"-yearsText").classList.remove("hidden")
@@ -359,7 +359,7 @@ const processCountdowns = () => {
         }
     }
     const decrement_years = (elem) => {
-        //weeks = 0 & days == 0 & hours == 00
+        //weeks = 0 & days === 0 & hours === 00
         //If years > 0 => decrement them
         if(1*elem.querySelector(".countdown.years").innerText){
             //Decrement pending years
@@ -377,13 +377,13 @@ const processCountdowns = () => {
             //Set hours to max value - 1 => hours = 23
             elem.querySelector(".countdown.hours").innerText = "23"
             //Arrange unit number: singular or plural
-            elem.querySelector("#"+prefix+"-yearsText").innerText = weeks == 1 ? translate(language, "years").slice(0, -1) : translate(language, "years")
+            elem.querySelector("#"+prefix+"-yearsText").innerText = weeks === 1 ? translate(language, "years").slice(0, -1) : translate(language, "years")
         } else {
             remove_countdown(elem)
         }
     }
     const decrement_weeks = (elem) => {
-        //days == 0 & hours == 00
+        //days === 0 & hours === 00
         //If weeks > 0 => decrement them
         if(1*elem.querySelector(".countdown.weeks").innerText){
             //Decrement pending weeks
@@ -399,13 +399,13 @@ const processCountdowns = () => {
             //Set hours to max value - 1 => hours = 23
             elem.querySelector(".countdown.hours").innerText = "23"
             //Arrange unit number: singular or plural
-            elem.querySelector("#"+prefix+"-weeksText").innerText = weeks == 1 ? translate(language, "weeks").slice(0, -2)+"." : translate(language, "weeks")
+            elem.querySelector("#"+prefix+"-weeksText").innerText = weeks === 1 ? translate(language, "weeks").slice(0, -2)+"." : translate(language, "weeks")
         } else {
             decrement_years(elem)
         }
     }
     const decrement_days = (elem) => {
-        //hours == 00
+        //hours === 00
         //If days > 0 => decrement them
         if(1*elem.querySelector(".countdown.days").innerText){
             //Decrement pending days
@@ -421,7 +421,7 @@ const processCountdowns = () => {
             hours = "23"
             elem.querySelector(".countdown.hours").innerText = hours
             //Arrange unit number: singular or plural
-            elem.querySelector("#"+prefix+"-daysText").innerText = days == 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
+            elem.querySelector("#"+prefix+"-daysText").innerText = days === 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
         } else {
             decrement_weeks(elems)
         }
@@ -431,7 +431,7 @@ const processCountdowns = () => {
         hours = 1*elem.querySelector(".countdown.hours").innerText - 1
         elem.querySelector(".countdown.hours").innerText = hours.toString().padStart(2, "0")
         //Arrange unit number: singular or plural
-        elem.querySelector("#"+prefix+"-hoursText").innerText = hours == 1 ? "h" : "hs"
+        elem.querySelector("#"+prefix+"-hoursText").innerText = hours === 1 ? "h" : "hs"
     }
     const check_countdown_end = (elem) => {
         if( !hours &&
@@ -447,7 +447,7 @@ const processCountdowns = () => {
         prefix = idArray[0]+"-"+idArray[1]+"-"+idArray[2]
         //Correct unit numbers (singulars and plurals) before processing values
         hours = 1*elem.querySelector(".countdown.hours").innerText
-        elem.querySelector("#"+prefix+"-hoursText").innerText = hours == 1 ? "h" : "hs"
+        elem.querySelector("#"+prefix+"-hoursText").innerText = hours === 1 ? "h" : "hs"
         days_toggle_visibility(elem)
         weeks_toggle_visibility(elem)
         years_toggle_visibility(elem)

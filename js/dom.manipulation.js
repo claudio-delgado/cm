@@ -233,7 +233,7 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
                 p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "They have succesfully obtained:"))
                 Object.keys(data.loot).forEach((good) => {
                     p = new element("p", "font-bold mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, good).charAt(0).toUpperCase()+translate(language, good).slice(1))
-                    p.appendHTML(" x "); p.appendHTML(data.loot[good]); p.appendHTML(" "); p.appendHTML(translate(language, data.loot[good] == 1 ? "unit" : "units"))
+                    p.appendHTML(" x "); p.appendHTML(data.loot[good]); p.appendHTML(" "); p.appendHTML(translate(language, data.loot[good] === 1 ? "unit" : "units"))
                 })
             } else {
                 p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Unfortunetely, they were not able to find any ruins."))
@@ -251,7 +251,7 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
     s = new element("span", "flex grow", [], parentElem); s.create()
     //View all button
     let button_id = `showAll${stockType.charAt(0).toUpperCase()+stockType.slice(1)}Stock`
-    let disabled = stockType == "buildingParts"
+    let disabled = stockType === "buildingParts"
     b = new element("button", `p-1 mx-2 text-xs grow button border border-gray-400 ${disabled ? "text-gray-900 bg-gray-500" : "text-white bg-gray-800"}`, [{"key":"type","value":"button"}], s.getNode(), button_id); b.create()
     i = new element("i", `fa fa-${disabled ? "ban" : "database"} me-2`, [], b.getNode()); i.create()
     s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], b.getNode()); s1.create(); s1.appendContent(translate(language, "View all", "m"))
@@ -260,7 +260,7 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
             stock_displayed = []
             stock_displayed = JSON.parse(JSON.stringify(stock_values))
             //Indicate what is being displayed.
-            let object_type = (stockType == "buildingParts" ? "building parts" : stockType)
+            let object_type = (stockType === "buildingParts" ? "building parts" : stockType)
             document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, `All ${object_type} from stock`)
             add_colony_stock_filters(stockType)
             update_stock()
@@ -292,7 +292,7 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
     b.getNode().addEventListener("click", (e) => {
         toggle_sort_stock(stockType)
     })
-    if(action == "filter"){
+    if(action === "filter"){
         //Build category and granularity filters.
         s = new element("span", "flex grow mt-1", [], parentElem); s.create()
         //Filter category button.
@@ -315,13 +315,13 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
         })
     }
     if(["filterCategory", "filterGranularity"].includes(action)){
-        if(value == null){ 
+        if(value === null){ 
             //Show all categories or granularities buttons.
             s = new element("span", "flex grow items-center mt-1", [], parentElem); s.create()
-            let text = (action == "filterCategory" ? "Filtrar por categoría" : "Filtrar por granularidad")
-            let id = (action == "filterCategory" ? "Category" : "Granularity")
+            let text = (action === "filterCategory" ? "Filtrar por categoría" : "Filtrar por granularidad")
+            let id = (action === "filterCategory" ? "Category" : "Granularity")
             s1 = new element("span", "ms-2 me-1", [], s.getNode()); s1.create(); s1.appendContent(text); s1.appendHTML(":")
-            let maxIndex = (action == "filterCategory" ? 5 : 6)
+            let maxIndex = (action === "filterCategory" ? 5 : 6)
             for(index = 1; index <= maxIndex; index++){
                 b = new element("button", "p-1 mx-1 text-xs grow button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"},{"key":"data-index","value":index}], s.getNode(), "filterResourcesStock"+id+index); b.create()
                 s1 = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create(); s1.appendContent(index.toString())
@@ -337,7 +337,7 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
             })
         } else {
             let filteredStockArray = []
-            if(action == "filterCategory"){
+            if(action === "filterCategory"){
                 //Indicate what is being displayed.
                 document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All category "+value+" "+stockType+" from stock")
                 let filteredStockObject = stock_classified[stockType].byCategory["category"+value]
@@ -349,7 +349,7 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
                 filteredStockArray = (filteredStockObject.granularity5!=null ? [...filteredStockArray, ...filteredStockObject.granularity5[language]] : filteredStockArray)
                 filteredStockArray = (filteredStockObject.granularity6!=null ? [...filteredStockArray, ...filteredStockObject.granularity6[language]] : filteredStockArray)
             }
-            if(action == "filterGranularity"){
+            if(action === "filterGranularity"){
                 //Indicate what is being displayed.
                 document.getElementById(stockType+"StockShowingInfo").innerText = translate(language, "All granularity "+value+" "+stockType+" from stock")
                 let filteredStockObject = stock_classified[stockType].byCategory
@@ -367,7 +367,7 @@ const add_colony_stock_filters = (stockType = "resources", action = "none", valu
                     let filteredResourceOrProductFound = false
                     //Current positive value stock resource/product is of the same category as the filter?
                     filteredStockArray.forEach((filterResourceOrProduct) => {
-                        filteredResourceOrProductFound = filteredResourceOrProductFound || (resourceOrProduct == filterResourceOrProduct)
+                        filteredResourceOrProductFound = filteredResourceOrProductFound || (resourceOrProduct === filterResourceOrProduct)
                     })
                     //If resource/product with positive value is not of the filter category/granularity, remove it from stock_displayed
                     if(!filteredResourceOrProductFound){
@@ -606,7 +606,7 @@ const accordion_colony = () => {
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
                 let stockValue = stock_displayed.resources[language][resource].toString()
                 s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockValue)
-                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue === 1 ? "unit" : "units")
             }
         })
         //Add next margin
@@ -642,7 +642,7 @@ const accordion_colony = () => {
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
                 let stockValue = stock_displayed.products[language][product].toString()
                 s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockValue)
-                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue === 1 ? "unit" : "units")
             }
         })
 
@@ -679,7 +679,7 @@ const accordion_colony = () => {
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
                 let stockValue = stock_displayed["building parts"][language][part].toString()
                 s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedPart+"-stock"); s2.create(); s2.appendContent(stockValue)
-                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue == 1 ? "unit" : "units")
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(stockValue === 1 ? "unit" : "units")
             }
         })
 
@@ -774,13 +774,13 @@ const accordion_buildings = (update = false) => {
     d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-buildings-groups"); d.create()
     //Check if there is no building in the colony
-    let noCampaignTents = typeof buildings.shelter == "undefined" || typeof buildings.shelter["campaign tent"] == "undefined" || !buildings.shelter["campaign tent"]
-    let noCottages = typeof buildings.shelter == "undefined" || typeof buildings.shelter["cottage"] == "undefined" || !buildings.shelter["cottage"]
-    let noHouses = typeof buildings.shelter == "undefined" || typeof buildings.shelter["house"] == "undefined" || !buildings.shelter["house"]
-    let noStoneHouses = typeof buildings.shelter == "undefined" || typeof buildings.shelter["stoneHouse"] == "undefined" || !buildings.shelter["stoneHouse"]
-    let noManors = typeof buildings.shelter == "undefined" || typeof buildings.shelter["manor"] == "undefined" || !buildings.shelter["manor"]
-    let noMansions = typeof buildings.shelter == "undefined" || typeof buildings.shelter["mansion"] == "undefined" || !buildings.shelter["mansion"]
-    let noGraveyards = typeof buildings.shelter == "undefined" || typeof buildings.shelter["graveyard"] == "undefined" || !buildings.shelter["graveyard"]
+    let noCampaignTents = typeof buildings.shelter === "undefined" || typeof buildings.shelter["campaign tent"] === "undefined" || !buildings.shelter["campaign tent"]
+    let noCottages = typeof buildings.shelter === "undefined" || typeof buildings.shelter["cottage"] === "undefined" || !buildings.shelter["cottage"]
+    let noHouses = typeof buildings.shelter === "undefined" || typeof buildings.shelter["house"] === "undefined" || !buildings.shelter["house"]
+    let noStoneHouses = typeof buildings.shelter === "undefined" || typeof buildings.shelter["stoneHouse"] === "undefined" || !buildings.shelter["stoneHouse"]
+    let noManors = typeof buildings.shelter === "undefined" || typeof buildings.shelter["manor"] === "undefined" || !buildings.shelter["manor"]
+    let noMansions = typeof buildings.shelter === "undefined" || typeof buildings.shelter["mansion"] === "undefined" || !buildings.shelter["mansion"]
+    let noGraveyards = typeof buildings.shelter === "undefined" || typeof buildings.shelter["graveyard"] === "undefined" || !buildings.shelter["graveyard"]
     let noShelters = noCampaignTents && noCottages && noStoneHouses && noHouses && noManors && noMansions && noGraveyards
     let noBuildings = noShelters
 
@@ -836,7 +836,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         s1.create(); s1.appendContent("NEW")
         //Add icons to name
         let citizen_gender = new_citizen.gender != undefined ? new_citizen.gender : undefined
-        let citizen_gender_icon_class = citizen_gender != undefined ? (citizen_gender == "Femenine" ? "fa-venus text-red-500" : "fa-mars text-blue-500") : "hidden"
+        let citizen_gender_icon_class = citizen_gender != undefined ? (citizen_gender === "Femenine" ? "fa-venus text-red-500" : "fa-mars text-blue-500") : "hidden"
         let citizen_age_icon_class = new_citizen.ageYears != undefined 
                                             ?  (new_citizen.ageYears <= 5 ? "fa-baby" 
                                                     :   (new_citizen.ageYears < 15 ? "fa-child"
@@ -851,7 +851,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         let citizen_role_icon_class = "hidden"
         if(citizen.role != undefined){
             role_icons.forEach((role) => {
-                if(role.key == new_citizen.role){
+                if(role.key === new_citizen.role){
                     citizen_role_icon_class = `fa-${role.icon}`
                 }
             })
@@ -878,7 +878,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             s.appendHTML(": ")
             s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""},{"key":"data-status", "value":new_citizen.status}], s.getNode(), `citizen-${id}-status`); s1.create(); s1.appendContent(!needs_translation ? "Idle" : translate(language, "Idle"))
             s.appendHTML(".")
-            if(new_citizen.gender.charAt(0) == "F"){
+            if(new_citizen.gender.charAt(0) === "F"){
                 s1 = new element("span", "pregnant hidden ms-1", [], s.getNode()); s1.create(); s1.appendContent("(")
                 s1 = new element("span", "pregnant hidden", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "weeks" : translate(language, "weeks"))
                 s1 = new element("span", "pregnant hidden", [], s.getNode()); s1.create(); s1.appendContent(":")
@@ -1092,26 +1092,26 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     //Check if id was provided, otherwise get the first available.
     id = !id && (!citizen || citizen.id == undefined) ? citizens.length : id
     new_citizen.id = id
-    new_citizen.gender = !citizen || citizen.gender == undefined || citizen.gender == null ? ["Femenine", "Masculine"][Math.floor(Math.random()*2)] : citizen.gender
-    new_citizen.name = !citizen || citizen.name == undefined || citizen.name == null ? set_random_name(language, new_citizen.gender) : citizen.name
-    new_citizen.father = !citizen || citizen.father == undefined || citizen.father == null ? null : citizen.father
-    new_citizen.mother = !citizen || citizen.mother == undefined || citizen.mother == null ? null : citizen.mother
-    new_citizen.children = !citizen || citizen.children == undefined || citizen.children == null ? [] : citizen.children
-    new_citizen.couple = !citizen || citizen.couple == undefined || citizen.couple == null ? null : citizen.couple
-    new_citizen.role = !citizen || citizen.role == undefined || citizen.role == null ? "unassigned" : citizen.role
-    new_citizen.rolekey = !citizen || citizen.rolekey == undefined || citizen.rolekey == null ? "unassigned" : citizen.rolekey
-    new_citizen.birthWeek = !citizen || citizen.birthWeek == undefined || citizen.birthWeek == null ? document.getElementById("passedWeeks").innerHTML*1 : citizen.birthWeek
-    new_citizen.birthWeeks = !citizen || citizen.birthWeeks == undefined || citizen.birthWeeks == null ? 0 : citizen.birthWeeks
-    new_citizen.ageYears = !citizen || citizen.ageYears == undefined || citizen.ageYears == null ? 0 : citizen.ageYears
-    new_citizen.ageWeeks = !citizen || citizen.ageWeeks == undefined || citizen.ageWeeks == null ? 0 : citizen.ageWeeks
-    new_citizen.status = !citizen || citizen.status == undefined || citizen.status == null ? "idle" : citizen.status
-    new_citizen.xp = !citizen || citizen.xp == undefined || citizen.xp == null ? 0 : citizen.xp
-    new_citizen.leftHand = !citizen || citizen.leftHand == undefined || citizen.leftHand == null ? "" : citizen.leftHand
-    new_citizen.rightHand = !citizen || citizen.rightHand == undefined || citizen.rightHand == null ? "" : citizen.rightHand
-    new_citizen.outfit = !citizen || citizen.outfit == undefined || citizen.outfit == null ? "No" : citizen.outfit
-    new_citizen.fertilityWeek = (!citizen || citizen.fertilityWeek == undefined || citizen.fertilityWeek == null) ? (new_citizen.gender == "Femenine" ? 1 + Math.floor(Math.random() * 4) : null) : citizen.fertilityWeek
-    new_citizen.fertility = !citizen || citizen.fertility == undefined || citizen.fertility == null ? 10 + Math.floor(Math.random() * 91) : citizen.fertility
-    new_citizen.weekOfDeath = !citizen || citizen.weekOfDeath == undefined || citizen.weekOfDeath == null ? 3120 + Math.floor(Math.random() * (4420-3120)) : citizen.weekOfDeath
+    new_citizen.gender = !citizen || citizen.gender == undefined || citizen.gender === null ? ["Femenine", "Masculine"][Math.floor(Math.random()*2)] : citizen.gender
+    new_citizen.name = !citizen || citizen.name == undefined || citizen.name === null ? set_random_name(language, new_citizen.gender) : citizen.name
+    new_citizen.father = !citizen || citizen.father == undefined || citizen.father === null ? null : citizen.father
+    new_citizen.mother = !citizen || citizen.mother == undefined || citizen.mother === null ? null : citizen.mother
+    new_citizen.children = !citizen || citizen.children == undefined || citizen.children === null ? [] : citizen.children
+    new_citizen.couple = !citizen || citizen.couple == undefined || citizen.couple === null ? null : citizen.couple
+    new_citizen.role = !citizen || citizen.role == undefined || citizen.role === null ? "unassigned" : citizen.role
+    new_citizen.rolekey = !citizen || citizen.rolekey == undefined || citizen.rolekey === null ? "unassigned" : citizen.rolekey
+    new_citizen.birthWeek = !citizen || citizen.birthWeek == undefined || citizen.birthWeek === null ? document.getElementById("passedWeeks").innerHTML*1 : citizen.birthWeek
+    new_citizen.birthWeeks = !citizen || citizen.birthWeeks == undefined || citizen.birthWeeks === null ? 0 : citizen.birthWeeks
+    new_citizen.ageYears = !citizen || citizen.ageYears == undefined || citizen.ageYears === null ? 0 : citizen.ageYears
+    new_citizen.ageWeeks = !citizen || citizen.ageWeeks == undefined || citizen.ageWeeks === null ? 0 : citizen.ageWeeks
+    new_citizen.status = !citizen || citizen.status == undefined || citizen.status === null ? "idle" : citizen.status
+    new_citizen.xp = !citizen || citizen.xp == undefined || citizen.xp === null ? 0 : citizen.xp
+    new_citizen.leftHand = !citizen || citizen.leftHand == undefined || citizen.leftHand === null ? "" : citizen.leftHand
+    new_citizen.rightHand = !citizen || citizen.rightHand == undefined || citizen.rightHand === null ? "" : citizen.rightHand
+    new_citizen.outfit = !citizen || citizen.outfit == undefined || citizen.outfit === null ? "No" : citizen.outfit
+    new_citizen.fertilityWeek = (!citizen || citizen.fertilityWeek == undefined || citizen.fertilityWeek === null) ? (new_citizen.gender === "Femenine" ? 1 + Math.floor(Math.random() * 4) : null) : citizen.fertilityWeek
+    new_citizen.fertility = !citizen || citizen.fertility == undefined || citizen.fertility === null ? 10 + Math.floor(Math.random() * 91) : citizen.fertility
+    new_citizen.weekOfDeath = !citizen || citizen.weekOfDeath == undefined || citizen.weekOfDeath === null ? 3120 + Math.floor(Math.random() * (4420-3120)) : citizen.weekOfDeath
     citizens[id] = new_citizen
     //Build citizen accordion header
     build_citizen_accordion_header()
@@ -1180,7 +1180,7 @@ const accordion_citizens = (amount = 10) => {
         new_citizen.outfit = "No"
         //Set fertility issues.
         new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
-        new_citizen.fertilityWeek = new_citizen.gender == "Femenine" ? 1 /*+ Math.floor(Math.random() * 4)*/ : null
+        new_citizen.fertilityWeek = new_citizen.gender === "Femenine" ? 1 /*+ Math.floor(Math.random() * 4)*/ : null
 
         build_citizen(translation = false, new_citizen.id, new_citizen)
         //citizenBuilder(i)
@@ -1271,7 +1271,7 @@ const show_active_production_rules = (location, parent_div) => {
         product_rules_defined.forEach((rule) => {
             if(rule.id == rule_id){
                 rule.rule_definition.requirements.forEach((requirement) => {
-                    if(requirement.index == req_index && requirement.type == "citizen"){
+                    if(requirement.index == req_index && requirement.type === "citizen"){
                         req_found = true
                         requirement.workers.forEach((assigned_worker_index) => {
                             //Get citizen info.
@@ -1279,14 +1279,14 @@ const show_active_production_rules = (location, parent_div) => {
                             let did = `active-rule-${rule_id}-requirement-${requirement.index}-worker-${assigned_worker_index}`
                             d = new element("div", "flex items-center justify-between w-full py-1 px-2 mb-1 text-xs text-white bg-gray-700 border border-gray-200 gap-3", [], d1.getNode(), did); d.create()
                             s = new element("span", "", [], d.getNode()); s.create()
-                            let gender_class = current_citizen.gender == "Feminine" ? "fa-venus" : "fa-mars"
-                            let gender_colour_class = current_citizen.gender == "feminine" ? "text-red-500" : "text-blue-500"
+                            let gender_class = current_citizen.gender === "Feminine" ? "fa-venus" : "fa-mars"
+                            let gender_colour_class = current_citizen.gender === "feminine" ? "text-red-500" : "text-blue-500"
                             i = new element("i", `me-1 fa ${gender_class} ${gender_colour_class}`, [], s.getNode(), `citizen-${assigned_worker_index}-gender-icon`); i.create()
                             let age_class = (current_citizen.ageYears <= 5 ? "fa-baby" : (current_citizen.ageYears < 15 ? "fa-child" : (current_citizen.ageYears < 21 ? "fa-person-walking" : (current_citizen.ageYears < 50 ? "fa-person" : (current_citizen.ageYears < 65 ? "fa-person" : "fa-person-cane"))))); 
                             i = new element("i", `text-white me-1 fa ${age_class}`, [], s.getNode(), `citizen-${assigned_worker_index}-age-icon`); i.create()
                             let role_class = ""
                             role_icons.forEach((role) => {
-                                if(role.key == current_citizen.role){
+                                if(role.key === current_citizen.role){
                                     role_class = `fa-${role.icon}`
                                 }
                             })
@@ -1324,20 +1324,20 @@ const show_active_production_rules = (location, parent_div) => {
         //Check if current rule has a location requirement and is the same as the input parameter.
         let visible_rule = false
         rule.rule_definition.requirements.forEach((requirement, index) => {
-            if(requirement.object == "Water reservoir"){
-                visible_rule = (!location || location == "waterReservoir")
+            if(requirement.object === "Water reservoir"){
+                visible_rule = (!location || location === "waterReservoir")
             } else {
-                if(requirement.object == "Hunting mount"){
-                    visible_rule = (!location || location == "huntingMount")
+                if(requirement.object === "Hunting mount"){
+                    visible_rule = (!location || location === "huntingMount")
                 } else {
-                    if(requirement.object == "Stone mount"){
-                        visible_rule = (!location || location == "stoneMount")
+                    if(requirement.object === "Stone mount"){
+                        visible_rule = (!location || location === "stoneMount")
                     } else {
-                        if(requirement.object == "Clay mount"){
-                            visible_rule = (!location || location == "clayMount")
+                        if(requirement.object === "Clay mount"){
+                            visible_rule = (!location || location === "clayMount")
                         } else {
-                            if(requirement.object == "Iron mount"){
-                                visible_rule = (!location || location == "ironMount")
+                            if(requirement.object === "Iron mount"){
+                                visible_rule = (!location || location === "ironMount")
                             } else {
                                 visible_rule = true
                             }
@@ -1377,18 +1377,20 @@ const show_active_production_rules = (location, parent_div) => {
             p = new element("p", "ms-1 mb-1 flex flex-wrap items-center text-xs text-white ", [], d1.getNode()); p.create()
             let requirements_last_index = rule.rule_definition.requirements.length - 1
             rule.rule_definition.requirements.forEach((requirement, index) => {
+                s = new element("span", "flex items-center m-0", [], p.getNode()); s.create()
                 if(!requirement.consumable){
-                    s = new element("span", "flex items-center m-0", [], p.getNode()); s.create()
                     s1 = new element("span", "font-bold pb-1 text-base", [], s.getNode()); s1.create(); s1.appendContent("[")
-                    s1id = `active-rule-${rule.id}-requirement-${requirement.index}-object`
-                    if(requirement.type == "citizen"){
-                        s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 my-1 px-1 ms-1 py-0 bg-gray-600", [], s.getNode(), s1id); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
-                        s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 border-s-0 my-1 px-1 me-1 py-0 bg-gray-600 rule-worker-unselected", [], s.getNode(), s1id+"-view"); s1.create()
-                        i = new element("i", "px-1 text-base fa fa-arrow-down", [], s1.getNode()); i.create()
-                        s1.getNode().addEventListener("click", click_worker)
-                    } else {
-                        s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 my-1 px-1 mx-1 py-0 bg-gray-600", [], s.getNode(), s1id); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
-                    }
+                }
+                s1id = `active-rule-${rule.id}-requirement-${requirement.index}-object`
+                if(requirement.type === "citizen"){
+                    s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 my-1 px-1 ms-1 py-0 bg-gray-600", [], s.getNode(), s1id); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
+                    s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 border-s-0 my-1 px-1 me-1 py-0 bg-gray-600 rule-worker-unselected", [], s.getNode(), s1id+"-view"); s1.create()
+                    i = new element("i", "px-1 text-base fa fa-arrow-down", [], s1.getNode()); i.create()
+                    s1.getNode().addEventListener("click", click_worker)
+                } else {
+                    s1 = new element("span", "font-bold flex flex-nowrap border-2 border-gray-800 my-1 px-1 mx-1 py-0 bg-gray-600", [], s.getNode(), s1id); s1.create(); s1.appendContent(translate(language, requirement.object, "", "capitalized")+" x "+requirement.quantity)
+                }
+                if(!requirement.consumable){
                     s1 = new element("span", "font-bold pb-1 text-base", [], s.getNode()); s1.create(); s1.appendContent("]")
                 }
                 if(index < requirements_last_index){
@@ -1415,7 +1417,7 @@ const show_active_production_rules = (location, parent_div) => {
                 let rule_id = e.target.closest("button").getAttribute("data-rule-id")
                 //Search rule in structure and remove it
                 product_rules_defined.forEach((rule, rule_index) => {
-                    if(rule.id == rule_id){
+                    if(rule.id === rule_id){
                         product_rules_defined.splice(rule_index, 1)
                     }
                 })
@@ -1441,6 +1443,7 @@ const show_active_production_rules = (location, parent_div) => {
 }
 const new_rule_click_requirement = (click_target, requirement, elem) => {
     let rule_index
+    let rule_requirements_fulfilled = false
     let toggle_save_new_rule_panel = (div, rule_index) => {
         let click_save_rule = (e) => {
             //Save rule
@@ -1457,9 +1460,9 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                 //Iterate rule's requirements
                 rule_created.rule_definition.requirements.forEach((requirement_element, requirement_array_index) => {
                     //Current requirement found?
-                    if(requirement_element.index == requirement_index){
+                    if(requirement_element.index === requirement_index*1){
                         //Check if current requirement demands workers
-                        if(requirement_element.type == "citizen"){
+                        if(requirement_element.type === "citizen"){
                             //Search workers assigned to requirement
                             let did = `#rule-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2.assigned`
                             document.querySelectorAll(did).forEach((citizen_elem) => {
@@ -1470,6 +1473,7 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                                     elem.setAttribute("data-status", "working")
                                     elem.innerText = translate(language, "working", "", "capitalized")
                                 })
+                                rule_created.rule_definition.requirements[requirement_array_index].workers = []
                                 rule_created.rule_definition.requirements[requirement_array_index].workers.push(citizen_index)
                             })
                             rule_created.rule_definition.result.quantity*= rule_created.rule_definition.requirements[requirement_array_index].workers.length
@@ -1486,9 +1490,8 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
             //document.querySelector("#productions-actions-title").remove()
             build_actions_available_panel(custom_accordions_div)
         }
-
         pid = `rule-${rule_index}-requirement-${requirement.index}-available-actions-title`
-        if(document.getElementById(pid) == undefined || document.getElementById(pid) == null){
+        if(document.getElementById(pid) == undefined || document.getElementById(pid) === null){
             //Add available actions title.
             p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], div, pid); p.create()
             s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
@@ -1533,10 +1536,15 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
         //Retrieve all available citizens.
         let required_worker_found = false, requirement_assigned_workers_div, requirement_assigned_workers
         let click_assigned = (e) => {
+            let rule_requirements_fulfilled
             toggle_assignable_worker(e)
             //Check if requirement is fulfilled
             let requiredWorkers = requirement.quantity
             requirement_assigned_workers = document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).length
+            //Update requirement new workers quantity
+            let requirement_name = document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).innerHTML
+            let requirement_name_array = requirement_name.split(" x ")
+            document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).innerHTML = requirement_name_array[0] + " x " + Math.max(requirement_assigned_workers, 1) 
             if(requirement_assigned_workers >= requiredWorkers){
                 //Mark requirement as fulfilled.
                 document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
@@ -1545,13 +1553,11 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                 document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("fulfilled", "bg-green-700", "border-green-500")
                 document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("fulfilled", "bg-green-700", "border-green-500")
                 //Check if all requirements were fulfilled.
-                let requirements_fulfilled = 0
-                e.target.closest("h2").parentElement.parentElement.querySelectorAll(".rule-requirement").forEach((elem) => {
-                    if(elem.classList.contains("fulfilled")){
-                        requirements_fulfilled++
-                    }
-                })
-                if(requirements_fulfilled === e.target.parentElement.querySelectorAll(".rule-requirement").length){
+                let requirement_elements = e.target.closest("h2").parentElement.parentElement.querySelectorAll(".rule-requirement")
+                let requirements_amount = requirement_elements.length
+                let requirements_fulfilled_amount = e.target.closest("h2").parentElement.parentElement.querySelectorAll(".rule-requirement.fulfilled").length
+                rule_requirements_fulfilled = requirements_fulfilled_amount === requirements_amount
+                if(rule_requirements_fulfilled){
                     document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-green-700", "border-green-500")
                     document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
                 } else {
@@ -1574,7 +1580,7 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                 document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
                 document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
             }
-            toggle_save_new_rule_panel(parent_elem, rule_index)
+            if(rule_requirements_fulfilled) toggle_save_new_rule_panel(parent_elem, rule_index)
         }
         document.querySelectorAll(".citizen").forEach((elem) => {
             let citizen_index = elem.id.split("-")[2]
@@ -1583,7 +1589,7 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
             let loop_citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status") 
             //= citizens[citizen_index].status
             //An idle worker with required role found?
-            if(loop_citizen_role == requirement.role && loop_citizen_status == "idle"){
+            if(loop_citizen_role === requirement.role && loop_citizen_status === "idle"){
                 let loop_citizen_xp = document.getElementById(`citizen-${citizen_index}-xp`).getAttribute("data-xp")*1
                 //Worker with required level of experience found?
                 if(loop_citizen_xp >= requirement.xp){
@@ -1638,7 +1644,7 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
     }
     if(click_target.closest("span").classList.contains("unSelected")){
         rule_index = click_target.closest("div").getAttribute("data-rule-index")
-        if(requirement.type == "citizen"){
+        if(requirement.type === "citizen"){
             process_citizen_requirement(rule_index, requirement, elem)
         }
     }
@@ -1666,9 +1672,9 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
         product_name_parent = get_product_name_parent(requirement)
         //Create span with product name, add square brackets in case it's not consumable
         //Check if current requirement is fulfilled.
-        let location_requirement_fulfilled = (requirement.type == "location" && requirement.object == current_mount)
+        let location_requirement_fulfilled = (requirement.type === "location" && requirement.object === current_mount)
         let requirement_fulfilled = location_requirement_fulfilled
-        if(requirement.type == "product"){
+        if(requirement.type === "product"){
             let resources_objects = Object.keys(stock_values["resources"]["EN"])
             let products_objects = Object.keys(stock_values["products"]["EN"])
             let building_parts_objects = Object.keys(stock_values["building parts"]["EN"])
@@ -1676,11 +1682,11 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
                                         (products_objects.includes(requirement.object) ? "products" :
                                          (building_parts_objects.includes(requirement.object) ? "building parts" : ""))
             let category_objects = Object.keys(stock_values[manufactured_category]["EN"])
-            let product_requirement_fulfilled = (requirement.type == "product" && category_objects.includes(requirement.object) && stock_values[manufactured_category]["EN"][requirement.object] >= requirement.quantity)
+            let product_requirement_fulfilled = (requirement.type === "product" && category_objects.includes(requirement.object) && stock_values[manufactured_category]["EN"][requirement.object] >= requirement.quantity)
             requirement_fulfilled ||= product_requirement_fulfilled
         }
-        let bg_class = requirement_fulfilled ? "border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
-        sid = `rule-${rule_index}-requirement-${requirement_index}`+(product_name_parent == p.getNode() ? "" : "-name")
+        let bg_class = requirement_fulfilled ? "fulfilled border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
+        sid = `rule-${rule_index}-requirement-${requirement_index}`+(product_name_parent === p.getNode() ? "" : "-name")
         s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
         let requirement_object_name = translate(language, requirement.object, "", "capitalized")
         //Check if a minimal xp value is needed
@@ -1697,7 +1703,7 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
         s.appendHTML(` x ${requirement.quantity}`)
         if(!requirement_fulfilled){
             sid = `rule-${rule_index}-requirement-${requirement_index}-update`
-            if(requirement.type == "citizen"){
+            if(requirement.type === "citizen"){
                 s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
                 i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
             }
@@ -1880,7 +1886,7 @@ const accordion_landforms = () => {
                 let citizen_role = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
                 let citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status")
                 let citizen_already_listed = document.getElementById(`waterReservoir-assignable-citizen-${citizen_index}`) != undefined
-                if(["waterbearing", "fishing"].includes(citizen_role) && citizen_status == "idle" && !citizen_already_listed){
+                if(["waterbearing", "fishing"].includes(citizen_role) && citizen_status === "idle" && !citizen_already_listed){
                     assignable_worker_found = true
                     add_assignable_worker_to_mount(citizen_index, "waterReservoir")
                     document.getElementById(`waterReservoir-citizen-${citizen_index}-assign`).addEventListener("click", 
@@ -2061,7 +2067,7 @@ const modal_popup = (modalTitle, modalType, modalData = {}) => {
     let parent = document.getElementById("modalBody")
     const format_popup = () => {
         //Adjust style if it's a functional modal or information modal.
-        if(modalData.modalStyle == "small"){
+        if(modalData.modalStyle === "small"){
             document.querySelector("#modalTitle").classList.remove("text-xl")
             document.querySelector("#modalTitle").classList.add("text-base")
             document.querySelector("#modalTitle").parentElement.classList.remove("p-4", "py-2", "ps-4")
@@ -2166,9 +2172,9 @@ const modal_popup = (modalTitle, modalType, modalData = {}) => {
     //Build modal pop up structure
     document.getElementById("modalTitle").innerHTML = translate(language, modalTitle)
     //Build popup body
-    if(modalType == "ZoneSearched"){ popupZoneSearched() }
-    if(modalType == "RoleCitizenBusy"){ popupCannotChangeRole() }
-    if(modalType == "ViewCitizenInfo"){ popupViewCitizenInfo() }
+    if(modalType === "ZoneSearched"){ popupZoneSearched() }
+    if(modalType === "RoleCitizenBusy"){ popupCannotChangeRole() }
+    if(modalType === "ViewCitizenInfo"){ popupViewCitizenInfo() }
 }
 const build_active_expedition = (parentElem, expeditionData = {}) => {
     //Build current active expeditions
@@ -2177,7 +2183,7 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
         document.querySelector("#"+parentElem.id+" > p").remove()
     }
     //Expedition type text
-    let expeditionType = expeditionData.type == "of resources" ? "Resources" : "Ruins"
+    let expeditionType = expeditionData.type === "of resources" ? "Resources" : "Ruins"
     //Build current expedition accordion header
     d2 = new element("div", "accordion-active-expedition", [{"key":"data-accordion", "value":"collapse"}], parentElem, "accordion-expedition-"+expeditionData.id); d2.create()
     h2 = new element("h2", expeditionType.toLowerCase()+"Expedition", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
@@ -2238,9 +2244,9 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
         d4.create()
         s = new element("span", "", [], d4.getNode()); s.create()
         //Build expeditionary or horse crew div
-        if(crewMember.type == "expeditionary"){
-            i = new element("i", "me-1 fa fa-"+(crewMember.gender == "F" ? "venus" : "mars")+" text-"+(crewMember.gender == "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-gender-icon"); i.create()
-            i = new element("i", "me-1 fa fa-"+(crewMember.age == "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-age-icon"); i.create()
+        if(crewMember.type === "expeditionary"){
+            i = new element("i", "me-1 fa fa-"+(crewMember.gender === "F" ? "venus" : "mars")+" text-"+(crewMember.gender === "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-gender-icon"); i.create()
+            i = new element("i", "me-1 fa fa-"+(crewMember.age === "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-age-icon"); i.create()
             i = new element("i", "me-1 fa fa-map-location-dot text-green-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-role-icon"); i.create()
             s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-xp-icon"); 
             s1.create(); s1.appendContent(Math.floor(crewMember.xp).toString())
@@ -2303,14 +2309,14 @@ const enable_notification_events = () => {
         e.target.closest("h2").removeEventListener('click', notification_handler)
         //Remove notification unread class and icon
         e.target.closest("h2").classList.remove("notificationUnread")
-        if(e.target.type == "button" && e.target.querySelector(".new:first-of-type")){
+        if(e.target.type === "button" && e.target.querySelector(".new:first-of-type")){
             e.target.querySelector(".new:first-of-type").remove()
         } else if(e.target.parentElement.querySelector(".new:first-of-type")){
             e.target.parentElement.querySelector(".new:first-of-type").remove()
         }
         //Check if there is no notification siblings and then remove parent notification.
         document.querySelector("#newsNotifications").innerText = document.querySelectorAll("#accordion-news .notificationUnread").length
-        document.querySelector("#newsNotifications").hidden = (document.querySelector("#newsNotifications").innerText == "0")
+        document.querySelector("#newsNotifications").hidden = (document.querySelector("#newsNotifications").innerText === "0")
     }
     document.querySelectorAll(".notificationUnread").forEach((value, key) => {
         value.removeEventListener('click', notification_handler)
@@ -2401,7 +2407,7 @@ const update_stock = () => {
             s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
             let stockValue = stock_displayed.resources[language][resource].toString()
             s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockValue)
-            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue == 1 ? "unit" : "units"))
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue === 1 ? "unit" : "units"))
         }
     })
     //If there was no resource to show, display empty message.
@@ -2430,7 +2436,7 @@ const update_stock = () => {
             s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
             let stockValue = stock_displayed.products[language][product].toString()
             s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockValue)
-            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue == 1 ? "unit" : "units"))
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue === 1 ? "unit" : "units"))
         }
     })
     //If there was no resource to show, display empty message.
@@ -2444,7 +2450,7 @@ const update_stock = () => {
 }
 //Change stock resources or products order from ASC to DESC or viceversa, and display results on Colony panel.
 const toggle_sort_stock = (type = "resources") => {
-    let object_type = (type == "buildingParts" ? "building parts" : type)
+    let object_type = (type === "buildingParts" ? "building parts" : type)
     let reversed = {}
     Object.keys(stock_displayed[object_type][language])
         .reverse()
@@ -2462,13 +2468,13 @@ const toggle_sort_stock = (type = "resources") => {
 const update_colony = (event = "zoneSearched") => {
     //Check for new buildings
     //Check if there is no building in the colony
-    let noCampaignTents = typeof buildings.shelter == "undefined" || typeof buildings.shelter["campaign tent"] == "undefined" || !buildings.shelter["campaign tent"]
-    let noCottages = typeof buildings.shelter == "undefined" || typeof buildings.shelter["cottage"] == "undefined" || !buildings.shelter["cottage"]
-    let noHouses = typeof buildings.shelter == "undefined" || typeof buildings.shelter["house"] == "undefined" || !buildings.shelter["house"]
-    let noStoneHouses = typeof buildings.shelter == "undefined" || typeof buildings.shelter["stoneHouse"] == "undefined" || !buildings.shelter["stoneHouse"]
-    let noManors = typeof buildings.shelter == "undefined" || typeof buildings.shelter["manor"] == "undefined" || !buildings.shelter["manor"]
-    let noMansions = typeof buildings.shelter == "undefined" || typeof buildings.shelter["mansion"] == "undefined" || !buildings.shelter["mansion"]
-    let noGraveyards = typeof buildings.shelter == "undefined" || typeof buildings.shelter["graveyard"] == "undefined" || !buildings.shelter["graveyard"]
+    let noCampaignTents = typeof buildings.shelter === "undefined" || typeof buildings.shelter["campaign tent"] === "undefined" || !buildings.shelter["campaign tent"]
+    let noCottages = typeof buildings.shelter === "undefined" || typeof buildings.shelter["cottage"] === "undefined" || !buildings.shelter["cottage"]
+    let noHouses = typeof buildings.shelter === "undefined" || typeof buildings.shelter["house"] === "undefined" || !buildings.shelter["house"]
+    let noStoneHouses = typeof buildings.shelter === "undefined" || typeof buildings.shelter["stoneHouse"] === "undefined" || !buildings.shelter["stoneHouse"]
+    let noManors = typeof buildings.shelter === "undefined" || typeof buildings.shelter["manor"] === "undefined" || !buildings.shelter["manor"]
+    let noMansions = typeof buildings.shelter === "undefined" || typeof buildings.shelter["mansion"] === "undefined" || !buildings.shelter["mansion"]
+    let noGraveyards = typeof buildings.shelter === "undefined" || typeof buildings.shelter["graveyard"] === "undefined" || !buildings.shelter["graveyard"]
     let noShelters = noCampaignTents && noCottages && noStoneHouses && noHouses && noManors && noMansions && noGraveyards
     let noBuildings = noShelters
     if(!noBuildings){
@@ -2500,7 +2506,7 @@ const update_colony = (event = "zoneSearched") => {
             //enableAccordions('#accordion-buildings-groups [data-accordion-target]')
         }
     }
-    if(event == "zoneSearched"){
+    if(event === "zoneSearched"){
         //Add notification about zone searched
         update_stock()
         add_news()
@@ -2512,7 +2518,7 @@ const post_conditions_changing_role = (previous_role, citizen_index) => {
     document.querySelectorAll(".assignable-workers > h2.assignable-worker.unassigned").forEach((elem) => {
         loop_citizen_index = elem.id.split("-")[3]
         //Check if citizen is assignable in a water reservoir.
-        if(["waterBearing", "fishing"].includes(previous_role) && loop_citizen_index == citizen_index){
+        if(["waterBearing", "fishing"].includes(previous_role) && loop_citizen_index === citizen_index){
             assignable_workers_div = elem.parentElement
             //Remove citizen from assignable workers list
             elem.remove()
@@ -2651,14 +2657,14 @@ const deassign_worker_to_mount = (citizenIndex, mountClass) => {
     })
     citizens[citizenIndex].status = "idle"
     let citizenRoleKey = document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role")
-    if(mountClass == "waterReservoir"){
-        if(citizenRoleKey == "waterbearing"){
+    if(mountClass === "waterReservoir"){
+        if(citizenRoleKey === "waterbearing"){
             //Add water income to Colony panel
             document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
             let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
             document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
         }
-        if(citizenRoleKey == "fishing"){
+        if(citizenRoleKey === "fishing"){
             //Add water income to Colony panel
             document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
             let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
@@ -2844,14 +2850,14 @@ const add_assigned_worker_to_mount = (citizenIndex, mountClass) => {
     })
     citizens[citizenIndex].status = lifeStarted ? "working" : "assigned"
     let citizenRoleKey = document.getElementById("citizen-"+citizenIndex+"-role").getAttribute("data-role")
-    if(mountClass == "waterReservoir"){
-        if(citizenRoleKey == "waterbearing"){
+    if(mountClass === "waterReservoir"){
+        if(citizenRoleKey === "waterbearing"){
             //Add water income to Colony panel
             document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
             let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
             document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
         }
-        if(citizenRoleKey == "fishing"){
+        if(citizenRoleKey === "fishing"){
             //Add water income to Colony panel
             document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
             let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1

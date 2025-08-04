@@ -1576,7 +1576,7 @@ const granularity_loot_multipliers = {
 const order_keys = (unordered, order = "ASC") => {
     // Sorting the object by keys
     //In ascending way
-    if(order == "ASC"){
+    if(order === "ASC"){
         const ordered = Object.keys(unordered)
             .sort() // Sort the keys alphabetically
             .reduce((obj, key) => {

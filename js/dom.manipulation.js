@@ -673,7 +673,7 @@ const accordion_colony = () => {
                 p = new element("p", "buildingPartStock pb-0 text-xs text-gray-400", [], ds.getNode()); p.create()
                 s = new element("span", "flex", [], p.getNode()); s.create()
                 s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
-                s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(part)
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, part, "", "capitalized"))
                 s1.appendHTML(": ")
                 formatedPart = part.replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
@@ -1020,9 +1020,9 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                     i = new element("i", "fa fa-venus-mars me-2", [], b.getNode()); i.create()
                     s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Search a couple"))
                     b.getNode().addEventListener("click", function(e){
-                        let objectData = {"language": language, "gender": new_citizen.gender, "parentId": `#accordion-citizen-${citizen_id}-body`}
+                        let objectData = {"language": language, "gender": new_citizen.gender, "objectName": "citizen", "objectId": citizen_id, "optionName": "actions", "parentId": `accordion-citizen-${citizen_id}-body`}
                         //Build assign role panel
-                        searchCouplePanel = new panel("searchCouple", objectData, "citizen", citizen_id, "actions")
+                        searchCouplePanel = new panel("searchCouple", objectData)
                         searchCouplePanel.hidePreviousOptions()
                         searchCouplePanel.buildPanel()
                     })
@@ -1032,9 +1032,9 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                     i = new element("i", "fa fa-handshake-simple me-2", [], b.getNode()); i.create()
                     s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Assign a role"))
                     b.getNode().addEventListener("click", function(e){
-                        let objectData = {"language": language, "gender": new_citizen.gender.charAt(0), "parentId": `#accordion-citizen-${citizen_id}-body`}
+                        let objectData = {"language": language, "gender": new_citizen.gender.charAt(0), "objectName": "citizen", "objectId": citizen_id, "optionName": "actions", "parentId": `accordion-citizen-${citizen_id}-body`}
                         //Build assign role panel
-                        assignRolePanel = new panel("assignRole", objectData, "citizen", citizen_id, "actions")
+                        assignRolePanel = new panel("assignRole", objectData)
                         assignRolePanel.hidePreviousOptions()
                         assignRolePanel.buildPanel()
                         //For each button with an assignable role, add a click event
@@ -1324,32 +1324,34 @@ const show_active_production_rules = (location, parent_div) => {
         //Check if current rule has a location requirement and is the same as the input parameter.
         let visible_rule = false
         rule.rule_definition.requirements.forEach((requirement, index) => {
-            if(requirement.object === "Water reservoir"){
-                visible_rule = (!location || location === "waterReservoir")
-            } else {
-                if(requirement.object === "Hunting mount"){
-                    visible_rule = (!location || location === "huntingMount")
+            if(location){
+                if(requirement.object === "Water reservoir"){
+                    visible_rule = location === "waterReservoir"
                 } else {
-                    if(requirement.object === "Stone mount"){
-                        visible_rule = (!location || location === "stoneMount")
+                    if(requirement.object === "Hunting mount"){
+                        visible_rule = location === "huntingMount"
                     } else {
-                        if(requirement.object === "Clay mount"){
-                            visible_rule = (!location || location === "clayMount")
+                        if(requirement.object === "Stone mount"){
+                            visible_rule = location === "stoneMount"
                         } else {
-                            if(requirement.object === "Iron mount"){
-                                visible_rule = (!location || location === "ironMount")
+                            if(requirement.object === "Clay mount"){
+                                visible_rule = location === "clayMount"
                             } else {
-                                visible_rule = true
+                                if(requirement.object === "Iron mount"){
+                                    visible_rule = location === "ironMount"
+                                }
                             }
                         }
                     }
                 }
+            } else {
+                visible_rule = true
             }
         })
         if(visible_rule){
-            rules_found++
             //Current rule accordion
-            d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.id}`); d.create()
+            d = new element("div", `${rules_found ? "mt-1" : ""}`, [{"key":"data-accordion","value":"collapse"}], parent_div, `accordion-active-rule-${rule.id}`); d.create()
+            rules_found++
             //Current rule accordion header
             h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-active-rule-${rule.id}-header`); h2.create()
             b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
@@ -1402,12 +1404,21 @@ const show_active_production_rules = (location, parent_div) => {
             sid = `active-rule-${rule.id}-result`
             s.create(); s.appendContent(translate(language, rule.object, "", "capitalized") + " x " + rule.rule_definition.result.quantity)
             enable_accordion_click(b.getNode())
-            d = new element("div", "rule-assigned-workers", [], document.getElementById(`accordion-active-rule-${rule.id}-body`)); d.create()
-            d = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], document.getElementById(`accordion-active-rule-${rule.id}-body`), `active-rule-${rule.id}-actions-available-title`); d.create()
+            let time_div = document.getElementById(`accordion-active-rule-${rule.id}-body`)
+            //Rule production time
+            d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], time_div); d2.create()
+            p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production time")); s.create(); 
+            s.appendHTML(":")
+            let duration = minimal_date_expression(rule.duration) 
+            s1 = new element("span", "ms-1 font-bold", [{"key":"data-hours", "value":""}], p.getNode()); s1.create(); s1.appendContent(duration)
+
+            d = new element("div", "rule-assigned-workers mt-1", [], time_div); d.create()
+            d = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], time_div, `active-rule-${rule.id}-actions-available-title`); d.create()
             p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d.getNode()); p.create()
             s = new element("span", "grow", [], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
             
-            d = new element("div", "border border-gray-800 bg-gray-400 text-xs", [], document.getElementById(`accordion-active-rule-${rule.id}-body`), `active-rule-${rule.id}-actions-available-body`); d.create()
+            d = new element("div", "border border-gray-800 bg-gray-400 text-xs", [], time_div, `active-rule-${rule.id}-actions-available-body`); d.create()
             p = new element("p", "flex w-100 justify-between p-1 text-gray-300", [], d.getNode()); p.create()
             b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [{"key":"data-rule-id", "value":rule.id}], p.getNode()); b.create()
             i = new element("i", "fa fa-times me-2", [], b.getNode()); i.create()
@@ -1417,7 +1428,7 @@ const show_active_production_rules = (location, parent_div) => {
                 let rule_id = e.target.closest("button").getAttribute("data-rule-id")
                 //Search rule in structure and remove it
                 product_rules_defined.forEach((rule, rule_index) => {
-                    if(rule.id === rule_id){
+                    if(rule.id == rule_id){
                         product_rules_defined.splice(rule_index, 1)
                     }
                 })
@@ -1441,22 +1452,28 @@ const show_active_production_rules = (location, parent_div) => {
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f", "capitalized"))
     }
 }
-const new_rule_click_requirement = (click_target, requirement, elem) => {
+const new_rule_click_requirement = (click_target, requirement, elem, clicked_product) => {
     let rule_index
-    let rule_requirements_fulfilled = false
-    let toggle_save_new_rule_panel = (div, rule_index) => {
+    let toggle_save_new_rule_action = (rule_index, requirements_fulfilled) => {
         let click_save_rule = (e) => {
+            //Identify rule index
+            let rule_index = e.target.closest("button").id.split("-")[2]
+            let result_object = e.target.closest("button").getAttribute("data-product")
+            let result_category = e.target.closest("button").getAttribute("data-category")
             //Save rule
             let rule_created = {}
             rule_last_id++
             rule_created.id = rule_last_id
             rule_created.index = rule_index
-            rule_created.object = document.querySelector(`#rule-${rule_index}-object`).getAttribute("data-object")
-            let rule_definition = JSON.parse(JSON.stringify(product_rules[rule_created.object].rules[0]))
+            rule_created.date_created = {"week":document.getElementById("passedWeeks").innerHTML, "day":document.getElementById("currentDay").innerHTML, "hour":document.getElementById("currentHour").innerHTML}
+            rule_created.object = result_object
+            rule_created.category = result_category
+            rule_created.rule_definition = JSON.parse(JSON.stringify(product_rules[rule_created.object].rules[0]))
+            rule_created.duration = document.getElementById(`rule-index-${rule_index}-duration`).getAttribute("data-hours")
+            rule_created.duration_remaining = rule_created.duration
             rule_created.status = "running"
             document.querySelectorAll(".rule-requirement").forEach((elem) => {
-                let requirement_index = elem.id.split("-")[3]
-                rule_created.rule_definition = rule_definition
+                let requirement_index = elem.id.split("-")[4]
                 //Iterate rule's requirements
                 rule_created.rule_definition.requirements.forEach((requirement_element, requirement_array_index) => {
                     //Current requirement found?
@@ -1464,7 +1481,8 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                         //Check if current requirement demands workers
                         if(requirement_element.type === "citizen"){
                             //Search workers assigned to requirement
-                            let did = `#rule-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2.assigned`
+                            let did = `#rule-index-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2.assigned`
+                            rule_created.rule_definition.requirements[requirement_array_index].workers = []
                             document.querySelectorAll(did).forEach((citizen_elem) => {
                                 //Obtain citizen index from div panel
                                 let citizen_index = citizen_elem.id.split("citizen-")[1]
@@ -1473,7 +1491,6 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                                     elem.setAttribute("data-status", "working")
                                     elem.innerText = translate(language, "working", "", "capitalized")
                                 })
-                                rule_created.rule_definition.requirements[requirement_array_index].workers = []
                                 rule_created.rule_definition.requirements[requirement_array_index].workers.push(citizen_index)
                             })
                             rule_created.rule_definition.result.quantity*= rule_created.rule_definition.requirements[requirement_array_index].workers.length
@@ -1484,32 +1501,50 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
             })
             product_rules_defined.push(rule_created)
             b.getNode().removeEventListener("click", click_save_rule)
-            let custom_accordions_div = e.target.closest(".newRule").previousSibling.previousSibling
+            //let custom_accordions_div = e.target.closest(".newRule").previousSibling.previousSibling
             e.target.closest(".newRule").previousSibling.remove()
             e.target.closest(".newRule").remove()
             //document.querySelector("#productions-actions-title").remove()
-            build_actions_available_panel(custom_accordions_div)
+            //build_actions_available_panel(custom_accordions_div)
+            let object_data = {"language": language, "objectName": "productions", "objectId": false, "optionName": "actions", "parentId": `productions`, "location": ""}
+            //Build new production rule panel
+            let new_production_rule_panel = new panel("newRule", object_data)
+            //new_production_rule_panel.removePanel()
+            new_production_rule_panel.showPreviousOptions()
         }
-        pid = `rule-${rule_index}-requirement-${requirement.index}-available-actions-title`
+        let button = document.getElementById(`rule-index-${rule_index}-confirm`)
+        if(requirements_fulfilled){
+            button.removeAttribute("disabled")
+            button.classList.remove("bg-gray-600")
+            button.classList.add("bg-gray-800")
+            button.addEventListener("click", click_save_rule)
+        } else {
+            button.setAttribute("disabled", "")
+            button.classList.add("bg-gray-600")
+            button.classList.remove("bg-gray-800")
+            button.removeEventListener("click", click_save_rule)
+        }
+        /*
+        pid = `rule-index-${rule_index}-requirement-${requirement.index}-available-actions-title`
         if(document.getElementById(pid) == undefined || document.getElementById(pid) === null){
             //Add available actions title.
             p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], div, pid); p.create()
             s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
             //Add available actions area.
-            did = `rule-${rule_index}-requirement-${requirement.index}-available-actions-area`
+            did = `rule-index-${rule_index}-requirement-${requirement.index}-available-actions-area`
             d = new element("div", "flex bg-gray-500 text-xs p-2 pb-1", [], div, did); d.create()
-            b = new element("button", "text-xs text-white grow p-2 me-2 button border border-gray-400 bg-gray-800", [{"key":"type", "value":"button"}], d.getNode(), `rule-${rule_index}-requirement-${requirement.index}-confirm`); b.create()
+            b = new element("button", "text-xs text-white grow p-2 me-2 button border border-gray-400 bg-gray-800", [{"key":"type", "value":"button"}, {"key":"data-product", "value":clicked_product.name}, {"key":"data-category", "value":clicked_product.category}], d.getNode(), `rule-index-${rule_index}-requirement-${requirement.index}-confirm`); b.create()
             i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
             s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Confirm rule"))
             //Add confirm rule click event
             b.getNode().addEventListener("click", click_save_rule)
-            b = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d.getNode(), `rule-${rule_index}-requirement-${requirement.index}-cancel`); b.create()
+            b = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d.getNode(), `rule-index-${rule_index}-requirement-${requirement.index}-cancel`); b.create()
             i = new element("i", "fa fa-times me-2", [], b.getNode()); i.create()
             s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Cancel rule"))
             //Add cancel rule click event
             b.getNode().addEventListener("click", (e) => {
                 //Restore workers to idle status.
-                document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).forEach((elem) => {
+                document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).forEach((elem) => {
                     let citizen_index = elem.id.split("citizen-")[1]
                     document.querySelectorAll(`#citizen-${citizen_index}-status`).forEach((citizen_elem) => {
                         let citizen_gender = document.getElementById(`citizen-${citizen_index}-gender`).innerText.charAt(0)
@@ -1518,70 +1553,97 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                         citizens[citizen_index].status = "idle"
                     })
                 })
-                let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}            
-                let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
+                let object_data = {"language": language, "objectName": "active-production-rules", "objectId": false, "optionName": "actions", 
+                                    "panelId": "productions-newRule", "panelTitleId": "productions-newRule-title", "parentId": "accordion-landform-1-body", "location": "waterReservoir",
+                                    "previous":{"panelId": "productions-actions", "panelTitleId": "productions-actions-title"}
+                                }            
+                let new_production_rule_panel = new panel("newRule", object_data)
                 new_production_rule_panel.removePanel()
                 new_production_rule_panel.showPreviousOptions()
             })
         } else {
-            if(!document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).length){
+            if(!document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).length){
                 document.getElementById(pid).remove()
                 document.getElementById(did).remove()
             }
         
         }
+        */
     }
-    let check_candidates = (requirement, rule_index, parent_elem) => {
+    const check_rule_fulfilled = (parent_div) => {
+        let requirement_elements = parent_div.querySelectorAll(".rule-requirement")
+        let requirements_amount = requirement_elements.length
+        let requirements_fulfilled_amount = parent_div.querySelectorAll(".rule-requirement.fulfilled").length
+        return requirements_fulfilled_amount === requirements_amount
+    }
+    const check_candidates = (requirement, rule_index, parent_elem) => {
         //Check if there exists citizens who accomplish current worker requirement.
         //Retrieve all available citizens.
-        let required_worker_found = false, requirement_assigned_workers_div, requirement_assigned_workers
+        let required_worker_found = false, requirement_assigned_workers_div, requirement_assigned_workers_ids
+        let requirement_assigned_workers_amount
         let click_assigned = (e) => {
             let rule_requirements_fulfilled
+            let result_product_object = document.querySelector(`#rule-index-${rule_index}-result`).getAttribute("data-object")
+            let duration
             toggle_assignable_worker(e)
             //Check if requirement is fulfilled
             let requiredWorkers = requirement.quantity
-            requirement_assigned_workers = document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).length
+            //Obtain all marked workers.
+            requirement_assigned_workers_ids = []
+            document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).forEach((worker_div) => {
+                let worker_id = worker_div.id.split("citizen-")[1]
+                requirement_assigned_workers_ids.push(citizens[worker_id])
+            })
+            requirement_assigned_workers_amount = requirement_assigned_workers_ids.length
+            //Update rule production time
+            let rule = product_rules[result_product_object].rules[rule_index-1]
+            if(rule.result.duration_type === "formula"){
+                let citizens_array = requirement_assigned_workers_ids
+                duration = eval(rule.result.formula)(citizens_array, rule.base_duration_in_hours)
+            } else {
+                duration = rule.result.duration
+            }
+            document.getElementById(`rule-index-${rule_index}-duration`).setAttribute("data-hours", duration)
+            document.getElementById(`rule-index-${rule_index}-duration`).innerHTML = minimal_date_expression(duration)
             //Update requirement new workers quantity
-            let requirement_name = document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).innerHTML
+            let requirement_name = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML
             let requirement_name_array = requirement_name.split(" x ")
-            document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).innerHTML = requirement_name_array[0] + " x " + Math.max(requirement_assigned_workers, 1) 
-            if(requirement_assigned_workers >= requiredWorkers){
+            document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML = requirement_name_array[0] + " x " + Math.max(requirement_assigned_workers_amount, 1) 
+            if(requirement_assigned_workers_amount >= requiredWorkers){
                 //Mark requirement as fulfilled.
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
-                document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("fulfilled", "bg-green-700", "border-green-500")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("fulfilled", "bg-green-700", "border-green-500")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("fulfilled", "bg-green-700", "border-green-500")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("fulfilled", "bg-green-700", "border-green-500")
                 //Check if all requirements were fulfilled.
-                let requirement_elements = e.target.closest("h2").parentElement.parentElement.querySelectorAll(".rule-requirement")
-                let requirements_amount = requirement_elements.length
-                let requirements_fulfilled_amount = e.target.closest("h2").parentElement.parentElement.querySelectorAll(".rule-requirement.fulfilled").length
-                rule_requirements_fulfilled = requirements_fulfilled_amount === requirements_amount
+                rule_requirements_fulfilled = check_rule_fulfilled(e.target.closest("h2").parentElement.parentElement)
                 if(rule_requirements_fulfilled){
-                    document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-green-700", "border-green-500")
-                    document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
+                    document.querySelector(`#rule-index-${rule_index}-result`).classList.add("bg-green-700", "border-green-500")
+                    document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
                 } else {
-                    document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-green-700", "border-green-500")
-                    document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
+                    document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-green-500")
+                    document.querySelector(`#rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
                 }
                 //Update result quantity
-                let result_product_label = document.querySelector(`#rule-${rule_index}-result`).innerText
-                let result_array = result_product_label.split(" x ")
-                let result_product_object = document.querySelector(`#rule-${rule_index}-result`).getAttribute("data-object")
-                let result_product_quantity = result_array[1]*1
-                result_product_quantity = requirement_assigned_workers * product_rules[result_product_object].rules[rule_index-1].result.quantity
-                document.querySelector(`#rule-${rule_index}-result`).innerText = translate(language, result_product_object, "", "capitalized")+" x "+result_product_quantity
+                //let result_product_label = document.querySelector(`#rule-${rule_index}-result`).innerText
+                //let result_array = result_product_label.split(" x ")
+                let result_product_quantity// = result_array[1]*1
+                result_product_quantity = requirement_assigned_workers_amount * product_rules[result_product_object].rules[rule_index-1].result.quantity
+                document.querySelector(`#rule-index-${rule_index}-result`).innerText = translate(language, result_product_object, "", "capitalized")+" x "+result_product_quantity
             } else {
                 //Unmark requirement as fulfilled.
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-green-700", "border-green-500")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-green-700", "border-green-500")
-                document.querySelector(`#rule-${rule_index}-result`).classList.remove("bg-green-700", "border-green-500")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
-                document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
-                document.querySelector(`#rule-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-green-500")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-500", "unaccomplished")
+                document.querySelector(`#rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-500")
             }
-            if(rule_requirements_fulfilled) toggle_save_new_rule_panel(parent_elem, rule_index)
+            toggle_save_new_rule_action(rule_index, rule_requirements_fulfilled)
         }
+        //Erase workers panel and build it again.
+        parent_elem.querySelector(".assignable-panel").innerHTML = ""
         document.querySelectorAll(".citizen").forEach((elem) => {
             let citizen_index = elem.id.split("-")[2]
             //Get current role and status
@@ -1601,19 +1663,19 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
                         has_tools_required = (tool != left_hand_tool && tool != right_hand_tool)
                     })
                     required_worker_found &&= has_tools_required
-                    let worker_already_listed = document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2#rule-${rule_index}-requirement-${requirement.index}-assignable-citizen-${citizen_index}`) != undefined
+                    let worker_already_listed = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2#rule-index-${rule_index}-requirement-${requirement.index}-assignable-citizen-${citizen_index}`) != undefined
                     if(required_worker_found && !worker_already_listed){
                         //Add citizen as assignable worker for the rule requirement.
                         add_assignable_worker_to_rule_requirement(citizen_index, parent_elem.querySelector(".assignable-panel")/*d.getNode()*/)
-                        requirement_assigned_workers = document.querySelectorAll(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2`).length
+                        requirement_assigned_workers_amount = document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2`).length
                         document.getElementById(`citizen-${citizen_index}-assign`).addEventListener("click", click_assigned)
                     }
                 }
             }
         })
-        requirement_assigned_workers_div = document.querySelector(`#rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area`)
-        requirement_assigned_workers = requirement_assigned_workers_div.querySelectorAll("h2").length
-        if(!requirement_assigned_workers && requirement_assigned_workers_div.querySelector("p.empty") == undefined){
+        requirement_assigned_workers_div = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area`)
+        requirement_assigned_workers_amount = requirement_assigned_workers_div.querySelectorAll("h2").length
+        if(!requirement_assigned_workers_amount && requirement_assigned_workers_div.querySelector("p.empty") == undefined){
             p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-200", [], requirement_assigned_workers_div); p.create()
             s = new element("span", "", [], p.getNode()); s.create()
             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
@@ -1623,23 +1685,23 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
     let process_citizen_requirement = (rule_index, requirement, elem) => {
         let click_refresh = (e) => {
             process_citizen_requirement(rule_index, requirement, elem)
-            document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
+            document.getElementById(`rule-index-${rule_index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
         }
         let parent_elem = elem.closest("div")
-        pid = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
+        pid = `rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
         //If assignable workers panel is not shown, display it
-        if(document.getElementById(`rule-${rule_index}-refresh-assignable-workers`) == undefined){
+        if(document.getElementById(`rule-index-${rule_index}-refresh-assignable-workers`) == undefined){
             //Add assignable workers title.
-            p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parent_elem, pid); p.create()
+            p = new element("p", "mt-1 items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parent_elem, pid); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Assignable workers"))
-            i = new element("i", "fa fa-rotate", [], p.getNode(), `rule-${rule_index}-refresh-assignable-workers`); i.create()
+            i = new element("i", "fa fa-rotate", [], p.getNode(), `rule-index-${rule_index}-refresh-assignable-workers`); i.create()
             //Add assignable workers area.
-            did = `rule-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
+            did = `rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
             d = new element("div", "assignable-panel new-rule assignable-workers bg-gray-500 text-xs p-2 pb-1", [], parent_elem, did); d.create()
         }
         //Add refresh click event
-        document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
-        document.getElementById(`rule-${rule_index}-refresh-assignable-workers`).addEventListener("click", click_refresh)
+        document.getElementById(`rule-index-${rule_index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
+        document.getElementById(`rule-index-${rule_index}-refresh-assignable-workers`).addEventListener("click", click_refresh)
         check_candidates(requirement, rule_index, parent_elem)
     }
     if(click_target.closest("span").classList.contains("unSelected")){
@@ -1649,12 +1711,11 @@ const new_rule_click_requirement = (click_target, requirement, elem) => {
         }
     }
 }
-//Display all rule requirements
+//Display all rule information including all of its requirements
 //Receives: rule as object, rule_index as id, clicked_product as DOM element, current_mount
-const new_rule_iterate_requirements = (rule, rule_index, clicked_product, current_mount = false) => {
+const new_rule_display_info = (rule, rule_index, clicked_product, current_mount = false) => {
     const get_product_name_parent = (requirement) => {
-        sid = `rule-${rule_index}-requirement-${requirement.index}`
-        s = new element("span", "flex items-center", [], p.getNode(), sid); s.create()
+        s = new element("span", "flex items-center", [], p.getNode(), `rule-index-${rule_index}-requirement-${requirement.index}`); s.create()
         if(!requirement.consumable){
             //Leftmost square brackets
             i1 = new element("i", "p-1 mb-0 text-lg fa fa-bracket-square", [], s.getNode()); i1.create()
@@ -1662,105 +1723,271 @@ const new_rule_iterate_requirements = (rule, rule_index, clicked_product, curren
         }// else return p.getNode()
         return s.getNode()
     }
-    //Iterate over al requirements for that rule.
-    p = new element("p", "flex justify-start flex-wrap w-100 p-1 text-gray-300", [], d1.getNode()); p.create()
-    let requirements_quantity = rule.requirements.length, requirement_index = 1
-    let product_name_parent
-    rule.requirements.forEach((requirement) => {
-        requirement.index = requirement_index
-        //Check if square brackes are needed (when requirement object is not something daily consumable)
-        product_name_parent = get_product_name_parent(requirement)
-        //Create span with product name, add square brackets in case it's not consumable
-        //Check if current requirement is fulfilled.
-        let location_requirement_fulfilled = (requirement.type === "location" && requirement.object === current_mount)
-        let requirement_fulfilled = location_requirement_fulfilled
-        if(requirement.type === "product"){
-            let resources_objects = Object.keys(stock_values["resources"]["EN"])
-            let products_objects = Object.keys(stock_values["products"]["EN"])
-            let building_parts_objects = Object.keys(stock_values["building parts"]["EN"])
-            let manufactured_category = resources_objects.includes(requirement.object) ? "resources" : 
-                                        (products_objects.includes(requirement.object) ? "products" :
-                                         (building_parts_objects.includes(requirement.object) ? "building parts" : ""))
-            let category_objects = Object.keys(stock_values[manufactured_category]["EN"])
-            let product_requirement_fulfilled = (requirement.type === "product" && category_objects.includes(requirement.object) && stock_values[manufactured_category]["EN"][requirement.object] >= requirement.quantity)
-            requirement_fulfilled ||= product_requirement_fulfilled
-        }
-        let bg_class = requirement_fulfilled ? "fulfilled border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
-        sid = `rule-${rule_index}-requirement-${requirement_index}`+(product_name_parent === p.getNode() ? "" : "-name")
-        s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
-        let requirement_object_name = translate(language, requirement.object, "", "capitalized")
-        //Check if a minimal xp value is needed
-        let XP_requirement = requirement.xp ? ` (${requirement.xp})` : ""
-        //Check if a tool is needed (max 2 in both worker's hands)
-        let tool_requirement_1 = requirement.tools != undefined && requirement.tools.length ? requirement.tools[0] : ""
-        let tool_requirement_2 = tool_requirement_1 && requirement.tools.length > 1 ? requirement.tools[1] : ""
-        let tool_requirement = tool_requirement_1 ? ` + ${translate(language, requirement.tools[0], "", "capitalized")}` : ""
-        tool_requirement += tool_requirement_2 ? ` + ${translate(language, requirement.tools[1], "", "capitalized")}` : ""
-        let requirement_name = requirement_object_name + XP_requirement + tool_requirement
-        requirement_object_name = tool_requirement ? `(${requirement_name})` : requirement_name
-        //Show requirement name and quantity
-        s.appendContent(requirement_object_name)
-        s.appendHTML(` x ${requirement.quantity}`)
-        if(!requirement_fulfilled){
-            sid = `rule-${rule_index}-requirement-${requirement_index}-update`
-            if(requirement.type === "citizen"){
-                s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
-                i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
+    const expand_rule_scheme = (body_div) => {
+        //Remove all contents of body_div
+        body_div.innerHTML = ""
+        //Iterate over al requirements for that rule.
+        p = new element("p", "flex justify-start flex-wrap w-100 p-1 text-gray-300", [], body_div); p.create()
+        let requirements_quantity = rule.requirements.length, requirement_index = 1
+        let product_name_parent, rule_workers = []
+        rule.requirements.forEach((requirement) => {
+            requirement.index = requirement_index
+            //Check if square brackes are needed (when requirement object is not something daily consumable)
+            product_name_parent = get_product_name_parent(requirement)
+            //Create span with product name, add square brackets in case it's not consumable
+            //Check if current requirement is fulfilled.
+            let location_requirement_fulfilled = (requirement.type === "location" && requirement.object === current_mount)
+            let requirement_fulfilled = location_requirement_fulfilled
+            if(["product", "resource", "building part"].includes(requirement.type)){
+                let manufactured_category = requirement.type + "s"
+                let category_objects = Object.keys(stock_values[manufactured_category]["EN"])
+                let product_requirement_fulfilled = (category_objects.includes(requirement.object) && stock_values[manufactured_category]["EN"][requirement.object] >= requirement.quantity)
+                requirement_fulfilled ||= product_requirement_fulfilled
+            } else {
+                if(requirement.type === "citizen"){
+                    rule_workers = requirement.workers
+                }
             }
-            //Add click event to requirement arrow button.
-            document.querySelectorAll(".unaccomplished").forEach((elem) => {
-                elem.addEventListener("click", (e) => {
-                    new_rule_click_requirement(e.target, requirement, elem)
-                    //e.target.closest("span").classList.remove("unSelected")
+            let bg_class = requirement_fulfilled ? "fulfilled border-green-500 bg-green-700" : "border-gray-500 bg-gray-700"
+            sid = `rule-index-${rule_index}-requirement-${requirement_index}`+(product_name_parent === p.getNode() ? "" : "-name")
+            s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
+            let requirement_object_name = translate(language, requirement.object, "N", "capitalized")
+            //Check if a minimal xp value is needed
+            let XP_requirement = requirement.xp ? ` (${requirement.xp})` : ""
+            //Check if a tool is needed (max 2 in both worker's hands)
+            let tool_requirement_1 = requirement.tools != undefined && requirement.tools.length ? requirement.tools[0] : ""
+            let tool_requirement_2 = tool_requirement_1 && requirement.tools.length > 1 ? requirement.tools[1] : ""
+            let tool_requirement = tool_requirement_1 ? ` + ${translate(language, requirement.tools[0], "", "capitalized")}` : ""
+            tool_requirement += tool_requirement_2 ? ` + ${translate(language, requirement.tools[1], "", "capitalized")}` : ""
+            let requirement_name = requirement_object_name + XP_requirement + tool_requirement
+            requirement_object_name = tool_requirement ? `(${requirement_name})` : requirement_name
+            //Show requirement name and quantity
+            s.appendContent(requirement_object_name)
+            s.appendHTML(` x ${requirement.quantity}`)
+            if(!requirement_fulfilled){
+                sid = `rule-index-${rule_index}-requirement-${requirement_index}-update`
+                if(requirement.type === "citizen"){
+                    s = new element("span", `px-2 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
+                    i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
+                }
+                //Add click event to requirement arrow button.
+                document.querySelectorAll(".unaccomplished").forEach((elem) => {
+                    elem.addEventListener("click", (e) => {
+                        new_rule_click_requirement(e.target, requirement, elem, clicked_product)
+                    })
+                })
+            }
+            //Rightmost square brackets
+            if(!requirement.consumable){ i2.create() }
+            if(requirement_index < requirements_quantity){
+                i = new element("i", "text-lg p-1 mb-0 fa fa-plus", [], p.getNode()); i.create()
+            }
+            requirement_index++
+        })
+        //Result
+        s = new element("span", "grow flex items-center", [], p.getNode()); s.create()
+        i = new element("i", "text-lg p-1 px-2 mb-0 fa fa-arrow-right", [], s.getNode()); i.create()
+        s1 = new element("span", "rule-result p-1 px-2 py-0.5 mb-0 font-bold border border-gray-500 bg-gray-700", [{"key":"data-object", "value":clicked_product.name}], s.getNode(), `rule-index-${rule_index}-result`); s1.create()
+        s1.appendContent(translate(language, clicked_product.name, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
+    }
+    const display_duration = () => {
+        //Rule result duration
+        let duration = minimal_date_expression(rule.base_duration_in_hours) 
+        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode())
+        d2.create();
+        p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production time")); s.create(); 
+        s.appendHTML(":")
+        s1 = new element("span", "ms-1 font-bold", [{"key": "data-hours", "value": rule.base_duration_in_hours}], p.getNode(), `rule-index-${rule_index}-duration`); s1.create(); s1.appendContent(duration)
+    }
+    const display_mode = () => {
+        const add_cycles = (e) => {
+            document.getElementById(`rule-index-${rule_index}-cycles`).innerHTML++
+            document.getElementById(`rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycles")
+            let reduce_icon = document.getElementById(`rule-index-${rule_index}-production-reduce-limit`)
+            if(reduce_icon.classList.contains("disabled")){
+                //Enable substractor.
+                reduce_icon.classList.add("disabled")
+                //Change color
+                reduce_icon.classList.add("bg-red-800")
+                reduce_icon.classList.remove("bg-gray-500")
+                //Reattach click event
+                reduce_icon.addEventListener("click", reduce_cycles)
+            }
+        }
+        const reduce_cycles = (e) => {
+            let cycles_elem = document.getElementById(`rule-index-${rule_index}-cycles`) 
+            cycles_elem.innerHTML = Math.max(1, cycles_elem.innerHTML*1 - 1)
+            document.getElementById(`rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycle"+(cycles_elem.innerHTML*1 > 1 ? "s" : ""))
+            if(cycles_elem.innerHTML*1 == 1){
+                let reduce_icon = document.getElementById(`rule-index-${rule_index}-production-reduce-limit`)
+                //Disable substractor.
+                reduce_icon.classList.add("disabled")
+                //Change color
+                reduce_icon.classList.remove("bg-red-800")
+                reduce_icon.classList.add("bg-gray-500")
+                //Detach click event
+                document.getElementById(`rule-index-${rule_index}-production-reduce-limit`).removeEventListener("click", reduce_cycles)
+            } 
+        }
+        const click_cyclic_mode = (e) => {
+            let clicked_button = e.target.closest("button")
+            //First make every button unchecked.
+            clicked_button.parentElement.querySelectorAll("button.checked").forEach((elem) => {
+                elem.classList.remove("bg-blue-600")
+                elem.classList.remove("checked")
+                elem.classList.add("bg-gray-800")
+                if(elem.querySelector("i")){
+                    elem.querySelector("i").remove()
+                }
+                elem.querySelector("span").classList.remove("ms-1")
+            })
+            //Unchecked button clicked?
+            if(!clicked_button.classList.contains("checked")){
+                clicked_button.classList.add("bg-blue-600")
+                clicked_button.classList.add("checked")
+                clicked_button.classList.remove("bg-gray-800")
+                let i = document.createElement("i")
+                i.classList.add("fa"); i.classList.add("fa-check")
+                clicked_button.children[0].classList.add("ms-1")
+                clicked_button.insertBefore(i, clicked_button.children[0])
+                //Show cycles or not, depending on mode selected.
+                if(clicked_button.classList.contains("cyclic")){
+                    document.getElementById(`rule-index-${rule_index}-production-limits`).classList.add("hidden")
+                    document.getElementById(`rule-index-${rule_index}-cycles-unit`).classList.add("hidden")
+                    document.getElementById(`rule-index-${rule_index}-cycles`).innerHTML = translate(language, "Unlimited", "m")
+                } else {
+                    document.getElementById(`rule-index-${rule_index}-production-limits`).classList.remove("hidden")
+                    document.getElementById(`rule-index-${rule_index}-cycles`).innerHTML = "1"
+                    document.getElementById(`rule-index-${rule_index}-cycles-unit`).classList.remove("hidden")
+                    document.getElementById(`rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycle")
+                    let reduce_icon = document.getElementById(`rule-index-${rule_index}-production-reduce-limit`)
+                    //Disable substractor.
+                    reduce_icon.classList.add("disabled")
+                    //Change color
+                    reduce_icon.classList.remove("bg-red-800")
+                    reduce_icon.classList.add("bg-gray-500")
+                    //Detach click event
+                    document.getElementById(`rule-index-${rule_index}-production-reduce-limit`).removeEventListener("click", reduce_cycles)
+                }
+            }
+        }
+        //Rule execution mode
+        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode())
+        d2.create();
+        p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production mode"))
+        s.appendHTML(":")
+        b1 = new element("button", "cyclic ms-1 bg-gray-800 border border-gray-200 px-2 py-0.5 font-bold", [{"key": "type", "value": "button"}], p.getNode(), `rule-index-${rule_index}-production-cyclic`); b1.create() 
+        b1.getNode().addEventListener("click", click_cyclic_mode)
+        //i = new element("i", "fa fa-arrows-repeat", [], b1.getNode()); i.create()
+        s = new element("span", "font-bold", [], b1.getNode()); s.create(); s.appendContent(translate(language, "Cyclic"))
+        //Mark limited mode as default.
+        b2 = new element("button", "limited checked ms-1 bg-blue-600 border border-gray-200 px-2 py-0.5 font-bold", [{"key": "type", "value": "button"}], p.getNode(), `rule-index-${rule_index}-production-limited`); b2.create(); 
+        b2.getNode().addEventListener("click", click_cyclic_mode)
+        //i = new element("i", "fa fa-hand", [], b2.getNode()); i.create()
+        i = new element("i", "fa fa-check", [], b2.getNode()); i.create()
+        s = new element("span", "ms-1 font-bold", [], b2.getNode()); s.create(); s.appendContent(translate(language, "Limited"))
+        p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 pb-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Limit"))
+        s.appendHTML(":")
+        s = new element("span", "ms-1 font-bold", [], p.getNode(), `rule-index-${rule_index}-cycles`); s.create(); s.appendContent("1")
+        s = new element("span", "ms-1 font-bold", [], p.getNode(), `rule-index-${rule_index}-cycles-unit`); s.create(); s.appendContent(translate(language, "cycle"))
+        let hide_modifiers = (p.getNode().classList.contains("cyclic"))
+        s = new element("span", `${hide_modifiers ? "hidden " : ""}ms-2`, [], p.getNode(), `rule-index-${rule_index}-production-limits`); s.create()
+        i1 = new element("button", "fa fa-plus bg-green-600 border border-gray-200 rounded px-1 py-0.5 font-bold", [], s.getNode(), `rule-index-${rule_index}-production-add-limit`); i1.create()
+        i2 = new element("button", "disabled fa fa-minus ms-1 bg-gray-500 border border-gray-200 rounded px-1 py-0.5 font-bold", [], s.getNode(), `rule-index-${rule_index}-production-reduce-limit`); i2.create()
+        i1.getNode().addEventListener("click", add_cycles)
+        i2.getNode().addEventListener("click", reduce_cycles)
+    }
+    const display_scheme = () => {
+        //Rule scheme
+        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-body", "value":`rule-index-${rule_index}-scheme-body`}, {"key":"data-group", "value":`rule-scheme-custom-accordion`}], d1.getNode(), `rule-index-${rule_index}-scheme-title`)
+        d2.create();
+        p = new element("p", "clickable flex justify-between items-center text-xs p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "grow", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Rule scheme"))
+        i = new element("i", "collapsable mt-0 me-2 text-sm fa font-bold fa-chevron-down", [], p.getNode()); i.create()
+        //Rule scheme body
+        d2 = new element("div", "hidden border-b border-gray-800 bg-gray-500 text-xs", [{"key":"data-rule-index", "value":rule_index}], d1.getNode(), `rule-index-${rule_index}-scheme-body`); d2.create()
+        custom_accordion(`rule-index-${rule_index}-scheme-title`, expand_rule_scheme)
+    }
+    const display_actions_available = () => {
+        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+        //Add available actions title.
+        p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
+        //Add available actions area.
+        d = new element("div", "flex gap-1 bg-gray-500 text-xs p-1", [], d2.getNode()); d.create()
+        //Action: Confirm rule
+        b1 = new element("button", "text-xs text-white grow p-2 me-2 button border border-gray-400 bg-gray-600", [{"key":"type", "value":"button"}, {"key":"disabled", "value":""}, {"key":"data-product", "value":clicked_product.name}, {"key":"data-category", "value":clicked_product.category}], d.getNode(), `rule-index-${rule_index}-confirm`); b1.create()
+        i = new element("i", "fa fa-plus me-2", [], b1.getNode()); i.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], b1.getNode()); s.create(); s.appendContent(translate(language, "Confirm rule"))
+        //Add confirm rule click event
+        //b1.getNode().addEventListener("click", click_save_rule)
+        //Action: Cancel rule
+        b2 = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d.getNode(), `rule-index-${rule_index}-cancel`); b2.create()
+        i = new element("i", "fa fa-times me-2", [], b2.getNode()); i.create()
+        s = new element("span", "", [{"key":"data-i18n", "value":""}], b2.getNode()); s.create(); s.appendContent(translate(language, "Cancel rule"))
+        //Add cancel rule click event
+        b2.getNode().addEventListener("click", (e) => {
+            //Restore workers to idle status.
+            document.querySelectorAll(".assignable-panel.assignable-workers h2.assigned").forEach((elem) => {
+                let citizen_index = elem.id.split("citizen-")[1]
+                document.querySelectorAll(`#citizen-${citizen_index}-status`).forEach((citizen_elem) => {
+                    let citizen_gender = document.getElementById(`citizen-${citizen_index}-gender`).innerText.charAt(0)
+                    citizen_elem.setAttribute("data-status", "idle")
+                    citizen_elem.innerText = translate(language, "Idle", citizen_gender)
+                    citizens[citizen_index].status = "idle"
                 })
             })
-        }
-        //Rightmost square brackets
-        if(!requirement.consumable){ i2.create()}
-        if(requirement_index < requirements_quantity){
-            i = new element("i", "text-lg p-1 mb-0 fa fa-plus", [], p.getNode()); i.create()
-        }
-        requirement_index++
-    })
-    //Result
-    s = new element("span", "grow flex items-center", [], p.getNode()); s.create()
-    i = new element("i", "text-lg p-1 px-2 mb-0 fa fa-arrow-right", [], s.getNode()); i.create()
-    s1id = `rule-${rule_index}-result`
-    s1 = new element("span", "rule-result p-1 px-2 py-0.5 mb-0 font-bold border border-gray-500 bg-gray-700", [{"key":"data-object", "value":clicked_product}], s.getNode(), s1id); s1.create()
-    s1.appendContent(translate(language, clicked_product, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
+            let object_data = {"language": language, "objectName": "active-production-rules", "objectId": false, "optionName": "actions", 
+                                "panelId": "productions-newRule", "panelTitleId": "productions-newRule-title", "parentId": "accordion-landform-1-body", "location": "waterReservoir",
+                                "previous":{"panelId": "productions-actions", "panelTitleId": "productions-actions-title"}
+                            }            
+            let new_production_rule_panel = new panel("newRule", object_data)
+            new_production_rule_panel.removePanel()
+            new_production_rule_panel.showPreviousOptions()
+        })
+    }
+    display_duration()
+    display_mode()
+    display_scheme()
+    display_actions_available()
     enable_accordion_click(b.getNode())
 }
-const new_rule_iterate_all_product_available_rules = (parent_div, clicked_product, current_mount = false) => {
+const display_product_available_rules = (parent_div, clicked_product, current_mount = false) => {
     //Iterate over all rules for that selected product.
     //Build product rules accordions with a rule inside.
     let rule_index = 1
-    //let parent_div = document.querySelector("#active-production-rules-newRule")
     d = new element("div", "", [{"key": "data-accordion", "value": "collapse"}], parent_div, "accordion-new-production-rules"); d.create()
-    product_rules[clicked_product].rules.forEach((rule, r_index) => {
-        h2 = new element("h2", `${r_index ? "mt-1 " : ""}border border-gray-800`, [], d.getNode(), `accordion-new-production-rule-${rule_index}-header`); h2.create()
-        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs font-medium border border-gray-800 gap-3 bg-gray-900 text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new-production-rule-${rule_index}-body`}, {"key": "aria-controls", "value": `accordion-new-production-rule-${rule_index}-body`}], h2.getNode())
+    var rules_amount = product_rules[clicked_product.name].rules.length
+    product_rules[clicked_product.name].rules.forEach((rule, r_index) => {
+        h2 = new element("h2", `${r_index ? "mt-1 " : ""}border border-gray-800`, [], d.getNode(), `accordion-new-production-rule-index-${rule_index}-header`); h2.create()
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs font-medium border border-gray-800 gap-3 bg-gray-900 text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new-production-rule-index-${rule_index}-body`}, {"key": "aria-controls", "value": `accordion-new-production-rule-index-${rule_index}-body`}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
-        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Production rule for"))
+        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(`${translate(language, "Production rule") + (rules_amount > 1 ? " #"+rule_index : "")} ${translate(language, "for")}`)
         s1.appendHTML(":")
-        s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-object", "value":clicked_product}, {"key":"data-rule", "value":rule_index}], s.getNode(), `rule-${rule_index}-object`); s1.create(); s1.appendContent(translate(language, clicked_product, "", "uppercase"))
+        s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-object", "value":clicked_product.name}, {"key":"data-category", "value":clicked_product.category}, {"key":"data-rule", "value":rule_index}], s.getNode(), `rule-index-${rule_index}-object`); s1.create(); s1.appendContent(translate(language, clicked_product.name, "", "uppercase"))
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-        d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-${rule_index}-header`},{"key": "data-rule-index", "value": rule_index}], d.getNode(), `accordion-new-production-rule-${rule_index}-body`); d1.create()
-        new_rule_iterate_requirements(rule, rule_index, clicked_product, current_mount)
+        d1 = new element("div", "bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-index-${rule_index}-header`},{"key": "data-rule-index", "value": rule_index},{"key": "data-category", "value": clicked_product.category}], d.getNode(), `accordion-new-production-rule-index-${rule_index}-body`); d1.create()
+        new_rule_display_info(rule, rule_index, clicked_product, current_mount)
         //Select rule requirement
         rule_index++
     })
 }
 const accordion_landforms = () => {
+    let landform_index
     let build_active_rules = (parent_elem) => {
         //Active rules title
-        d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`landform-1-active-production-rules`}, {"key":"data-group", "value":`landform-1-custom-accordion`}], parent_elem, "landform-1-active-production-rules-title"); d2.create()
+        d2 = new element("div", "waterReservoir border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`landform-${landform_index}-active-rules`}, {"key":"data-group", "value":`landform-${landform_index}-custom-accordion`}], parent_elem, `landform-${landform_index}-active-rules-title`); d2.create()
         p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Active production rules")
         i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
         //Active rules panel
-        d3 = new element("div", "active-production-rules hidden p-1 bg-gray-500 border-b border-gray-800 text-xs", [], d2.getNode(), `landform-1-active-production-rules`); d3.create()
-        custom_accordion(`landform-1-active-production-rules-title`, build_active_production_rules)
+        d3 = new element("div", "active-production-rules hidden p-1 bg-gray-500 border-b border-gray-800 text-xs", [], d2.getNode(), `landform-${landform_index}-active-rules`); d3.create()
+        custom_accordion(`landform-${landform_index}-active-rules-title`, build_active_production_rules)
     }
     let build_actions_available = (parent_elem) => {
         const build_actions_available_subpanel = (body_div) => {
@@ -1769,9 +1996,12 @@ const accordion_landforms = () => {
             i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
             s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "New production rule"))
             b.getNode().addEventListener("click", (e) => {
-                let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}
+                let object_data = {"language": language, "objectName": "active-production-rules", "objectId": false, "optionName": "actions", 
+                                    "previous":{"panelId":`landform-${landform_index}-actions-available`, 
+                                    "panelTitleId":`landform-${landform_index}-actions-available-title`}, 
+                                    "parentId": `accordion-landform-${landform_index}-body`, "location": "waterReservoir"}
                 //Build new production rule panel
-                let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
+                let new_production_rule_panel = new panel("newRule", object_data)
                 new_production_rule_panel.hidePreviousOptions()
                 new_production_rule_panel.buildPanel()
                 //For each button with a product rule, add a click event
@@ -1779,103 +2009,82 @@ const accordion_landforms = () => {
             })
         }
         //Actions available title
-        let d = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":"active-production-rules-actions"}, {"key":"data-group", "value":`landform-1-custom-accordion`}], parent_elem,  "active-production-rules-actions-title"); d.create()
+        let d = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`landform-${landform_index}-actions-available`}, {"key":"data-group", "value":`landform-${landform_index}-custom-accordion`}], parent_elem,  `landform-${landform_index}-actions-available-title`); d.create()
         p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
         i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
         //Actions available body
-        d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), "active-production-rules-actions"); d1.create()
-        custom_accordion("active-production-rules-actions-title", build_actions_available_subpanel)
-        /*
-        //Actions available
-        d2 = new element("div", "border border-gray-800 mt-1 bg-gray-500 text-xs", [], d1.getNode(), "active-production-rules-actions-title"); d2.create()
-        p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
-        s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Actions available")
-        i = new element("i", "mt-0 text-base fa fa-times invisible font-bold", [], p.getNode()); i.create()
-        //Landform's actions
-        d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "active-production-rules-actions"); d2.create()
-        p = new element("p", "flex w-100 justify-between p-1 text-gray-500 text-gray-300", [], d2.getNode()); p.create()
-        b = new element("button", "text-xs text-white grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "newProductionRule"); b.create()
-        i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
-        s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New production rule")
-        b.getNode().addEventListener("click", (e) => {
-            let object_data = {"language": language, "parentId": "#accordion-landform-1-body", "location": "waterReservoir"}
-            //Build new production rule panel
-            let new_production_rule_panel = new panel("newRule", object_data, "active-production-rules", false, "actions")
-            new_production_rule_panel.hidePreviousOptions()
-            new_production_rule_panel.buildPanel()
-            //For each button with a product rule, add a click event
-            rule_product_selection(p.getNode(), "waterReservoir")
-        })
-        */
+        d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `landform-${landform_index}-actions-available`); d1.create()
+        custom_accordion(`landform-${landform_index}-actions-available-title`, build_actions_available_subpanel)
     }
     let build_landforms_accordion = () => {
         //Build landforms accordion
+        landform_index = 1
         let parent_elem = document.getElementById("accordion-menu")
         //Build landforms accordion header
-        h2 = new element("h2", "mt-3", [], parent_elem, "accordion-menu-landform"); h2.create()
-        b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium text-gray-400 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-landform-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-landform-body"}], h2.getNode())
+        h2 = new element("h2", "mt-3", [], parent_elem, "accordion-menu-landforms"); h2.create()
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium text-gray-400 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-landforms-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-landforms-body"}], h2.getNode())
         b.create()
-        s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Landform")
+        s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Landforms")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Build landforms accordion body
-        d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-landform"}], parent_elem, "accordion-menu-landform-body"); d1.create()
-        d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode(), "accordion-landform-1-header"); d2.create()
+        d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-landforms"}], parent_elem, "accordion-menu-landforms-body"); d1.create()
+        d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
         d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-landforms"); d.create()
-        //Build landform 1 accordion header
-        h2 = new element("h2", "notificationUnread", [], d.getNode(), "accordion-landform-1-header"); h2.create()
-        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-landform-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-landform-1-body"}], h2.getNode())
+        //Build current landform accordion header
+        h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-landform-${landform_index}-header`); h2.create()
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-landform-${landform_index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-landform-${landform_index}-body`}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
         s1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
         s1.create(); s1.appendContent("NEW")
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Water reservoir")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-        //Build landform 1 accordion body
-        d1 = new element("div", "waterReservoir bg-gray-600 border border-gray-800 hidden", [{"key":"aria-labelledby","value":"accordion-landform-1-header"}], d.getNode(), "accordion-landform-1-body")
+        //Build current landform accordion body
+        d1 = new element("div", "waterReservoir bg-gray-600 border border-gray-800 hidden", [{"key":"aria-labelledby","value":`accordion-landform-${landform_index}-header`}], d.getNode(), `accordion-landform-${landform_index}-body`)
         d1.create()
         //Build water reservoir info
         //First column
-        d2 = new element("div", "p-2 px-3 bg-gray-600 text-xs", [], d1.getNode(), "landform-1-info")
+        d2 = new element("div", "p-2 px-3 bg-gray-600 text-xs", [], d1.getNode(), `landform-${landform_index}-info`)
         d2.create();
         p = new element("p", "text-xs flex justify-between text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Type")
         sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-type"); s1.create()
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), `landform-${landform_index}-type`); s1.create()
         s1.appendContent(colony_water_reservoir)
         //Second column
         s = new element("span", "", [], p.getNode()); s.create();
         s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"M"}], s.getNode()); s1.create(); s1.appendContent("Discovered in")
         sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
         s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Year")
-        s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdYear"); s1.create(); s1.appendContent("1")
+        s1 = new element("span", "me-1 font-bold", [], s.getNode(), `landform-${landform_index}-createdYear`); s1.create(); s1.appendContent("1")
         s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Week")
-        s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdWeek"); s1.create(); s1.appendContent("1")
+        s1 = new element("span", "me-1 font-bold", [], s.getNode(), `landform-${landform_index}-createdWeek`); s1.create(); s1.appendContent("1")
         s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Day")
-        s1 = new element("span", "me-1 font-bold", [], s.getNode(), "landform-1-createdDay"); s1.create(); s1.appendContent("1")
+        s1 = new element("span", "me-1 font-bold", [], s.getNode(), `landform-${landform_index}-createdDay`); s1.create(); s1.appendContent("1")
 
         p = new element("p", "text-xs flex justify-between text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Daily water income")
         sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-water-income"); s1.create()
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), `landform-${landform_index}-water-income`); s1.create()
         s1.appendContent(water_reservoirs[colony_water_reservoir]["daily-water-income"])
         s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("per water bearer")
         p = new element("p", "text-xs flex justify-between text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create();
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Daily food income")
         sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), "landform-1-food-income"); s1.create()
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), `landform-${landform_index}-food-income`); s1.create()
         s1.appendContent(water_reservoirs[colony_water_reservoir]["daily-food-income"])
         s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("per fisherman")
 
         //Build Assignable Workers title
-        d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assignable-workers-title")
+        d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), `landform-${landform_index}-assignable-workers-title`)
         d2.create();
         p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Permanently assignable workers")
-        i = new element("i", "fa fa-rotate", [], p.getNode(), `landform-1-refresh-assignable-workers`); i.create()
+        i = new element("i", "fa fa-rotate", [], p.getNode(), `landform-${landform_index}-refresh-assignable-workers`); i.create()
         i.getNode().addEventListener("click", (e) => {
             //Remove no available workers message if exist
             document.querySelectorAll(".waterReservoir .assignable-workers .empty").forEach((elem) => elem.remove())
@@ -1904,30 +2113,17 @@ const accordion_landforms = () => {
             }
         })
         //Build Assignable Workers area
-        d2 = new element("div", "assignable-workers p-2 pb-1 ps-3 bg-gray-600 text-xs", [], d1.getNode(), "landform-1-assignable-workers")
+        d2 = new element("div", "assignable-workers p-2 pb-1 bg-gray-600 text-xs", [], d1.getNode(), `landform-${landform_index}-assignable-workers`)
         d2.create();
         p = new element("p", "empty text-xs flex justify-between text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create()
         i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"n"}], s.getNode()); s1.create(); s1.appendContent("None")
         
-        d4 = new element("div", "", [], d1.getNode(), "landform_productions"); d4.create()
+        d4 = new element("div", "", [], d1.getNode(), `landform-${landform_index}-productions`); d4.create()
         //Active rules already defined and running.
         build_active_rules(d4.getNode())
         build_actions_available(d4.getNode())
-        /*    
-        //Build Active Production Rules title
-        d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "landform-1-active-production-rules-title")
-        d2.create();
-        p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Active production rules"))
-        //Build Active Production Rules area
-        d2 = new element("div", "active-production-rules p-2 bg-gray-600 text-xs", [], d1.getNode(), "landform-1-active-production-rules"); d2.create()
-        p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], d2.getNode()); p.create()
-        s = new element("span", "", [], p.getNode()); s.create()
-        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-        s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s.getNode()); s1.create(); s1.appendContent(translate(language, "None", "f"))
-    */
     }
     build_landforms_accordion()
 }
@@ -1946,9 +2142,9 @@ const accordion_expeditions = () => {
         i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New expedition")
         b.getNode().addEventListener("click", function(e){
-            let objectData = {"language": language, "parentId": "#expeditions"}
+            let objectData = {"language": language, "objectName": "expeditions", "objectId": false, "optionName": "actions", "parentId": "expeditions"}
             //Build panel
-            newExpeditionPanel = new panel("newExpedition", objectData, "expeditions", false, "actions")
+            newExpeditionPanel = new panel("newExpedition", objectData)
             newExpeditionPanel.hidePreviousOptions()
             newExpeditionPanel.buildPanel()
         })
@@ -2005,9 +2201,9 @@ const build_actions_available_panel = (parent_elem) => {
         i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "New production rule"))
         b.getNode().addEventListener("click", (e) => {
-            let object_data = {"language": language, "parentId": `#productions`, "location": ""}
+            let object_data = {"language": language, "objectName": "productions", "objectId": false, "optionName": "actions", "parentId": `productions`, "location": ""}
             //Build new production rule panel
-            let new_production_rule_panel = new panel("newRule", object_data, "productions", false, "actions")
+            let new_production_rule_panel = new panel("newRule", object_data)
             new_production_rule_panel.hidePreviousOptions()
             new_production_rule_panel.buildPanel()
         })
@@ -2425,7 +2621,7 @@ const update_stock = () => {
     count = 0
     Object.keys(stock_displayed.products[language]).forEach((product) => {
         formatedProduct = product.replaceAll(" ", "")
-        if(product.toLowerCase() != "food" && stock_displayed.products[language][product] >= 1){
+        if(stock_displayed.products[language][product] >= 1){
             let pt = (!count++ ? "pt-2" : "pt-0")
             p = new element("p", "productStock pb-0 text-xs text-gray-400", [], parentElement); p.create()
             s = new element("span", "flex", [], p.getNode()); s.create()
@@ -2436,6 +2632,35 @@ const update_stock = () => {
             s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
             let stockValue = stock_displayed.products[language][product].toString()
             s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockValue)
+            s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue === 1 ? "unit" : "units"))
+        }
+    })
+    //If there was no resource to show, display empty message.
+    if(!count){
+        p = new element("p", "resourceStock pb-0 text-xs text-gray-400", [], parentElement); p.create()
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "pt-2 ps-2 flex-none grow bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s1.getNode()); i.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"m"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "None", "m"))
+    }
+
+    parentElement = document.getElementById("building-parts-stock-list")
+    document.querySelectorAll("#building-parts-stock-list p").forEach((elem) => elem.remove())
+    //Update building parts
+    count = 0
+    Object.keys(stock_displayed["building parts"][language]).forEach((building_part) => {
+        formated_building_part = building_part.replaceAll(" ", "")
+        if(stock_displayed["building parts"][language][building_part] >= 1){
+            let pt = (!count++ ? "pt-2" : "pt-0")
+            p = new element("p", "productStock pb-0 text-xs text-gray-400", [], parentElement); p.create()
+            s = new element("span", "flex", [], p.getNode()); s.create()
+            s1 = new element("span", pt+" ps-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+            s2 = new element("span", "capitalize", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, building_part))
+            s1.appendHTML(": ")
+            formated_building_part = building_part.replaceAll(" ", "")
+            s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
+            let stockValue = stock_displayed["building parts"][language][building_part].toString()
+            s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formated_building_part+"-stock"); s2.create(); s2.appendContent(stockValue)
             s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue === 1 ? "unit" : "units"))
         }
     })
@@ -2607,8 +2832,8 @@ const add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
     //XP citizen icon
     iid = `citizen-${citizen_index}-xp-icon`
-    let citizenXP = document.getElementById(iid).innerText
-    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), iid); s1.create()
+    let citizenXP = document.getElementById(iid).innerText*1
+    s1 = new element("span", `${citizenXP ? "" : "hidden "}rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1`, [], s.getNode(), iid); s1.create()
     s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     iid = `citizen-${citizen_index}-name`

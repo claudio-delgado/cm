@@ -253,11 +253,53 @@ const life_interval = setInterval(() => {
     if(lifeStarted || searchingZone){
         
         //Hour passed
-        move_time()
+            move_time()
+            //Check production rules progress
+            let stock_changed = false
+            product_rules_defined.forEach((rule, rule_index) => {
+                //Is the production rule running?
+                if(rule.status == "running"){
+                    //Has the production rule remaining hours?
+                    if(rule.duration_remaining){
+                        //Check if it's the last remaining hour and the result has to be obtained.
+                        let result_attempt = rule.duration_remaining - 1 == 0
+                        //Decrement remaining hours.
+                        rule.duration_remaining = result_attempt ? rule.duration : rule.duration_remaining - 1
+                        //Try to obtain the result.
+                        if(result_attempt){
+                            //Iterate over all rule requirements to check those which must decrease stock values.
+                            rule.rule_definition.requirements.forEach((requirement) => {
+                                //If rule is still running and the requirement object is a product, resource or part, try to decrease the stock.
+                                if(rule.status === "running" && requirement.consumable && ["product", "resource", "building part"].includes(requirement.type)){
+                                    stock_changed = stock_values[requirement.type + "s"][language][translate(language, requirement.object)] >= requirement.quantity
+                                    if(stock_changed){
+                                        //Decrement stock goods.
+                                        stock_values[requirement.type + "s"][language][translate(language, requirement.object)] -= requirement.quantity
+                                    } else { //Insufficient stock for the object
+                                        rule.status = "suspended"
+                                        document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
+                                        product_rules_defined[rule_index].status = rule.status
+                                    }
+                                }
+                            })
+                            if(rule.status === "running"){
+                                //All rule required goods consumed => result must be obtained.
+                                //Generate product, resource or building part.
+                                stock_values[rule.category][language][translate(language, rule.object)] += rule.rule_definition.result.quantity * 1
+                            }
+                        }
+                    }
+                    if(stock_changed){
+                        stock_displayed = JSON.parse(JSON.stringify(stock_values))
+                        update_stock()
+                    }
+                }
+            })
+        //End hourly events
         
         //Zone searched flag
         zoneSearched = currentYear === 1 && currentWeek === 1 && currentDay === 1 && currentHour*1 === zoneSearchHoursNeeded
-        
+
         //Perform updating tasks inside game panels that involve hourly changes
         //Process countdowns
         processCountdowns()
@@ -433,16 +475,21 @@ const processCountdowns = () => {
         //Arrange unit number: singular or plural
         elem.querySelector("#"+prefix+"-hoursText").innerText = hours === 1 ? "h" : "hs"
     }
-    const check_countdown_end = (elem) => {
+    const check_countdown_end = (elem, loop = false) => {
         if( !hours &&
             elem.querySelector("#"+prefix+"-days").classList.contains("hidden") &&
             elem.querySelector("#"+prefix+"-weeks").classList.contains("hidden") &&
             elem.querySelector("#"+prefix+"-years").classList.contains("hidden")){
-            remove_countdown(elem)
+            if(!loop) {
+                remove_countdown(elem)
+            } else {
+                reset_countdown(elem)
+            }
         }
     }
     let hours, days, weeks, years, prefix
     document.querySelectorAll(".countdownTime").forEach((elem) => {
+        let loop = elem.classList.includes("loop")
         let idArray = elem.querySelector("span:first-child").id.split("-")
         prefix = idArray[0]+"-"+idArray[1]+"-"+idArray[2]
         //Correct unit numbers (singulars and plurals) before processing values
@@ -458,6 +505,6 @@ const processCountdowns = () => {
         } else {
             decrement_days(elem)
         }
-        check_countdown_end(elem)
+        check_countdown_end(elem, loop)
     })
 }

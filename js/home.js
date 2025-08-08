@@ -495,7 +495,10 @@ const custom_accordion = (header_element_id = null, callback = () => {}) => {
 const rule_product_selection = (paragraph, location = false) => {
     paragraph.querySelectorAll(".rule_product").forEach((button) => {
         button.addEventListener("click", (e) => {
-            let clicked_product = e.target.closest("button").getAttribute("data-product")
+            let clicked_product = {
+                "name": e.target.closest("button").getAttribute("data-product"), 
+                "category": e.target.closest("button").getAttribute("data-category")
+            }
             let parent_div = e.target.closest("div")
             //Remove product buttons.
             parent_div.querySelectorAll("p").forEach((elem) => elem.remove())
@@ -503,12 +506,12 @@ const rule_product_selection = (paragraph, location = false) => {
                 let current_mount = location === "waterReservoir" ? "Water reservoir" : location
                 //Iterate over all manufacturable products in a water reservoir
                 location_products[location]["EN"].forEach((location_product) => {
-                    if(location_product === clicked_product){
-                        new_rule_iterate_all_product_available_rules(parent_div, clicked_product, current_mount)
+                    if(location_product === clicked_product.name){
+                        display_product_available_rules(parent_div, clicked_product, current_mount)
                     }
                 })
             } else {
-                new_rule_iterate_all_product_available_rules(parent_div, clicked_product)
+                display_product_available_rules(parent_div, clicked_product)
             }
         })
     })
@@ -583,7 +586,7 @@ const process_worker_deassignation = (citizen_index, deassigned_from_where) => {
     }
 }
 const toggle_assignable_worker = (e) => {
-    let toggle_panel_aspect = () => {
+    const toggle_panel_aspect = () => {
         //Change citizen panel aspect.
         e.target.classList.toggle("text-green-400")
         e.target.classList.toggle("fa-square")
@@ -808,14 +811,25 @@ const cancel_relationship = (e) => {
    
     //Remove couple citizen from panel.
     //Panel citizen's couple
-    let couple_div = document.querySelector(`#citizen-${citizen_id}-couple`)
-    couple_div.querySelector("p").remove()
-    p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], couple_div); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
-    s1.appendContent(translate(language, "None", "f", "capitalized"))
-
+    let citizen_couple_div = document.querySelector(`#citizen-${citizen_id}-couple`)
+    let couple_citizen_div = document.querySelector(`#citizen-${couple_id}-couple`)
+    //Build "None" paragraph in case a couple panel is visible.
+    let none_div
+    if(citizen_couple_div != null || couple_citizen_div != null){
+        if(citizen_couple_div != null) {
+            none_div = citizen_couple_div
+            citizen_couple_div.querySelector("p").remove()
+        }
+        if(couple_citizen_div != null) {
+            none_div = couple_citizen_div
+            couple_citizen_div.querySelector("p").remove()
+        }
+        p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], none_div); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
+        s1.appendContent(translate(language, "None", "f", "capitalized"))
+    }
     //Remove relationship if it exists.
     document.querySelectorAll(`[data-citizen-1="${citizen_id}"], [data-citizen-2="${citizen_id}"]`).forEach((elem) => {
         elem.remove()
@@ -832,7 +846,7 @@ const cancel_relationship = (e) => {
 }
 const try_breeding = (e) => {
     let current_relationship_id = e.target.closest("button").id.split("-")[1]
-    let objectData = {"language": language, "parentId": `#accordion-relationship-${current_relationship_id}-body`}
+    let objectData = {"language": language, "objectName": "relationship", "objectId": current_relationship_id, "optionName": "actions", "parentId": `#accordion-relationship-${current_relationship_id}-body`}
     //Build panel
     let tryBreedingPanel = new panel("tryBreeding", objectData, "relationship", current_relationship_id, "actions")
     tryBreedingPanel.hidePreviousOptions()
@@ -858,7 +872,7 @@ const draw_couple_of_citizen = (a_citizen) => {
     let a_couple = citizens[a_citizen.couple]
     //Add couple to citizen.
     p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
-    h2 = new element("h2", "grow", [], p.getNode(), `#citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
+    h2 = new element("h2", "grow", [], p.getNode(), `citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
     d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [{"key":"data-citizen-id", "value":a_citizen.id}], h2.getNode()); d2.create()
     s = new element("span", "", [], d2.getNode()); s.create()
     let couple_gender_class = a_couple.gender.charAt(0) === "F" ? "venus" : "mars"
@@ -887,7 +901,7 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     let couple_div = document.querySelector(`#citizen-${a_citizen.id}-couple`)
     //Add couple to citizen.
     p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
-    h2 = new element("h2", "grow", [], p.getNode(), `#citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
+    h2 = new element("h2", "grow", [], p.getNode(), `citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
     d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [{"key":"data-citizen-id", "value":a_couple.id}], h2.getNode()); d2.create()
     s = new element("span", "", [], d2.getNode()); s.create()
     let couple_gender_class = a_couple.gender.charAt(0) === "F" ? "venus" : "mars"
@@ -1117,7 +1131,7 @@ const handleToggleHorse = (e) => {
 }
 //Assignment and deassignment of workers in differnte panels (landforms and new expedition)
 const handleToggleWorker = (e) => {
-    let handleStartExpedition = (event) => {
+    const handleStartExpedition = (event) => {
         event.target.removeEventListener("click", handleStartExpedition)
         let expeditionType = event.target.closest("button#expeditionStart").getAttribute("data-type")
         //Prepare expedition data to add in new Active Expedition panel.
@@ -1340,10 +1354,10 @@ const test_citizen_fishing_roles = (citizens_id) => {
     assign_role_to_citizen(citizen_index, "fishing", translate(language, "Fisher", "m"), "fish", false)
     */
 }
-const test_citizen_constructor_roles = (citizens_id) => {
+const test_citizen_builder_roles = (citizens_id) => {
     //Assign role construction to citizens up to 2, manually
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "construction", translate(language, "Constructor", "f", "capitalized"), "trowel", false)
+        assign_role_to_citizen(citizen_index, "construction", translate(language, "Builder", "f", "capitalized"), "trowel", false)
     })
 }
 const test_familiar_relationships = () => {
@@ -1404,7 +1418,7 @@ const test_build_new_citizen = () => {
 //Avoid modal pop up when zone searched
 showModalZoneSearched = false
 test_citizen_fishing_roles([1, 3, 4, 8])
-test_citizen_constructor_roles([2, 5, 6])
+test_citizen_builder_roles([2, 5, 6])
 //test_pregnancy_status()
 //text_familiary_relationships()
 test_build_new_citizen()

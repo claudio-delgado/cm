@@ -7,86 +7,97 @@ const panelClasses = {
 }
 
 class panel{
-    constructor(panelName, data, objectName, objectId, optionName){
+    constructor(panel_name, data){
         //data is an object with additional information about the object used on the panel.
-        this.panelName = panelName
-        this.objectName = objectName
-        this.objectId = objectId
-        this.optionName = optionName
+        this.panel = {}
+        this.panel.name = panel_name
+        this.object_name = data.objectName
+        this.object_id = data.objectId
+        this.option_name = data.optionName
+        this.panel.id = data.panelId ? 
+                        data.panelId :
+                        this.object_name+(this.object_id ? "-"+this.object_id : "")+"-"+this.panel.name 
+        this.panel.titleId = data.panelTitleId ? 
+                        data.panelTitleId :
+                        this.panel.id+"-title" 
         this.data = data
-        this.previousOptionsPanelId = objectName+(objectId ? "-"+objectId : "")+"-"+optionName
-        this.previousPanel = ""
-        this.isDisplayed = false
+        this.panel.previous = {}
+        this.panel.previous.id = data.previous && data.previous.panelId ? 
+                                    data.previous.panelId : 
+                                    this.object_name+(this.object_id ? "-"+this.object_id : "")+"-"+this.option_name
+        this.panel.previous.body = document.querySelector("#"+this.panel.previous.id)
+        this.panel.previous.titleId = data.previous && data.previous.panelTitleId ? 
+                                        data.previous.panelTitleId :
+                                        this.panel.previous.id+"-title"
+        this.panel.previous.title = document.querySelector("#"+this.panel.previous.titleId)
+        this.is_displayed = false
         currently_used_panel = this
     }
     hidePreviousOptions(){
-        this.previousPanel = document.querySelector("#"+this.previousOptionsPanelId)
-        this.previousPanelTitle = document.querySelector("#"+this.previousOptionsPanelId+"-title")
-        if(this.previousPanel != null){
-            this.previousPanel.classList.remove("hidden"); this.previousPanel.classList.add("hidden")
+        if(this.panel.previous.body != null){
+            this.panel.previous.body.classList.add("hidden")
         }
-        if(this.previousPanelTitle != null){
-            this.previousPanelTitle.classList.remove("hidden"); this.previousPanelTitle.classList.add("hidden")
+        if(this.panel.previous.title != null){
+            this.panel.previous.title.classList.add("hidden")
         }
     }
     showPreviousOptions(){
-        this.previousPanel = document.querySelector("#"+this.previousOptionsPanelId)
-        this.previousPanelTitle = document.querySelector("#"+this.previousOptionsPanelId+"-title")
-        this.previousPanel.classList.remove("hidden")
-        this.previousPanelTitle.classList.remove("hidden")
+        this.panel.previous.body.classList.remove("hidden")
+        this.panel.previous.title.classList.remove("hidden")
     }
     removePanel(){
-        document.querySelector("#"+this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName+"-title").remove()
-        document.querySelector("#"+this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName).remove()
+        document.querySelector("#"+this.panel.titleId).remove()
+        document.querySelector("#"+this.panel.id).remove()
     }
     buildPanel(){
+        let change_language, paragraph, paragraph_bg
+        let parent_div = document.querySelector("#"+this.data.parentId)
+
         const build_title_div = () => {
             //--Build div, add paragraph
-            d1 = new element("div", `${this.panelName}-title mt-1 border border-gray-300 border-gray-800 bg-gray-900 text-gray-200 text-xs`, [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName+"-title")
+            d1 = new element("div", `${this.panel.name}-title mt-1 border border-gray-300 border-gray-800 bg-gray-900 text-gray-200 text-xs`, [], parent_div, this.panel.titleId)
             d1.create()
             p = new element("p", "flex justify-between items-center p-1 ps-2 text-xs", [], d1.getNode())
             p.create()
         }
         const set_general_features = () => {
-            switch(this.panelName){
+            switch(this.panel.name){
                 case "assignRole": 
                     i = new element("i", "me-2 fa "+panelClasses.assignRole.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.assignRole.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", "", "", changeLanguage=false))
-                    paragraphBg = panelClasses.assignRole.bg
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "Assign a role") : translate("EN", "Asignarle un rol", "", "", change_language=false))
+                    paragraph_bg = panelClasses.assignRole.bg
                     break
                 case "searchCouple": 
                     i = new element("i", "me-2 fa "+panelClasses.searchCouple.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.searchCouple.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", "", "", changeLanguage=false))
-                    paragraphBg = panelClasses.searchCouple.bg
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New couple: Select a candidate") : translate("EN", "Nueva pareja: Seleccionar un/a candidato/a", "", "", change_language=false))
+                    paragraph_bg = panelClasses.searchCouple.bg
                     break
                 case "tryBreeding": 
                     i = new element("i", "me-2 fa "+panelClasses.tryBreeding.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.tryBreeding.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "Try breeding", "", "", false) : translate("EN", "Intentar reproducción", "", "", changeLanguage=false))
-                    paragraphBg = panelClasses.tryBreeding.bg
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "Try breeding", "", "", false) : translate("EN", "Intentar reproducción", "", "", change_language=false))
+                    paragraph_bg = panelClasses.tryBreeding.bg
                     break
                 case "newExpedition": 
                     i = new element("i", "me-2 fa "+panelClasses.newExpedition.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", "", "", changeLanguage=false))
-                    paragraphBg = panelClasses.newExpedition.bg
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", "", "", change_language=false))
+                    paragraph_bg = panelClasses.newExpedition.bg
                     break
                 case "newRule": 
                     i = new element("i", "me-2 fa "+panelClasses.newProductionRule.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], paragraph)
-                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New production rule", "", "", changeLanguage=false) : translate("EN", "Nueva regla de producción", "", "", changeLanguage=false))
-                    paragraphBg = panelClasses.newExpedition.bg
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New production rule", "", "", change_language=false) : translate("EN", "Nueva regla de producción", "", "", change_language=false))
+                    paragraph_bg = panelClasses.newExpedition.bg
                     break
             }
         }
-        let changeLanguage, paragraph, paragraphBg
-        let parentDiv = document.querySelector(this.data.parentId) 
-        
+                
         //Build title div.
         build_title_div()
-        paragraph = document.querySelector(`#${this.objectName+(this.objectId ? "-"+this.objectId : "")}-${this.panelName}-title p`)
+        paragraph = document.querySelector(`#${this.panel.titleId} p`)
         
         //--Build span with icon before. Set general panel features.
         set_general_features()
@@ -94,7 +105,7 @@ class panel{
         //Build close icon to the right
         i = new element("i", "mt-0 me-1 text-base fa fa-times font-bold", [], paragraph); i.create()
         i.getNode().addEventListener("click", (e) => {
-            if(this.panelName === "newExpedition"){
+            if(this.panel.name === "newExpedition"){
                 //Make assigned expeditionaries or army available restoring status of all of them.
                 document.querySelectorAll(".assignedWorkers h2").forEach((citizen) => {
                     //Check if assigned object is a worker or a horse...
@@ -114,39 +125,39 @@ class panel{
         })
 
         //Build specific panel
-        d1 = new element("div", this.panelName+" p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [], parentDiv, this.objectName+(this.objectId ? "-"+this.objectId : "")+"-"+this.panelName); d1.create()
+        d1 = new element("div", this.panel.name+" p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [], parent_div, this.panel.id); d1.create()
         p = new element("p", "flex py-1 w-100 gap-1 justify-between items-center flex-wrap p-1 text-gray-300", [], d1.getNode());
-        let divSpecificParagraphButton = []
-        if(this.panelName === "assignRole"){
+        let div_specific_paragraph_buttons = []
+        if(this.panel.name === "assignRole"){
             //Specific Assign Role panel
             p.create()
-            let currentRole = document.querySelector("#"+this.objectName+"-"+this.objectId+"-role").getAttribute("data-role")
-            let iElement, buttonText = "", generalRole = "", buttonColours = "", isDisabled = false
+            let current_role = document.querySelector("#"+this.object_name+"-"+this.object_id+"-role").getAttribute("data-role")
+            let iElement, button_text = "", general_role = "", button_colours = "", is_disabled = false
             role_icons.forEach((value, index) => {
-                divSpecificParagraphButton[index]= document.createElement("button")
-                iElement = "<i class='fa fa-"+value.icon+" me-2'></i>"
+                div_specific_paragraph_buttons[index]= document.createElement("button")
+                iElement = `<i class='fa fa-${value.icon} me-2'></i>`
                 if(typeof(value[this.data.language]) != 'undefined'){
                     if(typeof(value[this.data.language][this.data.gender]) != 'undefined'){
-                        buttonText = value[this.data.language][this.data.gender]
+                        button_text = value[this.data.language][this.data.gender]
                     } else {
-                        buttonText = value[this.data.language]
+                        button_text = value[this.data.language]
                     }
-                    divSpecificParagraphButton[index].innerHTML = iElement + buttonText
-                    divSpecificParagraphButton[index].setAttribute("data-icon", value.icon)
-                    divSpecificParagraphButton[index].setAttribute("data-rolekey", value.key)
-                    generalRole = typeof value["EN"][this.data.gender] != "undefined" ? value["EN"][this.data.gender].replaceAll(" ","") : value["EN"].replaceAll(" ","")
+                    div_specific_paragraph_buttons[index].innerHTML = iElement + button_text
+                    div_specific_paragraph_buttons[index].setAttribute("data-icon", value.icon)
+                    div_specific_paragraph_buttons[index].setAttribute("data-rolekey", value.key)
+                    general_role = typeof value["EN"][this.data.gender] != "undefined" ? value["EN"][this.data.gender].replaceAll(" ","") : value["EN"].replaceAll(" ","")
                 }
-                isDisabled = currentRole != null && value.key === currentRole
-                buttonColours = isDisabled ? "border-gray-500 bg-gray-700 text-gray-400" : "border-green-700 bg-green-900 text-white"
-                divSpecificParagraphButton[index].classList = generalRole+" assignableRole text-xs capitalize "+(index+1 < role_icons.length ? "grow " : "")+"p-2 me-1 mb-1 button border "+buttonColours
-                divSpecificParagraphButton[index].disabled = isDisabled
-                p.appendContent(divSpecificParagraphButton[index])
+                is_disabled = current_role != null && value.key === current_role
+                button_colours = is_disabled ? "border-gray-500 bg-gray-700 text-gray-400" : "border-green-700 bg-green-900 text-white"
+                div_specific_paragraph_buttons[index].classList = `${general_role} assignableRole text-xs capitalize ${index+1 < role_icons.length ? "grow " : ""}p-2 me-1 mb-1 button border ${button_colours}`
+                div_specific_paragraph_buttons[index].disabled = is_disabled
+                p.appendContent(div_specific_paragraph_buttons[index])
             })
         }
-        if(this.panelName === "searchCouple"){
+        if(this.panel.name === "searchCouple"){
             //Specific Search couple panel
             p.create()
-            let citizen_id = this.objectId*1
+            let citizen_id = this.object_id*1
             let citizen = get_citizen_by_index(citizen_id)
             citizen.id = citizen_id
             let citizen_parents = get_citizen_parents(citizen)
@@ -222,31 +233,31 @@ class panel{
                 s1 = new element("span", "", [{"key": "data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "No candidates available"))
             }
         }
-        if(this.panelName === "tryBreeding"){
+        if(this.panel.name === "tryBreeding"){
             //Specific Try breeding panel.
             p.create()
             let stage = 0, attraction_percent_citizen = 0, attraction_percent_couple = 0, accumulative_percent = 0
             let accumulative_percent_citizen = 0, accumulative_percent_couple = 0
             let breeding_stage
-            let citizen_id = document.getElementById(`accordion-relationship-${this.objectId}`).getAttribute("data-citizen-1")
-            let couple_id = document.getElementById(`accordion-relationship-${this.objectId}`).getAttribute("data-citizen-2")
+            let citizen_id = document.getElementById(`accordion-relationship-${this.object_id}`).getAttribute("data-citizen-1")
+            let couple_id = document.getElementById(`accordion-relationship-${this.object_id}`).getAttribute("data-citizen-2")
             let citizen = citizens[citizen_id]
             let couple = citizens[couple_id]
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], p.getNode(), `accordion-relationship-${this.objectId}-breeding-processes`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], p.getNode(), `accordion-relationship-${this.object_id}-breeding-processes`); d.create()
             //Build mutual knowledge process header
-            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.objectId}-breeding-stages-header`); h2.create()
-            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-breeding-stages-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-breeding-stages-body`}], h2.getNode())
+            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.object_id}-breeding-stages-header`); h2.create()
+            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-breeding-stages-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-breeding-stages-body`}], h2.getNode())
             b.create()
             s = new element("span", "flex items-center w-full", [], b.getNode()); s.create()
             s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Mutual knowledge process"))
             s1 = new element("span", "grow flex justify-end", [], s.getNode()); s1.create()
-            s2 = new element("span", "px-1 border border-gray-300 text-white", [], s1.getNode(), `relationship-${this.objectId}-attraction-group`); s2.create()
-            i = new element("i", "fa me-1 font-bold", [], s2.getNode(), `relationship-${this.objectId}-attraction-icon`); i.create();
-            let s3 = new element("span", "font-bold", [], s2.getNode(), `relationship-${this.objectId}-attraction-value`); s3.create(); s3.appendContent("100%")
+            s2 = new element("span", "px-1 border border-gray-300 text-white", [], s1.getNode(), `relationship-${this.object_id}-attraction-group`); s2.create()
+            i = new element("i", "fa me-1 font-bold", [], s2.getNode(), `relationship-${this.object_id}-attraction-icon`); i.create();
+            let s3 = new element("span", "font-bold", [], s2.getNode(), `relationship-${this.object_id}-attraction-value`); s3.create(); s3.appendContent("100%")
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //Build mutual knowledge process body
-            d1 = new element("div", "hidden p-1 border border-gray-900 bg-gray-500", [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-breeding-stages-header`}], d.getNode(), `accordion-relationship-${this.objectId}-breeding-stages-body`)
+            d1 = new element("div", "hidden p-1 border border-gray-900 bg-gray-500", [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-breeding-stages-header`}], d.getNode(), `accordion-relationship-${this.object_id}-breeding-stages-body`)
             d1.create()
             //Obtain couple's information
             let citizen_own_attributes = new Set(citizen.attributes)
@@ -262,35 +273,35 @@ class panel{
             let stage_accordion_bg_class, status_message, stage_class
             
             //Relationship final results
-            d = new element("div", "hidden m-1 mb-1 border border-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-stages-result`); d.create()
+            d = new element("div", "hidden m-1 mb-1 border border-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.object_id}-stages-result`); d.create()
             p = new element("p", "p-1 px-2 w-full", [], d.getNode()); p.create()
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
             s = new element("span", "ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "and"))
             s = new element("span", "ms-1 font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
-            s = new element("span", "ms-1", [], p.getNode(), `accordion-relationship-${this.objectId}-stages-result-viability`); s.create()
-            s = new element("span", "ms-1 font-bold", [], p.getNode(), `accordion-relationship-${this.objectId}-stages-result-grade`); s.create()
+            s = new element("span", "ms-1", [], p.getNode(), `accordion-relationship-${this.object_id}-stages-result-viability`); s.create()
+            s = new element("span", "ms-1 font-bold", [], p.getNode(), `accordion-relationship-${this.object_id}-stages-result-grade`); s.create()
             s = new element("span", "hidden ms-1", [], p.getNode()); s.create(); s.appendContent(translate(language, "relationship"))
             p = new element("p", "p-1 px-2 flex w-full", [], d.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Attraction level obtained"))
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-            s = new element("span", "ms-1 font-bold", [], p.getNode(), `accordion-relationship-${this.objectId}-stages-result-attraction`); s.create()
+            s = new element("span", "ms-1 font-bold", [], p.getNode(), `accordion-relationship-${this.object_id}-stages-result-attraction`); s.create()
 
-            d = new element("div", "m-1 mb-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stages`); d.create()
+            d = new element("div", "m-1 mb-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stages`); d.create()
             //Stages details header
-            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.objectId}-stages-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs bg-gray-700 border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stages-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stages-body`}], h2.getNode())
+            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.object_id}-stages-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs bg-gray-700 border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stages-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stages-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stages details"))
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //Stages details body
-            d1 = new element("div", `hidden p-1 px-1 mb-1 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stages-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stages-body`)
+            d1 = new element("div", `hidden p-1 px-1 mb-1 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stages-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stages-body`)
             d1.create()
             
             //Stage 1: Strong interest of citizen
             stage = 1
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate interest of citizen.
             let citizen_much_interested_in_couple = citizen_wished_attributes.intersection(couple_own_attributes).size
             attraction_percent_citizen = citizen_much_interested_in_couple ? breeding_stage.percent*1 : 0
@@ -298,10 +309,10 @@ class panel{
             accumulative_percent += Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_much_interested_in_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_much_interested_in_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -311,15 +322,10 @@ class panel{
             s1 = new element("span", `text-gray-300 ms-1 font-bold`, [], p.getNode()); s1.create(); s1.appendContent(citizen.name.split(",")[0])
             s1 = new element("span", "grow flex justify-end", [], p.getNode()); s1.create()
             s2 = new element("span", `text-gray-300 ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent((attraction_percent_citizen >= 0 ? "+" : "") + attraction_percent_citizen.toString() + "%")
-            /*
-            s2 = new element("span", `${stage_color} ms-1` , [], s1.getNode()); s2.create(); s2.appendContent("[")
-            s2 = new element("span", `${stage_color} ms-1 font-bold`, [], s1.getNode()); s2.create(); s2.appendContent(accumulative_percent.toString() + "%")
-            s2 = new element("span", `${stage_color} ms-1`, [], s1.getNode()); s2.create(); s2.appendContent("]")
-            */
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 mb-1 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 mb-1 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -345,7 +351,7 @@ class panel{
             
             //Stage 2: Strong interest of couple
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate interest of couple.
             let couple_much_interested_in_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size
             attraction_percent_couple = couple_much_interested_in_citizen ? breeding_stage.percent*1 : 0
@@ -353,10 +359,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_much_interested_in_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_much_interested_in_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -369,7 +375,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -395,7 +401,7 @@ class panel{
 
             //Stage 3: Big love of citizen
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate big love of citizen.
             let citizen_in_love_with_couple = citizen_wished_attributes.intersection(couple_own_attributes).size > 1
             attraction_percent_citizen = citizen_in_love_with_couple ? breeding_stage.percent*1 : 0
@@ -403,10 +409,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_in_love_with_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_in_love_with_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -419,7 +425,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -445,7 +451,7 @@ class panel{
             
             //Stage 4: Big love of couple
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate big love of couple.
             let couple_in_love_with_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size > 1
             attraction_percent_couple = couple_in_love_with_citizen ? breeding_stage.percent*1 : 0
@@ -453,10 +459,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_in_love_with_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_in_love_with_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -469,7 +475,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -495,7 +501,7 @@ class panel{
 
             //Stage 5: Passion of citizen
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate passion of citizen.
             let citizen_passionate_with_couple = citizen_wished_attributes.intersection(couple_own_attributes).size === 3
             attraction_percent_citizen = citizen_passionate_with_couple ? breeding_stage.percent*1 : 0
@@ -503,10 +509,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_passionate_with_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_passionate_with_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -519,7 +525,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -545,7 +551,7 @@ class panel{
             
             //Stage 6: Passion of couple
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate passion of couple.
             let couple_passionate_with_citizen = couple_wished_attributes.intersection(citizen_own_attributes).size === 3
             attraction_percent_couple = couple_passionate_with_citizen ? breeding_stage.percent*1 : 0
@@ -553,10 +559,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_passionate_with_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_passionate_with_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -569,7 +575,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -595,7 +601,7 @@ class panel{
             
             //Stage 7: Compatibility of citizen
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate compatibility of citizen.
             let citizen_feels_compatible_with_couple
             attributes[language].forEach((attribute_class) => {
@@ -609,10 +615,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_compatible_with_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_compatible_with_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -625,7 +631,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -651,7 +657,7 @@ class panel{
 
             //Stage 8: Compatibility of couple
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate compatibility of citizen.
             let couple_feels_compatible_with_citizen
             attributes[language].forEach((attribute_class) => {
@@ -665,10 +671,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_compatible_with_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_compatible_with_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -681,7 +687,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -707,7 +713,7 @@ class panel{
 
             //Stage 9: Citizen feels too young
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels too young.
             let citizen_feels_too_young_for_couple = citizen_age_group < couple_age_group
             attraction_percent_citizen = breeding_stage.percent[citizen_couple_age_group_difference]*1
@@ -715,10 +721,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_too_young_for_couple ? "bg-red-900" : "bg-green-900"
             status_message = citizen_feels_too_young_for_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -731,7 +737,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -765,7 +771,7 @@ class panel{
 
             //Stage 10: Couple feels too young
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels too young.
             let couple_feels_too_young_for_citizen = couple_age_group < citizen_age_group
             attraction_percent_couple = breeding_stage.percent[citizen_couple_age_group_difference]*1
@@ -773,10 +779,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_too_young_for_citizen ? "bg-red-900" : "bg-green-900"
             status_message = couple_feels_too_young_for_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -789,7 +795,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -823,7 +829,7 @@ class panel{
             
             //Stage 11: Citizen feels too old
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels too young.
             let citizen_feels_too_old_for_couple = couple_age_group < citizen_age_group
             attraction_percent_citizen = breeding_stage.percent[citizen_couple_age_group_difference]*1
@@ -831,10 +837,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_too_old_for_couple ? "bg-red-900" : "bg-green-900"
             status_message = citizen_feels_too_old_for_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -847,7 +853,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -881,7 +887,7 @@ class panel{
 
             //Stage 12: Couple feels too old
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels too young.
             let couple_feels_too_old_for_citizen = citizen_age_group < couple_age_group
             attraction_percent_couple = breeding_stage.percent[citizen_couple_age_group_difference]*1
@@ -889,10 +895,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_too_old_for_citizen ? "bg-red-900" : "bg-green-900"
             status_message = couple_feels_too_old_for_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -905,7 +911,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -939,7 +945,7 @@ class panel{
             
             //Stage 13: Both citizens feel age difference
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate how they both feel the age difference with the other.
             attraction_percent_citizen = attraction_percent_couple = age_difference_attraction(citizen_couple_age_difference)
             accumulative_percent_citizen += attraction_percent_citizen; accumulative_percent_citizen = Math.max(accumulative_percent_citizen, 0)
@@ -947,10 +953,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = attraction_percent_citizen > 0 ? "bg-green-900" : (attraction_percent_citizen < 0 ? "bg-red-900" : "bg-gray-700")
             status_message = attraction_percent_citizen >= 0 ? translate(language, "not fulfilled", "f", "capitalized") : translate(language, "fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -962,7 +968,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1013,7 +1019,7 @@ class panel{
             
             //Stage 14: Citizen feels admiration
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels admiration.
             let citizen_feels_admiration_for_couple = true
             attributes[language].forEach((attribute_class) => {
@@ -1025,10 +1031,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_admiration_for_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_admiration_for_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1041,7 +1047,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1068,7 +1074,7 @@ class panel{
             
             //Stage 15: Couple feels admiration
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels admiration.
             let couple_feels_admiration_for_citizen = true
             attributes[language].forEach((attribute_class) => {
@@ -1080,10 +1086,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_admiration_for_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_admiration_for_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1096,7 +1102,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1123,7 +1129,7 @@ class panel{
             
             //Stage 16: Citizen feels physical attraction
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels physically attracted to couple.
             let couple_physical_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
@@ -1139,10 +1145,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_physically_attracted_to_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_physically_attracted_to_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1155,7 +1161,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1181,7 +1187,7 @@ class panel{
             
             //Stage 17: Couple feels physical attraction
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels physically attracted to citizen.
             let citizen_physical_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
@@ -1197,10 +1203,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_physically_attracted_to_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_physically_attracted_to_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1213,7 +1219,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1239,7 +1245,7 @@ class panel{
 
             //Stage 18: Citizen feels mental attraction
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels mentally attracted to couple.
             let couple_mental_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
@@ -1255,10 +1261,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_mentally_attracted_to_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_mentally_attracted_to_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1271,7 +1277,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1297,7 +1303,7 @@ class panel{
 
             //Stage 19: Couple feels mental attraction
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels mentally attracted to citizen.
             let citizen_mental_attributes = 0
             attributes["EN"].forEach((attribute_class) => {
@@ -1313,10 +1319,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_mentally_attracted_to_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_mentally_attracted_to_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1329,7 +1335,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1355,7 +1361,7 @@ class panel{
 
             //Stage 20: Both citizens feel things in common
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate how they both feel having things in common with the other.
             let common_attributes = citizen_own_attributes.intersection(couple_own_attributes)
             let both_have_something_in_common = common_attributes.size > 0
@@ -1365,10 +1371,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = attraction_percent_citizen > 0 ? "bg-green-900" : "bg-gray-700"
             status_message = attraction_percent_citizen >= 0 ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1380,7 +1386,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1422,7 +1428,7 @@ class panel{
 
             //Stage 21: Citizen feels protected
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels protected.
             let citizen_feels_protected_by_couple = couple_own_attributes.has(translate(language, "Protection"))
             attraction_percent_citizen = citizen_feels_protected_by_couple ? breeding_stage.percent*1 : 0
@@ -1430,10 +1436,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_protected_by_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_protected_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1446,7 +1452,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1472,7 +1478,7 @@ class panel{
             
             //Stage 22: Couple feels protected
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels protected.
             let couple_feels_protected_by_couple = citizen_own_attributes.has(translate(language, "Protection"))
             attraction_percent_couple = couple_feels_protected_by_couple ? breeding_stage.percent*1 : 0
@@ -1480,10 +1486,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_protected_by_couple ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_protected_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1496,7 +1502,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1522,7 +1528,7 @@ class panel{
             
             //Stage 23: Citizen feels supported
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels supported.
             let citizen_feels_supported_by_couple = couple_own_attributes.has(translate(language, "Partnership"))
             attraction_percent_citizen = citizen_feels_supported_by_couple ? breeding_stage.percent*1 : 0
@@ -1530,10 +1536,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_supported_by_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_supported_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1546,7 +1552,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1572,7 +1578,7 @@ class panel{
             
             //Stage 24: Couple feels supported
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels supported.
             let couple_feels_supported_by_citizen = citizen_own_attributes.has(translate(language, "Partnership"))
             attraction_percent_couple = couple_feels_supported_by_citizen ? breeding_stage.percent*1 : 0
@@ -1580,10 +1586,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_supported_by_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_supported_by_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1596,7 +1602,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1622,7 +1628,7 @@ class panel{
             
             //Stage 25: Citizen feels delighted
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels supported.
             let citizen_feels_delighted_by_couple = couple_own_attributes.has(translate(language, "Sympathy"))
             attraction_percent_citizen = citizen_feels_delighted_by_couple ? breeding_stage.percent*1 : 0
@@ -1630,10 +1636,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_delighted_by_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_delighted_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1646,7 +1652,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1672,7 +1678,7 @@ class panel{
             
             //Stage 26: Couple feels delighted
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels delighted.
             let couple_feels_delighted_by_citizen = citizen_own_attributes.has(translate(language, "Sympathy"))
             attraction_percent_couple = couple_feels_delighted_by_citizen ? breeding_stage.percent*1 : 0
@@ -1680,10 +1686,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_delighted_by_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_delighted_by_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1696,7 +1702,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1722,7 +1728,7 @@ class panel{
             
             //Stage 27: Citizen feels convinced
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels supported.
             let citizen_feels_convinced_by_couple = couple_own_attributes.has(translate(language, "Charisma"))
             attraction_percent_citizen = citizen_feels_convinced_by_couple ? breeding_stage.percent*1 : 0
@@ -1730,10 +1736,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_feels_convinced_by_couple ? "bg-green-900" : "bg-gray-700"
             status_message = citizen_feels_convinced_by_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1746,7 +1752,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1772,7 +1778,7 @@ class panel{
             
             //Stage 28: Couple feels convinced
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels delighted.
             let couple_feels_convinced_by_citizen = citizen_own_attributes.has(translate(language, "Charisma"))
             attraction_percent_couple = couple_feels_convinced_by_citizen ? breeding_stage.percent*1 : 0
@@ -1780,10 +1786,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_feels_convinced_by_citizen ? "bg-green-900" : "bg-gray-700"
             status_message = couple_feels_convinced_by_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1796,7 +1802,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1822,7 +1828,7 @@ class panel{
             
             //Stage 29: Citizen dislikes something
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if citizen feels supported.
             let citizen_dislikes_something_of_couple = couple_own_attributes.has(citizen_hated_attribute)
             attraction_percent_citizen = citizen_dislikes_something_of_couple ? breeding_stage.percent*1 : 0
@@ -1830,10 +1836,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = citizen_dislikes_something_of_couple ? "bg-red-900" : "bg-gray-700"
             status_message = citizen_dislikes_something_of_couple ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1846,7 +1852,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name.split(",")[0])
@@ -1872,7 +1878,7 @@ class panel{
             
             //Stage 30: Couple feels convinced
             stage++
-            breeding_stage = breeding_stages[stage-1]
+            breeding_stage = attraction_stages[stage-1]
             //Evaluate if couple feels delighted.
             let couple_dislikes_something_of_citizen = citizen_own_attributes.has(couple_hated_attribute)
             attraction_percent_couple = couple_dislikes_something_of_citizen ? breeding_stage.percent*1 : 0
@@ -1880,10 +1886,10 @@ class panel{
             accumulative_percent = Math.min(accumulative_percent_citizen, accumulative_percent_couple, 100)
             stage_accordion_bg_class = couple_dislikes_something_of_citizen ? "bg-red-900" : "bg-gray-700"
             status_message = couple_dislikes_something_of_citizen ? translate(language, "fulfilled", "f", "capitalized") : translate(language, "not fulfilled", "f", "capitalized")
-            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}`); d.create()
+            d = new element("div", "m-1 grow", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}`); d.create()
             //header
-            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-header`); h2.create()
-            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-stage-${stage}-body`}], h2.getNode())
+            h2 = new element("h2", "mt-1", [], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-header`); h2.create()
+            b = new element("button", `unattached-click flex items-center justify-between w-full py-1 px-2 text-xs ${stage_accordion_bg_class} border border-gray-700 gap-3 text-gray-400`, [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-stage-${stage}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-stage-${stage}-body`}], h2.getNode())
             b.create()
             p = new element("p", "flex justify-between w-full", [], b.getNode()); p.create()
             s1 = new element("span", `text-gray-300`, [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Stage"))
@@ -1896,7 +1902,7 @@ class panel{
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //body
-            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.objectId}-stage-${stage}-body`)
+            d2 = new element("div", `hidden p-1 px-2 border border-gray-900 ${stage_accordion_bg_class}`, [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-stage-${stage}-header`}], d.getNode(), `accordion-relationship-${this.object_id}-stage-${stage}-body`)
             d2.create()
             p = new element("p", "", [], d2.getNode()); p.create();
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(couple.name.split(",")[0])
@@ -1920,33 +1926,33 @@ class panel{
                 s = new element("span", "ms-1 text-red-400", [], p.getNode()); s.create(); s.appendContent(translate(language, "gained no attraction in this stage"))
             }
             //Compute header results
-            document.getElementById(`accordion-relationship-${this.objectId}-stages-result`).classList.remove("hidden")
+            document.getElementById(`accordion-relationship-${this.object_id}-stages-result`).classList.remove("hidden")
             if(accumulative_percent >= 70){
-                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-viability`).innerHTML = translate(language, "have")
+                document.getElementById(`accordion-relationship-${this.object_id}-stages-result-viability`).innerHTML = translate(language, "have")
                 let relationship_grade = accumulative_percent <= 80 ? "a good" : (accumulative_percent <= 90 ? "an excellent" : "a wonderful")
-                document.getElementById(`accordion-relationship-${this.objectId}-stages-result`).querySelector(".hidden").classList.remove("hidden")
-                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-grade`).innerHTML = translate(language, relationship_grade)
+                document.getElementById(`accordion-relationship-${this.object_id}-stages-result`).querySelector(".hidden").classList.remove("hidden")
+                document.getElementById(`accordion-relationship-${this.object_id}-stages-result-grade`).innerHTML = translate(language, relationship_grade)
             } else {
-                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-viability`).innerHTML = translate(language, "cannot have")
-                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-grade`).innerHTML = translate(language, "a relationship, unfortunately.")
+                document.getElementById(`accordion-relationship-${this.object_id}-stages-result-viability`).innerHTML = translate(language, "cannot have")
+                document.getElementById(`accordion-relationship-${this.object_id}-stages-result-grade`).innerHTML = translate(language, "a relationship, unfortunately.")
             }
-            document.getElementById(`accordion-relationship-${this.objectId}-stages-result-attraction`).innerHTML = accumulative_percent + "%"
-            document.getElementById(`accordion-relationship-${this.objectId}-stages-result`).classList.add(accumulative_percent >= 70 ? "bg-green-900" : "bg-gray-800")
+            document.getElementById(`accordion-relationship-${this.object_id}-stages-result-attraction`).innerHTML = accumulative_percent + "%"
+            document.getElementById(`accordion-relationship-${this.object_id}-stages-result`).classList.add(accumulative_percent >= 70 ? "bg-green-900" : "bg-gray-800")
             if(accumulative_percent < 70){
-                document.getElementById(`accordion-relationship-${this.objectId}-stages-result-attraction`).classList.add("text-red-500")
-                document.querySelector(`#accordion-relationship-${this.objectId}-stages-result p:first-child`).classList.add("text-red-500")
+                document.getElementById(`accordion-relationship-${this.object_id}-stages-result-attraction`).classList.add("text-red-500")
+                document.querySelector(`#accordion-relationship-${this.object_id}-stages-result p:first-child`).classList.add("text-red-500")
             }
-            document.getElementById(`relationship-${this.objectId}-attraction-group`).classList.add(accumulative_percent >= 70 ? "bg-green-700" : "bg-red-700")
-            document.getElementById(`relationship-${this.objectId}-attraction-icon`).classList.add(accumulative_percent >= 70 ? "fa-thumbs-up" : "fa-thumbs-down")
-            document.getElementById(`relationship-${this.objectId}-attraction-value`).innerHTML = accumulative_percent.toString()+"%"
+            document.getElementById(`relationship-${this.object_id}-attraction-group`).classList.add(accumulative_percent >= 70 ? "bg-green-700" : "bg-red-700")
+            document.getElementById(`relationship-${this.object_id}-attraction-icon`).classList.add(accumulative_percent >= 70 ? "fa-thumbs-up" : "fa-thumbs-down")
+            document.getElementById(`relationship-${this.object_id}-attraction-value`).innerHTML = accumulative_percent.toString()+"%"
             
             //Mutual knowledge process result
-            let parent_elem = document.querySelector(`#accordion-relationship-${this.objectId}-breeding-stages-body`)
+            let parent_elem = document.querySelector(`#accordion-relationship-${this.object_id}-breeding-stages-body`)
             let process_results = [], process_result_errors = []
             let process_class = accumulative_percent >= 70 ? "bg-green-900" : "bg-red-800"
             process_results[0] = accumulative_percent >= 70 ? "Successfully completed" : "Not completed"
             process_result_errors[0] = accumulative_percent < 70 ? translate(language, "They both feel insufficient attraction") : false
-            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], parent_elem, `accordion-relationship-${this.objectId}-attraction-results`); d.create()
+            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], parent_elem, `accordion-relationship-${this.object_id}-attraction-results`); d.create()
             p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Process result"))
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
@@ -1957,20 +1963,20 @@ class panel{
             }
 
             //Build fertility process header
-            let parent_div = document.querySelector(`#accordion-relationship-${this.objectId}-breeding-processes`)
-            h2 = new element("h2", "mt-1", [], parent_div, `accordion-relationship-${this.objectId}-breeding-fertility-header`); h2.create()
-            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.objectId}-breeding-fertility-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.objectId}-breeding-fertility-body`}], h2.getNode())
+            let parent_div = document.querySelector(`#accordion-relationship-${this.object_id}-breeding-processes`)
+            h2 = new element("h2", "mt-1", [], parent_div, `accordion-relationship-${this.object_id}-breeding-fertility-header`); h2.create()
+            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-2 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-relationship-${this.object_id}-breeding-fertility-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-relationship-${this.object_id}-breeding-fertility-body`}], h2.getNode())
             b.create()
             s = new element("span", "flex items-center w-full", [], b.getNode()); s.create()
             s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Fertility check process"))
             s1 = new element("span", "grow flex justify-end", [], s.getNode()); s1.create()
-            s2 = new element("span", "px-1 border border-gray-300 text-white", [], s1.getNode(), `relationship-${this.objectId}-fertility-group`); s2.create()
-            i = new element("i", "fa font-bold", [], s2.getNode(), `relationship-${this.objectId}-fertility-icon`); i.create();
-            //s3 = new element("span", "font-bold", [], s2.getNode(), `relationship-${this.objectId}-fertility-value`); s3.create(); s3.appendContent("100%")
+            s2 = new element("span", "px-1 border border-gray-300 text-white", [], s1.getNode(), `relationship-${this.object_id}-fertility-group`); s2.create()
+            i = new element("i", "fa font-bold", [], s2.getNode(), `relationship-${this.object_id}-fertility-icon`); i.create();
+            //s3 = new element("span", "font-bold", [], s2.getNode(), `relationship-${this.object_id}-fertility-value`); s3.create(); s3.appendContent("100%")
             b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
             enable_accordion_click(b.getNode())
             //Build fertility process body
-            d1 = new element("div", "hidden p-1 border border-gray-900 bg-gray-500", [{"key":"aria-labelledby","value":`accordion-relationship-${this.objectId}-breeding-fertility-header`}], parent_div, `accordion-relationship-${this.objectId}-breeding-fertility-body`)
+            d1 = new element("div", "hidden p-1 border border-gray-900 bg-gray-500", [{"key":"aria-labelledby","value":`accordion-relationship-${this.object_id}-breeding-fertility-header`}], parent_div, `accordion-relationship-${this.object_id}-breeding-fertility-body`)
             d1.create()
             let citizen_has_fertility = citizen.fertility > 0
             let citizen_class = citizen_has_fertility ? "text-green-500" : "text-red-500"
@@ -1978,10 +1984,10 @@ class panel{
             let couple_class = couple_has_fertility ? "text-green-500" : "text-red-500"
             let both_have_fertility = citizen_has_fertility && couple_has_fertility
             let woman_fertile
-            d = new element("div", "p-1 border border-gray-800 bg-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-levels-title`); d.create()
+            d = new element("div", "p-1 border border-gray-800 bg-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-levels-title`); d.create()
             p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Citizen's fertility levels"))
-            d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-levels`); d.create()
+            d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-levels`); d.create()
             p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
             s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(citizen.name)
             p = new element("p", "px-1 mb-1 w-full", [], d.getNode()); p.create()
@@ -1995,10 +2001,10 @@ class panel{
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, ":"))
             s = new element("span", `ms-1 font-bold ${couple_class}`, [], p.getNode()); s.create(); s.appendContent(couple.fertility.toString())
             if(both_have_fertility){
-                d = new element("div", "p-1 border border-gray-800 bg-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-week-title`); d.create()
+                d = new element("div", "p-1 border border-gray-800 bg-gray-800 text-white grow", [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-week-title`); d.create()
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
                 s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Breeding viability"))
-                d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-week`); d.create()
+                d = new element("div", "m-1 mb-1 p-1 border border-gray-800 bg-gray-600 text-white grow", [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-week`); d.create()
                 p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
                 let woman = citizen.gender.charAt(0) === "F" ? citizen : couple
                 let woman_fertility_week
@@ -2040,19 +2046,19 @@ class panel{
                 process_result_errors[1] = translate(language, "Someone in the couple is not fertile enough")
             }
             if(woman_fertile && both_have_fertility){
-                document.querySelector(`#relationship-${this.objectId}-fertility-group`).classList.add("bg-green-900")
-                document.querySelector(`#relationship-${this.objectId}-fertility-icon`).classList.add("fa-thumbs-up")
+                document.querySelector(`#relationship-${this.object_id}-fertility-group`).classList.add("bg-green-900")
+                document.querySelector(`#relationship-${this.object_id}-fertility-icon`).classList.add("fa-thumbs-up")
                 process_results[1] = "Successfully completed"
                 process_class = "bg-green-800"
             } else {
-                document.querySelector(`#relationship-${this.objectId}-fertility-group`).classList.add("bg-red-700")
-                document.querySelector(`#relationship-${this.objectId}-fertility-icon`).classList.add("fa-thumbs-down")
+                document.querySelector(`#relationship-${this.object_id}-fertility-group`).classList.add("bg-red-700")
+                document.querySelector(`#relationship-${this.object_id}-fertility-icon`).classList.add("fa-thumbs-down")
                 process_results[1] = "Not completed"
                 process_class = "bg-red-800"
             }
 
             //Fertility process result
-            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], d1.getNode(), `accordion-relationship-${this.objectId}-fertility-results`); d.create()
+            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-results`); d.create()
             p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Process result"))
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
@@ -2063,10 +2069,10 @@ class panel{
             }
 
             //Final results
-            parent_div = document.getElementById(`relationship-${this.objectId}-tryBreeding`)
+            parent_div = document.getElementById(`relationship-${this.object_id}-tryBreeding`)
             let final_results = process_results[0] === "Successfully completed" && process_results[1] === "Successfully completed" ? "Breeding is possible" : "It is not possible for the couple to breed"
             process_class = final_results != "Breeding is possible" ? "bg-red-800" : "bg-green-900"
-            d = new element("div", `ms-1 me-1 mb-1 ${process_class} p-1 flex justify-between border border-gray-800 bg-gray-600 text-white grow`, [], parent_div, `accordion-relationship-${this.objectId}-fertility-results`); d.create()
+            d = new element("div", `ms-1 me-1 mb-1 ${process_class} p-1 flex justify-between border border-gray-800 bg-gray-600 text-white grow`, [], parent_div, `accordion-relationship-${this.object_id}-fertility-results`); d.create()
             d1 = new element("div", `grow`, [], d.getNode()); d1.create()
             p = new element("p", "px-1 w-full", [], d1.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Final result"))
@@ -2118,25 +2124,25 @@ class panel{
                 })
             }
         }
-        if(this.panelName === "newRule"){
+        if(this.panel.name === "newRule"){
             //Specific New Production Rule panel
             p.create(); p.getNode().id = "new-rule-title"
             s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
             s.appendHTML(":")
-            let iElement, buttonText = "", buttonColours = ""
+            let iElement, button_text = "", button_colours = ""
             let products
             if(this.data.location){
                 p = new element("p", "flex w-100 justify-between items-center flex-wrap p-1 pb-0 text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
                 products = location_products[this.data.location]["EN"]
                 products.forEach((product, index) => {
-                    divSpecificParagraphButton[index] = document.createElement("button")
+                    div_specific_paragraph_buttons[index] = document.createElement("button")
                     iElement = "<i class='fa fa-plus me-2'></i>"
-                    buttonText = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
-                    divSpecificParagraphButton[index].innerHTML = iElement + buttonText
-                    buttonColours = "border-blue-600 bg-blue-900 text-white"
-                    divSpecificParagraphButton[index].classList = "rule_product text-xs capitalize "+(index+1 < products.length ? "grow " : "")+"p-2 py-1 me-1 mb-1 button border "+buttonColours
-                    divSpecificParagraphButton[index].setAttribute("data-product", product)
-                    p.appendContent(divSpecificParagraphButton[index])
+                    button_text = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
+                    div_specific_paragraph_buttons[index].innerHTML = iElement + button_text
+                    button_colours = "border-blue-600 bg-blue-900 text-white"
+                    div_specific_paragraph_buttons[index].classList = `rule_product text-xs capitalize ${index+1 < products.length ? "grow " : ""}p-2 py-1 me-1 mb-1 button border ${button_colours}`
+                    div_specific_paragraph_buttons[index].setAttribute("data-product", product)
+                    p.appendContent(div_specific_paragraph_buttons[index])
                 })
             } else {
                 //Build products category accordions
@@ -2172,7 +2178,7 @@ class panel{
                         let products_found = 0
                         products.forEach((product, p_index) => {
                             if(product_rules[product]){
-                                b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}], p.getNode()); b.create()
+                                b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}, {"key":"data-category","value":category}], p.getNode()); b.create()
                                 i = new element("i", "fa fa-plus me-1", [], b.getNode()); i.create()
                                 s = new element("span", "", [], b.getNode()); s.create(); s.appendContent(translate(language, product, "", "capitalized"))
                                 products_found++
@@ -2192,7 +2198,7 @@ class panel{
                 })
             }
         }
-        if(this.panelName === "newExpedition"){
+        if(this.panel.name === "newExpedition"){
             //Specific New Expedition panel
             p.create()
             //Build type of expedition options
@@ -2352,6 +2358,6 @@ class panel{
                 })
             })
         }
-        this.isDisplayed = true
+        this.is_displayed = true
     }
 }

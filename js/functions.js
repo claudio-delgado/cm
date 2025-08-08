@@ -240,7 +240,7 @@ const pregnancy_amount_of_babies = (fertility_sum) => {
 }
 
 //Building parts or products coeficients.
-const age_group_by_birthweeks = (birthweeks) => {
+const age_group_by_birthweeks = (birthWeeks) => {
     let result = ""
     Object.keys(age_week_limits).forEach((group) => {
         result = age_week_limits[group].min <= birthWeeks && birthWeeks <= age_week_limits[group].max ? group : result
@@ -249,13 +249,13 @@ const age_group_by_birthweeks = (birthweeks) => {
 }
 const age_coeficient = (a_citizen) => {
     let age_group = age_group_by_birthweeks(a_citizen.birthWeeks)
-    return ["adult"].includes(age_group) ? 1 :(["teen", "grown adult"].includes(age_group) ? 0.5 :((["child", "ancient"].includes(age_group) ? 0.2 :0)))
+    return ["adult"].includes(age_group) ? 1 :(["teen", "grown adult"].includes(age_group) ? 0.5 :((["child", "ancient"].includes(age_group) ? 0.2 : 0)))
 }
 const log_base = (base, x) => {
     return Math.log(x) / Math.log(base)
 }
 const xp_coeficient = (a_citizen) => {
-    return 1 + ((3/2) * Math.log_base(3/2, a_citizen.xp + 1))
+    return 1 + ((3/2) * log_base(3/2, a_citizen.xp + 1)) / 10
 }
 const attributes_coeficient = (a_citizen) => {
     let strong_citizen = a_citizen.attributes.includes(translate(language, "strength"))
@@ -265,6 +265,7 @@ const attributes_coeficient = (a_citizen) => {
     let cunning_citizen = a_citizen.attributes.includes(translate(language, "cunning"))
     return strong_citizen ? 1.5 : (dexterous_citizen ? 1.4 : (agile_citizen ? 1.2 : (smart_citizen || cunning_citizen ? 1.1 : 1)))
 }
+//Coeficient that measures the quantity of building parts produced
 const construction_coeficient = (citizens_array) => {
     let result = 0
     citizens_array.forEach((loop_citizen) => {
@@ -272,11 +273,67 @@ const construction_coeficient = (citizens_array) => {
     })
     return result
 }
-const construction_duration = (citizens_array) => {
+//Coeficient that measures the duration of a production rule in order to produce the result
+const construction_duration = (citizens_array, base_duration_in_hours) => {
     let denominator = 0
     citizens_array.forEach((loop_citizen) => {
         denominator += age_coeficient(loop_citizen)
     })
-    return 1 / denominator
+    return base_duration_in_hours / (denominator ? denominator : 1)
 }
-//Formula invoques a function
+//Displayed time/date functions
+//Minimal date expression based on hours
+const minimal_date_expression = (hours) => {
+    let expression = ""
+    hours = Math.floor(hours)
+    if(hours >= 24 * 7 * 52){ //hours expression is more than a year.
+        let years_dec = hours / (24 * 7 * 52)
+        let years = Math.floor(years_dec) 
+        expression = `${years} ${translate(language, (years == 1 ? "year" : "years"), "", "lowercase")}`
+        //Remaining hours
+        hours -= years * (24 * 7 * 52)
+    }
+    if(hours >= 24 * 7){ //hours expression is more than a week.
+        let weeks_dec = hours / (24 * 7)
+        let weeks = Math.floor(weeks_dec)
+        expression += `${expression ? ", " : ""}${weeks} ${translate(language, (weeks == 1 ? "week" : "weeks"), "", "lowercase")}`
+        //Remaining hours
+        hours -= weeks * (24 * 7)
+    }
+    if(hours >= 24){ //hours expression is more than a day.
+        let days_dec = hours / 24
+        let days = Math.floor(days_dec)
+        expression += `${expression ? ", " : ""}${days} ${translate(language, (days == 1 ? "day" : "days"), "", "lowercase")}`
+        //Remaining hours
+        hours -= days * 24
+    }
+    if(hours){ //hours expression is less than a day.
+        expression += `${expression ? ", " : ""}${hours} ${translate(language, (hours == 1 ? "hour" : "hours"), "", "lowercase")}`
+    }
+    return expression
+}
+const format_countdown_date_expression = (date_expression, object = false, index = false) => {
+    let main_span = document.createElement("span")
+    main_span.classList.add("countdownTime")
+    //Decompose date_expression
+    let date_expression_array = date_expression.split(", ")
+    date_expression_array.forEach((date_token, token_index) => {
+        main_span.innerHTML += (token_index ? ", " : "")
+        let date_token_array = date_token.split(" ")
+        let token_unit = date_token_array[1].slice(-1) != "s" ? date_token_array[1]+"s" : date_token_array[1]
+        //Date token value
+        let token_value_span = document.createElement("span")
+        token_value_span.classList.add("countdown")
+        token_value_span.classList.add(translate("EN", token_unit, "", "lowercase", false))
+        token_value_span.innerHTML = date_token_array[0]
+        //Date token unit
+        let token_unit_span = document.createElement("span")
+        token_unit_span.classList.add("ms-1")
+        token_unit_span.setAttribute("data-i18n", "")
+        token_unit_span.id = (object && index) ? object + "-" + index + "-pending-" + token_unit+"Text" : ""
+        token_unit_span.innerHTML = date_token_array[1]
+        main_span.appendChild(token_value_span)
+        main_span.appendChild(token_unit_span)
+    })
+    return main_span
+}

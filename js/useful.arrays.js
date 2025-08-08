@@ -293,7 +293,7 @@ const attributes_adjectives = {
 const role_icons = [ 
     {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero", "N":"aguatero/a"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
     {"EN": "hunter", "ES": {"F": "cazadora", "M": "cazador"}, "key":"hunting", "icon": "deer"}, {"EN": "stone breaker", "ES": {"F": "picadora", "M": "picador"}, "key":"stonebreaking", "icon": "pickaxe"}, 
-    {"EN": "constructor", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
+    {"EN": "builder", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
     {"EN": "soldier", "ES": "soldado", "key":"war", "icon": "shield-halved"}, {"EN": "miner", "ES": {"F": "minera", "M": "minero"}, "key":"mining", "icon": "shovel"}, 
     {"EN": "farmer", "ES": {"F": "granjera", "M": "granjero"}, "key":"farming", "icon": "wheat"}, {"EN": "carpenter", "ES": {"F":"carpintera", "M":"carpintero"}, "key":"carpentry", "icon": "hammer"}, 
     {"EN": {"F":"ovenwoman", "M": "ovenman"}, "ES": {"F":"hornera", "M":"hornero"}, "key":"oven", "icon": "temperature-high"}, {"EN": "blacksmith", "ES": {"F": "herrera", "M": "herrero"}, "key":"blacksmithing", "icon": "industry"}, 
@@ -308,7 +308,7 @@ const age_week_limits = {
     "teen":{"min":728, "max":1091},
     "adult":{"min":1092, "max":2651},
     "grown adult":{"min":2652, "max":3379},
-    "ancient":{"min":3380, "max":null},
+    "ancient":{"min":3380, "max":9999},
 }
 const person_icons = [
     {"EN": "baby", "ES": {"F":"bebé", "M":"beba"}, "text":"xs", "icon": "baby"},
@@ -1761,7 +1761,8 @@ const product_rules = {
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
                  "workers": [], "tools": []},
             ],
-            "result": {"quantity": 0.5, "duration_type": "constant", "duration": 1, "score": 1/300},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 0.5, "duration_type": "constant", "duration": 24, "score": 1/300},
         }]
     },
     "perch": {
@@ -1771,7 +1772,8 @@ const product_rules = {
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
                  "workers": [], "tools": []},
             ],
-            "result": {"quantity": 1, "duration_type": "constant", "duration": 1, "score": 1/200},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/200},
         }]
     },
     "salmon": {
@@ -1782,7 +1784,8 @@ const product_rules = {
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 1, "consumable": false,
                  "workers": [], "tools": ["fishing rod"]},
             ],
-            "result": {"quantity": 1, "duration_type": "constant", "duration": 1, "score": 1/600},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/600},
         },
         {
             "requirements": [
@@ -1790,7 +1793,8 @@ const product_rules = {
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 1, "consumable": false,
                  "workers": [], "tools": ["fishing net"]},
             ],
-            "result": {"quantity": 5, "duration_type": "constant", "duration": 1, "score": 1/600},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 5, "duration_type": "constant", "duration": 24, "score": 1/600},
         }]
     },
     "trout": {
@@ -1800,20 +1804,22 @@ const product_rules = {
                 {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
                  "workers": [], "tools": []},
             ],
-            "result": {"quantity": 0.2, "duration_type": "constant", "duration": 1, "score": 1/400},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 0.2, "duration_type": "constant", "duration": 24, "score": 1/400},
         }]
     },
     "shed": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "constructor", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
                  "tools": []},
-                {"index": 2, "object": "wood", "type": "product", "quantity": 80, "consumable": true},
-                {"index": 3, "object": "stone", "type": "product", "quantity": 80, "consumable": true},
+                {"index": 2, "object": "wood", "type": "resource", "quantity": 80, "consumable": true},
+                {"index": 3, "object": "stone", "type": "resource", "quantity": 80, "consumable": true},
                 {"index": 4, "object": "hammer", "type": "product", "quantity": 8, "consumable": true},
                 {"index": 5, "object": "nail", "type": "product", "quantity": 140, "consumable": true},
             ],
-            "result": {"quantity": 1, "duration_type": "formula", "duration":"construction_duration", "score": 1/2},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
         }]
     },
 }
@@ -1821,8 +1827,16 @@ var product_rules_defined = [
     { //rule_created
         "id": 0,
         "index": 0,
+        "date_created":{
+            "week":0,
+            "day":1,
+            "hour":1
+        },
         "object": "", 
+        "category": "",
         "status":["running", "suspended"],
+        "duration":0,
+        "duration_remaining":0,
         "rule_definition": {
             "requirements": [
                 {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
@@ -1854,7 +1868,7 @@ const water_reservoirs = {
     }
 }
 
-const breeding_stages = [
+const attraction_stages = [
     {"stage": 1, "description": "Strong interest of", "percent": "50"}, //45 40
     {"stage": 2, "description": "Strong interest of", "percent": "50"}, //45 40
     {"stage": 3, "description": "Big love of", "percent": "40"}, //30 

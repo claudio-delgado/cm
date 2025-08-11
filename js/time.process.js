@@ -140,7 +140,8 @@ const life_interval = setInterval(() => {
                     }
                 })
                 if(!requirement_fulfilled){
-                    product_rules[product_index].status = "suspended"
+                    product_rules[product_index].status = "ended"
+                    //TODO: Turn all rule workers to idle status...
                 } else {
                     //Update product stock with new value.
                     stock_values.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
@@ -276,16 +277,33 @@ const life_interval = setInterval(() => {
                                         //Decrement stock goods.
                                         stock_values[requirement.type + "s"][language][translate(language, requirement.object)] -= requirement.quantity
                                     } else { //Insufficient stock for the object
-                                        rule.status = "suspended"
+                                        rule.status = "ended"
                                         document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
+                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.remove("bg-gray-700")
+                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.add("bg-red-900")
                                         product_rules_defined[rule_index].status = rule.status
+                                        //TODO: Turn all rule workers to idle status...
                                     }
                                 }
+                                //Check workers life...
                             })
                             if(rule.status === "running"){
                                 //All rule required goods consumed => result must be obtained.
                                 //Generate product, resource or building part.
                                 stock_values[rule.category][language][translate(language, rule.object)] += rule.rule_definition.result.quantity * 1
+                                //Check rule mode and if not cyclic, verify if there is any cycle left to iterate.
+                                if(rule.production_limit !== "cyclic"){
+                                    if(rule.production_limit*1 == 1){ //No more cycles => suspend rule.
+                                        rule.status = "ended"
+                                        document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
+                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.remove("bg-gray-700")
+                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.add("bg-red-900")
+                                        product_rules_defined[rule_index].status = rule.status
+                                        //TODO: Turn all rule workers to idle status...
+                                    } else {
+                                        rule.production_limit-- //There are still cycles left to iterate.
+                                    }
+                                }
                             }
                         }
                     }

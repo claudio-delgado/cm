@@ -2178,7 +2178,8 @@ class panel{
                         let products_found = 0
                         products.forEach((product, p_index) => {
                             if(product_rules[product]){
-                                b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}, {"key":"data-category","value":category}], p.getNode()); b.create()
+                                let rule_category = category == "by location" ? "products" : category
+                                b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}, {"key":"data-category","value":rule_category}], p.getNode()); b.create()
                                 i = new element("i", "fa fa-plus me-1", [], b.getNode()); i.create()
                                 s = new element("span", "", [], b.getNode()); s.create(); s.appendContent(translate(language, product, "", "capitalized"))
                                 products_found++

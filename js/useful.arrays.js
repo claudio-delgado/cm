@@ -1593,36 +1593,196 @@ const order_keys = (unordered, order = "ASC") => {
     }
 }
 const buildings = {
-    "shelter": {
-       "campaign tent": 0
+    "shelters": {
+       "campaign tent": 0, //tienda de campaña
+       "cottage": 0, //cabaña de madera
+       "stoneHouse": 0, //casa de piedra
+       "brickhouse": 0, //casa de ladrillos
+       "manor": 0, //casona
+       "mansion": 0, //mansión
+       "graveyard": 0, //cementerio
+    },
+    "mount_placed":{
+        "quarry" : 0, //pedregal (stonesmith)
+        "clay quarry" : 0, //terrario
+        "lumberjack's hut" : 0, //puesto de leñador
+        "mine" : 0, //mina
+        /* For future versions...
+        "hunting post" : 0, //puesto de cazador
+        */
+    },
+    "productions": {
+        /* For future versions...
+        "water well" : 0, //pozo de agua
+        */
+        "farm": 0, //granja
+        "barnyard": 0, //corral
+        "mill": 0, //molino
+        "slaughterhouse": 0, //matadero
+        "furnaces": 0, //hornos
+        "textile": 0, //textil
+        "blacksmith": 0, //herrería
+        "sawmill": 0, //aserradero
+        "workshop": 0, //talle
+        "woodsmith": 0, //carpintería (carpentry)
+    },
+    "trainings": {
+        "academy": 0, //academia
+        "barracks": 0, //cuartel
+        /* For future versions...
+        "archery range": 0, //campo de arquería
+        */
+    },
+    "exchanges": {
+        "market": 0, //mercado
+        "fair": 0, //feria
+        "bank": 0, //banco
+        "tavern": 0, //taberna
     }
 }
 const shelter_capacities = {
     "campaign tent": 3,
-    "cottage": 10,
-    "stoneHouse": 15,
-    "house": 20,
+    "cottage": 9,
+    "stoneHouse": 16,
+    "brickhouse": 24,
     "manor": 42,
     "mansion": 80,
-    "graveyard": 16
+    "graveyard": 15
 }
 const mounts = {
-    "Hunting mount": {"discovery-probability-1":"0.50"}, 
-    "Stone mount": {"discovery-probability-1":"0.23", "discovery-probability-2":"0.45"}, 
-    "Wood mount": {"discovery-probability-1":"0.15", "discovery-probability-2":"0.3"}, 
-    "Clay mount": {"discovery-probability-1":"0.07", "discovery-probability-2":"0.15"},
-    "Mine": {"discovery-probability-1":"0.05", "discovery-probability-2":"0.1"},
+    "descriptions": {
+        "Water reservoir": {"owned":0, "camelCase":"waterReservoir", "discovery-probability-1":"1", "role-keys-related":["waterBearing", "fishing"]}, 
+        "Hunting mount": {"owned":0, "camelCase":"huntingMount", "discovery-probability-1":"0.50", "role-keys-related":["hunting"]}, 
+        "Stone mount": {"owned":0, "camelCase":"stoneMount", "discovery-probability-1":"0.23", "discovery-probability-2":"0.45", "role-keys-related":["stonebreaking"]}, 
+        "Wood mount": {"owned":0, "camelCase":"woodMount", "discovery-probability-1":"0.15", "discovery-probability-2":"0.3", "role-keys-related":["woodcutting"]}, 
+        "Clay mount": {"owned":0, "camelCase":"clayMount", "discovery-probability-1":"0.07", "discovery-probability-2":"0.15", "role-keys-related":["stonebreaking"]},
+        "Mineral mount": {"owned":0, "camelCase":"mineralMount", "discovery-probability-1":"0.05", "discovery-probability-2":"0.1", "role-keys-related":["mining"]},
+    },
+    "camelCase":{
+        "waterReservoir": "Water reservoir",
+        "huntingMount": "Hunting mount",
+        "stoneMount": "Stone mount",
+        "woodMount": "Wood mount",
+        "clayMount": "Clay mount",
+        "mineralMount": "Mineral mount"
+    }
 }
-const location_products = {
+const location_goods = {
     "waterReservoir":{
         "EN": ["perch", "carp", "trout", "salmon"],
         "ES": ["perca", "carpa", "trucha", "salmón"]
-    }
+    },
+    "stoneMount":{
+        "EN": ["basic knife", "cement", "concrete", "handcraft", "boulder", "stone", "water", "limestone", 
+               "plaster", "gravel", "sand", "salt", "granite", "basalt", "quartz", "marble"],
+        "ES": ["cuchilla", "cemento", "hormigón", "artesanía", "roca", "piedra", "agua", "piedra caliza",
+               "yeso", "gravilla", "arena", "sal", "granito", "basalto", "cuarzo", "mármol"]
+    },
+    "woodMount":{
+        "EN": ["wooden trunk", "branch", "leño", "resina", "hongo", "hoja de té", "grano de café"],
+        "ES": ["tronco", "rama", "wood", "resin", "mushroom", "tea leaf", "coffee grain"]
+    },
 }
-const categorized_products = {
+const categorized_goods = {
     "by location": {
         "subcategories":
-            location_products
+            location_goods
+    },
+    "resources": {
+        "subcategories":{
+            "stone made": {
+                "ES": [
+                    "roca",
+                    "piedra",
+                    "agua",
+                    "piedra caliza",
+                    "yeso",
+                    "gravilla",
+                    "arena",
+                    "sal",
+                    "granito",
+                    "basalto",
+                    "cuarzo",
+                    "mármol"
+                ],
+                "EN": [
+                    "boulder",
+                    "stone",
+                    "water",
+                    "limestone",
+                    "plaster",
+                    "gravel",
+                    "sand",
+                    "salt",
+                    "granite",
+                    "basalt",
+                    "quartz",
+                    "marble"
+                ]
+            },
+            "wooden": {
+                "ES": [
+                    "tronco",
+                    "rama",
+                    "wood",
+                    "resin",
+                    "hongo",
+                    "hoja de té",
+                    "grano de café"
+                ],
+                "EN": [
+                    "wooden trunk",
+                    "branch",
+                    "leño",
+                    "resina",
+                    "hongo",
+                    "hoja de té",
+                    "grano de café"
+                ]
+            },
+        }
+    },
+    "products": {
+        "subcategories":{
+            "stone made": {
+                "ES": [
+                    "cuchilla",
+                    "cemento", 
+                    "hormigón",
+                    "artesanía",
+                ],
+                "EN": [
+                    "basic knife",
+                    "cement",
+                    "concrete",
+                    "handcraft",
+                ]
+            },
+            "wooden": {
+                "ES": [
+                    "red de pesca",
+                    "caña de pescar",
+                    "vara de madera",
+                    "madero",
+                    "viga de madera",
+                    "placa de madera",
+                    "vara de madera",
+                    "aserrín",
+                    "viruta", 
+                ],
+                "EN": [
+                    "fishing net",
+                    "fishing rod",
+                    "wooden stick",
+                    "wooden plank",
+                    "wooden piece",
+                    "wooden plate",
+                    "wooden stick",
+                    "sawdust",
+                    "wooden chip"
+                ]
+            }               
+        }
     },
     "building parts": {
         "subcategories":{
@@ -1665,13 +1825,13 @@ const categorized_products = {
                     "piso de mármol grande",
                 ],
                 "EN":[
-                    "small stone wall",
-                    "medium stone wall",
-                    "big stone wall",
-                    "medium stone roof",
                     "big stone roof",
+                    "big stone wall",
                     "big granite floor",
                     "big marble floor",
+                    "medium stone roof",
+                    "medium stone wall",
+                    "small stone wall",
                 ]
             },
             "concrete made":{
@@ -1753,7 +1913,293 @@ const categorized_products = {
         }
     }
 }
+const building_rules = {
+    "campaign tent": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "wooden trunk", "type": "resource", "quantity": 12, "consumable": true},
+                {"index": 2, "object": "rag", "type": "product", "quantity": 10, "consumable": true},
+                {"index": 3, "object": "wood", "type": "resource", "quantity": 20, "consumable": true},
+                {"index": 4, "object": "rope", "type": "product", "quantity": 10, "consumable": true},
+                {"index": 5, "object": "branch", "type": "resource", "quantity": 100, "consumable": true},
+                {"index": 6, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 48,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1, "xp": 1/20, "life_quality": 0},
+        }]
+    },
+    "cottage": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "medium wooden wall", "type": "building part", "quantity": 4, "consumable": true},
+                {"index": 2, "object": "small wooden wall", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 3, "object": "medium wooden roof", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 4, "object": "medium wooden floor", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 5, "object": "big bed", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 6, "object": "small bed", "type": "building part", "quantity": 6, "consumable": true},
+                {"index": 7, "object": "table", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*6,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 6, "xp": 4/10, "life_quality": 1},
+        }]
+    },
+    "stone house": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "medium stone wall", "type": "building part", "quantity": 4, "consumable": true},
+                {"index": 2, "object": "small stone wall", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 3, "object": "medium stone roof", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 4, "object": "medium wooden floor", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 5, "object": "big bed", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 6, "object": "small bed", "type": "building part", "quantity": 6, "consumable": true},
+                {"index": 7, "object": "table", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*11,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 6, "xp": 6/10, "life_quality": 0},
+        }]
+    },
+    "brick house": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "medium brick wall", "type": "building part", "quantity": 4, "consumable": true},
+                {"index": 2, "object": "small brick wall", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 3, "object": "medium tile roof", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 4, "object": "medium concrete floor", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 5, "object": "big bed", "type": "building part", "quantity": 5, "consumable": true},
+                {"index": 6, "object": "small bed", "type": "building part", "quantity": 8, "consumable": true},
+                {"index": 7, "object": "table", "type": "building part", "quantity": 2, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 3, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*30,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 11, "xp": 3/4, "life_quality": 2},
+        }]
+    },
+    "manor": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "medium brick wall", "type": "building part", "quantity": 10, "consumable": true},
+                {"index": 2, "object": "small brick wall", "type": "building part", "quantity": 6, "consumable": true},
+                {"index": 3, "object": "medium plaster roof", "type": "building part", "quantity": 7, "consumable": true},
+                {"index": 4, "object": "medium granite floor", "type": "building part", "quantity": 3, "consumable": true},
+                {"index": 5, "object": "big bed", "type": "building part", "quantity": 10, "consumable": true},
+                {"index": 6, "object": "small bed", "type": "building part", "quantity": 18, "consumable": true},
+                {"index": 7, "object": "table", "type": "building part", "quantity": 5, "consumable": true},
+                {"index": 8, "object": "carpet", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 5, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*70,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 24, "xp": 2, "life_quality": 5},
+        }]
+    },
+    "mansion": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "big brick wall", "type": "building part", "quantity": 18, "consumable": true},
+                {"index": 2, "object": "small brick wall", "type": "building part", "quantity": 10, "consumable": true},
+                {"index": 3, "object": "big plaster roof", "type": "building part", "quantity": 6, "consumable": true},
+                {"index": 4, "object": "big marble floor", "type": "building part", "quantity": 7, "consumable": true},
+                {"index": 5, "object": "big bed", "type": "building part", "quantity": 20, "consumable": true},
+                {"index": 6, "object": "small bed", "type": "building part", "quantity": 30, "consumable": true},
+                {"index": 7, "object": "table", "type": "building part", "quantity": 10, "consumable": true},
+                {"index": 8, "object": "carpet", "type": "building part", "quantity": 8, "consumable": true},
+                {"index": 9, "object": "vase", "type": "building part", "quantity": 10, "consumable": true},
+                {"index": 10, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 10, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*160,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 50, "xp": 4, "life_quality": 12},
+        }]
+    },
+    "graveyard": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "fence", "type": "building part", "quantity": 4, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 1600, "consumable": true},
+                {"index": 3, "object": "boulder", "type": "resource", "quantity": 50, "consumable": true},
+                {"index": 4, "object": "gravel", "type": "resource", "quantity": 2000, "consumable": true},
+                {"index": 5, "object": "sand", "type": "resource", "quantity": 3000, "consumable": true},
+                {"index": 6, "object": "shovel", "type": "product", "quantity": 2, "consumable": true},
+                {"index": 7, "object": "soil", "type": "resource", "quantity": 500, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*6,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
+        }]
+    },
+    "quarry": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
+                {"index": 3, "object": "pickaxe", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 4, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 5, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 6, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
+                {"index": 7, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*2,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
+        }]
+    },
+    "clay quarry": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
+                {"index": 3, "object": "pickaxe", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 4, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 5, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 6, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
+                {"index": 7, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*2,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
+        }]
+    },
+    "lumberjack's hut": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
+                {"index": 3, "object": "wood plank", "type": "product", "quantity": 100, "consumable": true},
+                {"index": 4, "object": "pickaxe", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 6, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 7, "object": "nail", "type": "product", "quantity": 350, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*2,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
+        }]
+    },
+    "mine": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 400, "consumable": true},
+                {"index": 3, "object": "wood plank", "type": "product", "quantity": 100, "consumable": true},
+                {"index": 4, "object": "pickaxe", "type": "product", "quantity": 150, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 6, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 7, "object": "nail", "type": "product", "quantity": 200, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24*7*3,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 7, "xp": 1/5, "life_quality": 0},
+        }]
+    },
+}
+const resource_rules = {
+    "boulder": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "stonebreaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/70, "xp": 1/140},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stonebreaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 5, "duration_type": "constant", "duration": 24, "score": 1/70, "xp": 1/140},
+        }]
+    },
+    "limestone": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stonebreaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 2, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 8, "duration_type": "constant", "duration": 24, "score": 1/700, "xp": 1/1300},
+        }]
+    },
+    "stone": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "stonebreaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 10, "duration_type": "constant", "duration": 24, "score": 1/750, "xp": 1/1500},
+        }]
+    },
+    "water": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "stonebreaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 8, "duration_type": "constant", "duration": 24, "score": 1/250, "xp": 1/500},
+        }]
+    },
+}
 const product_rules = {
+    "basic knife": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "tools": []},
+                {"index": 4, "object": "stone", "type": "resource", "quantity": 6, "consumable": true},
+                {"index": 5, "object": "rag", "type": "product", "quantity": 20, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/100, "xp": 0.1},
+        }]
+    },
+    "big bed": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden plank", "type": "product", "quantity": 6, "consumable": true},
+                {"index": 3, "object": "wood", "type": "resource", "quantity": 6, "consumable": true},
+                {"index": 4, "object": "nail", "type": "product", "quantity": 130, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 4, "consumable": true},
+                {"index": 6, "object": "hay", "type": "product", "quantity": 200, "consumable": true},
+                {"index": 7, "object": "rag", "type": "product", "quantity": 20, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
+        }]
+    },
+    "big wooden roof": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 3, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 70, "consumable": true},
+                {"index": 3, "object": "wooden piece", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 3, "object": "resin", "type": "resource", "quantity": 50, "consumable": true},
+                {"index": 4, "object": "wood", "type": "resource", "quantity": 14, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 8, "consumable": true},
+                {"index": 6, "object": "nail", "type": "product", "quantity": 650, "consumable": true},
+                {"index": 7, "object": "rope", "type": "product", "quantity": 120, "consumable": true},
+                {"index": 8, "object": "wooden plate", "type": "product", "quantity": 10, "consumable": true},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1, "xp": 3/4},
+        }]
+    },
+    "bonfire": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "tools": []},
+                {"index": 2, "object": "wood", "type": "resource", "quantity": 10, "consumable": true},
+                {"index": 3, "object": "branch", "type": "resource", "quantity": 50, "consumable": true},
+                {"index": 4, "object": "hay", "type": "product", "quantity": 20, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/8, "xp": 1/10},
+        }]
+    },
     "carp": {
         "rules": [{
             "requirements": [
@@ -1762,7 +2208,96 @@ const product_rules = {
                  "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 0.5, "duration_type": "constant", "duration": 24, "score": 1/300},
+            "result": {"quantity": 0.5, "duration_type": "constant", "duration": 24, "score": 1/180, "xp": 1/180},
+        }]
+    },
+    "cement": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 2, "xp": 2, "consumable": false, "tools": []},
+                {"index": 4, "object": "gravel", "type": "product", "quantity": 500, "consumable": true},
+                {"index": 5, "object": "clay", "type": "product", "quantity": 100, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 5, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/70, "xp": 0.1},
+        }]
+    },
+    "fence": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "tools": []},
+                {"index": 2, "object": "wooden plank", "type": "product", "quantity": 8, "consumable": true},
+                {"index": 3, "object": "wood", "type": "resource", "quantity": 4, "consumable": true},
+                {"index": 4, "object": "nail", "type": "product", "quantity": 40, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 2, "consumable": true},
+                {"index": 6, "object": "rope", "type": "product", "quantity": 10, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
+        }]
+    },
+    "medium stone wall": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 25, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 700, "consumable": true},
+                {"index": 3, "object": "limestone", "type": "resource", "quantity": 450, "consumable": true},
+                {"index": 4, "object": "cement", "type": "product", "quantity": 500, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2, "xp":4/10},
+        }]
+    },
+    "medium wooden floor": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 30, "consumable": true},
+                {"index": 3, "object": "wooden plank", "type": "product", "quantity": 34, "consumable": true},
+                {"index": 4, "object": "wooden piece", "type": "product", "quantity": 15, "consumable": true},
+                {"index": 5, "object": "wooden plate", "type": "product", "quantity": 9, "consumable": true},
+                {"index": 6, "object": "wood", "type": "product", "quantity": 6, "consumable": true},
+                {"index": 7, "object": "hammer", "type": "product", "quantity": 8, "consumable": true},
+                {"index": 8, "object": "resin", "type": "resource", "quantity": 50, "consumable": true},
+                {"index": 9, "object": "nail", "type": "product", "quantity": 600, "consumable": true},
+                {"index": 10, "object": "rope", "type": "product", "quantity": 60, "consumable": true},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1, "xp": 6/10},
+        }]
+    },
+    "medium wooden roof": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 30, "consumable": true},
+                {"index": 3, "object": "wooden plank", "type": "product", "quantity": 34, "consumable": true},
+                {"index": 4, "object": "wood", "type": "resource", "quantity": 6, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 4, "consumable": true},
+                {"index": 6, "object": "nail", "type": "product", "quantity": 300, "consumable": true},
+                {"index": 7, "object": "rope", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 8, "object": "wooden plate", "type": "product", "quantity": 4, "consumable": true},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 2/3, "xp": 1/2},
+        }]
+    },
+    "medium wooden wall": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 25, "consumable": true},
+                {"index": 3, "object": "wooden plank", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 4, "object": "wood", "type": "resource", "quantity": 4, "consumable": true},
+                {"index": 4, "object": "nail", "type": "product", "quantity": 240, "consumable": true},
+                {"index": 5, "object": "rope", "type": "product", "quantity": 32, "consumable": true},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 2/5, "xp": 1/3},
         }]
     },
     "perch": {
@@ -1773,7 +2308,7 @@ const product_rules = {
                  "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/200},
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/200, "xp": 1/200},
         }]
     },
     "salmon": {
@@ -1785,7 +2320,7 @@ const product_rules = {
                  "workers": [], "tools": ["fishing rod"]},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/600},
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/100, "xp": 1/100},
         },
         {
             "requirements": [
@@ -1794,18 +2329,7 @@ const product_rules = {
                  "workers": [], "tools": ["fishing net"]},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 5, "duration_type": "constant", "duration": 24, "score": 1/600},
-        }]
-    },
-    "trout": {
-        "rules": [{
-            "requirements": [
-                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
-                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
-                 "workers": [], "tools": []},
-            ],
-            "base_duration_in_hours": 24,
-            "result": {"quantity": 0.2, "duration_type": "constant", "duration": 24, "score": 1/400},
+            "result": {"quantity": 5, "duration_type": "constant", "duration": 24, "score": 1/100, "xp": 1/100},
         }]
     },
     "shed": {
@@ -1820,6 +2344,73 @@ const product_rules = {
             ],
             "base_duration_in_hours": 24,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
+        }]
+    },
+    "small bed": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden plank", "type": "product", "quantity": 4, "consumable": true},
+                {"index": 3, "object": "wood", "type": "resource", "quantity": 4, "consumable": true},
+                {"index": 4, "object": "nail", "type": "product", "quantity": 80, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 2, "consumable": true},
+                {"index": 6, "object": "hay", "type": "product", "quantity": 100, "consumable": true},
+                {"index": 7, "object": "rag", "type": "product", "quantity": 10, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
+        }]
+    },
+    "small wooden wall": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 12, "consumable": true},
+                {"index": 3, "object": "wooden plank", "type": "product", "quantity": 5, "consumable": true},
+                {"index": 4, "object": "nail", "type": "product", "quantity": 100, "consumable": true},
+                {"index": 5, "object": "rope", "type": "product", "quantity": 15, "consumable": true},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/4, "xp": 1/5},
+        }]
+    },
+    "small stone wall": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "tools": []},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 12, "consumable": true},
+                {"index": 2, "object": "stone", "type": "resource", "quantity": 300, "consumable": true},
+                {"index": 3, "object": "limestone", "type": "resource", "quantity": 250, "consumable": true},
+                {"index": 4, "object": "cement", "type": "product", "quantity": 300, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/3, "xp":3/10},
+        }]
+    },
+    "table": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "tools": []},
+                {"index": 2, "object": "wooden plank", "type": "product", "quantity": 10, "consumable": true},
+                {"index": 3, "object": "wood", "type": "resource", "quantity": 4, "consumable": true},
+                {"index": 3, "object": "nail", "type": "product", "quantity": 40, "consumable": true},
+                {"index": 4, "object": "hammer", "type": "product", "quantity": 4, "consumable": true}
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
+        }]
+    },
+    "trout": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, 
+                 "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 0.2, "duration_type": "constant", "duration": 24, "score": 1/140, "xp": 1/140},
         }]
     },
 }

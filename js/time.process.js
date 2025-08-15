@@ -13,12 +13,12 @@ const life_interval = setInterval(() => {
         //Update initial stock
         loadInitialRandomGoods()
         //Update initial shelter capacity
-        buildings.shelter["campaign tent"] = 5
+        buildings.shelters["campaign tent"] = 5
         s1 = document.querySelector("#colonyShelterCapacityInfo")
         s1.classList.remove("text-red-400")
         s1.classList.add("text-green-400")
         document.querySelector("#shelterCapacityIcon").remove()
-        document.querySelector("#colonyShelterCapacity").innerHTML = shelter_capacities["campaign tent"] * buildings.shelter["campaign tent"]
+        document.querySelector("#colonyShelterCapacity").innerHTML = shelter_capacities["campaign tent"] * buildings.shelters["campaign tent"]
         s1.innerHTML+= " ("
         s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent(translate(language, "Occupation"))
         s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
@@ -279,10 +279,19 @@ const life_interval = setInterval(() => {
                                     } else { //Insufficient stock for the object
                                         rule.status = "ended"
                                         document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
-                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.remove("bg-gray-700")
-                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.add("bg-red-900")
+                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
+                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
                                         product_rules_defined[rule_index].status = rule.status
-                                        //TODO: Turn all rule workers to idle status...
+                                        //Turn all rule workers to idle status...
+                                        rule.rule_definition.requirements.forEach((requirement) => {
+                                            if(requirement.type === "citizen"){
+                                                requirement.workers.forEach((citizen_index) => {
+                                                    document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
+                                                    document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
+                                                    citizens[citizen_index].status = "idle"
+                                                })    
+                                            }
+                                        })
                                     }
                                 }
                                 //Check workers life...
@@ -296,10 +305,19 @@ const life_interval = setInterval(() => {
                                     if(rule.production_limit*1 == 1){ //No more cycles => suspend rule.
                                         rule.status = "ended"
                                         document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
-                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.remove("bg-gray-700")
-                                        document.getElementById(`active-rule-${rule.id}-status`).parentElement.classList.add("bg-red-900")
+                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
+                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
                                         product_rules_defined[rule_index].status = rule.status
-                                        //TODO: Turn all rule workers to idle status...
+                                        //Turn all rule workers to idle status...
+                                        rule.rule_definition.requirements.forEach((requirement) => {
+                                            if(requirement.type === "citizen"){
+                                                requirement.workers.forEach((citizen_index) => {
+                                                    document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
+                                                    document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
+                                                    citizens[citizen_index].status = "idle"
+                                                })    
+                                            }
+                                        })
                                     } else {
                                         rule.production_limit-- //There are still cycles left to iterate.
                                     }
@@ -483,7 +501,7 @@ const processCountdowns = () => {
             //Arrange unit number: singular or plural
             elem.querySelector("#"+prefix+"-daysText").innerText = days === 1 ? translate(language, "days").slice(0, -1) : translate(language, "days")
         } else {
-            decrement_weeks(elems)
+            decrement_weeks(elem)
         }
     }
     const decrement_hours = (elem) => {
@@ -507,7 +525,7 @@ const processCountdowns = () => {
     }
     let hours, days, weeks, years, prefix
     document.querySelectorAll(".countdownTime").forEach((elem) => {
-        let loop = elem.classList.includes("loop")
+        let loop = elem.classList.contains("loop")
         let idArray = elem.querySelector("span:first-child").id.split("-")
         prefix = idArray[0]+"-"+idArray[1]+"-"+idArray[2]
         //Correct unit numbers (singulars and plurals) before processing values

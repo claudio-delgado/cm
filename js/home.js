@@ -78,15 +78,15 @@ const endActiveExpedition = (expeditionType) => {
             //Calculate type of mount discovered
             let mountResourceType = Math.random()
             if(!huntingMountDiscovered){
-                data.mountResourceType = mountResourceType < mounts["Mine"]["discovery-probability-1"] ? "Mine" :
-                                        mountResourceType < mounts["Clay mount"]["discovery-probability-1"] ? "Clay" :
-                                        mountResourceType < mounts["Wood mount"]["discovery-probability-1"] ? "Wood" :
-                                        mountResourceType < mounts["Stone mount"]["discovery-probability-1"] ? "Stone" : "Hunting"
+                data.mountResourceType = mountResourceType < mounts.descriptions["Mineral mount"]["discovery-probability-1"] ? "mineralMount" :
+                                        mountResourceType < mounts.descriptions["Clay mount"]["discovery-probability-1"] ? "clayMount" :
+                                        mountResourceType < mounts.descriptions["Wood mount"]["discovery-probability-1"] ? "woodMount" :
+                                        mountResourceType < mounts.descriptions["Stone mount"]["discovery-probability-1"] ? "stoneMount" : "huntingMount"
                 huntingMountDiscovered = data.mountResourceType === "Hunting"
             } else {
-                data.mountResourceType = mountResourceType < mounts["Mine"]["discovery-probability-2"] ? "Mine" :
-                                        mountResourceType < mounts["Clay mount"]["discovery-probability-2"] ? "Clay" :
-                                        mountResourceType < mounts["Wood mount"]["discovery-probability-2"] ? "Wood" : "Stone"
+                data.mountResourceType = mountResourceType < mounts.descriptions["Mineral mount"]["discovery-probability-2"] ? "mineralMount" :
+                                        mountResourceType < mounts.descriptions["Clay mount"]["discovery-probability-2"] ? "clayMount" :
+                                        mountResourceType < mounts.descriptions["Wood mount"]["discovery-probability-2"] ? "WoodMount" : "stoneMount"
             }
         }
     }
@@ -253,7 +253,7 @@ const endActiveExpedition = (expeditionType) => {
         data.successfullExpedition = mountResourceFound
         add_news("ResourcesExpeditionFinished", data)
         if(mountResourceFound){
-            add_landform(data.mountResourceType.charAt(0).toLowerCase()+data.mountResourceType.slice(1))
+            add_landform(data.mountResourceType/*.charAt(0).toLowerCase()+data.mountResourceType.slice(1)*/)
             resourcesExpeditionsDone++
             document.querySelector("#resourcesSuccessfullExpeditions").innerText = resourcesExpeditionsDone
         }
@@ -505,7 +505,7 @@ const rule_product_selection = (paragraph, location = false) => {
             if(location){
                 let current_mount = location === "waterReservoir" ? "Water reservoir" : location
                 //Iterate over all manufacturable products in a water reservoir
-                location_products[location]["EN"].forEach((location_product) => {
+                location_goods[location]["EN"].forEach((location_product) => {
                     if(location_product === clicked_product.name){
                         display_product_available_rules(parent_div, clicked_product, current_mount)
                     }
@@ -1360,6 +1360,12 @@ const test_citizen_builder_roles = (citizens_id) => {
         assign_role_to_citizen(citizen_index, "construction", translate(language, "Builder", "f", "capitalized"), "trowel", false)
     })
 }
+const test_citizen_expeditionary_roles = (citizens_id) => {
+    //Assign role construction to citizens up to 2, manually
+    citizens_id.forEach((citizen_index) => {
+        assign_role_to_citizen(citizen_index, "expeditioning", translate(language, "Expeditionary", "", "capitalized"), "map-location-dot", false)
+    })
+}
 const test_familiar_relationships = () => {
     //Test familiar relationship between citizens
     add_parent_to_citizen(citizens[6], citizens[1], "father")   //6 padre de 1
@@ -1417,12 +1423,14 @@ const test_build_new_citizen = () => {
 
 //Avoid modal pop up when zone searched
 showModalZoneSearched = false
-test_citizen_fishing_roles([1, 3, 4, 8])
+test_citizen_fishing_roles([1, 3, 4])
 test_citizen_builder_roles([2, 5, 6])
+test_build_new_citizen()
+test_citizen_expeditionary_roles([7, 8, 9, 10, 11])
 //test_pregnancy_status()
 //text_familiary_relationships()
-test_build_new_citizen()
-add_couple_to_citizen(citizens[1], citizens[6])             //1 pareja de 6
+add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6
+add_landform("stoneMount")
 //daysPassed = 5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

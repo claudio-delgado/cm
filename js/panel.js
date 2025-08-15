@@ -2132,22 +2132,23 @@ class panel{
             let iElement, button_text = "", button_colours = ""
             let products
             if(this.data.location){
-                p = new element("p", "flex w-100 justify-between items-center flex-wrap p-1 pb-0 text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
-                products = location_products[this.data.location]["EN"]
+                p = new element("p", "flex justify-between gap-1 w-100 items-center flex-wrap p-1 pb-0 text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
+                products = location_goods[this.data.location]["EN"]
                 products.forEach((product, index) => {
                     div_specific_paragraph_buttons[index] = document.createElement("button")
                     iElement = "<i class='fa fa-plus me-2'></i>"
                     button_text = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
                     div_specific_paragraph_buttons[index].innerHTML = iElement + button_text
                     button_colours = "border-blue-600 bg-blue-900 text-white"
-                    div_specific_paragraph_buttons[index].classList = `rule_product text-xs capitalize ${index+1 < products.length ? "grow " : ""}p-2 py-1 me-1 mb-1 button border ${button_colours}`
+                    div_specific_paragraph_buttons[index].classList = `rule_product text-xs capitalize ${index+1 < products.length ? "grow " : ""}p-2 py-1 button border ${button_colours}`
                     div_specific_paragraph_buttons[index].setAttribute("data-product", product)
+                    div_specific_paragraph_buttons[index].setAttribute("data-category", "products")
                     p.appendContent(div_specific_paragraph_buttons[index])
                 })
             } else {
                 //Build products category accordions
                 let parent_elem = d1.getNode()//document.querySelector(this.data.parentId)
-                Object.keys(categorized_products).forEach((category, index) => {
+                Object.keys(categorized_goods).forEach((category, index) => {
                     //let category_name = category.charAt(0).toUpperCase()+category.slice(1)
                     //Build productions categories accordion header
                     h2 = new element("h2", `${index ? "mt-1" : ""}`, [], parent_elem, `accordion-productions-category-${index+1}`); h2.create()
@@ -2158,11 +2159,11 @@ class panel{
                     enable_accordion_click(b.getNode())
                     //Build productions categories accordion body
                     d1 = new element("div", "border-b border-s border-e border-gray-800 bg-gray-600 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parent_elem, `accordion-productions-category-${index+1}-body`); d1.create()
-                    let subcategories = categorized_products[category]["subcategories"]
+                    let subcategories = categorized_goods[category]["subcategories"]
                     d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
                     Object.keys(subcategories).forEach((subcategory, s_index) => {
                         //Format certain subcategories.
-                        let translatable_subcategory = subcategory === "waterReservoir" ? "Water reservoir" : subcategory
+                        let translatable_subcategory = mounts.camelCase[subcategory] ? mounts.camelCase[subcategory] : subcategory
                         //Build productions subcategories accordion header
                         h2 = new element("h2", s_index ? "mt-1 mb-0" : "m-0", [], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}`); h2.create()
                         b = new element("button", "unattached-click p-1 flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-700 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-productions-category-${index+1}-sub-${s_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-productions-category-${index+1}-sub-${s_index+1}-body`}], h2.getNode())
@@ -2172,20 +2173,26 @@ class panel{
                         enable_accordion_click(b.getNode())
                         //Build productions subcategories accordion body
                         d2 = new element("div", "p-1 border-s border-e border-b border-gray-800 bg-gray-400 hidden", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}-sub-${s_index+1}`}], d.getNode(), `accordion-productions-category-${index+1}-sub-${s_index+1}-body`); d2.create()
-                        let products = categorized_products[category]["subcategories"][subcategory]["EN"]
+                        let goods = categorized_goods[category]["subcategories"][subcategory]["EN"]
                         d1 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), `accordion-productions-category-${index+1}-subcategory-${s_index+1}-products`); d1.create()
                         p = new element("p", "flex gap-1 w-100 justify-between items-center flex-wrap text-gray-300", [], d1.getNode()); p.create()
-                        let products_found = 0
-                        products.forEach((product, p_index) => {
-                            if(product_rules[product]){
-                                let rule_category = category == "by location" ? "products" : category
-                                b = new element("button", "rule_product text-xs capitalize "+(p_index+1 < products.length ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":product}, {"key":"data-category","value":rule_category}], p.getNode()); b.create()
+                        let goods_found = 0
+                        goods.forEach((good, p_index) => {
+                            if(product_rules[good] || resource_rules[good]){
+                                let rule_category
+                                if(product_rules[good]){
+                                    rule_category = category == "by location" ? "products" : category
+                                }
+                                if(resource_rules[good]){
+                                    rule_category = category == "by location" ? "resources" : category
+                                }
+                                b = new element("button", "rule_product text-xs capitalize "+(/*p_index+1 < goods.length*/true ? "grow " : "")+"p-2 py-1 button border border-blue-600 bg-blue-900 text-white", [{"key":"type","value":"button"}, {"key":"data-product","value":good}, {"key":"data-category","value":rule_category}], p.getNode()); b.create()
                                 i = new element("i", "fa fa-plus me-1", [], b.getNode()); i.create()
-                                s = new element("span", "", [], b.getNode()); s.create(); s.appendContent(translate(language, product, "", "capitalized"))
-                                products_found++
+                                s = new element("span", "", [], b.getNode()); s.create(); s.appendContent(translate(language, good, "", "capitalized"))
+                                goods_found++
                             }
                         })
-                        if(!products_found){
+                        if(!goods_found){
                             p.getNode().classList.add("empty")
                             s = new element("span", "font-bold text-gray-900", [], p.getNode()); s.create()
                             i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()

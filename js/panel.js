@@ -125,8 +125,8 @@ class panel{
         })
 
         //Build specific panel
-        d1 = new element("div", this.panel.name+" p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [], parent_div, this.panel.id); d1.create()
-        p = new element("p", "flex py-1 w-100 gap-1 justify-between items-center flex-wrap p-1 text-gray-300", [], d1.getNode());
+        d1 = new element("div", this.panel.name+" p-1 border-b border-s border-e border-gray-800 bg-gray-400 text-xs", [], parent_div, this.panel.id); d1.create()
+        p = new element("p", "flex w-100 gap-1 justify-between items-center flex-wrap text-gray-300", [], d1.getNode());
         let div_specific_paragraph_buttons = []
         if(this.panel.name === "assignRole"){
             //Specific Assign Role panel
@@ -2058,7 +2058,7 @@ class panel{
             }
 
             //Fertility process result
-            d = new element("div", `m-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-results`); d.create()
+            d = new element("div", `mt-1 ${process_class} p-1 border border-gray-800 bg-gray-600 text-white grow`, [], d1.getNode(), `accordion-relationship-${this.object_id}-fertility-results`); d.create()
             p = new element("p", "px-1 w-full", [], d.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Process result"))
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
@@ -2072,7 +2072,7 @@ class panel{
             parent_div = document.getElementById(`relationship-${this.object_id}-tryBreeding`)
             let final_results = process_results[0] === "Successfully completed" && process_results[1] === "Successfully completed" ? "Breeding is possible" : "It is not possible for the couple to breed"
             process_class = final_results != "Breeding is possible" ? "bg-red-800" : "bg-green-900"
-            d = new element("div", `ms-1 me-1 mb-1 ${process_class} p-1 flex justify-between border border-gray-800 bg-gray-600 text-white grow`, [], parent_div, `accordion-relationship-${this.object_id}-fertility-results`); d.create()
+            d = new element("div", `mt-1 ${process_class} p-1 flex justify-between border border-gray-800 bg-gray-600 text-white grow`, [], parent_div, `accordion-relationship-${this.object_id}-fertility-results`); d.create()
             d1 = new element("div", `grow`, [], d.getNode()); d1.create()
             p = new element("p", "px-1 w-full", [], d1.getNode()); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Final result"))
@@ -2127,8 +2127,9 @@ class panel{
         if(this.panel.name === "newRule"){
             //Specific New Production Rule panel
             p.create(); p.getNode().id = "new-rule-title"
-            s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
-            s.appendHTML(":")
+            p.getNode().classList.remove("justify-between", "gap-1")
+            s = new element("span", "text-gray-900 font-bold", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
+            s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(":")
             let iElement, button_text = "", button_colours = ""
             let products
             if(this.data.location){

@@ -104,31 +104,92 @@ const colony_satisfaction = (lifeQuality, population) => {
         if(lifeQuality >= 1.5 * population){
             if(lifeQuality >= 2 * population){
                 satisfaction.word = "Extreme happiness"
-                satisfaction.icon = "face-laugh-squint" 
-                satisfaction.color = "text-green-400"
+                satisfaction.icon = "fa-face-laugh-squint" 
+                satisfaction.color = "bg-green-500"
             } else { 
                 satisfaction.word = "Happiness" 
-                satisfaction.icon = "face-laugh" 
-                satisfaction.color = "text-green-400"
+                satisfaction.icon = "fa-face-laugh" 
+                satisfaction.color = "bg-green-600"
             }
         } else {
             satisfaction.word = "Satisfaction"
-            satisfaction.icon = "face-smile"
-            satisfaction.color = "text-green-400"
+            satisfaction.icon = "fa-face-smile"
+            satisfaction.color = "bg-green-700"
         }
     } else {
         if(lifeQuality <= 0.5 * population){ 
             satisfaction.word = "Dissapointment"
-            satisfaction.icon = "face-weary"
-            satisfaction.color = "text-red-400"
+            satisfaction.icon = "fa-face-weary"
+            satisfaction.color = "bg-red-800"
         } else { 
             satisfaction.word = "Dissatisfaction"
-            satisfaction.icon = "face-meh"
-            satisfaction.color = "text-yellow-400"
+            satisfaction.icon = "fa-face-meh"
+            satisfaction.color = "bg-yellow-600"
         }
     }
     return satisfaction
 }
+const shelter_capacity_mood = (shelter_capacity, population) => {
+    let satisfaction = {}
+    let occupation = Math.round((population / shelter_capacity) * 100)
+    satisfaction.occupation = occupation
+    if(occupation < 95){
+        if(occupation <= 75){
+            if(occupation <= 50){
+                satisfaction.word = "Extreme happiness"
+                satisfaction.icon = "fa-face-laugh-squint" 
+                satisfaction.color = "bg-green-500"
+            } else { 
+                satisfaction.word = "Happiness" 
+                satisfaction.icon = "fa-face-laugh" 
+                satisfaction.color = "bg-green-600"
+            }
+        } else {
+            satisfaction.word = "Satisfaction"
+            satisfaction.icon = "fa-face-smile"
+            satisfaction.color = "bg-green-700"
+        }
+    } else {
+        if(occupation <= 100){
+            satisfaction.word = "Worry"
+            satisfaction.icon = "fa-face-meh"
+            satisfaction.color = "bg-yellow-600"
+        } else {
+            if(occupation < 120){ 
+                satisfaction.word = "Dissatisfaction"
+                satisfaction.icon = "fa-face-frown"
+                satisfaction.color = "bg-yellow-700"
+            } else {
+                satisfaction.word = "Dissapointment"
+                satisfaction.icon = "fa-face-weary"
+                satisfaction.color = "bg-red-800"
+            }
+        }
+    }
+    return satisfaction
+}
+const oppression_mood = (oppresion) => {
+    let satisfaction = {}
+    if(oppresion > 0){
+        satisfaction.word = "Dissatisfaction"
+        satisfaction.icon = "fa-face-meh"
+        satisfaction.color = "bg-red-800"
+    } else {
+        satisfaction.word = "Satisfaction"
+        satisfaction.icon = "fa-face-smile"
+        satisfaction.color = "bg-green-700"
+    }
+    return satisfaction
+}
+
+const get_shelter_capacity = () => {
+    let shelter_capacity = 0
+    Object.keys(buildings.shelters).forEach((shelter) => {
+        shelter_capacity += buildings.shelters[shelter] * shelter_capacities[shelter]
+    })
+    return shelter_capacity
+}
+
 
 //Gauss normal distribution function
 const gauss = (a, b, c, x) => {

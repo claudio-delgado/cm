@@ -1,5 +1,5 @@
 //Long term global variables
-var language = "ES", citizensAmount, citizensFemaleAmount, citizensMaleAmount
+var language = "ES", citizensFemaleAmount, citizensMaleAmount
 var citizens = [], pregnancies = []
 var daysPassed = 0, dayPassed = weekPassed = yearPassed = false, searchingZone = zoneSearched = lifeStarted = false
 var colony_water_reservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0, huntingMountDiscovered = false

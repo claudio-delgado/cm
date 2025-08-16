@@ -2,7 +2,7 @@
 
 const initColonyInfo = () => {
     language = "ES", colonyScore = 0, colonyLifeQuality = 10
-    citizensAmount = 10, citizensFemaleAmount = 5, citizensMaleAmount = 5
+    citizensFemaleAmount = 5, citizensMaleAmount = 5
     daysPassed = 0, dayPassed = false, weekPassed = false
     wagonsAmount = 3, horsesAmount = 6
     //colony_water_reservoir = water_reservoirs[Math.floor(Math.random() * water_reservoirs.length)].name
@@ -404,9 +404,9 @@ const setRandomNames = (language) => {
     var femaleFamilies = naming['families'][language]['F']
     var maleFamilies = naming['families'][language]['M']
     //Iterate over each citizen and assign names and families
-    for(let i = 1; i<=citizensAmount; i++){
+    for(let i = 1; i<=Object.keys(citizens).length; i++){
         let randomCitizenName = "", randomCitizenFamily = "", iconGroup = "", genderClass = "", genderColour = ""
-        if(i<=citizensAmount/2){
+        if(i<=Object.keys(citizens).length/2){
             iconGroup = "fa"; genderClass = "fa-venus"; genderColour = "text-red-500"
             randomCitizenName = femaleNames[Math.floor(Math.random() * femaleNames.length)]
             femaleNames = femaleNames.filter(item => item !== randomCitizenName)
@@ -535,7 +535,7 @@ accordion_news()
 add_news("Welcome")
 accordion_colony()
 accordion_buildings()
-accordion_citizens(citizensAmount)
+accordion_citizens()
 accordion_relationships()
 accordion_landforms()
 accordion_expeditions()
@@ -846,7 +846,7 @@ const cancel_relationship = (e) => {
 }
 const try_breeding = (e) => {
     let current_relationship_id = e.target.closest("button").id.split("-")[1]
-    let objectData = {"language": language, "objectName": "relationship", "objectId": current_relationship_id, "optionName": "actions", "parentId": `#accordion-relationship-${current_relationship_id}-body`}
+    let objectData = {"language": language, "objectName": "relationship", "objectId": current_relationship_id, "optionName": "actions", "parentId": `accordion-relationship-${current_relationship_id}-body`}
     //Build panel
     let tryBreedingPanel = new panel("tryBreeding", objectData, "relationship", current_relationship_id, "actions")
     tryBreedingPanel.hidePreviousOptions()
@@ -1360,6 +1360,18 @@ const test_citizen_builder_roles = (citizens_id) => {
         assign_role_to_citizen(citizen_index, "construction", translate(language, "Builder", "f", "capitalized"), "trowel", false)
     })
 }
+const test_citizen_waterBearer_roles = (citizens_id) => {
+    //Assign role waterbearing to citizens in citizens_id array
+    citizens_id.forEach((citizen_index) => {
+        assign_role_to_citizen(citizen_index, "waterbearing", translate(language, "Water bearer", "f", "capitalized"), "glass-water", false)
+    })
+}
+const test_citizen_stoneBreaker_roles = (citizens_id) => {
+    //Assign role construction to citizens up to 2, manually
+    citizens_id.forEach((citizen_index) => {
+        assign_role_to_citizen(citizen_index, "stonebreaking", translate(language, "Stone breaker", "f", "capitalized"), "pickaxe", false)
+    })
+}
 const test_citizen_expeditionary_roles = (citizens_id) => {
     //Assign role construction to citizens up to 2, manually
     citizens_id.forEach((citizen_index) => {
@@ -1398,25 +1410,27 @@ const test_familiar_relationships = () => {
                  3m   --- 7h
     */
 }
-const test_build_new_citizen = () => {
+const test_build_new_citizen = (data = {}) => {
     let new_citizen = {}
-    new_citizen.id = citizens.length
-    new_citizen.father = 6
-    new_citizen.mother = 1
-    new_citizen.children = []
-    new_citizen.couple = null
-    new_citizen.role = new_citizen.rolekey = "unassigned"
-    new_citizen.birthWeek = document.getElementById("passedWeeks").innerHTML*1 - 780 //Just born assumed
-    new_citizen.birthWeeks = 780 //Weeks already lived.
-    new_citizen.ageYears = 15 //Just born assumed
-    new_citizen.ageWeeks = 0 //Just born assumed
-    new_citizen.status = "idle"
-    new_citizen.gender = ["Femenine", "Masculine"][Math.floor(Math.random()*2)]
-    new_citizen.name = set_random_name(language, new_citizen.gender)
-    new_citizen.xp = 0
-    new_citizen.leftHand = new_citizen.rightHand = ""
-    new_citizen.outfit = "No"
-    new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
+    new_citizen.id = data.id ? data.id : Object.keys(citizens).length + 1
+    new_citizen.father = data.father ? data.father : 6
+    new_citizen.mother = data.mother ? data.mother : 1
+    new_citizen.children = data.children ? data.children : []
+    new_citizen.couple = data.couple ? data.couple : null
+    new_citizen.role = data.role ? data.role : "unassigned"
+    new_citizen.rolekey = data.rolekey ? data.rolekey : "unassigned"
+    new_citizen.birthWeek = data.birthWeek ? data.birthWeek : document.getElementById("passedWeeks").innerHTML*1 - 780 //Just born assumed
+    new_citizen.ageYears = data.ageYears ? data.ageYears : 15 //Just born assumed
+    new_citizen.birthWeeks = data.birthWeeks ? data.birthWeeks : 780 //Weeks already lived.
+    new_citizen.ageWeeks = data.ageWeeks ? data.ageWeeks : 0 //Just born assumed
+    new_citizen.status = data.status ? data.status : "idle"
+    new_citizen.gender = data.gender ? data.gender : ["Femenine", "Masculine"][Math.floor(Math.random()*2)]
+    new_citizen.name = data.name ? data.name : set_random_name(language, new_citizen.gender)
+    new_citizen.xp = data.xp ? data.xp : 0
+    new_citizen.leftHand = data.leftHand ? data.leftHand : ""
+    new_citizen.rightHand = data.rightHand ? data.rightHand : ""
+    new_citizen.outfit = data.outfit ? data.outfit : "No"
+    new_citizen.fertility = data.fertility ? data.fertility : 10 + Math.floor(Math.random() * 91)
     build_citizen(translation = true, new_citizen.id, new_citizen)
     //build_citizen(translation = true, undefined, undefined)
 }
@@ -1425,8 +1439,14 @@ const test_build_new_citizen = () => {
 showModalZoneSearched = false
 test_citizen_fishing_roles([1, 3, 4])
 test_citizen_builder_roles([2, 5, 6])
-test_build_new_citizen()
+test_build_new_citizen({"gender": "Femenine", "ageYears":"21", "ageWeeks": 0, "birthWeeks": 1092, "birthWeek":-1092})
 test_citizen_expeditionary_roles([7, 8, 9, 10, 11])
+test_build_new_citizen({"gender": "Masculine"})
+test_build_new_citizen({"gender": "Femenine"})
+test_citizen_stoneBreaker_roles([12, 13])
+test_build_new_citizen({"gender": "Masculine"})
+test_build_new_citizen({"gender": "Femenine"})
+test_citizen_waterBearer_roles([14, 15])/**/
 //test_pregnancy_status()
 //text_familiary_relationships()
 add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6

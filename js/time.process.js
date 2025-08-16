@@ -12,8 +12,9 @@ const life_interval = setInterval(() => {
         document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.remove() })
         //Update initial stock
         loadInitialRandomGoods()
-        //Update initial shelter capacity
         buildings.shelters["campaign tent"] = 5
+        /*
+        //Update initial shelter capacity
         s1 = document.querySelector("#colonyShelterCapacityInfo")
         s1.classList.remove("text-red-400")
         s1.classList.add("text-green-400")
@@ -24,8 +25,9 @@ const life_interval = setInterval(() => {
         s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
         s1.innerHTML+= ")"
         i = new element("i", "ms-1 fa fa-face-smile", [], s1, "shelterCapacityIcon"); i.create()
-        //Update initial buildings
         update_colony()
+        */
+        //Update initial buildings
         if(showModalZoneSearched) { 
             modal_popup("Zone researched!", "ZoneSearched") 
             modal.show()
@@ -44,6 +46,7 @@ const life_interval = setInterval(() => {
             document.getElementById("newExpeditionNoActions").classList.add("hidden")
             document.querySelector("#expeditionStart").classList.remove("hidden")
         }
+        update_colony("zoneSearched")
     }
     //Hour passed
     const move_time = () => {
@@ -123,7 +126,7 @@ const life_interval = setInterval(() => {
     }
     const update_running_productions = () => {
         //Update running productions
-        product_rules_defined.forEach((product_rule, product_index) => {
+        good_rules_defined.forEach((product_rule, product_index) => {
             if(product_rule.status === "running"){
                 let rule_object = product_rule.object
                 //Check if requirements are currently fulfilled.
@@ -257,80 +260,90 @@ const life_interval = setInterval(() => {
             move_time()
             //Check production rules progress
             let stock_changed = false
-            product_rules_defined.forEach((rule, rule_index) => {
+            good_rules_defined.forEach((rule, rule_index) => {
                 //Is the production rule running?
                 if(rule.status == "running"){
-                    //Has the production rule remaining hours?
-                    if(rule.duration_remaining){
-                        //Check if it's the last remaining hour and the result has to be obtained.
-                        let result_attempt = rule.duration_remaining - 1 == 0
-                        //Decrement remaining hours.
-                        rule.duration_remaining = result_attempt ? rule.duration : rule.duration_remaining - 1
-                        //Try to obtain the result.
-                        if(result_attempt){
-                            //Iterate over all rule requirements to check those which must decrease stock values.
-                            rule.rule_definition.requirements.forEach((requirement) => {
-                                //If rule is still running and the requirement object is a product, resource or part, try to decrease the stock.
-                                if(rule.status === "running" && requirement.consumable && ["product", "resource", "building part"].includes(requirement.type)){
-                                    stock_changed = stock_values[requirement.type + "s"][language][translate(language, requirement.object)] >= requirement.quantity
-                                    if(stock_changed){
-                                        //Decrement stock goods.
-                                        stock_values[requirement.type + "s"][language][translate(language, requirement.object)] -= requirement.quantity
-                                    } else { //Insufficient stock for the object
-                                        rule.status = "ended"
-                                        document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
-                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
-                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
-                                        product_rules_defined[rule_index].status = rule.status
-                                        //Turn all rule workers to idle status...
-                                        rule.rule_definition.requirements.forEach((requirement) => {
-                                            if(requirement.type === "citizen"){
-                                                requirement.workers.forEach((citizen_index) => {
-                                                    document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
-                                                    document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
-                                                    citizens[citizen_index].status = "idle"
-                                                })    
-                                            }
-                                        })
-                                    }
+                    //Decrement remaining hours.
+                    rule.duration_remaining--
+                    //Check if it's the last remaining hour and the result has to be obtained.
+                    if(!rule.duration_remaining){
+                        //Reset remaining hours with default rule's value.
+                        rule.duration_remaining = rule.duration
+                        //Get rule workers.
+                        let xp_increase = rule.rule_definition.result.xp ? rule.rule_definition.result.xp : 0
+                        rule.rule_definition.requirements.forEach((requirement) => {
+                            if(requirement.type === "citizen" && requirement.workers && requirement.workers.length){
+                                requirement.workers.forEach((citizen_id) => {
+                                    //Update worker xp.
+                                    citizens[citizen_id].xp += xp_increase
+                                })
+                            }
+                        })
+                        //Iterate over all rule requirements and execute them.
+                        //This may involve checking those requirement goods which must decrease stock values, or check workers life.
+                        rule.rule_definition.requirements.forEach((requirement) => {
+                            //If rule is still running and the requirement object is a product, resource or part, try to decrease the stock.
+                            if(rule.status === "running" && requirement.consumable && ["product", "resource", "building part"].includes(requirement.type)){
+                                stock_changed = stock_values[requirement.type + "s"][language][translate(language, requirement.object)] >= requirement.quantity
+                                if(stock_changed){
+                                    //Decrement stock goods.
+                                    stock_values[requirement.type + "s"][language][translate(language, requirement.object)] -= requirement.quantity
+                                } else { //Insufficient stock for the object
+                                    rule.status = "ended"
+                                    document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
+                                    document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
+                                    document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
+                                    good_rules_defined[rule_index].status = rule.status
+                                    //Turn all rule workers to idle status...
+                                    rule.rule_definition.requirements.forEach((requirement) => {
+                                        if(requirement.type === "citizen"){
+                                            requirement.workers.forEach((citizen_index) => {
+                                                document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
+                                                document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
+                                                citizens[citizen_index].status = "idle"
+                                            })    
+                                        }
+                                    })
                                 }
-                                //Check workers life...
-                            })
-                            if(rule.status === "running"){
-                                //All rule required goods consumed => result must be obtained.
-                                //Generate product, resource or building part.
-                                stock_values[rule.category][language][translate(language, rule.object)] += rule.rule_definition.result.quantity * 1
-                                //Check rule mode and if not cyclic, verify if there is any cycle left to iterate.
-                                if(rule.production_limit !== "cyclic"){
-                                    if(rule.production_limit*1 == 1){ //No more cycles => suspend rule.
-                                        rule.status = "ended"
-                                        document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
-                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
-                                        document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
-                                        product_rules_defined[rule_index].status = rule.status
-                                        //Turn all rule workers to idle status...
-                                        rule.rule_definition.requirements.forEach((requirement) => {
-                                            if(requirement.type === "citizen"){
-                                                requirement.workers.forEach((citizen_index) => {
-                                                    document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
-                                                    document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
-                                                    citizens[citizen_index].status = "idle"
-                                                })    
-                                            }
-                                        })
-                                    } else {
-                                        rule.production_limit-- //There are still cycles left to iterate.
-                                    }
+                            }
+                            //Check workers life...
+                        })
+                        //Obtain result...
+                        if(rule.status === "running"){
+                            //All rule required goods consumed => result must be obtained.
+                            //Generate product, resource or building part.
+                            stock_values[rule.category][language][translate(language, rule.object)] += rule.rule_definition.result.quantity * 1
+                            stock_changed = true
+                            //Check rule mode and if not cyclic, verify if there is any cycle left to iterate.
+                            if(rule.production_limit != Infinity){
+                                if(rule.production_limit*1 == 1){ //No more cycles => suspend rule.
+                                    rule.status = "ended"
+                                    document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
+                                    document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
+                                    document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
+                                    good_rules_defined[rule_index].status = rule.status
+                                    //Turn all rule workers to idle status...
+                                    rule.rule_definition.requirements.forEach((requirement) => {
+                                        if(requirement.type === "citizen"){
+                                            requirement.workers.forEach((citizen_index) => {
+                                                document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
+                                                document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
+                                                citizens[citizen_index].status = "idle"
+                                            })    
+                                        }
+                                    })
+                                } else {
+                                    rule.production_limit-- //There are still cycles left to iterate.
                                 }
                             }
                         }
                     }
-                    if(stock_changed){
-                        stock_displayed = JSON.parse(JSON.stringify(stock_values))
-                        update_stock()
-                    }
                 }
             })
+            if(stock_changed){
+                stock_displayed = JSON.parse(JSON.stringify(stock_values))
+                update_stock()
+            }
         //End hourly events
         
         //Zone searched flag

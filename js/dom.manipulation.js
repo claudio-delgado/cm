@@ -179,7 +179,7 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
             p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your citizens have succesfully discovered the following things:"))
             p = new element("p", "mb-2 text-gray-200", [], d2.getNode()); p.create()
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((buildings.shelters["campaign tent"]).toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent(get_shelter_capacity().toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "campaign tents", "", "lowercase"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
             s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock_displayed.resources[language][translate(language, "stone")]).toString())
@@ -458,10 +458,10 @@ const accordion_colony = () => {
         
         //Shelter capacity
         //Get shelter capacity from buildings array
-        let shelterCapacity = buildings.shelters["campaign tent"].toString()
-        let shelterCapacityOccupation = !buildings.shelters["campaign tent"] ? "" : "67%"
+        let shelterCapacity = get_shelter_capacity().toString()
+        let shelterCapacityOccupation = "0%"
         let shelterCapacityIcon = ""
-        let shelterCapacityColor = !buildings.shelters["campaign tent"] ? "bg-red-800" : "bg-green-700"
+        let shelterCapacityColor = "bg-red-800"
         p = new element("p", "w-100 flex gap-1 p-0 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
@@ -723,57 +723,96 @@ const accordion_colony = () => {
     build_stock()
     build_actions_available()
 }
-const add_building = (index, type, parentElement) => {
+const display_building_rules = (parent_div, building_type, building_rules) => {
+    //Iterate over all rules for that selected building.
+    //Create building rules accordions with a rule inside.
+    d = new element("div", "", [{"key": "data-accordion", "value": "collapse"}], parent_div, "accordion-new-building-rules"); d.create()
+    var rules_amount = building_rules.length
+    building_rules.forEach((rule, r_index) => {
+        h2 = new element("h2", `${r_index ? "mt-1 " : ""}border border-gray-800`, [], d.getNode(), `accordion-new-building-rule-index-${r_index}-header`); h2.create()
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs font-medium border border-gray-800 gap-3 bg-gray-900 text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new-building-rule-index-${rule_index}-body`}, {"key": "aria-controls", "value": `accordion-new-building-rule-index-${rule_index}-body`}], h2.getNode())
+        b.create()
+        s = new element("span", "", [], b.getNode()); s.create()
+        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(`${translate(language, "Construction rule") + (rules_amount > 1 ? " #"+r_index : "")}`)
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        d1 = new element("div", "p-1 bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-index-${r_index}-header`},{"key": "data-rule-index", "value": r_index},{"key": "data-category", "value": building_type}], d.getNode(), `accordion-new-building-rule-index-${r_index}-body`); d1.create()
+        //new_rule_display_info(rule, rule_index, clicked_product, current_mount)
+        //Select rule requirement
+    })
+}
+const add_building = (non_zero_index, type, parentElement) => {
+    //Get building group and type.
+    let index = non_zero_index - 1
+    let building_group = parentElement.id.split("-")[1]
+    let building_type = parentElement.id.split("-")[3]
+    let current_building = buildings[building_group][building_type]["building_list"][index]
     //Build building accordion container
-    d0 = new element("div", "w-100", [], parentElement, "accordion-building-1-"+index); d0.create()
+    d0 = new element("div", "w-100", [], parentElement, `building-group-${building_group}-building-${building_type}-${index}`); d0.create()
     //Build building accordion header
-    h2 = new element("h2", "notificationUnread w-100", [], d0.getNode(), "accordion-building-1-"+index+"-header"); h2.create()
-    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-1-"+index+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-1-"+index+"-body"}], h2.getNode(), "accordion-building-1-"+index)
+    h2 = new element("h2", "notificationUnread w-100", [], d0.getNode(), `building-group-${building_group}-building-${building_type}-${index}-header`); h2.create()
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#building-group-${building_group}-building-${building_type}-${index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`building-group-${building_group}-building-${building_type}-${index}-body`}], h2.getNode())
     b.create()
     enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
     s1 = new element("span", "new text-xs px-1 py-0 font-bold rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent(translate(language, "NEW", "m"))
     enable_notification_events()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, type))
-    s1 = new element("span", "font-bold ms-1", [], s.getNode()); s1.create(); s1.appendContent(""+index)
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(current_building.name)
+    //s1 = new element("span", "font-bold ms-1", [], s.getNode()); s1.create(); s1.appendContent(""+index)
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build building accordion body
-    d1 = new element("div", "hidden w-100", [{"key":"aria-labelledby","value":"accordion-building-1-"+index+"-header"}], d0.getNode(), "accordion-building-1-"+index+"-body"); d1.create()
-    d2 = new element("div", "p-2 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
+    d1 = new element("div", "hidden w-100", [{"key":"aria-labelledby","value":`building-group-${building_group}-building-${building_type}-${index}-header`}], d0.getNode(), `building-group-${building_group}-building-${building_type}-${index}-body`); d1.create()
+    d2 = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
     //Campaign tent info
-    //First line
-    p = new element("p", "ms-1 mb-2 text-xs text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Status"))
-    p.appendHTML(": ")
-    s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], p.getNode(), "building-1-"+index+"-status"); s.create(); s.appendContent(translate(language, "Constructed", "m"))
-    p.appendHTML(".")
-    //Second line
-    p = new element("p", "ms-1 mb-2 text-xs text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], p.getNode()); s.create(); s.appendContent(translate(language, "Constructed in", "m"))
-    p.appendHTML(": ")
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Year"))
-    s = new element("span", "font-bold ms-1", [], p.getNode(), "building-1-"+index+"-createdYear"); s.create(); s.appendContent("1")
-    p.appendHTML(", ")
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Week"))
-    s = new element("span", "font-bold ms-1", [], p.getNode(), "building-1-"+index+"-createdWeek"); s.create(); s.appendContent("1")
-    p.appendHTML(", ")
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Day"))
-    s = new element("span", "font-bold ms-1", [], p.getNode(), "building-1-"+index+"-createdDay"); s.create(); s.appendContent("1")
-    p.appendHTML(".")
-    //Third line
-    p = new element("p", "ms-1 mb-2 text-xs text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Shelter capacity"))
-    p.appendHTML(": ")
-    s = new element("span", "font-bold", [], p.getNode(), "building-1-"+index+"-capacity"); s.create(); s.appendContent("3")
-    s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "citizens"))
+    //First line: Constructed in...
+    p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "flex", [], p.getNode()); s.create()
+    s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Constructed in", "f"))
+    s1.appendHTML(": ")
+    s = new element("span", "grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+    s1 = new element("span", "flex-none", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year"))
+    s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdYear`); s1.create(); s1.appendContent(current_building.created.year.toString())
+    s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week"))
+    s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdWeek`); s1.create(); s1.appendContent(current_building.created.week.toString())
+    s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day"))
+    s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdDay`); s1.create(); s1.appendContent(current_building.created.day.toString())
+    s1 = new element("span", "flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdHour`); s1.create(); s1.appendContent(current_building.created.hour.toString().padStart(2, "0"))
+    s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.")
+    //Second line: Status: Finished...
+    p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "flex", [], p.getNode()); s.create()
+    s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Status"))
+    s1.appendHTML(": ")
+    s = new element("span", "flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+    s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-status`); s1.create()
+    s1.appendContent(translate(language, current_building.status, "f"))
+    s = new element("span", "font-bold p-0.5 px-1 grow bg-red-700 border border-gray-700 text-white", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fire hazard") + ": " + buildings[building_group][building_type].risk["fire hazard"]*100 +"%")
+    //Third line: Shelter capacity...
+    p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
+    s = new element("span", "flex", [], p.getNode()); s.create()
+    s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Shelter capacity"))
+    s1.appendHTML(": ")
+    s = new element("span", "grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+    s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-capacity`); s1.create(); s1.appendContent(current_building.capacity.toString())
+    s2 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s2.create(); s2.appendContent(translate(language, "citizens"))
+
+/*
     //Forth line
     p = new element("p", "ms-1 mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "font-bold p-0.5 px-1 rounded bg-red-500 text-white", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fire hazard"))
+    */
 }
 const accordion_buildings = (update = false) => {
-    const new_building = () => {
-        //Add new building to the accordion
+    const new_building = (e) => {
+        //Create new building in the accordion
+        let object_data = {"language": language, "objectName": "buildings", "objectId": false, "optionName": "actions", "parentId": `accordion-menu-buildings-body`, "location": ""}
+        //Build new production rule panel
+        let new_production_rule_panel = new panel("newBuilding", object_data)
+        new_production_rule_panel.hidePreviousOptions()
+        new_production_rule_panel.buildPanel()
     }
     //Build buildings accordion
     let parentElem = document.getElementById("accordion-menu")
@@ -809,7 +848,6 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     let new_citizen = {}
     let accordion_citizens = document.getElementById("accordion-citizens")
     let build_citizen_accordion_header = () => {
-        let accordion_citizens = document.getElementById("accordion-citizens")
         h2 = new element("h2", "notificationUnread", [], accordion_citizens, `accordion-citizen-${id}-header`); h2.create()
         b = new element("button", "unattached-click font-medium flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-citizen-${id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-citizen-${id}-body`}], h2.getNode())
         b.create()
@@ -820,15 +858,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         let citizen_gender = new_citizen.gender != undefined ? new_citizen.gender : undefined
         let citizen_gender_icon_class = citizen_gender != undefined ? (citizen_gender === "Femenine" ? "fa-venus text-red-500" : "fa-mars text-blue-500") : "hidden"
         let citizen_age_icon_class = new_citizen.ageYears != undefined 
-                                            ?  (new_citizen.ageYears <= 5 ? "fa-baby" 
-                                                    :   (new_citizen.ageYears < 15 ? "fa-child"
-                                                        :   (new_citizen.ageYears < 21 ? "fa-person-walking"
-                                                            :   (new_citizen.ageYears < 50 ? "fa-person"
-                                                                :   (new_citizen.ageYears < 65 ? "fa-person" : "fa-person-cane")
-                                                                )
-                                                            )
-                                                        )
-                                                )
+                                            ?  `fa-${age_icons(new_citizen.ageYears)}`
                                             : "hidden fa"
         let citizen_role_icon_class = "hidden"
         if(citizen.role != undefined){
@@ -1079,7 +1109,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         show_actions_available(d1)
     }
     //Check if id was provided, otherwise get the first available.
-    id = !id && (!citizen || citizen.id == undefined) ? Object.keys(citizens).length : id
+    id = !id && (!citizen || citizen.id == undefined) ? Object.keys(citizens).length + 1 : id
     new_citizen.id = id
     new_citizen.gender = !citizen || citizen.gender == undefined || citizen.gender === null ? ["Femenine", "Masculine"][Math.floor(Math.random()*2)] : citizen.gender
     new_citizen.name = !citizen || citizen.name == undefined || citizen.name === null ? set_random_name(language, new_citizen.gender) : citizen.name
@@ -1115,7 +1145,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.mother])
     }
     enable_accordion_click(document.querySelector(`#accordion-citizen-${new_citizen.id}-header button`))
-    update_colony("new citizen")
+    update_colony("populationUpdate")
     return new_citizen
 }
 const accordion_citizens = (amount = 10) => {
@@ -1543,10 +1573,16 @@ let click_save_rule = (e) => {
     //new_production_rule_panel.removePanel()
     new_production_rule_panel.showPreviousOptions()
 }
-const new_rule_click_requirement = (click_target, requirement, elem, clicked_product) => {
+const new_rule_click_requirement = (click_target, requirement, elem, clicked_object) => {
     let rule_index
+    var id_added_text = ""
+    if(clicked_object.category === "buildings"){
+        let building_group = parent_div.id.split("-")[3]
+        let building_type = parent_div.id.split("-")[5]
+        id_added_text = `newBuilding-group-${building_group}-type-${building_type}-`
+    }
     let toggle_save_new_rule_action = (rule_index, requirements_fulfilled) => {
-        let button = document.getElementById(`rule-index-${rule_index}-confirm`)
+        let button = document.getElementById(`${id_added_text}rule-index-${rule_index}-confirm`)
         if(requirements_fulfilled){
             button.removeAttribute("disabled")
             button.classList.remove("bg-gray-600")
@@ -1573,14 +1609,14 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
         let requirement_assigned_workers_amount
         let click_assigned = (e) => {
             let rule_requirements_fulfilled
-            let result_product_object = document.querySelector(`#rule-index-${rule_index}-result`).getAttribute("data-object")
+            let result_product_object = document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).getAttribute("data-object")
             let duration
             toggle_assignable_worker(e)
             //Check if requirement is fulfilled
             let requiredWorkers = requirement.quantity
             //Obtain all marked workers.
             requirement_assigned_workers_ids = []
-            document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).forEach((worker_div) => {
+            document.querySelectorAll(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2.assigned`).forEach((worker_div) => {
                 let worker_id = worker_div.id.split("citizen-")[1]
                 requirement_assigned_workers_ids.push(citizens[worker_id])
             })
@@ -1595,12 +1631,12 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
             } else {
                 duration = rule.result.duration
             }
-            document.getElementById(`rule-index-${rule_index}-duration`).setAttribute("data-hours", duration)
-            document.getElementById(`rule-index-${rule_index}-duration`).innerHTML = minimal_date_expression(duration)
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-duration`).setAttribute("data-hours", duration)
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-duration`).innerHTML = minimal_date_expression(duration)
             //Update requirement new workers quantity
             let requirement_name = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML
             let requirement_name_array = requirement_name.split(" x ")
-            document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML = requirement_name_array[0] + " x " + Math.max(requirement_assigned_workers_amount, requirement.quantity) 
+            document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML = requirement_name_array[0] + " x " + Math.max(requirement_assigned_workers_amount, requirement.quantity) 
             let requirement_marked_workers = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update span`)
             if(requirement_assigned_workers_amount) {
                 requirement_marked_workers.innerHTML = requirement_assigned_workers_amount.toString()
@@ -1610,32 +1646,32 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
             }
             if(requirement_assigned_workers_amount >= requiredWorkers){
                 //Mark requirement as fulfilled.
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-900", "unaccomplished")
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-gray-700", "border-gray-900", "unaccomplished")
-                document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("fulfilled", "bg-green-700", "border-gray-800")
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("fulfilled", "bg-green-700", "border-gray-800")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-gray-700", "border-gray-900", "unaccomplished")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-gray-700", "border-gray-900", "unaccomplished")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-500")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("fulfilled", "bg-green-700", "border-gray-800")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("fulfilled", "bg-green-700", "border-gray-800")
                 //Check if all requirements were fulfilled.
                 rule_requirements_fulfilled = check_rule_fulfilled(e.target.closest("h2").parentElement.parentElement)
                 if(rule_requirements_fulfilled){
-                    document.querySelector(`#rule-index-${rule_index}-result`).classList.add("bg-green-700", "border-gray-800")
-                    document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-900")
+                    document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.add("bg-green-700", "border-gray-800")
+                    document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.remove("bg-gray-700", "border-gray-900")
                 } else {
-                    document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-gray-800")
-                    document.querySelector(`#rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-900")
+                    document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-gray-800")
+                    document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-900")
                 }
                 //Update result quantity
                 let result_product_quantity
                 result_product_quantity = requirement_assigned_workers_amount * good_rules[result_product_object].rules[rule_index-1].result.quantity
-                document.querySelector(`#rule-index-${rule_index}-result`).innerText = translate(language, result_product_object, "", "capitalized")+" x "+result_product_quantity
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).innerText = translate(language, result_product_object, "", "capitalized")+" x "+result_product_quantity
             } else {
                 //Unmark requirement as fulfilled.
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-green-700", "border-gray-800")
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-green-700", "border-gray-800")
-                document.querySelector(`#rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-gray-800")
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-900", "unaccomplished")
-                document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-900", "unaccomplished")
-                document.querySelector(`#rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-900")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-green-700", "border-gray-800")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("bg-green-700", "border-gray-800")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-gray-800")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-900", "unaccomplished")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-900", "unaccomplished")
+                document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-900")
             }
             toggle_save_new_rule_action(rule_index, rule_requirements_fulfilled)
         }
@@ -1660,17 +1696,17 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
                         has_tools_required = (tool != left_hand_tool && tool != right_hand_tool)
                     })
                     required_worker_found &&= has_tools_required
-                    let worker_already_listed = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2#rule-index-${rule_index}-requirement-${requirement.index}-assignable-citizen-${citizen_index}`) != undefined
+                    let worker_already_listed = document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-citizen-${citizen_index}`) != undefined
                     if(required_worker_found && !worker_already_listed){
                         //Add citizen as assignable worker for the rule requirement.
                         add_assignable_worker_to_rule_requirement(citizen_index, parent_elem.querySelector(".assignable-panel")/*d.getNode()*/)
-                        requirement_assigned_workers_amount = document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2`).length
+                        requirement_assigned_workers_amount = document.querySelectorAll(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area h2`).length
                         document.getElementById(`citizen-${citizen_index}-assign`).addEventListener("click", click_assigned)
                     }
                 }
             }
         })
-        requirement_assigned_workers_div = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area`)
+        requirement_assigned_workers_div = document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area`)
         requirement_assigned_workers_amount = requirement_assigned_workers_div.querySelectorAll("h2").length
         if(!requirement_assigned_workers_amount && requirement_assigned_workers_div.querySelector("p.empty") == undefined){
             p = new element("p", "empty ms-1 mb-1 text-xs flex justify-between text-gray-200", [], requirement_assigned_workers_div); p.create()
@@ -1683,7 +1719,7 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
         let click_refresh = (e) => {
             //Change status to idle for those possible workers already assigned to requirement.
             let requirement_index = e.target.id.split("-")[4]
-            document.querySelectorAll(`#rule-index-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2`).forEach((worker_h2) => {
+            document.querySelectorAll(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2`).forEach((worker_h2) => {
                 let worker_id = worker_h2.id.split("citizen-")[1]
                 citizens[worker_id].status = "idle"
                 document.querySelectorAll(`#citizen-${worker_id}-status`).forEach((elem) => {
@@ -1692,29 +1728,29 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
                 })
             })
             //Automatically change citizen requirement to unaccomplished.
-            document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("fulfilled", "bg-green-700", "border-gray-800")
-            document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("fulfilled", "bg-green-700", "border-gray-800")
-            document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-900")
-            document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-900")
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("fulfilled", "bg-green-700", "border-gray-800")
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.remove("fulfilled", "bg-green-700", "border-gray-800")
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.add("bg-gray-700", "border-gray-900")
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update`).classList.add("bg-gray-700", "border-gray-900")
             process_citizen_requirement(rule_index, requirement, elem)
-            document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
         }
         
         let parent_elem = elem.closest("div")
-        pid = `rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
+        pid = `${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-title`
         //If assignable workers panel is not shown, display it
-        if(document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`) == undefined){
+        if(document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`) == undefined){
             //Add assignable workers title.
             p = new element("p", "items-center text-xs flex justify-between p-1 ps-3 text-gray-200 bg-gray-700", [], parent_elem, pid); p.create()
             s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Assignable workers"))
-            i = new element("i", "fa fa-rotate", [], p.getNode(), `rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`); i.create()
+            i = new element("i", "fa fa-rotate", [], p.getNode(), `${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`); i.create()
             //Add assignable workers area.
-            did = `rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
+            did = `${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-assignable-workers-area`
             d = new element("div", "assignable-panel new-rule assignable-workers bg-gray-400 text-xs p-1 pb-0", [], parent_elem, did); d.create()
         }
         //Add refresh click event
-        document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
-        document.getElementById(`rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`).addEventListener("click", click_refresh)
+        document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`).removeEventListener("click", click_refresh)
+        document.getElementById(`${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-refresh-assignable-workers`).addEventListener("click", click_refresh)
         check_candidates(requirement, rule_index, parent_elem)
     }
     if(click_target.closest("span").classList.contains("unSelected")){
@@ -1725,15 +1761,19 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_pro
     }
 }
 //Display all rule information including all of its requirements
-//Receives: rule as object, rule_index as id, clicked_product as DOM element, current_mount
-const new_rule_display_info = (rule, rule_index, clicked_product, current_mount = false) => {
-    const get_product_name_parent = (requirement) => {
-        s = new element("span", "flex items-center", [], p.getNode(), `rule-index-${rule_index}-requirement-${requirement.index}`); s.create()
+//Receives: rule as object, rule_index as id, clicked_object as DOM element, current_mount (optional)
+const new_rule_display_info = (rule, rule_index, clicked_object, current_mount = false) => {
+    var id_added_text = ""
+    if(clicked_object.category === "buildings"){
+        id_added_text = `newBuilding-group-${clicked_object.group}-type-${clicked_object.type}-`
+    }
+    const get_object_name_parent = (requirement) => {
+        s = new element("span", "flex items-center", [], p.getNode(), `${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}`); s.create()
         if(!requirement.consumable){
             //Leftmost and rightmost square brackets
             i1 = new element("i", "p-1 mb-0 text-lg text-gray-700 fa fa-bracket-square", [], s.getNode()); i1.create()
             i2 = new element("i", "p-1 mb-0 text-lg text-gray-700 fa fa-bracket-square-right", [], s.getNode());
-        }// else return p.getNode()
+        }
         return s.getNode()
     }
     const expand_rule_scheme = (body_div) => {
@@ -1742,23 +1782,27 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
         //Iterate over al requirements for that rule.
         p = new element("p", "flex justify-start flex-wrap w-100 p-1 text-gray-300", [], body_div); p.create()
         let requirements_quantity = rule.requirements.length, requirement_index = 1
-        let product_name_parent, rule_workers = []
+        let object_name_parent, rule_workers = []
+        let requirement_fulfilled
         let a_requirement_cannot_be_fulfilled = false
         rule.requirements.forEach((requirement) => {
             requirement.index = requirement_index
             //Check if square brackes are needed (when requirement object is not something daily consumable)
-            product_name_parent = get_product_name_parent(requirement)
+            object_name_parent = get_object_name_parent(requirement)
             //Create span with product name, add square brackets in case it's not consumable
             //Check if current requirement is fulfilled.
-            let location_requirement_fulfilled = (requirement.type === "location" && (requirement.object === current_mount || mounts.descriptions[requirement.object].owned))
-            let requirement_fulfilled = location_requirement_fulfilled, requirement_cannot_be_fulfilled = false
+            let is_location_requirement = requirement.type === "location"
+            let location_requirement_fulfilled = (is_location_requirement && (requirement.object === current_mount || mounts.descriptions[requirement.object].owned))
+            requirement_fulfilled = location_requirement_fulfilled
+            let requirement_cannot_be_fulfilled = is_location_requirement && !requirement_fulfilled
+            a_requirement_cannot_be_fulfilled ||= requirement_cannot_be_fulfilled
             if(["product", "resource", "building part"].includes(requirement.type)){
                 let manufactured_category = requirement.type + "s"
-                let category_objects = Object.keys(stock_values[manufactured_category]["EN"])
-                let product_requirement_fulfilled = (category_objects.includes(requirement.object) && stock_values[manufactured_category]["EN"][requirement.object] >= requirement.quantity)
-                requirement_fulfilled ||= product_requirement_fulfilled
-                requirement_cannot_be_fulfilled = !requirement_fulfilled
-                a_requirement_cannot_be_fulfilled ||= requirement_cannot_be_fulfilled
+                let category_objects = Object.keys(stock_values[manufactured_category][language])
+                let object_requirement_fulfilled = (category_objects.includes(translate(language, requirement.object)) 
+                                                    && stock_values[manufactured_category][language][translate(language, requirement.object)] >= requirement.quantity)
+                requirement_fulfilled ||= object_requirement_fulfilled
+                a_requirement_cannot_be_fulfilled ||= !requirement_fulfilled
             } else {
                 if(requirement.type === "citizen"){
                     rule_workers = requirement.workers
@@ -1766,11 +1810,11 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
                     //Requirement type is "building"
                     if(requirement.type === "building"){
                         //Check if required building exists as shelter but it doesn't have the amount needed.
-                        let building_required_amount = buildings["shelters"][requirement.object.toLowerCase()]
+                        let building_required_amount = buildings["shelter_related"][requirement.object.toLowerCase()]
                         if(building_required_amount != undefined && building_required_amount < requirement.quantity){
                             requirement_cannot_be_fulfilled = true
                         }
-                        building_required_amount = buildings["mount_placed"][requirement.object.toLowerCase()]
+                        building_required_amount = buildings["mounts_related"][requirement.object.toLowerCase()].building_list.length
                         //Check if required building exists as a mount placed building, but it doesn't have the amount needed.
                         if(building_required_amount != undefined && building_required_amount < requirement.quantity){
                             requirement_cannot_be_fulfilled = true
@@ -1779,12 +1823,12 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
                     }
                 }
             }
-            let bg_class = requirement_fulfilled ? "fulfilled border-gray-800 bg-green-700" : (requirement_cannot_be_fulfilled ? "border-gray-900 bg-red-900": "border-gray-900 bg-gray-700")
-            sid = `rule-index-${rule_index}-requirement-${requirement_index}`+(product_name_parent === p.getNode() ? "" : "-name")
-            s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], product_name_parent, sid); s.create()
+            let bg_class = requirement_fulfilled ? "fulfilled border-gray-800 bg-green-700" : (/*!requirement_cannot_be_fulfilled ||*/ requirement.type === "citizen" ? "border-gray-900 bg-gray-700" : "border-gray-900 bg-red-900")
+            sid = `${id_added_text}rule-index-${rule_index}-requirement-${requirement_index}`+(object_name_parent === p.getNode() ? "" : "-name")
+            s = new element("span", `rule-requirement px-2 py-0.5 mb-0 font-bold border ${bg_class}`, [], object_name_parent, sid); s.create()
             let requirement_object_name = translate(language, requirement.object, "N", "capitalized")
             //Check if a minimal xp value is needed
-            let XP_requirement = requirement.xp ? ` (${requirement.xp})` : ""
+            let XP_requirement = requirement.xp ? ` (${requirement.xp}<sup>+</sup>)` : ""
             //Check if a tool is needed (max 2 in both worker's hands)
             let tool_requirement_1 = requirement.tools != undefined && requirement.tools.length ? requirement.tools[0] : ""
             let tool_requirement_2 = tool_requirement_1 && requirement.tools.length > 1 ? requirement.tools[1] : ""
@@ -1793,19 +1837,18 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
             let requirement_name = requirement_object_name + XP_requirement + tool_requirement
             requirement_object_name = tool_requirement ? `(${requirement_name})` : requirement_name
             //Show requirement name and quantity
-            s.appendContent(requirement_object_name)
-            s.appendHTML(` x ${requirement.quantity}`)
+            s.appendHTML(`${requirement_object_name} x ${requirement.quantity}`)
             if(!requirement_fulfilled){
                 if(requirement.type === "citizen"){
-                    sid = `rule-index-${rule_index}-requirement-${requirement_index}-update`
-                    s = new element("span", `px-0 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], product_name_parent, sid); s.create()
+                    sid = `${id_added_text}rule-index-${rule_index}-requirement-${requirement_index}-update`
+                    s = new element("span", `px-0 py-0.5 mb-0 font-bold border unaccomplished unSelected ${bg_class}`, [], object_name_parent, sid); s.create()
                     s1 = new element("span", "hidden ms-1 font-bold", [], s.getNode()); s1.create()
                     i = new element("i", "px-1 text-sm fa fa-arrow-down", [], s.getNode()); i.create()
                 }
                 //Add click event to requirement arrow button.
                 document.querySelectorAll(".unaccomplished").forEach((elem) => {
                     elem.addEventListener("click", (e) => {
-                        new_rule_click_requirement(e.target, requirement, elem, clicked_product)
+                        new_rule_click_requirement(e.target, requirement, elem, clicked_object)
                     })
                 })
             }
@@ -1819,8 +1862,8 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
         //Result
         s = new element("span", "grow flex items-center", [], p.getNode()); s.create()
         i = new element("i", "text-lg text-gray-700 p-1 px-2 mb-0 fa fa-arrow-right", [], s.getNode()); i.create()
-        s1 = new element("span", `${a_requirement_cannot_be_fulfilled ? "bg-red-900" : "bg-gray-700"} rule-result p-1 px-2 py-0.5 mb-0 font-bold border border-gray-900`, [{"key":"data-object", "value":clicked_product.name}], s.getNode(), `rule-index-${rule_index}-result`); s1.create()
-        s1.appendContent(translate(language, clicked_product.name, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
+        s1 = new element("span", `${a_requirement_cannot_be_fulfilled ? "bg-red-900" : "bg-gray-700"} rule-result p-1 px-2 py-0.5 mb-0 font-bold border border-gray-900`, [{"key":"data-object", "value":clicked_object.name}], s.getNode(), `${id_added_text}rule-index-${rule_index}-result`); s1.create()
+        s1.appendContent(translate(language, clicked_object.name, "", "capitalized")); s1.appendHTML(` x ${rule.result.quantity}`)
     }
     const display_duration = () => {
         //Rule result duration
@@ -1828,17 +1871,18 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
         d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode())
         d2.create();
         p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production time")); s.create(); 
+        let time_label = clicked_object.category === "buildings" ? "Construction time" : "Production time"
+        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, time_label)); s.create(); 
         s.appendHTML(":")
-        s1 = new element("span", "ms-1 font-bold", [{"key": "data-hours", "value": rule.base_duration_in_hours}], p.getNode(), `rule-index-${rule_index}-duration`); s1.create(); s1.appendContent(duration)
+        s1 = new element("span", "ms-1 font-bold", [{"key": "data-hours", "value": rule.base_duration_in_hours}], p.getNode(), `${id_added_text}rule-index-${rule_index}-duration`); s1.create(); s1.appendContent(duration)
     }
     const display_mode = () => {
         const add_cycles = (e) => {
-            let cycles_elem = document.getElementById(`rule-index-${rule_index}-cycles`) 
+            let cycles_elem = document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles`) 
             cycles_elem.innerHTML++
-            document.getElementById(`rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycles")
-            document.getElementById(`rule-index-${rule_index}-production-mode`).setAttribute("data-limit", cycles_elem.innerHTML)
-            let reduce_icon = document.getElementById(`rule-index-${rule_index}-production-reduce-limit`)
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycles")
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-production-mode`).setAttribute("data-limit", cycles_elem.innerHTML)
+            let reduce_icon = document.getElementById(`${id_added_text}rule-index-${rule_index}-production-reduce-limit`)
             if(reduce_icon.classList.contains("disabled")){
                 //Enable substractor.
                 reduce_icon.classList.add("disabled")
@@ -1850,19 +1894,19 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
             }
         }
         const reduce_cycles = (e) => {
-            let cycles_elem = document.getElementById(`rule-index-${rule_index}-cycles`) 
+            let cycles_elem = document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles`) 
             cycles_elem.innerHTML = Math.max(1, cycles_elem.innerHTML*1 - 1)
-            document.getElementById(`rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycle"+(cycles_elem.innerHTML*1 > 1 ? "s" : ""))
-            document.getElementById(`rule-index-${rule_index}-production-mode`).setAttribute("data-limit", cycles_elem.innerHTML)
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycle"+(cycles_elem.innerHTML*1 > 1 ? "s" : ""))
+            document.getElementById(`${id_added_text}rule-index-${rule_index}-production-mode`).setAttribute("data-limit", cycles_elem.innerHTML)
             if(cycles_elem.innerHTML*1 == 1){
-                let reduce_icon = document.getElementById(`rule-index-${rule_index}-production-reduce-limit`)
+                let reduce_icon = document.getElementById(`${id_added_text}rule-index-${rule_index}-production-reduce-limit`)
                 //Disable substractor.
                 reduce_icon.classList.add("disabled")
                 //Change color
                 reduce_icon.classList.remove("bg-red-800")
                 reduce_icon.classList.add("bg-gray-500")
                 //Detach click event
-                document.getElementById(`rule-index-${rule_index}-production-reduce-limit`).removeEventListener("click", reduce_cycles)
+                document.getElementById(`${id_added_text}rule-index-${rule_index}-production-reduce-limit`).removeEventListener("click", reduce_cycles)
             } 
         }
         const click_production_mode = (e) => {
@@ -1888,39 +1932,39 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
                 clicked_button.insertBefore(i, clicked_button.children[0])
                 //Show cycles or not, depending on mode selected.
                 if(clicked_button.classList.contains("cyclic")){
-                    document.getElementById(`rule-index-${rule_index}-production-mode`).setAttribute("data-limit", "cyclic")
-                    document.getElementById(`rule-index-${rule_index}-production-limits`).classList.add("hidden")
-                    document.getElementById(`rule-index-${rule_index}-cycles-unit`).classList.add("hidden")
-                    document.getElementById(`rule-index-${rule_index}-cycles`).innerHTML = translate(language, "Unlimited", "m")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-production-mode`).setAttribute("data-limit", "cyclic")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-production-limits`).classList.add("hidden")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles-unit`).classList.add("hidden")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles`).innerHTML = translate(language, "Unlimited", "m")
                 } else {
-                    document.getElementById(`rule-index-${rule_index}-production-limits`).classList.remove("hidden")
-                    document.getElementById(`rule-index-${rule_index}-cycles`).innerHTML = "1"
-                    document.getElementById(`rule-index-${rule_index}-production-mode`).setAttribute("data-limit", "1")
-                    document.getElementById(`rule-index-${rule_index}-cycles-unit`).classList.remove("hidden")
-                    document.getElementById(`rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycle")
-                    let reduce_icon = document.getElementById(`rule-index-${rule_index}-production-reduce-limit`)
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-production-limits`).classList.remove("hidden")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles`).innerHTML = "1"
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-production-mode`).setAttribute("data-limit", "1")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles-unit`).classList.remove("hidden")
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-cycles-unit`).innerHTML = translate(language, "cycle")
+                    let reduce_icon = document.getElementById(`${id_added_text}rule-index-${rule_index}-production-reduce-limit`)
                     //Disable substractor.
                     reduce_icon.classList.add("disabled")
                     //Change color
                     reduce_icon.classList.remove("bg-red-800")
                     reduce_icon.classList.add("bg-gray-500")
                     //Detach click event
-                    document.getElementById(`rule-index-${rule_index}-production-reduce-limit`).removeEventListener("click", reduce_cycles)
+                    document.getElementById(`${id_added_text}rule-index-${rule_index}-production-reduce-limit`).removeEventListener("click", reduce_cycles)
                 }
             }
         }
         //Rule execution mode
-        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-limit", "value":"1"}], d1.getNode(), `rule-index-${rule_index}-production-mode`)
+        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-limit", "value":"1"}], d1.getNode(), `${id_added_text}rule-index-${rule_index}-production-mode`)
         d2.create();
         p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production mode"))
         s.appendHTML(":")
-        b1 = new element("button", "cyclic ms-1 bg-gray-800 border border-gray-200 px-2 py-0.5 font-bold", [{"key": "type", "value": "button"}], p.getNode(), `rule-index-${rule_index}-production-cyclic`); b1.create() 
+        b1 = new element("button", "cyclic ms-1 bg-gray-800 border border-gray-200 px-2 py-0.5 font-bold", [{"key": "type", "value": "button"}], p.getNode(), `${id_added_text}rule-index-${rule_index}-production-cyclic`); b1.create() 
         b1.getNode().addEventListener("click", click_production_mode)
         //i = new element("i", "fa fa-arrows-repeat", [], b1.getNode()); i.create()
         s = new element("span", "font-bold", [], b1.getNode()); s.create(); s.appendContent(translate(language, "Cyclic"))
         //Mark limited mode as default.
-        b2 = new element("button", "limited checked ms-1 bg-blue-600 border border-gray-200 px-2 py-0.5 font-bold", [{"key": "type", "value": "button"}], p.getNode(), `rule-index-${rule_index}-production-limited`); b2.create(); 
+        b2 = new element("button", "limited checked ms-1 bg-blue-600 border border-gray-200 px-2 py-0.5 font-bold", [{"key": "type", "value": "button"}], p.getNode(), `${id_added_text}rule-index-${rule_index}-production-limited`); b2.create(); 
         b2.getNode().addEventListener("click", click_production_mode)
         //i = new element("i", "fa fa-hand", [], b2.getNode()); i.create()
         i = new element("i", "fa fa-check", [], b2.getNode()); i.create()
@@ -1928,26 +1972,44 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
         p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 pb-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Limit"))
         s.appendHTML(":")
-        s = new element("span", "ms-1 font-bold", [], p.getNode(), `rule-index-${rule_index}-cycles`); s.create(); s.appendContent("1")
-        s = new element("span", "ms-1 font-bold", [], p.getNode(), `rule-index-${rule_index}-cycles-unit`); s.create(); s.appendContent(translate(language, "cycle"))
+        s = new element("span", "ms-1 font-bold", [], p.getNode(), `${id_added_text}rule-index-${rule_index}-cycles`); s.create(); s.appendContent("1")
+        s = new element("span", "ms-1 font-bold", [], p.getNode(), `${id_added_text}rule-index-${rule_index}-cycles-unit`); s.create(); s.appendContent(translate(language, "cycle"))
         let hide_modifiers = (p.getNode().classList.contains("cyclic"))
-        s = new element("span", `${hide_modifiers ? "hidden " : ""}ms-2`, [], p.getNode(), `rule-index-${rule_index}-production-limits`); s.create()
-        i1 = new element("button", "fa fa-plus bg-green-600 border border-gray-200 rounded px-1 py-0.5 font-bold", [], s.getNode(), `rule-index-${rule_index}-production-add-limit`); i1.create()
-        i2 = new element("button", "disabled fa fa-minus ms-1 bg-gray-500 border border-gray-200 rounded px-1 py-0.5 font-bold", [], s.getNode(), `rule-index-${rule_index}-production-reduce-limit`); i2.create()
+        s = new element("span", `${hide_modifiers ? "hidden " : ""}ms-2`, [], p.getNode(), `${id_added_text}rule-index-${rule_index}-production-limits`); s.create()
+        i1 = new element("button", "fa fa-plus bg-green-600 border border-gray-200 rounded px-1 py-0.5 font-bold", [], s.getNode(), `${id_added_text}rule-index-${rule_index}-production-add-limit`); i1.create()
+        i2 = new element("button", "disabled fa fa-minus ms-1 bg-gray-500 border border-gray-200 rounded px-1 py-0.5 font-bold", [], s.getNode(), `${id_added_text}rule-index-${rule_index}-production-reduce-limit`); i2.create()
         i1.getNode().addEventListener("click", add_cycles)
         i2.getNode().addEventListener("click", reduce_cycles)
     }
     const display_scheme = () => {
+        let parent_div
+        if(clicked_object.category === "buildings"){
+            id_added_text1 = `Building-group-${clicked_object.group}-type-${clicked_object.type}`
+            parent_div = document.getElementById(`accordion-new${id_added_text1}-production-rule-index-${rule_index}-body`)
+        }
+        const refresh_scheme = (e) => {
+            //Turn all possible workers to idle status if they exist.
+            let rule_index = e.target.id.split("-")[2]
+            document.querySelectorAll(`#${id_added_text}rule-index-${rule_index}-scheme-body .assignable-panel h2`).forEach((elem) => {
+                let citizen_id = elem.id.split("citizen-")[1]
+                citizens[citizen_id].status = "idle"
+                document.getElementById(`citizen-${citizen_id}-status`).innerHTML = translate(language, "idle")
+                document.getElementById(`citizen-${citizen_id}-status`).setAttribute("data-status", "idle")
+            })
+            expand_rule_scheme(document.getElementById(`${id_added_text}rule-index-${rule_index}-scheme-body`))
+        }
         //Rule scheme
-        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-body", "value":`rule-index-${rule_index}-scheme-body`}, {"key":"data-group", "value":`rule-scheme-custom-accordion`}], d1.getNode(), `rule-index-${rule_index}-scheme-title`)
+        d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-body", "value":`${id_added_text}rule-index-${rule_index}-scheme-body`}, {"key":"data-group", "value":`${id_added_text}rule-scheme-custom-accordion`}], parent_div, `${id_added_text}rule-index-${rule_index}-scheme-title`)
         d2.create();
         p = new element("p", "clickable flex justify-between items-center text-xs p-1 ps-3 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
         s = new element("span", "grow", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Rule scheme"))
+        i = new element("i", "refreshable mt-0 me-2 text-sm fa font-bold fa-rotate", [], p.getNode(), `${id_added_text}rule-index-${rule_index}-scheme-refresh`); i.create()
+        i.getNode().addEventListener("click", refresh_scheme)
         i = new element("i", "collapsable mt-0 me-2 text-sm fa font-bold fa-chevron-down", [], p.getNode()); i.create()
         //Rule scheme body
-        d2 = new element("div", "hidden border-b border-s border-e border-gray-700 bg-gray-400 text-xs", [{"key":"data-rule-index", "value":rule_index}], d1.getNode(), `rule-index-${rule_index}-scheme-body`); d2.create()
-        custom_accordion(`rule-index-${rule_index}-scheme-title`, expand_rule_scheme)
+        d2 = new element("div", "hidden border-b border-s border-e border-gray-700 bg-gray-400 text-xs", [{"key":"data-rule-index", "value":rule_index}], d1.getNode(), `${id_added_text}rule-index-${rule_index}-scheme-body`); d2.create()
+        custom_accordion(`${id_added_text}rule-index-${rule_index}-scheme-title`, expand_rule_scheme)
     }
     const display_actions_available = () => {
         d2 = new element("div", "mt-1 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
@@ -1957,13 +2019,13 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
         //Add available actions area.
         d3 = new element("div", "flex gap-1 bg-gray-400 text-xs p-1", [], d2.getNode()); d3.create()
         //Action: Confirm rule
-        b1 = new element("button", "text-xs text-white grow p-2 me-2 button border border-gray-400 bg-gray-600", [{"key":"type", "value":"button"}, {"key":"disabled", "value":""}, {"key":"data-product", "value":clicked_product.name}, {"key":"data-category", "value":clicked_product.category}], d3.getNode(), `rule-index-${rule_index}-confirm`); b1.create()
+        b1 = new element("button", "text-xs text-white grow p-2 me-2 button border border-gray-400 bg-gray-600", [{"key":"type", "value":"button"}, {"key":"disabled", "value":""}, {"key":"data-product", "value":clicked_object.name}, {"key":"data-category", "value":clicked_object.category}], d3.getNode(), `${id_added_text}rule-index-${rule_index}-confirm`); b1.create()
         i = new element("i", "fa fa-plus me-2", [], b1.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b1.getNode()); s.create(); s.appendContent(translate(language, "Confirm rule"))
         //Add confirm rule click event
         b1.getNode().addEventListener("click", click_save_rule)
         //Action: Cancel rule
-        b2 = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d3.getNode(), `rule-index-${rule_index}-cancel`); b2.create()
+        b2 = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d3.getNode(), `${id_added_text}rule-index-${rule_index}-cancel`); b2.create()
         i = new element("i", "fa fa-times me-2", [], b2.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b2.getNode()); s.create(); s.appendContent(translate(language, "Cancel rule"))
         //Add cancel rule click event
@@ -1993,27 +2055,42 @@ const new_rule_display_info = (rule, rule_index, clicked_product, current_mount 
     display_actions_available()
     enable_accordion_click(b.getNode())
 }
-const display_product_available_rules = (parent_div, clicked_product, current_mount = false) => {
-    //Iterate over all rules for that selected product.
-    //Build product rules accordions with a rule inside.
-    let rule_index = 1
-    d = new element("div", "", [{"key": "data-accordion", "value": "collapse"}], parent_div, "accordion-new-production-rules"); d.create()
-    let good_rules = clicked_product.category === "products" ? products_rules : resource_rules
-    var rules_amount = good_rules[clicked_product.name].rules.length
-    good_rules[clicked_product.name].rules.forEach((rule, r_index) => {
-        h2 = new element("h2", `${r_index ? "mt-1 " : ""}border border-gray-800`, [], d.getNode(), `accordion-new-production-rule-index-${rule_index}-header`); h2.create()
-        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs font-medium border border-gray-800 gap-3 bg-gray-900 text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new-production-rule-index-${rule_index}-body`}, {"key": "aria-controls", "value": `accordion-new-production-rule-index-${rule_index}-body`}], h2.getNode())
-        b.create()
-        s = new element("span", "", [], b.getNode()); s.create()
-        s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(`${translate(language, "Rule") + (rules_amount > 1 ? " #"+rule_index : "")} ${translate(language, "for")}`)
-        s1.appendHTML(":")
-        s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-object", "value":clicked_product.name}, {"key":"data-category", "value":clicked_product.category}, {"key":"data-rule", "value":rule_index}], s.getNode(), `rule-index-${rule_index}-object`); s1.create(); s1.appendContent(translate(language, clicked_product.name, "", "uppercase"))
-        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-        d1 = new element("div", "p-1 bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new-production-rule-index-${rule_index}-header`},{"key": "data-rule-index", "value": rule_index},{"key": "data-category", "value": clicked_product.category}], d.getNode(), `accordion-new-production-rule-index-${rule_index}-body`); d1.create()
-        new_rule_display_info(rule, rule_index, clicked_product, current_mount)
-        //Select rule requirement
-        rule_index++
-    })
+const display_object_available_rules = (parent_div, clicked_object, current_mount = false) => {
+    //Check if object is a product, resource, building part or building.
+    var object_rules = clicked_object.category === "products" || clicked_object.category === "building parts"? 
+                            product_rules : 
+                            (clicked_object.category === "resources" ? 
+                                resource_rules : building_rules
+                            )
+    let id_added_text = ""
+    if(clicked_object.category === "buildings"){
+        let building_group = parent_div.id.split("-")[3]
+        let building_type = parent_div.id.split("-")[5]
+        clicked_object.group = building_group
+        clicked_object.type = building_type
+        id_added_text = `Building-group-${building_group}-type-${building_type}`
+    }
+    //Build object rules accordions with a rule inside.
+    d = new element("div", "", [{"key": "data-accordion", "value": "collapse"}], parent_div, `accordion-new${id_added_text}-production-rules`); d.create()
+    //Iterate over all rules for that selected object (product / building).
+    if(object_rules[clicked_object.name] != undefined){
+        var rules_amount = object_rules[clicked_object.name].rules.length
+        object_rules[clicked_object.name].rules.forEach((rule, r_index) => {
+            h2 = new element("h2", `${r_index ? "mt-1 " : ""}border border-gray-800`, [], d.getNode(), `accordion-new${id_added_text}-production-rule-index-${r_index+1}-header`); h2.create()
+            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs font-medium border border-gray-800 gap-3 bg-gray-900 text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new${id_added_text}-production-rule-index-${r_index+1}-body`}, {"key": "aria-controls", "value": `accordion-new${id_added_text}-production-rule-index-${r_index+1}-body`}], h2.getNode())
+            b.create()
+            s = new element("span", "", [], b.getNode()); s.create()
+            let accordion_message = clicked_object.category == "buildings" ? translate(language, "Construction rule") : `${translate(language, "Rule") + (rules_amount > 1 ? " #"+r_index : "")} ${translate(language, "for")}`
+            s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(accordion_message)
+            if(clicked_object.category !== "buildings"){
+                s1.appendHTML(":")
+                s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-object", "value":clicked_object.name}, {"key":"data-category", "value":clicked_object.category}, {"key":"data-rule", "value":r_index+1}], s.getNode(), `rule-index-${r_index+1}-object`); s1.create(); s1.appendContent(translate(language, clicked_object.name, "", "uppercase"))
+            }
+            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+            d1 = new element("div", "p-1 bg-gray-500 border border-gray-800 hidden", [{"key": "aria-labelledby", "value": `accordion-new${id_added_text}-production-rule-index-${r_index+1}-header`},{"key": "data-rule-index", "value": r_index+1},{"key": "data-category", "value": clicked_object.category}], d.getNode(), `accordion-new${id_added_text}-production-rule-index-${r_index+1}-body`); d1.create()
+            new_rule_display_info(rule, r_index+1, clicked_object, current_mount)
+        })
+    }
 }
 const accordion_landforms = () => {
     let landform_index
@@ -2120,7 +2197,7 @@ const build_actions_available_panel = (parent_elem) => {
     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Actions available"))
     i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
     //Actiions available panel
-    d1 = new element("div", "hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-actions`); d1.create()
+    d1 = new element("div", "hidden p-1 bg-gray-600 text-xs", [], d.getNode(), `productions-actions`); d1.create()
     custom_accordion(`productions-actions-title`, build_actions_available_subpanel)
 }
 const build_active_production_rules = (body_div) => {
@@ -2143,7 +2220,7 @@ const accordion_productions = () => {
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Active production rules")
         i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
         //Active rules panel
-        d1 = new element("div", "active-production-rules hidden p-1 bg-gray-500 text-xs", [], d.getNode(), `productions-active-rules-body`); d1.create()
+        d1 = new element("div", "active-production-rules hidden p-1 bg-gray-600 text-xs", [], d.getNode(), `productions-active-rules-body`); d1.create()
         custom_accordion(`productions-active-rules-title`, build_active_production_rules)
     }
     //Build productions accordion
@@ -2157,7 +2234,7 @@ const accordion_productions = () => {
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build productions accordion body
     d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-productions"}], parentElem, "accordion-menu-productions-body"); d1.create()
-    d2 = new element("div", "py-1 border border-gray-700 bg-gray-600", [], d1.getNode()); d2.create()
+    d2 = new element("div", "py-1 border border-gray-700 bg-gray-500", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1 ", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "productions"); d.create()
     
     //build_product_category_accordions()  
@@ -2431,7 +2508,7 @@ const add_landform = (landform_type = "waterReservoir") => {
     let translate_panel = true//landform_type !== "waterReservoir"
     const build_active_rules = (parent_elem) => {
         //Active rules title
-        d2 = new element("div", "waterReservoir border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`landform-${landform_index}-active-rules`}, {"key":"data-group", "value":`landform-${landform_index}-custom-accordion`}], parent_elem, `landform-${landform_index}-active-rules-title`); d2.create()
+        d2 = new element("div", `${landform_type} border border-gray-800 bg-gray-800 text-xs`, [{"key":"data-body", "value":`landform-${landform_index}-active-rules`}, {"key":"data-group", "value":`landform-${landform_index}-custom-accordion`}], parent_elem, `landform-${landform_index}-active-rules-title`); d2.create()
         p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate_panel ? translate(language, "Active production rules") : "Active production rules")
         i = new element("i", "collapsable mt-0 me-1 text-sm fa fa-chevron-down font-bold", [], p.getNode()); i.create()
@@ -2468,13 +2545,13 @@ const add_landform = (landform_type = "waterReservoir") => {
         custom_accordion(`landform-${landform_index}-actions-available-title`, build_actions_available_subpanel)
     }
     let d = document.querySelector("#accordion-landforms")
-    let landform_index = document.querySelectorAll("#accordion-landforms h2").length + 1
+    let landforms_amount = document.querySelectorAll("#accordion-landforms > h2").length
+    let landform_index = landforms_amount + 1
     let landform_title = mounts.camelCase[landform_type]
     //Add landform to "mounts" structure.
     mounts.descriptions[landform_title].owned++
-    let mount_amount = document.querySelectorAll("#accordion-landforms h2").length
     //Build landform #landformIndex accordion header
-    h2 = new element("h2", `${mount_amount ? "mt-1" : ""} notificationUnread`, [], d, `accordion-landform-${landform_index}-header`); h2.create()
+    h2 = new element("h2", `${landforms_amount ? "mt-1" : ""} notificationUnread`, [], d, `accordion-landform-${landform_index}-header`); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-landform-${landform_index}-body`}, {"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-landform-${landform_index}-body`}], h2.getNode(), `accordion-landform-${landform_index}`)
     b.create()
     enable_accordion_click(b.getNode())
@@ -2681,104 +2758,149 @@ const toggle_sort_stock = (type = "resources") => {
 }
 //Update accordions structure
 const update_colony = (event = "zoneSearched") => {
-    //Check for new buildings
-    //Check if there is no building in the colony
-    let noCampaignTents = typeof buildings.shelters === "undefined" || typeof buildings.shelters["campaign tent"] === "undefined" || !buildings.shelters["campaign tent"]
-    let noCottages = typeof buildings.shelters === "undefined" || typeof buildings.shelters["cottage"] === "undefined" || !buildings.shelters["cottage"]
-    let noBrickHouses = typeof buildings.shelters === "undefined" || typeof buildings.shelters["brickhouse"] === "undefined" || !buildings.shelters["brickhouse"]
-    let noStoneHouses = typeof buildings.shelters === "undefined" || typeof buildings.shelters["stoneHouse"] === "undefined" || !buildings.shelters["stoneHouse"]
-    let noManors = typeof buildings.shelters === "undefined" || typeof buildings.shelters["manor"] === "undefined" || !buildings.shelters["manor"]
-    let noMansions = typeof buildings.shelters === "undefined" || typeof buildings.shelters["mansion"] === "undefined" || !buildings.shelters["mansion"]
-    let noGraveyards = typeof buildings.shelters === "undefined" || typeof buildings.shelters["graveyard"] === "undefined" || !buildings.shelters["graveyard"]
-    let noShelters = noCampaignTents && noCottages && noStoneHouses && noBrickHouses && noManors && noMansions && noGraveyards
-    let noBuildings = noShelters
-    //Is there any building in the colony?
-    if(!noBuildings){
+    if(event === "zoneSearched" || event === "buildingsUpdate"){
+        //Check for new buildings
         let parentElem = document.querySelector("#accordion-buildings-groups")
         parentElem.classList.add("border", "border-gray-800")
         //Remove all buildings from panel
         parentElem.childNodes.forEach(elem => elem.remove())
-        //Add existing buildings groups
+        
+        //Create existing buildings groups
         let building_groups = Object.keys(buildings)
-        let current_group = building_groups[0]
-        //Build group 1 (campaign tents) accordion header
-        header1 = new element("h2", "notificationUnread", [], parentElem, "accordion-building-group-1-header"); header1.create()
-        button1 = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-building-group-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-building-group-1-body"}], header1.getNode(), "accordion-building-group-1")
-        button1.create()
-        enable_accordion_click(button1.getNode())
-        span = new element("span", "", [], button1.getNode()); span.create()
-        span1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], span.getNode())
-        span1.create(); span1.appendContent("NEW")
-        span1 = new element("span", "", [{"key":"data-i18n","value":""}], span.getNode()); span1.create(); span1.appendContent(translate(language, current_group, "", "capitalized"))
-        button1.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-         //Build group 1 (campaign tents) accordion body
-        body1 = new element("div", "hidden p-1 bg-gray-500", [{"key":"aria-labelledby","value":"accordion-building-group-1-header"}], parentElem, "accordion-building-group-1-body"); body1.create()
+        building_groups.forEach((current_group) => {
+            //Check if current type in the group has at least one building placed in the colony.
+            let current_type_empty = true
+            Object.keys(buildings[current_group]).forEach((building_name) => {
+                //Is there any current group building in the colony?
+                if(buildings[current_group][building_name]["building_list"].length){
+                    current_type_empty = false
+                }
+            })
+            //If shelters group => show accordion (even if there is no shelter building)
+            //If not, only show the group accordion if there is at least a building created in the colony.
+            if(current_group == "shelter_related" || !current_type_empty){
+                //Create current group accordion header
+                let translatable_current_group = current_group.replace("_", " ")
+                header1 = new element("h2", "notificationUnread", [], parentElem, `accordion-${current_group}-buildings-header`); header1.create()
+                button1 = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-${current_group}-buildings-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-${current_group}-buildings-body`}], header1.getNode(), `accordion-${current_group}-buildings`)
+                button1.create()
+                enable_accordion_click(button1.getNode())
+                span = new element("span", "", [], button1.getNode()); span.create()
+                span1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], span.getNode())
+                span1.create(); span1.appendContent("NEW")
+                span1 = new element("span", "", [{"key":"data-i18n","value":""}], span.getNode()); span1.create(); span1.appendContent(translate(language, translatable_current_group, "", "capitalized"))
+                button1.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                //Build current group accordion body
+                body1 = new element("div", "hidden p-1 bg-gray-500", [{"key":"aria-labelledby","value":`#accordion-${current_group}-buildings-header`}], parentElem, `accordion-${current_group}-buildings-body`); body1.create()
+                if(!current_type_empty){
+                    //If shelters group => show total colony shelter capacity.
+                    if(current_group === "shelter_related"){
+                        //Show building type shelter capacity.
+                        p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], body1.getNode()); p.create()
+                        s = new element("span", "flex", [], p.getNode()); s.create()
+                        s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+                        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Total shelter capacity"))
+                        s1.appendHTML(": ")
+                        s = new element("span", "grow flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+                        s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${current_group}-total-capacity`); s1.create()
+                        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "citizens"))
+                    }
+                    let total_shelter_capacity = 0
+                    //Create building types.
+                    Object.keys(buildings[current_group]).forEach((building_type) => {
+                        if(buildings[current_group][building_type]["building_list"].length){
+                            let building_plural = buildings[current_group][building_type].plural
+                            //Build current building type accordion.
+                            d = new element("div", "border border-gray-900", [{"key":"data-accordion","value":"collapse"}], body1.getNode(), `accordion-${current_group}-building-${building_type}`); d.create()
+                            //Build current building type accordion header
+                            h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-${current_group}-building-${building_type}-header`); h2.create()
+                            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-${current_group}-building-${building_type}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-${current_group}-building-${building_type}-body`}], h2.getNode())
+                            b.create()
+                            enable_accordion_click(b.getNode())
+                            s = new element("span", "", [], b.getNode()); s.create()
+                            s1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
+                            s1.create(); s1.appendContent("NEW")
+                            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, building_plural))
+                            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                            //Build current building type accordion body
+                            d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-${current_group}-building-${building_type}-header`}], d.getNode(), `accordion-${current_group}-building-${building_type}-body`); d1.create()
+                            d3 = new element("div", "p-1 bg-gray-600 text-xs", [], d1.getNode()); d3.create()
+                            if(current_group === "shelter_related"){
+                                //Show building type shelter capacity.
+                                p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], d3.getNode()); p.create()
+                                s = new element("span", "flex", [], p.getNode()); s.create()
+                                s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+                                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Total shelter capacity"))
+                                s1.appendHTML(": ")
+                                s = new element("span", "grow flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+                                s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${current_group}-building-${building_type}-total-capacity`); s1.create()
+                                s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "citizens"))
+                            }
+                            d = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500", [{"key":"data-accordion","value":"collapse"}], d3.getNode(), `accordion-${current_group}-building-${building_type}-list`); d.create()
+                            if(current_group === "shelter_related"){
+                                let building_type_shelter_capacity = 0
+                                buildings[current_group][building_type]["building_list"].forEach((building, b_index) => {
+                                    building_type_shelter_capacity += building.capacity
+                                    //Add current building accordion with their contents.
+                                    let building_text = translate(language, buildings[current_group][building_type].name)
+                                    add_building(b_index + 1, building_text.charAt(0).toUpperCase()+building_text.slice(1), d.getNode())
+                                })
+                                document.getElementById(`building-group-${current_group}-building-${building_type}-total-capacity`).innerHTML = get_shelter_capacity()
+                                total_shelter_capacity += building_type_shelter_capacity
+                            }
+                        }
+                    })
+                    if(current_group === "shelters"){
+                        document.getElementById(`building-group-${current_group}-total-capacity`).innerHTML = total_shelter_capacity.toString()
+                    }
+                } else {
+                    //Show empty message. (only for shelters)
+                }
+            }
+        })
+    }
+    if(event === "zoneSearched" || event === "populationUpdate"){
+        //Updates derived from increasing population.
+        //1) Update colony water and food consumption.
+        document.getElementById("colony-water-consumption").innerHTML = Object.keys(citizens).length * 2
+        document.getElementById("water-revenue").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
+        document.getElementById("colony-food-consumption").innerHTML = Object.keys(citizens).length * 1
+        document.getElementById("food-revenue").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
+        //2) Update total population
+        document.getElementById("colonyPopulation").innerHTML = Object.keys(citizens).length.toString()   
+        //3) Update life quality mood
+        if(document.getElementById("colonyLifeQualitySituation") != undefined){
+            let current_life_quality = document.getElementById("colonyLifeQuality").innerHTML*1
+            let colony_life_quality_satisfaction = colony_satisfaction(current_life_quality, Object.keys(citizens).length*1)
+            document.getElementById("colonyLifeQualitySituation").classList.remove("bg-red-800", "bg-yellow-600", "bg-green-500", "bg-green-600", "bg-green-700")
+            document.getElementById("colonyLifeQualitySituation").classList.add(colony_life_quality_satisfaction.color)
+            document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.remove("fa-face-meh", "fa-face-weary", "fa-face-smile", "fa-face-laugh", "fa-face-laugh-squint")
+            document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.add(colony_life_quality_satisfaction.icon)
+            document.getElementById("colonyLifeQualityImpression").innerHTML = translate(language, colony_life_quality_satisfaction.word)
+        }
+    }
 
-        //Is there any campaing tent in the colony?
-        if(!noCampaignTents){
-            //Build group 1
-            d = new element("div", "border border-gray-900", [{"key":"data-accordion","value":"collapse"}], body1.getNode(), "accordion-buildings-group-1-building-1"); d.create()
-            //Build group 1 (campaign tents) accordion header
-            h2 = new element("h2", "notificationUnread", [], d.getNode(), "accordion-buildings-group-1-building-1-header"); h2.create()
-            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-buildings-group-1-building-1-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-buildings-group-1-building-1-body"}], h2.getNode())
-            b.create()
-            enable_accordion_click(b.getNode())
-            s = new element("span", "", [], b.getNode()); s.create()
-            s1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
-            s1.create(); s1.appendContent("NEW")
-            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Campaign tents"))
-            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-            //Build group 1 (campaign tents) accordion body
-            d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-building-group-1-building-1-header"}], d.getNode(), "accordion-buildings-group-1-building-1-body"); d1.create()
-            d3 = new element("div", "p-1 bg-gray-600 text-xs", [], d1.getNode()); d3.create()
-            p = new element("p", "ms-1 mb-2 text-xs text-gray-200", [], d3.getNode()); p.create()
-            s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Total shelter capacity"))
-            p.appendHTML(": ")
-            s = new element("span", "font-bold", [], p.getNode(), "building-group-1-total-capacity"); s.create(); s.appendContent("15")
-            s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "citizens"))
-            d = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500", [{"key":"data-accordion","value":"collapse"}], d3.getNode(), "accordion-buildings-group-1-building-1-list"); d.create()
-            //Add all campaign tents accordions with their contents.
-            for(i=1; i<=buildings.shelters["campaign tent"]; i++) { add_building(i, "Campaign tent", d.getNode()) }
+    if(event === "zoneSearched" || event === "populationUpdate" || event === "buildingsUpdate"){
+        //4) Check new shelter capacity
+        let current_shelter_capacity = get_shelter_capacity()
+        let colony_shelter_capacity_mood = shelter_capacity_mood(current_shelter_capacity, Object.keys(citizens).length.toString())
+        // Update shelter capacity mood
+        if(document.getElementById("colonyShelterCapacityInfo") != undefined){
+            let shelter_capacity_info = document.getElementById("colonyShelterCapacityInfo")
+            shelter_capacity_info.classList.remove("bg-red-800", "bg-yellow-400", "bg-green-700")
+            shelter_capacity_info.classList.add(colony_shelter_capacity_mood.color)
+            if(document.getElementById("colonyShelterCapacity") != undefined){
+                document.getElementById("colonyShelterCapacity").innerHTML = current_shelter_capacity.toString()
+            }
+            if(document.getElementById("colonyShelterOccupation") != undefined){
+                document.getElementById("colonyShelterOccupation").innerHTML = colony_shelter_capacity_mood.occupation + "%"
+            }
+            if(document.getElementById("shelterCapacityIcon") != undefined){
+                let shelter_capacity_icon = document.getElementById("shelterCapacityIcon")
+                shelter_capacity_icon.classList.remove("fa-face-laugh-squint", "fa-face-laugh", "fa-face-smile", "fa-face-meh", "fa-face-weary")
+                shelter_capacity_icon.classList.add(colony_shelter_capacity_mood.icon)
+            }
         }
-    }
-    //Updates derived from increasing population.
-    //1) Update colony water and food consumption.
-    document.getElementById("colony-water-consumption").innerHTML = Object.keys(citizens).length * 2
-    document.getElementById("water-revenue").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
-    document.getElementById("colony-food-consumption").innerHTML = Object.keys(citizens).length * 1
-    document.getElementById("food-revenue").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
-    //2) Update total population
-    document.getElementById("colonyPopulation").innerHTML = Object.keys(citizens).length.toString()
-    //3) Check new shelter capacity
-    let current_shelter_capacity = get_shelter_capacity()
-    let colony_shelter_capacity_mood = shelter_capacity_mood(current_shelter_capacity, Object.keys(citizens).length.toString())
-    // Update shelter capacity mood
-    if(document.getElementById("colonyShelterCapacityInfo") != undefined){
-        let shelter_capacity_info = document.getElementById("colonyShelterCapacityInfo")
-        shelter_capacity_info.classList.remove("bg-red-800", "bg-yellow-400", "bg-green-700")
-        shelter_capacity_info.classList.add(colony_shelter_capacity_mood.color)
-        if(document.getElementById("colonyShelterCapacity") != undefined){
-            document.getElementById("colonyShelterCapacity").innerHTML = current_shelter_capacity.toString()
-        }
-        if(document.getElementById("colonyShelterOccupation") != undefined){
-            document.getElementById("colonyShelterOccupation").innerHTML = colony_shelter_capacity_mood.occupation + "%"
-        }
-        if(document.getElementById("shelterCapacityIcon") != undefined){
-            let shelter_capacity_icon = document.getElementById("shelterCapacityIcon")
-            shelter_capacity_icon.classList.remove("fa-face-laugh-squint", "fa-face-laugh", "fa-face-smile", "fa-face-meh", "fa-face-weary")
-            shelter_capacity_icon.classList.add(colony_shelter_capacity_mood.icon)
-        }
-    }
-    
-    //4) Update life quality mood
-    if(document.getElementById("colonyLifeQualitySituation") != undefined){
-        let current_life_quality = document.getElementById("colonyLifeQuality").innerHTML*1
-        let colony_life_quality_satisfaction = colony_satisfaction(current_life_quality, Object.keys(citizens).length*1)
-        document.getElementById("colonyLifeQualitySituation").classList.remove("bg-red-800", "bg-yellow-600", "bg-green-500", "bg-green-600", "bg-green-700")
-        document.getElementById("colonyLifeQualitySituation").classList.add(colony_life_quality_satisfaction.color)
-        document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.remove("fa-face-meh", "fa-face-weary", "fa-face-smile", "fa-face-laugh", "fa-face-laugh-squint")
-        document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.add(colony_life_quality_satisfaction.icon)
-        document.getElementById("colonyLifeQualityImpression").innerHTML = translate(language, colony_life_quality_satisfaction.word)
     }
     if(event === "zoneSearched"){
         //Add notification about zone searched

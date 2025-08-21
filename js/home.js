@@ -458,33 +458,35 @@ const custom_accordion = (header_element_id = null, callback = () => {}) => {
     if(header_element != null && body_element != null){
         header_element.querySelectorAll(".clickable").forEach((elem) => {
             elem.addEventListener("click", (e) => {
-                //Find other custom accordions with same accordion class.
-                let accordion_group = header_element.getAttribute("data-group")
-                document.querySelectorAll(`div[data-group="${accordion_group}"]:not(#${header_element.id})`).forEach((elem) => {
-                    //Collapse these custom accordions with same accordion class.
-                    //1) Remove up arrow icon and set a down arrow if necessary.
-                    let arrow = document.getElementById(elem.id).querySelector("i.fa-chevron-up")
-                    if(arrow){
-                        arrow.classList.remove("fa-chevron-up")
-                        arrow.classList.add("fa-chevron-down")
+                if(!e.target.classList.contains("refreshable")){
+                    //Find other custom accordions with same accordion class.
+                    let accordion_group = header_element.getAttribute("data-group")
+                    document.querySelectorAll(`div[data-group="${accordion_group}"]:not(#${header_element.id})`).forEach((elem) => {
+                        //Collapse these custom accordions with same accordion class.
+                        //1) Remove up arrow icon and set a down arrow if necessary.
+                        let arrow = document.getElementById(elem.id).querySelector("i.fa-chevron-up")
+                        if(arrow){
+                            arrow.classList.remove("fa-chevron-up")
+                            arrow.classList.add("fa-chevron-down")
+                        }
+                        //2) Hide accordion body.
+                        let body_id = document.getElementById(elem.id).getAttribute("data-body")
+                        document.getElementById(body_id).classList.add("hidden")
+                        //3) Remove accordion body content.
+                        document.getElementById(body_id).innerHTML = ""
+                        //4) Change accordion title background color.
+                        document.querySelector(`#${elem.id} p`).classList.remove("bg-gray-800", "bg-gray-900")
+                    })
+                    let collapsable = e.target.closest(".clickable").querySelector("i.collapsable")
+                    e.target.closest(".clickable").classList.toggle("bg-gray-900")
+                    collapsable.classList.toggle("fa-chevron-down")
+                    collapsable.classList.toggle("fa-chevron-up")
+                    body_element.classList.toggle("hidden")
+                    if(collapsable.classList.contains("fa-chevron-up")){
+                        callback(body_element)
+                    } else {
+                        body_element.innerHTML = ""
                     }
-                    //2) Hide accordion body.
-                    let body_id = document.getElementById(elem.id).getAttribute("data-body")
-                    document.getElementById(body_id).classList.add("hidden")
-                    //3) Remove accordion body content.
-                    document.getElementById(body_id).innerHTML = ""
-                    //4) Change accordion title background color.
-                    document.querySelector(`#${elem.id} p`).classList.remove("bg-gray-800", "bg-gray-900")
-                })
-                let collapsable = e.target.closest(".clickable").querySelector("i.collapsable")
-                e.target.closest(".clickable").classList.toggle("bg-gray-900")
-                collapsable.classList.toggle("fa-chevron-down")
-                collapsable.classList.toggle("fa-chevron-up")
-                body_element.classList.toggle("hidden")
-                if(collapsable.classList.contains("fa-chevron-up")){
-                    callback(body_element)
-                } else {
-                    body_element.innerHTML = ""
                 }
             })
         })
@@ -507,11 +509,11 @@ const rule_product_selection = (paragraph, location = false) => {
                 //Iterate over all manufacturable products in a water reservoir
                 location_goods[location]["EN"].forEach((location_product) => {
                     if(location_product === clicked_product.name){
-                        display_product_available_rules(parent_div, clicked_product, current_mount)
+                        display_object_available_rules(parent_div, clicked_product, current_mount)
                     }
                 })
             } else {
-                display_product_available_rules(parent_div, clicked_product)
+                display_object_available_rules(parent_div, clicked_product)
             }
         })
     })
@@ -1378,6 +1380,12 @@ const test_citizen_expeditionary_roles = (citizens_id) => {
         assign_role_to_citizen(citizen_index, "expeditioning", translate(language, "Expeditionary", "", "capitalized"), "map-location-dot", false)
     })
 }
+const test_citizen_woodcutter_roles = (citizens_id) => {
+    //Assign role construction to citizens up to 2, manually
+    citizens_id.forEach((citizen_index) => {
+        assign_role_to_citizen(citizen_index, "woodcutting", translate(language, "Woodcutter", "", "capitalized"), "axe", false)
+    })
+}
 const test_familiar_relationships = () => {
     //Test familiar relationship between citizens
     add_parent_to_citizen(citizens[6], citizens[1], "father")   //6 padre de 1
@@ -1446,11 +1454,16 @@ test_build_new_citizen({"gender": "Femenine"})
 test_citizen_stoneBreaker_roles([12, 13])
 test_build_new_citizen({"gender": "Masculine"})
 test_build_new_citizen({"gender": "Femenine"})
-test_citizen_waterBearer_roles([14, 15])/**/
+test_citizen_waterBearer_roles([14])
+test_citizen_woodcutter_roles([15])/**/
 //test_pregnancy_status()
 //text_familiary_relationships()
 add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6
+add_landform("huntingMount")
 add_landform("stoneMount")
+add_landform("clayMount")
+add_landform("mineralMount")
+add_landform("woodMount")
 //daysPassed = 5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

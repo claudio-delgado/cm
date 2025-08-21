@@ -2,6 +2,7 @@ const panelClasses = {
     "assignRole": {"i":"fa-handshake-simple", "text":"font-bold grow", "bg":"bg-gray-900"},
     "searchCouple": {"i":"fa-venus-mars", "text":"font-bold grow", "bg":"bg-gray-900"},
     "tryBreeding": {"i":"fa-venus-mars", "text":"font-bold grow", "bg":"bg-gray-900"},
+    "newBuilding": {"i":"fa-trowel", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newExpedition": {"i":"fa-location-dot", "text":"font-bold grow", "bg":"bg-gray-900"},
     "newProductionRule": {"i":"fa-subscript", "text":"font-bold grow", "bg":"bg-gray-900"}
 }
@@ -52,10 +53,10 @@ class panel{
     buildPanel(){
         let change_language, paragraph, paragraph_bg
         let parent_div = document.querySelector("#"+this.data.parentId)
-
-        const build_title_div = () => {
+        let upper_spacing = true
+        const build_title_div = (spacing = "mt-1") => {
             //--Build div, add paragraph
-            d1 = new element("div", `${this.panel.name}-title mt-1 border border-gray-300 border-gray-800 bg-gray-900 text-gray-200 text-xs`, [], parent_div, this.panel.titleId)
+            d1 = new element("div", `${this.panel.name}-title ${spacing} border border-gray-300 border-gray-800 bg-gray-900 text-gray-200 text-xs`, [], parent_div, this.panel.titleId)
             d1.create()
             p = new element("p", "flex justify-between items-center p-1 ps-2 text-xs", [], d1.getNode())
             p.create()
@@ -86,6 +87,13 @@ class panel{
                     s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New expedition") : translate("EN", "Nueva expedición", "", "", change_language=false))
                     paragraph_bg = panelClasses.newExpedition.bg
                     break
+                case "newBuilding": 
+                    i = new element("i", "me-2 fa "+panelClasses.newBuilding.i, [], paragraph); i.create()
+                    s = new element("span", panelClasses.newBuilding.text, [{"key":"data-i18n", "value":""}], paragraph)
+                    s.create(); s.appendContent(this.data.language === "ES" ? translate("ES", "New building") : translate("EN", "Nuevo edificio", "", "", change_language=false))
+                    paragraph_bg = panelClasses.newBuilding.bg
+                    upper_spacing = false
+                    break
                 case "newRule": 
                     i = new element("i", "me-2 fa "+panelClasses.newProductionRule.i, [], paragraph); i.create()
                     s = new element("span", panelClasses.newExpedition.text, [{"key":"data-i18n", "value":""}], paragraph)
@@ -96,7 +104,7 @@ class panel{
         }
                 
         //Build title div.
-        build_title_div()
+        build_title_div(upper_spacing ? null : upper_spacing)
         paragraph = document.querySelector(`#${this.panel.titleId} p`)
         
         //--Build span with icon before. Set general panel features.
@@ -125,8 +133,8 @@ class panel{
         })
 
         //Build specific panel
-        d1 = new element("div", this.panel.name+" p-1 border-b border-s border-e border-gray-800 bg-gray-400 text-xs", [], parent_div, this.panel.id); d1.create()
-        p = new element("p", "flex w-100 gap-1 justify-between items-center flex-wrap text-gray-300", [], d1.getNode());
+        d1 = new element("div", this.panel.name+" p-1 border-b border-s border-e border-gray-800 bg-gray-600 text-xs", [], parent_div, this.panel.id); d1.create()
+        p = new element("p", "px-1 flex w-100 gap-1 justify-between items-center flex-wrap text-gray-300", [], d1.getNode());
         let div_specific_paragraph_buttons = []
         if(this.panel.name === "assignRole"){
             //Specific Assign Role panel
@@ -2124,6 +2132,53 @@ class panel{
                 })
             }
         }
+        if(this.panel.name === "newBuilding"){
+            //let object_data = {"language": language, "objectName": "buildings", "objectId": false, "optionName": "actions", "parentId": `accordion-menu-buildings-body`, "location": ""}
+            //Specific New Building panel
+            d1.getNode().classList.add("flex", "flex-wrap", "gap-1")
+            p.create(); p.getNode().id = "new-building-title"
+            p.getNode().classList.remove("justify-between", "gap-1")
+            s = new element("span", "text-gray-900 font-bold", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Select a building category"))
+            s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(":")
+            //Build building groups accordions
+            let building_groups = Object.keys(buildings)
+            let d2 = new element("div", "w-100 flex flex-wrap gap-1", [{"key":"data-accordion", "value":"collapse"}], d1.getNode(), `accordion-newBuilding-groups`); d2.create()
+            building_groups.forEach((building_group, b_index) => {
+                let group_name = building_group.replace("_", " ")
+                group_name.charAt(0).toUpperCase() + group_name.slice(1)
+                d3 = new element("div", "w-100", [], d2.getNode()); d3.create()
+                //Build building groups accordion header
+                h2 = new element("h2", "w-100", [], d3.getNode(), `accordion-newBuilding-group-${b_index+1}`); h2.create()
+                b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-newBuilding-group-${b_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-newBuilding-group-${b_index+1}-body`}], h2.getNode())
+                b.create()
+                s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, group_name, "", "capitalized"))
+                b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                enable_accordion_click(b.getNode())
+                //Build building types accordion body
+                d1 = new element("div", "w-100 border-b border-s border-e border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-newBuilding-group-${b_index+1}-header`}], d3.getNode(), `accordion-newBuilding-group-${b_index+1}-body`); d1.create()
+                let building_types = Object.keys(buildings[building_group])
+                d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-newBuilding-group-${b_index+1}-types`); d.create()
+                d1 = new element("div", "flex flex-wrap gap-1", [{"key":"data-accordion", "value":"collapse"}], d.getNode()); d1.create()
+                let parent_div = d1.getNode()
+                building_types.forEach((building_type, bt_index) => {
+                    let type_name_raw = building_type.replace("_", " ")
+                    let type_name = type_name_raw.charAt(0).toUpperCase() + type_name_raw.slice(1)
+                    let div = new element("div", "w-100", [], parent_div); div.create()
+                    //Build building types accordion header
+                    h2 = new element("h2", "w-100", [], div.getNode(), `accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-header`); h2.create()
+                    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-body`}], h2.getNode())
+                    b.create()
+                    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, type_name, "", "capitalized"))
+                    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                    enable_accordion_click(b.getNode())
+                    //Build building types accordion body
+                    d3 = new element("div", "w-100 border-b border-s border-e border-gray-800 bg-gray-400 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-header`}], div.getNode(), `accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-body`); d3.create()
+                    d = new element("div", "", [], d3.getNode(), `accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-rules`); d.create()
+                    //let rules = building_rules[type_name_raw] ? building_rules[type_name_raw].rules : null
+                    display_object_available_rules(d.getNode(), {"name": type_name_raw, "category": "buildings"})
+                })
+            })
+        }
         if(this.panel.name === "newRule"){
             //Specific New Production Rule panel
             p.create(); p.getNode().id = "new-rule-title"
@@ -2131,19 +2186,20 @@ class panel{
             s = new element("span", "text-gray-900 font-bold", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Select a product"))
             s = new element("span", "text-gray-900 font-bold", [], p.getNode()); s.create(); s.appendContent(":")
             let iElement, button_text = "", button_colours = ""
-            let products
+            let goods
             if(this.data.location){
                 p = new element("p", "flex justify-between gap-1 w-100 items-center flex-wrap p-1 pb-0 text-gray-300", [], d1.getNode(), "new-rule-products"); p.create()
-                products = location_goods[this.data.location]["EN"]
-                products.forEach((product, index) => {
+                goods = location_goods[this.data.location]["EN"]
+                goods.forEach((good, index) => {
                     div_specific_paragraph_buttons[index] = document.createElement("button")
                     iElement = "<i class='fa fa-plus me-2'></i>"
-                    button_text = translate(language, product.charAt(0).toUpperCase()+product.slice(1))
+                    let good_category = get_good_category(good)
+                    button_text = translate(language, good.charAt(0).toUpperCase()+good.slice(1))
                     div_specific_paragraph_buttons[index].innerHTML = iElement + button_text
                     button_colours = "border-blue-600 bg-blue-900 text-white"
-                    div_specific_paragraph_buttons[index].classList = `rule_product text-xs capitalize ${index+1 < products.length ? "grow " : ""}p-2 py-1 button border ${button_colours}`
-                    div_specific_paragraph_buttons[index].setAttribute("data-product", product)
-                    div_specific_paragraph_buttons[index].setAttribute("data-category", "products")
+                    div_specific_paragraph_buttons[index].classList = `rule_product text-xs capitalize ${index+1 < goods.length ? "grow " : ""}p-2 py-1 button border ${button_colours}`
+                    div_specific_paragraph_buttons[index].setAttribute("data-product", good)
+                    div_specific_paragraph_buttons[index].setAttribute("data-category", good_category)
                     p.appendContent(div_specific_paragraph_buttons[index])
                 })
             } else {
@@ -2159,7 +2215,7 @@ class panel{
                     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
                     enable_accordion_click(b.getNode())
                     //Build productions categories accordion body
-                    d1 = new element("div", "border-b border-s border-e border-gray-800 bg-gray-600 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parent_elem, `accordion-productions-category-${index+1}-body`); d1.create()
+                    d1 = new element("div", "border-b border-s border-e border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-productions-category-${index+1}`}], parent_elem, `accordion-productions-category-${index+1}-body`); d1.create()
                     let subcategories = categorized_goods[category]["subcategories"]
                     d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-productions-category-${index+1}-subcategories`); d.create()
                     Object.keys(subcategories).forEach((subcategory, s_index) => {
@@ -2231,7 +2287,7 @@ class panel{
                     s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""},{"key":"data-type", "value":e.target.getAttribute("data-type")}], s.getNode())
                     s1.create(); s1.appendContent(translate(language, typeText))
                     //Build needed time text
-                    let p1 = new element("p", "w-100 items-center flex-wrap px-1 text-gray-300", [], d1.getNode()); p1.create()
+                    let p1 = new element("p", "w-100 mt-2 items-center flex-wrap px-1 text-gray-300", [], d1.getNode()); p1.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Required travel time"))
                     s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
                     s = new element("span", "ms-1 px-1 rounded bg-gray-700 border border-gray-500", [], p1.getNode(), "expeditionRequiredTime"); s.create()

@@ -95,9 +95,10 @@ const expedition_carriage_capacity = (expeditionaryXP, mountedExpeditionary) => 
     return Math.ceil((expeditionaryXP / 10) + 1/2) + 2 * mountedExpeditionary
 }
 const age_index = (age) => age <= 5 ? 0 : (age <= 14 ? 1 : (age <= 21 ? 2 : (age <= 50 ? 3 : (age <= 65 ? 4 : 5))))
-const age_icons = (age) => person_icons[age_index(age)][language].icon
-const age_group = (age) => age_groups[age_index(age)][language].icon
+const age_icons = (age) => person_icons[age_index(age)]["EN"].icon
+const age_group = (age) => age_groups[age_index(age)]["EN"].icon
 
+//Colony information functions
 const colony_satisfaction = (lifeQuality, population) => {
     let satisfaction = {}
     if(lifeQuality >= population){
@@ -181,15 +182,37 @@ const oppression_mood = (oppresion) => {
     }
     return satisfaction
 }
-
 const get_shelter_capacity = () => {
     let shelter_capacity = 0
-    Object.keys(buildings.shelters).forEach((shelter) => {
-        shelter_capacity += buildings.shelters[shelter] * shelter_capacities[shelter]
+    Object.keys(buildings.shelter_related).forEach(shelter => {
+        buildings.shelter_related[shelter].building_list.forEach(building => {
+           shelter_capacity += building.capacity
+        })
     })
     return shelter_capacity
 }
-
+//Resources and products functions
+const get_good_category = (good) => {
+    let category = false
+    try{
+        Object.keys(categorized_goods.resources.subcategories).forEach((subcategory) => {
+            if(categorized_goods.resources.subcategories[subcategory].EN.includes(good) || categorized_goods.resources.subcategories[subcategory].ES.includes(good)){
+                category = "resources"
+                throw new Error("Category found")
+            }
+        })
+        if(!category){
+            Object.keys(categorized_goods.products.subcategories).forEach((subcategory) => {
+                if(categorized_goods.products.subcategories[subcategory].EN.includes(good) || categorized_goods.products.subcategories[subcategory].ES.includes(good)){
+                    category = "products"
+                    throw new Error("Category found")
+                }
+            })
+        }
+    } catch(error){
+        if(error.message === "Category found") return category
+    }
+}
 
 //Gauss normal distribution function
 const gauss = (a, b, c, x) => {

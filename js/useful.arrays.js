@@ -290,16 +290,89 @@ const attributes_adjectives = {
     "EN": {"Agility":"agile", "Strength":"strong", "Dexterity":"dexterous", "Intelligence":"smart", "Creativity":"creative", "Cunning":"cunning", "Sympathy":"easy going", "Charisma":"charismatic", "Protection":"protective", "Partnership":"good partner", "Bravery":"brave"},
     "ES": {"Agilidad":{"F":"ágil", "M":"ágil"}, "Fuerza":{"F":"fuerte", "M":"fuerte"}, "Destreza":{"F":"muy diestra", "M":"muy diestro"}, "Inteligencia":{"F":"inteligente", "M":"inteligente"}, "Creatividad":{"F":"creativa", "M":"creativo"}, "Astucia":{"F":"astuta", "M":"astuto"}, "Simpatía":{"F":"simpática", "M":"simpático"}, "Carisma":{"F":"carismática", "M":"carismático"}, "Protección":{"F":"protectora", "M":"protector"}, "Compañerismo":{"F":"compañera", "M":"compañero"}, "Valentía":{"F":"valiente", "M":"valiente"}}
 }
+const shelter_capacities = {
+    "campaign tent": 3,
+    "cottage": 9,
+    "stoneHouse": 16,
+    "brickhouse": 24,
+    "manor": 42,
+    "mansion": 80,
+    "graveyard": 15
+}
+const building_info = {
+    "name": "Campaign tent 1",
+    "capacity": 3,
+    "created":{"year":1, "week":1, "day":1, "hour":1},
+    "workers_assigned": []
+    //...
+}
+const buildings = {
+    "shelter_related": {
+       "campaign_tent": { "name": "campaign tent", "plural": "campaign tents", "risk": {"fire hazard": 0.5}, "building_list":[] }, //tienda de campaña
+       "cottage": { "name": "cottage", "plural": "cottages", "risk": {"fire hazard": 0.2}, "building_list":[]}, //cabaña de madera
+       "stone_house": { "name": "stone house", "plural": "stone houses", "building_list":[]}, //casa de piedra
+       "brick_house": { "name": "brick house", "plural": "brick houses", "building_list":[]}, //casa de ladrillos
+       "manor": { "name": "manor", "plural": "manors", "building_list":[]}, //casona
+       "mansion": { "name": "mansion", "plural": "mansions", "building_list":[]}, //mansión
+       "graveyard": { "name": "graveyard", "plural": "graveyards", "building_list":[]}, //cementerio*/
+    },
+    "mounts_related":{
+        "quarry" : { "name": "quarry", "plural": "quarries", "building_list":[]}, //pedregal (stonesmith)
+        "clay_quarry" : { "name": "clay quarry", "plural": "clay quarries", "building_list":[]}, //terrario
+        "lumberjack's_hut" : { "name": "lumberjack's hut", "plural": "lumberjack's huts", "building_list":[]}, //puesto de leñador
+        "mine" : { "name": "mine", "plural": "mines", "building_list":[]}, //mina
+        /* For future versions...
+        "hunting post" : 0, //puesto de cazador
+        */
+    },
+    "production_related": {
+        /* For future versions...
+        "water well" : 0, //pozo de agua
+        */
+        "farm": { "name": "farm", "plural": "farms", "building_list":[]}, //granja
+        "barnyard": { "name": "barnyard", "plural": "barn yards", "building_list":[]}, //corral
+        "mill": { "name": "mill", "plural": "mills", "building_list":[]}, //molino
+        "slaughterhouse": { "name": "slaughterhouse", "plural": "slaughterhouses", "building_list":[]}, //matadero
+        "furnaces": { "name": "furnaces", "plural": "furnaces", "building_list":[]}, //hornos
+        "textile": { "name": "textile", "plural": "textiles", "building_list":[]}, //textil
+        "blacksmith": { "name": "blacksmith", "plural": "blacksmiths", "building_list":[]}, //herrería
+        "sawmill": { "name": "misawmillne", "plural": "sawmills", "building_list":[]}, //aserradero
+        "workshop": { "name": "workshop", "plural": "workshops", "building_list":[]}, //talle
+        "woodsmith": { "name": "woodsmith", "plural": "woodsmiths", "building_list":[]}, //carpintería (carpentry)
+    },
+    "training_related": {
+        "academy": { "name": "academy", "plural": "academies", "building_list":[]}, //academia
+        "barracks": { "name": "barracks", "plural": "barracks", "building_list":[]}, //cuartel
+        /* For future versions...
+        "archery range": 0, //campo de arquería
+        */
+    },
+    "exchange_related": {
+        "market": { "name": "market", "plural": "markets", "building_list":[]}, //mercado
+        "fair": { "name": "fair", "plural": "fairs", "building_list":[]}, //feria
+        "bank": { "name": "bank", "plural": "banks", "building_list":[]}, //banco
+        "tavern": { "name": "tavern", "plural": "campaign taverns", "building_list":[]}, //taberna
+    }
+}
 const role_icons = [ 
-    {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero", "N":"aguatero/a"}, "key":"waterbearing", "icon": "glass-water"}, {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
-    {"EN": "hunter", "ES": {"F": "cazadora", "M": "cazador"}, "key":"hunting", "icon": "deer"}, {"EN": "stone breaker", "ES": {"F": "picadora", "M": "picador"}, "key":"stonebreaking", "icon": "pickaxe"}, 
-    {"EN": "builder", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
-    {"EN": "soldier", "ES": "soldado", "key":"war", "icon": "shield-halved"}, {"EN": "miner", "ES": {"F": "minera", "M": "minero"}, "key":"mining", "icon": "shovel"}, 
-    {"EN": "farmer", "ES": {"F": "granjera", "M": "granjero"}, "key":"farming", "icon": "wheat"}, {"EN": "carpenter", "ES": {"F":"carpintera", "M":"carpintero"}, "key":"carpentry", "icon": "hammer"}, 
-    {"EN": {"F":"ovenwoman", "M": "ovenman"}, "ES": {"F":"hornera", "M":"hornero"}, "key":"oven", "icon": "temperature-high"}, {"EN": "blacksmith", "ES": {"F": "herrera", "M": "herrero"}, "key":"blacksmithing", "icon": "industry"}, 
-    {"EN": "technician", "ES": {"F": "técnica", "M": "técnico"}, "key":"technics", "icon": "gear"}, {"EN": "spinner", "ES": {"F":"hilandera", "M":"hilandero"}, "key":"spinning", "icon": "socks"}, 
-    {"EN": "banker", "ES": {"F": "banquera", "M": "banquero"}, "key":"bankery", "icon": "sack-dollar"}, {"EN": "academic", "ES": {"F": "académica", "M": "académico"}, "key":"researching", "icon": "graduation-cap"}, 
-    {"EN": "merchant", "ES": "mercader", "key":"marketing", "icon": "store"}, {"EN": "expeditionary", "ES": {"F": "expedicionaria", "M": "expedicionario"}, "key":"expeditioning", "icon": "map-location-dot"}
+    {"EN": "academic", "ES": {"F": "académica", "M": "académico"}, "key":"researching", "icon": "graduation-cap"}, 
+    {"EN": "banker", "ES": {"F": "banquera", "M": "banquero"}, "key":"bankery", "icon": "sack-dollar"}, 
+    {"EN": "blacksmith", "ES": {"F": "herrera", "M": "herrero"}, "key":"blacksmithing", "icon": "industry"}, 
+    {"EN": "builder", "ES": {"F": "constructora", "M": "constructor"}, "key":"construction", "icon": "trowel"}, 
+    {"EN": "carpenter", "ES": {"F":"carpintera", "M":"carpintero"}, "key":"carpentry", "icon": "hammer"}, 
+    {"EN": "expeditionary", "ES": {"F": "expedicionaria", "M": "expedicionario"}, "key":"expeditioning", "icon": "map-location-dot"},
+    {"EN": "farmer", "ES": {"F": "granjera", "M": "granjero"}, "key":"farming", "icon": "wheat"}, 
+    {"EN": "fisher", "ES": {"F":"pescadora", "M":"pescador", "N":"pescador/a"}, "key":"fishing", "icon": "fish"},
+    {"EN": "hunter", "ES": {"F": "cazadora", "M": "cazador"}, "key":"hunting", "icon": "deer"}, 
+    {"EN": "merchant", "ES": "mercader", "key":"marketing", "icon": "store"}, 
+    {"EN": "miner", "ES": {"F": "minera", "M": "minero"}, "key":"mining", "icon": "shovel"}, 
+    {"EN": {"F":"ovenwoman", "M": "ovenman"}, "ES": {"F":"hornera", "M":"hornero"}, "key":"oven", "icon": "temperature-high"}, 
+    {"EN": "soldier", "ES": "soldado", "key":"war", "icon": "shield-halved"}, 
+    {"EN": "stone breaker", "ES": {"F": "picadora", "M": "picador"}, "key":"stonebreaking", "icon": "pickaxe"}, 
+    {"EN": "spinner", "ES": {"F":"hilandera", "M":"hilandero"}, "key":"spinning", "icon": "socks"}, 
+    {"EN": "technician", "ES": {"F": "técnica", "M": "técnico"}, "key":"technics", "icon": "gear"}, 
+    {"EN": "water bearer", "ES": {"F": "aguatera", "M": "aguatero", "N":"aguatero/a"}, "key":"waterbearing", "icon": "glass-water"}, 
+    {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
 ]
 const age_groups = ["baby", "child", "teen", "adult", "grown adult", "ancient"]
 const age_week_limits = {
@@ -336,6 +409,7 @@ var wagon_goods = {
         "nail": 2500,
         "hammer": 50,
         "shovel": 80,
+        "pickaxe": 70,
         "trowel": 100,
         "saw": 80,
         "hay": 100,
@@ -414,6 +488,7 @@ const stock_values = {
         "ES": {
             "aceite de maíz": 0,
             "aceite de oliva": 0,
+            "acero fundido": 0,
             "aguja": 0,
             "alfombra": 0,
             "almendra": 0,
@@ -443,6 +518,7 @@ const stock_values = {
             "cemento": 0,
             "centeno": 0,
             "cerdo": 0,
+            "ciervo": 0,
             "clavo": 7500,
             "conejo": 0,
             "correa": 0,
@@ -460,7 +536,6 @@ const stock_values = {
             "espinaca": 0,
             "fratacho": 300,
             "frutilla": 0,
-            "acero fundido": 0,
             "bronce fundido": 0,
             "cobre fundido": 0,
             "estaño fundido": 0,
@@ -484,6 +559,7 @@ const stock_values = {
             "huevo": 0,
             "jamón cocido": 0,
             "jamón crudo": 0,
+            "jabalí": 0,
             "ladrillo": 0,
             "lana": 0,
             "lanza": 0,
@@ -512,7 +588,8 @@ const stock_values = {
             "papa": 0,
             "pera": 0,
             "perca": 0,
-            "pico": 0,
+            "perdiz": 0,
+            "pico": 210,
             "piel": 0,
             "placa de acero": 0,
             "placa de hierro": 0,
@@ -525,6 +602,7 @@ const stock_values = {
             "red de pesca": 0,
             "remolacha": 0,
             "repollo": 0,
+            "roedor": 0,
             "salmón": 0,
             "salvado": 0,
             "sémola": 0,
@@ -581,6 +659,7 @@ const stock_values = {
             "cog": 0,
             "copper foundry": 0,
             "cutting press": 0,
+            "deer": 0,
             "dough": 0,
             "egg": 0,
             "fat": 0,
@@ -620,10 +699,12 @@ const stock_values = {
             "onion": 0,
             "orange": 0,
             "outfit": 0,
+            "oar": 0,
+            "partridge":0,
             "peach": 0,
             "pear": 0,
             "perch": 0,
-            "pickaxe": 0,
+            "pickaxe": 210,
             "pig": 0,
             "pig meat": 0,
             "potatoe": 0,
@@ -635,6 +716,7 @@ const stock_values = {
             "raw ham": 0,
             "rice": 0,
             "rice flour": 0,
+            "rodent": 0,
             "roof tile": 0,
             "rope": 900,
             "rye": 0,
@@ -683,7 +765,7 @@ const stock_values = {
     },
     "building parts": {
         "ES": {
-            "fogón": 0,
+            "fogata": 0,
             "pared de madera pequeña": 0,
             "pared de mader mediana": 0,
             "techo de madera mediano": 0,
@@ -1598,63 +1680,6 @@ const order_keys = (unordered, order = "ASC") => {
         return (ordered)
     }
 }
-const buildings = {
-    "shelters": {
-       "campaign tent": 0, //tienda de campaña
-       "cottage": 0, //cabaña de madera
-       "stoneHouse": 0, //casa de piedra
-       "brickhouse": 0, //casa de ladrillos
-       "manor": 0, //casona
-       "mansion": 0, //mansión
-       "graveyard": 0, //cementerio
-    },
-    "mount_placed":{
-        "quarry" : 0, //pedregal (stonesmith)
-        "clay quarry" : 0, //terrario
-        "lumberjack's hut" : 0, //puesto de leñador
-        "mine" : 0, //mina
-        /* For future versions...
-        "hunting post" : 0, //puesto de cazador
-        */
-    },
-    "productions": {
-        /* For future versions...
-        "water well" : 0, //pozo de agua
-        */
-        "farm": 0, //granja
-        "barnyard": 0, //corral
-        "mill": 0, //molino
-        "slaughterhouse": 0, //matadero
-        "furnaces": 0, //hornos
-        "textile": 0, //textil
-        "blacksmith": 0, //herrería
-        "sawmill": 0, //aserradero
-        "workshop": 0, //talle
-        "woodsmith": 0, //carpintería (carpentry)
-    },
-    "trainings": {
-        "academy": 0, //academia
-        "barracks": 0, //cuartel
-        /* For future versions...
-        "archery range": 0, //campo de arquería
-        */
-    },
-    "exchanges": {
-        "market": 0, //mercado
-        "fair": 0, //feria
-        "bank": 0, //banco
-        "tavern": 0, //taberna
-    }
-}
-const shelter_capacities = {
-    "campaign tent": 3,
-    "cottage": 9,
-    "stoneHouse": 16,
-    "brickhouse": 24,
-    "manor": 42,
-    "mansion": 80,
-    "graveyard": 15
-}
 const mounts = {
     "descriptions": {
         "Water reservoir": {"owned":0, "camelCase":"waterReservoir", "discovery-probability-1":"1", "role-keys-related":["waterBearing", "fishing"]}, 
@@ -1674,19 +1699,31 @@ const mounts = {
     }
 }
 const location_goods = {
+    "clayMount":{
+        "EN": ["clay", "sand", "soil"],
+        "ES": ["arcilla", "arena", "tierra fértil"]
+    },
+    "huntingMount":{
+        "EN": ["rodent", "partridge", "deer", "oar"],
+        "ES": ["roedor", "perdiz", "ciervo", "jabalí"]
+    },
+    "mineralMount":{
+        "EN": ["charcoal", "copper", "diamond", "gold", "iron", "platinum", "silver", "tin"],
+        "ES": ["carbón", "cobre", "diamante", "estaño", "hierro", "oro", "plata", "platino"]
+    },
+    "stoneMount":{
+        "EN": ["basic knife", "cement", "concrete", "handcraft", "boulder", "stone", "water", "limestone", 
+               "plaster", "gravel", "salt", "granite", "basalt", "quartz", "marble"],
+        "ES": ["cuchilla", "cemento", "hormigón", "artesanía", "roca", "piedra", "agua", "piedra caliza",
+               "yeso", "gravilla", "sal", "granito", "basalto", "cuarzo", "mármol"]
+    },
     "waterReservoir":{
         "EN": ["perch", "carp", "trout", "salmon"],
         "ES": ["perca", "carpa", "trucha", "salmón"]
     },
-    "stoneMount":{
-        "EN": ["basic knife", "cement", "concrete", "handcraft", "boulder", "stone", "water", "limestone", 
-               "plaster", "gravel", "sand", "salt", "granite", "basalt", "quartz", "marble"],
-        "ES": ["cuchilla", "cemento", "hormigón", "artesanía", "roca", "piedra", "agua", "piedra caliza",
-               "yeso", "gravilla", "arena", "sal", "granito", "basalto", "cuarzo", "mármol"]
-    },
     "woodMount":{
-        "EN": ["wooden trunk", "branch", "leño", "resina", "hongo", "hoja de té", "grano de café"],
-        "ES": ["tronco", "rama", "wood", "resin", "mushroom", "tea leaf", "coffee grain"]
+        "EN": ["wooden trunk", "branch", "wood", "resin", "mushroom", "tea leaf", "coffee grain"],
+        "ES": ["tronco", "rama", "leño", "resin", "mushroom", "hoja de té", "grano de café"]
     },
 }
 const categorized_goods = {
@@ -1696,6 +1733,40 @@ const categorized_goods = {
     },
     "resources": {
         "subcategories":{
+            "earth made": {
+                "ES": [
+                    "arcilla",
+                    "arena",
+                    "tierra fértil"
+                ],
+                "EN": [
+                    "clay",
+                    "sand",
+                    "soil"
+                ]
+            },
+            "mineral made": {
+                "ES": [
+                    "carbón",
+                    "cobre",
+                    "diamante",
+                    "estaño",
+                    "hierro",
+                    "oro",
+                    "plata",
+                    "platino",
+                ],
+                "EN": [
+                    "charcoal",
+                    "copper",
+                    "diamond",
+                    "gold",
+                    "iron",
+                    "platinum",
+                    "silver",
+                    "tin",
+                ]
+            },
             "stone made": {
                 "ES": [
                     "roca",
@@ -1704,7 +1775,6 @@ const categorized_goods = {
                     "piedra caliza",
                     "yeso",
                     "gravilla",
-                    "arena",
                     "sal",
                     "granito",
                     "basalto",
@@ -1718,7 +1788,6 @@ const categorized_goods = {
                     "limestone",
                     "plaster",
                     "gravel",
-                    "sand",
                     "salt",
                     "granite",
                     "basalt",
@@ -1730,8 +1799,8 @@ const categorized_goods = {
                 "ES": [
                     "tronco",
                     "rama",
-                    "wood",
-                    "resin",
+                    "leño",
+                    "resina",
                     "hongo",
                     "hoja de té",
                     "grano de café"
@@ -1739,23 +1808,48 @@ const categorized_goods = {
                 "EN": [
                     "wooden trunk",
                     "branch",
-                    "leño",
-                    "resina",
-                    "hongo",
-                    "hoja de té",
-                    "grano de café"
+                    "wood",
+                    "resin",
+                    "mushroom",
+                    "tea leaf",
+                    "coffee grain"
                 ]
             },
         }
     },
     "products": {
         "subcategories":{
+            /*"earth made": {
+            },*/
+            "animal related":{
+                "EN": [
+                    "carp",
+                    "deer",
+                    "fishing net",
+                    "oar",
+                    "partridge",
+                    "perch",
+                    "rodent",
+                    "salmon",
+                    "trout",
+                ],
+                "ES": [
+                    "carpa",
+                    "ciervo",
+                    "jabalí",
+                    "perca",
+                    "perdiz",
+                    "roedor",
+                    "salmón",
+                    "trucha",
+                ]               
+            },
             "stone made": {
                 "ES": [
-                    "cuchilla",
-                    "cemento", 
-                    "hormigón",
                     "artesanía",
+                    "cemento", 
+                    "cuchilla",
+                    "hormigón",
                 ],
                 "EN": [
                     "basic knife",
@@ -1766,35 +1860,43 @@ const categorized_goods = {
             },
             "wooden": {
                 "ES": [
-                    "red de pesca",
+                    "aserrín",
                     "caña de pescar",
-                    "vara de madera",
                     "madero",
-                    "viga de madera",
                     "placa de madera",
                     "vara de madera",
-                    "aserrín",
+                    "viga de madera",
                     "viruta", 
                 ],
                 "EN": [
-                    "fishing net",
                     "fishing rod",
-                    "wooden stick",
-                    "wooden plank",
                     "wooden piece",
+                    "wooden plank",
                     "wooden plate",
                     "wooden stick",
                     "sawdust",
                     "wooden chip"
                 ]
-            }               
+            },
+            "tools":{
+                "EN": [
+                    "basic knife",
+                    "fishing net",
+                    "fishing rod",
+                ],
+                "ES": [
+                    "cuchilla",
+                    "caña de pescar",
+                    "red de pesca",
+                ]
+            }
         }
     },
     "building parts": {
         "subcategories":{
             "wooden": {
                 "ES": [
-                    "fogón",
+                    "fogata",
                     "pared de madera pequeña",
                     "pared de madera mediana",
                     "techo de madera mediano",
@@ -1867,7 +1969,7 @@ const categorized_goods = {
         },
         "collection":{
             "ES": [
-                "fogón",
+                "fogata",
                 "pared de madera pequeña",
                 "pared de madera mediana",
                 "techo de madera mediano",
@@ -2040,13 +2142,14 @@ const building_rules = {
     "quarry": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 2, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
-                {"index": 3, "object": "pickaxe", "type": "product", "quantity": 50, "consumable": true},
-                {"index": 4, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 5, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 6, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
-                {"index": 7, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
+                {"index": 4, "object": "pickaxe", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 5, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 6, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 7, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
+                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*2,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
@@ -2055,13 +2158,14 @@ const building_rules = {
     "clay quarry": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 2, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
-                {"index": 3, "object": "pickaxe", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 4, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 5, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
-                {"index": 6, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
-                {"index": 7, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 1, "object": "Clay mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 4, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
+                {"index": 5, "object": "pickaxe", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 6, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 7, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 8, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
+                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*2,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
@@ -2070,14 +2174,15 @@ const building_rules = {
     "lumberjack's hut": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 2, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
-                {"index": 3, "object": "wood plank", "type": "product", "quantity": 100, "consumable": true},
-                {"index": 4, "object": "pickaxe", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 5, "object": "hammer", "type": "product", "quantity": 50, "consumable": true},
-                {"index": 6, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 7, "object": "nail", "type": "product", "quantity": 350, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "stone", "type": "resource", "quantity": 200, "consumable": true},
+                {"index": 4, "object": "wooden plank", "type": "product", "quantity": 100, "consumable": true},
+                {"index": 5, "object": "pickaxe", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 6, "object": "hammer", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 7, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 8, "object": "nail", "type": "product", "quantity": 350, "consumable": true},
+                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*2,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
@@ -2086,14 +2191,15 @@ const building_rules = {
     "mine": {
         "rules": [{
             "requirements": [
-                {"index": 1, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 2, "object": "stone", "type": "resource", "quantity": 400, "consumable": true},
-                {"index": 3, "object": "wood plank", "type": "product", "quantity": 100, "consumable": true},
-                {"index": 4, "object": "pickaxe", "type": "product", "quantity": 150, "consumable": true},
-                {"index": 5, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
-                {"index": 6, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
-                {"index": 7, "object": "nail", "type": "product", "quantity": 200, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "shed", "type": "building part", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "stone", "type": "resource", "quantity": 400, "consumable": true},
+                {"index": 4, "object": "wooden plank", "type": "product", "quantity": 100, "consumable": true},
+                {"index": 5, "object": "pickaxe", "type": "product", "quantity": 150, "consumable": true},
+                {"index": 6, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 7, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
+                {"index": 8, "object": "nail", "type": "product", "quantity": 200, "consumable": true},
+                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*3,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 7, "xp": 1/5, "life_quality": 0},
@@ -2101,6 +2207,17 @@ const building_rules = {
     },
 }
 const resource_rules = {
+    "basalt": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 2, "xp": 5, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 8, "duration_type": "constant", "duration": 24, "score": 1/78, "xp": 0.7*1/78},
+        }]
+    }, 
     "boulder": {
         "rules": [{
             "requirements": [
@@ -2108,7 +2225,7 @@ const resource_rules = {
                 {"index": 2, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/70, "xp": 1/140},
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/70, "xp": 0.5*1/70},
         }, {
             "requirements": [
                 {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
@@ -2116,9 +2233,122 @@ const resource_rules = {
                 {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 5, "duration_type": "constant", "duration": 24, "score": 1/70, "xp": 1/140},
+            "result": {"quantity": 5, "duration_type": "constant", "duration": 24, "score": 1/70, "xp": 0.5*1/70},
         }]
     },
+    "branch": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 50, "duration_type": "constant", "duration": 24, "score": 1/3000, "xp": 0.5*1/3000},
+        }]
+    },
+    "charcoal": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "miner", "role": "mining", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 20, "duration_type": "constant", "duration": 24, "score": 1/1400, "xp": 0.5*1/1400},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 100, "duration_type": "constant", "duration": 24, "score": 1/1400, "xp": 0.5*1/1400},
+        }]
+    },
+    "clay": {
+        "rules": [
+        {
+            "requirements": [
+                {"index": 1, "object": "Clay mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 50, "duration_type": "constant", "duration": 24, "score": 1/2500, "xp": 0.5*1/2500},
+        }]
+    },
+    "coffee grain": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "basic knife", "type": "product", "quantity": 1, "consumable": true},
+                {"index": 4, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 2, "xp": 3, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 200, "duration_type": "constant", "duration": 24, "score": 1/2500, "xp": 0.6*1/2500},
+        }]
+    },
+    "copper": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 2, "xp": 2, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 100, "duration_type": "constant", "duration": 24, "score": 1/2000, "xp": 0.6*1/2000},
+        }]
+    },
+    "diamond": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 5, "xp": 12, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 0.01, "duration_type": "constant", "duration": 24, "score": 100, "xp": 10},
+        }]
+    },
+    "gold": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 4, "xp": 8, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/4, "xp": 4/5},
+        }]
+    },
+    "granite": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 2, "xp": 5, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 9, "duration_type": "constant", "duration": 24, "score": 1/90, "xp": 0.6*1/90},
+        }]
+    },   
+    "iron": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "miner", "role": "mining", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 10, "duration_type": "constant", "duration": 24, "score": 1/1200, "xp": 0.5*1/1200},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 100, "duration_type": "constant", "duration": 24, "score": 1/1200, "xp": 0.5*1/1200},
+        }]
+    },    
     "limestone": {
         "rules": [{
             "requirements": [
@@ -2127,7 +2357,95 @@ const resource_rules = {
                 {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 2, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 8, "duration_type": "constant", "duration": 24, "score": 1/700, "xp": 1/1300},
+            "result": {"quantity": 15, "duration_type": "constant", "duration": 24, "score": 1/700, "xp": 0.6*1/700},
+        }]
+    },
+    "marble": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 3, "xp": 6, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 6, "duration_type": "constant", "duration": 24, "score": 1/50, "xp": 0.8*1/50},
+        }]
+    },
+    "mushroom": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 1, "xp": 3, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 15, "duration_type": "constant", "duration": 24, "score": 1/400, "xp": 0.6*1/400},
+        }]
+    },
+    "platinum": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 3, "xp": 5, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 30, "duration_type": "constant", "duration": 24, "score": 1/250, "xp": 0.7*1/250},
+        }]
+    },
+    "quartz": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 3, "xp": 4, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 7, "duration_type": "constant", "duration": 24, "score": 1/60, "xp": 0.8*1/60},
+        }]
+    },
+    "resin": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 1, "xp": 2, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 40, "duration_type": "constant", "duration": 24, "score": 1/500, "xp": 0.6*1/500},
+        }]
+    },
+    "sand": {
+        "rules": [
+        {
+            "requirements": [
+                {"index": 1, "object": "Clay mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 100, "duration_type": "constant", "duration": 24, "score": 1/7500, "xp": 0.5*1/7500},
+        }]
+    },
+    "silver": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 3, "xp": 4, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 50, "duration_type": "constant", "duration": 24, "score": 1/400, "xp": 0.7*1/400},
+        }]
+    },
+    "soil": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Clay mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "clay quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 200, "duration_type": "constant", "duration": 24, "score": 1/2500, "xp": 0.6*1/2500},
         }]
     },
     "stone": {
@@ -2136,8 +2454,30 @@ const resource_rules = {
                 {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
                 {"index": 2, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
-            "base_duration_in_hours": 2,
-            "result": {"quantity": 10, "duration_type": "constant", "duration": 24, "score": 1/750, "xp": 1/1500},
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 10, "duration_type": "constant", "duration": 24, "score": 1/750, "xp": 0.5*1/750},
+        }]
+    },
+    "tea leaf": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 2, "xp": 4, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 45, "duration_type": "constant", "duration": 24, "score": 1/2000, "xp": 0.5*1/2000},
+        }]
+    },
+    "tin": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Mineral mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Mine", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "miner", "role": "mining", "type": "citizen", "quantity": 2, "xp": 3, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 80, "duration_type": "constant", "duration": 24, "score": 1/900, "xp": 0.6*1/900},
         }]
     },
     "water": {
@@ -2147,7 +2487,27 @@ const resource_rules = {
                 {"index": 2, "object": "water bearer", "role": "waterbearing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24,
-            "result": {"quantity": 8, "duration_type": "constant", "duration": 24, "score": 1/250, "xp": 1/500},
+            "result": {"quantity": 8, "duration_type": "constant", "duration": 24, "score": 1/250, "xp": 0.5*1/250},
+        }]
+    },
+    "wood": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 10, "duration_type": "constant", "duration": 24, "score": 1/600, "xp": 0.5*1/600},
+        }]
+    },
+    "wooden trunk": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "woodcutter", "role": "woodcutting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 4, "duration_type": "constant", "duration": 24, "score": 1/350, "xp": 0.5*1/350},
         }]
     },
 }
@@ -2328,6 +2688,25 @@ const product_rules = {
             "result": {"quantity": 5, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/70, "xp": 0.1},
         }]
     },
+    "deer": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Hunting mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lance", "type": "object", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "hunter", "role": "hunting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/150, "xp": 1/150},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Hunting mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "bow and arrows", "type": "object", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "hunter", "role": "hunting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 2, "duration_type": "constant", "duration": 24, "score": 1/150, "xp": 1/150},
+        }]
+    },
     "fence": {
         "rules": [{
             "requirements": [
@@ -2341,6 +2720,31 @@ const product_rules = {
             ],
             "base_duration_in_hours": 24,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1/2},
+        }]
+    },
+    "fishing net": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "rope", "type": "product", "quantity": 20, "consumable": true},
+                {"index": 4, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/15, "xp": 0.5*1/15},
+        }]
+    },
+    "fishing rod": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "rope", "type": "product", "quantity": 2, "consumable": true},
+                {"index": 4, "object": "wooden stick", "type": "product", "quantity": 3, "consumable": true},
+                {"index": 5, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/15, "xp": 0.5*1/15},
         }]
     },
     "medium brick wall": {
@@ -2458,6 +2862,35 @@ const product_rules = {
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 2/5, "xp": 1/3},
         }]
     },
+    "oar": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Hunting mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "lance", "type": "object", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "hunter", "role": "hunting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 0.5, "duration_type": "constant", "duration": 24, "score": 1/150, "xp": 1/150},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Hunting mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "bow and arrows", "type": "object", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "hunter", "role": "hunting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 2, "duration_type": "constant", "duration": 24, "score": 1/150, "xp": 1/150},
+        }]
+    },
+    "partridge": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Hunting mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "hunter", "role": "hunting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/200, "xp": 1/200},
+        }]
+    },
     "perch": {
         "rules": [{
             "requirements": [
@@ -2467,6 +2900,16 @@ const product_rules = {
             ],
             "base_duration_in_hours": 24,
             "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/200, "xp": 1/200},
+        }]
+    },
+    "rodent": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Hunting mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "hunter", "role": "hunting", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 1, "duration_type": "constant", "duration": 24, "score": 1/250, "xp": 1/250},
         }]
     },
     "salmon": {
@@ -2581,6 +3024,38 @@ const product_rules = {
             ],
             "base_duration_in_hours": 24,
             "result": {"quantity": 0.2, "duration_type": "constant", "duration": 24, "score": 1/140, "xp": 1/140},
+        }]
+    },
+    "wooden stick": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "branch", "type": "resource", "quantity": 30, "consumable": true},
+                {"index": 3, "object": "basic knife", "type": "product", "quantity": 1, "consumable": true},
+                {"index": 4, "object": "carpenter", "role": "carpentry", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 30, "duration_type": "constant", "duration": 24, "score": 1/500, "xp": 0.5*1/500},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "wood", "type": "resource", "quantity": 2, "consumable": true},
+                {"index": 3, "object": "saw", "type": "product", "quantity": 2, "consumable": true},
+                {"index": 4, "object": "basic knife", "type": "product", "quantity": 2, "consumable": true},
+                {"index": 5, "object": "carpenter", "role": "carpentry", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 60, "duration_type": "constant", "duration": 24, "score": 1/500, "xp": 0.5*1/500},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "Wood mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 1, "consumable": true},
+                {"index": 3, "object": "saw", "type": "product", "quantity": 6, "consumable": true},
+                {"index": 4, "object": "basic knife", "type": "product", "quantity": 3, "consumable": true},
+                {"index": 5, "object": "carpenter", "role": "carpentry", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 60, "duration_type": "constant", "duration": 24, "score": 1/500, "xp": 0.5*1/500},
         }]
     },
 }

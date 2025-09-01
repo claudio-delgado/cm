@@ -43,10 +43,10 @@ const naming = {
                 "Ingrid", "Irene", "Iriel", "Irina", "Iris", "Irma", "Isabel", "Isabella", "Isadora", "Isaura", "Isidora", "Ivana",
                 "Ivonne", "Jacinta", "Jana", "Janet", "Janina", "Jazmín", "Jennifer", "Jenny", "Jéssica", "Jezabel", "Jimena", 
                 "Jocelyn", "Johanna", "Jorgelina", "Josefina", "Juana", "Juanita", "Judith", "Judy", "Julia", "Juliana", "Julieta",
-                "Juno", "Justina", "Kacey", "Kaia", "Kaira", "Karen", "Karin", "Karina", "Karla", "Katya", "Katyana", "Kayra",
-                "Keila", "Keisha", "Kelly", "Kendra", "Kesia", "Kiana", "Kiara", "Kim", "Laila", "Lara", "Larissa", "Latisha",
-                "Laura", "Laureana", "Lea", "Leandra", "Leda", "Leia", "Leila", "Lena", "Leonela", "Leonor", "Leonora", "Leslie",
-                "Lessia", "Leticia", "Liana", "Libertad", "Lidia", "Liliana", "Lina", "Linda", "Lionela", "Lisa", "Lisana", 
+                "Juno", "Justina", "Kacey", "Kaia", "Kaira", "Karen", "Karin", "Karina", "Karla", "Karol", "Katya", "Katyana", 
+                "Kayra", "Keila", "Keisha", "Kelly", "Kendra", "Kesia", "Kiana", "Kiara", "Kim", "Laila", "Lara", "Larissa", 
+                "Latisha","Laura", "Laureana", "Lea", "Leandra", "Leda", "Leia", "Leila", "Lena", "Leonela", "Leonor", "Leonora", 
+                "Leslie", "Lessia", "Leticia", "Liana", "Libertad", "Lidia", "Liliana", "Lina", "Linda", "Lionela", "Lisa", "Lisana", 
                 "Lisandra", "Lisbet", "Lisette", "Liuba", "Liv", "Livia", "Liz", "Lizbeth", "Lizzy", "Loana", "Lola", "Loreana", 
                 "Lorelei", "Lorena", "Lorenza", "Lori", "Loriana", "Lorna", "Luana", "Lucero", "Lucía", "Luciana", "Lucila",
                 "Lucrecia", "Lucy", "Ludmila", "Ludovica", "Luisa", "Luisana", "Luisina", "Luján", "Lulú", "Luna", "Lupita", "Luz",
@@ -108,19 +108,18 @@ const naming = {
                 "Isidoro", "Ismael", "Israel", "Ítalo", "Iuri", "Iván", "Ivo", "Jacinto", "Jack", "Jacobo", "Jacques", "Jaime", 
                 "Jairo", "Jano", "Jason", "Javier", "Jenaro", "Jere", "Jeremías", "Jerónimo", "Jerry", "Jim", "Jimmy", "Joaquín", 
                 "Joel", "Johann", "Jonás", "Jonathan", "Jordi", "Jorge", "José", "Josué", "Juan", "Juanito", "Julián", "Juliano", 
-                "Julio", "Junior", "Justiniano", "Kai", "Karim", "Karol", "Keanu", "Kendrick", "Kenny", "Kerry", "Kevin", "Killian", 
-                "Lancelot", "Laureano", "Lautaro", "Lázaro", "Leandro", "Lemmy", "Lenny", "Leo", "Leon", "Leonardo", "Leonel", 
-                "Leopoldo", "Leroy", "Lionel", "Lisandro", "Lorenzo", "Luca", "Lucas", "Luciano", "Lucio", "Ludovico", "Luis", "Magno",
-                "Manolo", "Manu", "Manuel", "Marce", "Marcelo", "Marco", "Marcos", "Mariano", "Mario", "Martín", "Martiniano", "Martino", 
-                "Mateo", "Matías", "Mauricio", "Mauro", "Maximiliano", "Máximo", "Melito", "Miguel", "Mikael", "Milo", "Milton", "Mirko", 
-                "Nelson", "Néstor", "Nicolás", "Nino", "Norberto", "Octavio", "Odo", "Omar", "Oscar", "Pablo", "Paco", "Pancho", "Paolo",
-                "Pascual", "Patricio", "Paulo", "Pedro", "Pepita", "Pepe", "Pepin", "Pepito", "Rafael", "Ramiro", "Ramón", "Raúl", 
-                "Ricardo", "Roberto", "Rodolfo", "Rodrigo", "Rolando", "Román", "Rubén", "Samuel", "Sandro", "Santino", "Saúl", 
-                "Sebastián", "Sergio", "Silvano", "Silvestre", "Silvio", "Simón", "Stéfano", "Tadeo", "Teo", "Tiago", "Tiberio", "Tim", 
-                "Tincho", "Tito", "Tiziano", "Tobías", "Toby", "Tomás", "Tommy", "Travis", "Tristán", "Tulio", "Ubaldo", "Udo", "Ulises", 
-                "Umberto", "Uriel", "Valentín", "Valentino", "Valerio", "Vero", "Vicente", "Víctor", "Victoriano", "Viggo", "Virgilio", 
-                "Virginio", "Vito", "Viviano", "Vladimir", "Waldo", "Wálter", "Willy", "Xavier", "Yago", "Yahir", "Yannis", "Zacarías", 
-                "Zenon"
+                "Julio", "Junior", "Justiniano", "Kai", "Karim", "Keanu", "Kendrick", "Kenny", "Kerry", "Kevin", "Killian", "Lancelot", 
+                "Laureano", "Lautaro", "Lázaro", "Leandro", "Lemmy", "Lenny", "Leo", "Leon", "Leonardo", "Leonel", "Leopoldo", "Leroy", 
+                "Lionel", "Lisandro", "Lorenzo", "Luca", "Lucas", "Luciano", "Lucio", "Ludovico", "Luis", "Magno", "Manolo", "Manu", 
+                "Manuel", "Marce", "Marcelo", "Marco", "Marcos", "Mariano", "Mario", "Martín", "Martiniano", "Martino", "Mateo", "Matías", 
+                "Mauricio", "Mauro", "Maximiliano", "Máximo", "Melito", "Miguel", "Mikael", "Milo", "Milton", "Mirko", "Nelson", "Néstor", 
+                "Nicolás", "Nino", "Norberto", "Octavio", "Odo", "Omar", "Oscar", "Pablo", "Paco", "Pancho", "Paolo", "Pascual", 
+                "Patricio", "Paulo", "Pedro", "Pepita", "Pepe", "Pepin", "Pepito", "Rafael", "Ramiro", "Ramón", "Raúl", "Ricardo", 
+                "Roberto", "Rodolfo", "Rodrigo", "Rolando", "Román", "Rubén", "Samuel", "Sandro", "Santino", "Saúl", "Sebastián", 
+                "Sergio", "Silvano", "Silvestre", "Silvio", "Simón", "Stéfano", "Tadeo", "Teo", "Tiago", "Tiberio", "Tim", "Tincho", 
+                "Tito", "Tiziano", "Tobías", "Toby", "Tomás", "Tommy", "Travis", "Tristán", "Tulio", "Ubaldo", "Udo", "Ulises", "Umberto", 
+                "Uriel", "Valentín", "Valentino", "Valerio", "Vero", "Vicente", "Víctor", "Victoriano", "Viggo", "Virgilio", "Virginio", 
+                "Vito", "Viviano", "Vladimir", "Waldo", "Wálter", "Willy", "Xavier", "Yago", "Yahir", "Yannis", "Zacarías", "Zenon"
             ],	
         },
     },
@@ -290,70 +289,6 @@ const attributes_adjectives = {
     "EN": {"Agility":"agile", "Strength":"strong", "Dexterity":"dexterous", "Intelligence":"smart", "Creativity":"creative", "Cunning":"cunning", "Sympathy":"easy going", "Charisma":"charismatic", "Protection":"protective", "Partnership":"good partner", "Bravery":"brave"},
     "ES": {"Agilidad":{"F":"ágil", "M":"ágil"}, "Fuerza":{"F":"fuerte", "M":"fuerte"}, "Destreza":{"F":"muy diestra", "M":"muy diestro"}, "Inteligencia":{"F":"inteligente", "M":"inteligente"}, "Creatividad":{"F":"creativa", "M":"creativo"}, "Astucia":{"F":"astuta", "M":"astuto"}, "Simpatía":{"F":"simpática", "M":"simpático"}, "Carisma":{"F":"carismática", "M":"carismático"}, "Protección":{"F":"protectora", "M":"protector"}, "Compañerismo":{"F":"compañera", "M":"compañero"}, "Valentía":{"F":"valiente", "M":"valiente"}}
 }
-const shelter_capacities = {
-    "campaign tent": 3,
-    "cottage": 9,
-    "stoneHouse": 16,
-    "brickhouse": 24,
-    "manor": 42,
-    "mansion": 80,
-    "graveyard": 15
-}
-const building_info = {
-    "name": "Campaign tent 1",
-    "capacity": 3,
-    "created":{"year":1, "week":1, "day":1, "hour":1},
-    "workers_assigned": []
-    //...
-}
-const buildings = {
-    "shelter_related": {
-       "campaign_tent": { "name": "campaign tent", "plural": "campaign tents", "risk": {"fire hazard": 0.5}, "building_list":[] }, //tienda de campaña
-       "cottage": { "name": "cottage", "plural": "cottages", "risk": {"fire hazard": 0.2}, "building_list":[]}, //cabaña de madera
-       "stone_house": { "name": "stone house", "plural": "stone houses", "building_list":[]}, //casa de piedra
-       "brick_house": { "name": "brick house", "plural": "brick houses", "building_list":[]}, //casa de ladrillos
-       "manor": { "name": "manor", "plural": "manors", "building_list":[]}, //casona
-       "mansion": { "name": "mansion", "plural": "mansions", "building_list":[]}, //mansión
-       "graveyard": { "name": "graveyard", "plural": "graveyards", "building_list":[]}, //cementerio*/
-    },
-    "mounts_related":{
-        "quarry" : { "name": "quarry", "plural": "quarries", "building_list":[]}, //pedregal (stonesmith)
-        "clay_quarry" : { "name": "clay quarry", "plural": "clay quarries", "building_list":[]}, //terrario
-        "lumberjack's_hut" : { "name": "lumberjack's hut", "plural": "lumberjack's huts", "building_list":[]}, //puesto de leñador
-        "mine" : { "name": "mine", "plural": "mines", "building_list":[]}, //mina
-        /* For future versions...
-        "hunting post" : 0, //puesto de cazador
-        */
-    },
-    "production_related": {
-        /* For future versions...
-        "water well" : 0, //pozo de agua
-        */
-        "farm": { "name": "farm", "plural": "farms", "building_list":[]}, //granja
-        "barnyard": { "name": "barnyard", "plural": "barn yards", "building_list":[]}, //corral
-        "mill": { "name": "mill", "plural": "mills", "building_list":[]}, //molino
-        "slaughterhouse": { "name": "slaughterhouse", "plural": "slaughterhouses", "building_list":[]}, //matadero
-        "furnaces": { "name": "furnaces", "plural": "furnaces", "building_list":[]}, //hornos
-        "textile": { "name": "textile", "plural": "textiles", "building_list":[]}, //textil
-        "blacksmith": { "name": "blacksmith", "plural": "blacksmiths", "building_list":[]}, //herrería
-        "sawmill": { "name": "misawmillne", "plural": "sawmills", "building_list":[]}, //aserradero
-        "workshop": { "name": "workshop", "plural": "workshops", "building_list":[]}, //talle
-        "woodsmith": { "name": "woodsmith", "plural": "woodsmiths", "building_list":[]}, //carpintería (carpentry)
-    },
-    "training_related": {
-        "academy": { "name": "academy", "plural": "academies", "building_list":[]}, //academia
-        "barracks": { "name": "barracks", "plural": "barracks", "building_list":[]}, //cuartel
-        /* For future versions...
-        "archery range": 0, //campo de arquería
-        */
-    },
-    "exchange_related": {
-        "market": { "name": "market", "plural": "markets", "building_list":[]}, //mercado
-        "fair": { "name": "fair", "plural": "fairs", "building_list":[]}, //feria
-        "bank": { "name": "bank", "plural": "banks", "building_list":[]}, //banco
-        "tavern": { "name": "tavern", "plural": "campaign taverns", "building_list":[]}, //taberna
-    }
-}
 const role_icons = [ 
     {"EN": "academic", "ES": {"F": "académica", "M": "académico"}, "key":"researching", "icon": "graduation-cap"}, 
     {"EN": "banker", "ES": {"F": "banquera", "M": "banquero"}, "key":"bankery", "icon": "sack-dollar"}, 
@@ -397,6 +332,44 @@ const mood_icons = {
     "satisfaction": {"icon": "fa-smile", "color": "text-green-400"},
     "disapointment": {"icon": "fa-frown-open", "color": "text-yellow-400"},
     "defeated": {"icon": "fa-face-dizzy", "color": "text-red-800"},
+}
+const score_bonus = {
+    //Buildings completed...
+    //Shelters completed...
+    "brickhouse_built": 11,
+    "campaign_tent_built": 1,
+    "cottage_built": 5,
+    "graveyard_built": 7,
+    "manor_built": 24,
+    "mansion_built": 50,
+    "stonehouse_built": 6,
+    //Mount related buildings completed...
+    "clay_quarry_built": 5,
+    "lumberjack's_hut_built": 5,
+    "mine_built": 7,
+    "quarry_built": 5,
+    //Product manufacturing buildings completed...
+    "academy_built": 50,
+    "bank_built": 45,
+    "barracks_built": 30,
+    "blacksmith_built": 18,
+    "barnyard_built": 10,
+    "farm_built": 10,
+    "fair_built": 20,
+    "furnaces_built": 16,
+    "market_built": 22,
+    "mill_built": 12,
+    "sawmill_built": 20,
+    "slaughterhouse_built": 15,
+    "tavern_built": 20,
+    "textile_built": 25,
+    "workshop_built": 28,
+    //Mounts found...
+    "clay_mount_found": 6,
+    "hunting_mount_found": 1,
+    "stone_mount_found": 3,
+    "mineral_mount_found": 10,
+    "wood_mount_found": 5,
 }
 //Important objects
 var wagon_goods = {
@@ -2025,6 +1998,74 @@ const categorized_goods = {
         }
     }
 }
+const shelter_capacities = {
+    "campaign tent": 3,
+    "cottage": 9,
+    "stoneHouse": 16,
+    "brickhouse": 24,
+    "manor": 42,
+    "mansion": 80,
+    "graveyard": 15
+}
+const facility_capacities = {
+    "quarry": 5,
+}
+const building_info = {
+    "name": "Campaign tent 1",
+    "capacity": 3,
+    "initiated":{"year":1, "week":1, "day":1, "hour":1},
+    "created":{"year":1, "week":1, "day":1, "hour":1},
+    "workers_assigned": []
+    //...
+}
+const buildings = {
+    "shelter_related": {
+       "campaign_tent": { "name": "campaign tent", "plural": "campaign tents", "risk": {"fire hazard": 0.5}, "last_id": 0, "building_list":[] }, //tienda de campaña
+       "cottage": { "name": "cottage", "plural": "cottages", "risk": {"fire hazard": 0.2}, "last_id": 0, "building_list":[]}, //cabaña de madera
+       "stone_house": { "name": "stone house", "plural": "stone houses", "last_id": 0, "building_list":[]}, //casa de piedra
+       "brick_house": { "name": "brick house", "plural": "brick houses", "last_id": 0, "building_list":[]}, //casa de ladrillos
+       "manor": { "name": "manor", "plural": "manors", "last_id": 0, "building_list":[]}, //casona
+       "mansion": { "name": "mansion", "plural": "mansions", "last_id": 0, "building_list":[]}, //mansión
+       "graveyard": { "name": "graveyard", "plural": "graveyards", "last_id": 0, "building_list":[]}, //cementerio*/
+    },
+    "mounts_related":{
+        "quarry" : { "name": "quarry", "plural": "quarries", "last_id": 0, "building_list":[]}, //pedregal (stonesmith)
+        "clay_quarry" : { "name": "clay quarry", "plural": "clay quarries", "last_id": 0, "building_list":[]}, //terrario
+        "lumberjack's_hut" : { "name": "lumberjack's hut", "plural": "lumberjack's huts", "last_id": 0, "building_list":[]}, //puesto de leñador
+        "mine" : { "name": "mine", "plural": "mines", "last_id": 0, "building_list":[]}, //mina
+        /* For future versions...
+        "hunting post" : 0, //puesto de cazador
+        */
+    },
+    "production_related": {
+        /* For future versions...
+        "water well" : 0, //pozo de agua
+        */
+        "farm": { "name": "farm", "plural": "farms", "last_id": 0, "building_list":[]}, //granja
+        "barnyard": { "name": "barnyard", "plural": "barn yards", "last_id": 0, "building_list":[]}, //corral
+        "mill": { "name": "mill", "plural": "mills", "last_id": 0, "building_list":[]}, //molino
+        "slaughterhouse": { "name": "slaughterhouse", "plural": "slaughterhouses", "last_id": 0, "building_list":[]}, //matadero
+        "furnaces": { "name": "furnaces", "plural": "furnaces", "last_id": 0, "building_list":[]}, //hornos
+        "textile": { "name": "textile", "plural": "textiles", "last_id": 0, "building_list":[]}, //textil
+        "blacksmith": { "name": "blacksmith", "plural": "blacksmiths", "last_id": 0, "building_list":[]}, //herrería
+        "sawmill": { "name": "sawmill", "plural": "sawmills", "last_id": 0, "building_list":[]}, //aserradero
+        "workshop": { "name": "workshop", "plural": "workshops", "last_id": 0, "building_list":[]}, //talle
+        "woodsmith": { "name": "woodsmith", "plural": "woodsmiths", "last_id": 0, "building_list":[]}, //carpintería (carpentry)
+    },
+    "training_related": {
+        "academy": { "name": "academy", "plural": "academies", "last_id": 0, "building_list":[]}, //academia
+        "barracks": { "name": "barracks", "plural": "barracks", "last_id": 0, "building_list":[]}, //cuartel
+        /* For future versions...
+        "archery range": 0, //campo de arquería
+        */
+    },
+    "exchange_related": {
+        "market": { "name": "market", "plural": "markets", "last_id": 0, "building_list":[]}, //mercado
+        "fair": { "name": "fair", "plural": "fairs", "last_id": 0, "building_list":[]}, //feria
+        "bank": { "name": "bank", "plural": "banks", "last_id": 0, "building_list":[]}, //banco
+        "tavern": { "name": "tavern", "plural": "taverns", "last_id": 0, "building_list":[]}, //taberna
+    }
+}
 const building_rules = {
     "campaign tent": {
         "rules": [{
@@ -2034,10 +2075,22 @@ const building_rules = {
                 {"index": 3, "object": "wood", "type": "resource", "quantity": 20, "consumable": true},
                 {"index": 4, "object": "rope", "type": "product", "quantity": 10, "consumable": true},
                 {"index": 5, "object": "branch", "type": "resource", "quantity": 100, "consumable": true},
-                {"index": 6, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 6, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 48,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1, "xp": 1/20, "life_quality": 0},
+        }, {
+            "requirements": [
+                {"index": 1, "object": "lumberjack's hut", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "wooden trunk", "type": "resource", "quantity": 12, "consumable": true},
+                {"index": 3, "object": "rag", "type": "product", "quantity": 10, "consumable": true},
+                {"index": 4, "object": "wood", "type": "resource", "quantity": 20, "consumable": true},
+                {"index": 5, "object": "rope", "type": "product", "quantity": 10, "consumable": true},
+                {"index": 6, "object": "branch", "type": "resource", "quantity": 100, "consumable": true},
+                {"index": 7, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+            ],
+            "base_duration_in_hours": 48,
+            "result": {"quantity": 2, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 1, "xp": 1/20, "life_quality": 0},
         }]
     },
     "cottage": {
@@ -2050,7 +2103,7 @@ const building_rules = {
                 {"index": 5, "object": "big bed", "type": "building part", "quantity": 2, "consumable": true},
                 {"index": 6, "object": "small bed", "type": "building part", "quantity": 6, "consumable": true},
                 {"index": 7, "object": "table", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 8, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*6,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 6, "xp": 4/10, "life_quality": 1},
@@ -2066,7 +2119,7 @@ const building_rules = {
                 {"index": 5, "object": "big bed", "type": "building part", "quantity": 2, "consumable": true},
                 {"index": 6, "object": "small bed", "type": "building part", "quantity": 6, "consumable": true},
                 {"index": 7, "object": "table", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 8, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*11,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 6, "xp": 6/10, "life_quality": 0},
@@ -2082,7 +2135,7 @@ const building_rules = {
                 {"index": 5, "object": "big bed", "type": "building part", "quantity": 5, "consumable": true},
                 {"index": 6, "object": "small bed", "type": "building part", "quantity": 8, "consumable": true},
                 {"index": 7, "object": "table", "type": "building part", "quantity": 2, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 3, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 8, "object": "builder", "role": "construction", "type": "citizen", "quantity": 3, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*30,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 11, "xp": 3/4, "life_quality": 2},
@@ -2099,7 +2152,7 @@ const building_rules = {
                 {"index": 6, "object": "small bed", "type": "building part", "quantity": 18, "consumable": true},
                 {"index": 7, "object": "table", "type": "building part", "quantity": 5, "consumable": true},
                 {"index": 8, "object": "carpet", "type": "building part", "quantity": 1, "consumable": true},
-                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 5, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 9, "object": "builder", "role": "construction", "type": "citizen", "quantity": 5, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*70,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 24, "xp": 2, "life_quality": 5},
@@ -2117,7 +2170,7 @@ const building_rules = {
                 {"index": 7, "object": "table", "type": "building part", "quantity": 10, "consumable": true},
                 {"index": 8, "object": "carpet", "type": "building part", "quantity": 8, "consumable": true},
                 {"index": 9, "object": "vase", "type": "building part", "quantity": 10, "consumable": true},
-                {"index": 10, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 10, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 10, "object": "builder", "role": "construction", "type": "citizen", "quantity": 10, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*160,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 50, "xp": 4, "life_quality": 12},
@@ -2133,7 +2186,7 @@ const building_rules = {
                 {"index": 5, "object": "sand", "type": "resource", "quantity": 3000, "consumable": true},
                 {"index": 6, "object": "shovel", "type": "product", "quantity": 2, "consumable": true},
                 {"index": 7, "object": "soil", "type": "resource", "quantity": 500, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 8, "object": "builder", "role": "construction", "type": "citizen", "quantity": 2, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*6,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
@@ -2149,9 +2202,9 @@ const building_rules = {
                 {"index": 5, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
                 {"index": 6, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
                 {"index": 7, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
-                {"index": 8, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 8, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
-            "base_duration_in_hours": 24*7*2,
+            "base_duration_in_hours": 5, //24*7*2,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
         }]
     },
@@ -2165,7 +2218,7 @@ const building_rules = {
                 {"index": 6, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
                 {"index": 7, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
                 {"index": 8, "object": "nail", "type": "product", "quantity": 250, "consumable": true},
-                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 9, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*2,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
@@ -2182,7 +2235,7 @@ const building_rules = {
                 {"index": 6, "object": "hammer", "type": "product", "quantity": 50, "consumable": true},
                 {"index": 7, "object": "shovel", "type": "product", "quantity": 20, "consumable": true},
                 {"index": 8, "object": "nail", "type": "product", "quantity": 350, "consumable": true},
-                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 9, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*2,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 5, "xp": 1/10, "life_quality": 0},
@@ -2199,7 +2252,7 @@ const building_rules = {
                 {"index": 6, "object": "hammer", "type": "product", "quantity": 20, "consumable": true},
                 {"index": 7, "object": "shovel", "type": "product", "quantity": 50, "consumable": true},
                 {"index": 8, "object": "nail", "type": "product", "quantity": 200, "consumable": true},
-                {"index": 9, "object": "builder", "role": "constructing", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
+                {"index": 9, "object": "builder", "role": "construction", "type": "citizen", "quantity": 1, "xp": 0, "consumable": false, "workers": [], "tools": []},
             ],
             "base_duration_in_hours": 24*7*3,
             "result": {"quantity": 1, "duration_type": "formula", "formula":"construction_duration", "formula_args": ["citizens_array", "base_duration_in_days"], "score": 7, "xp": 1/5, "life_quality": 0},
@@ -2329,6 +2382,17 @@ const resource_rules = {
             ],
             "base_duration_in_hours": 24,
             "result": {"quantity": 9, "duration_type": "constant", "duration": 24, "score": 1/90, "xp": 0.6*1/90},
+        }]
+    },   
+    "gravel": {
+        "rules": [{
+            "requirements": [
+                {"index": 1, "object": "Stone mount", "type": "location", "quantity": 1, "consumable": false},
+                {"index": 2, "object": "Quarry", "type": "building", "quantity": 1, "consumable": false},
+                {"index": 3, "object": "stone breaker", "role": "stonebreaking", "type": "citizen", "quantity": 1, "xp": 3, "consumable": false, "tools": []},
+            ],
+            "base_duration_in_hours": 24,
+            "result": {"quantity": 200, "duration_type": "constant", "duration": 24, "score": 1/3000, "xp": 0.6*1/3000},
         }]
     },   
     "iron": {
@@ -3059,6 +3123,37 @@ const product_rules = {
         }]
     },
 }
+var building_rules_defined = [
+    {
+        "id": 0,
+        "index": 0,
+        "project_created":{
+            "week":0,
+            "day":1,
+            "hour":1
+        },
+        "project_ended":{
+            "week":0,
+            "day":1,
+            "hour":1
+        },
+        "building": "", 
+        "group": "",
+        "type": "",
+        "status":["under construction", "ended"],
+        "duration":0,
+        "duration_remaining":0,
+        "rule_definition": {
+            "requirements": [
+                {"index": 1, "object": "Water reservoir", "type": "location", "quantity": 1, "tools": [], "consumable": false},
+                {"index": 2, "object": "fisher", "role": "fishing", "type": "citizen", "quantity": 1, "xp": 0, "tools": [], "consumable": false, "workers": []
+                },
+            ],
+            "result": {"quantity": 1, "score": 1/200},
+        }
+    }
+]
+building_rules_defined = []
 var good_rules_defined = [
     { //rule_created
         "id": 0,
@@ -3101,6 +3196,27 @@ const water_reservoirs = {
     "Stream":{
         "daily-water-income":"3", 
         "daily-food-income":"1"
+    }
+}
+var population_loss_events = {
+    "daily": {
+        "water_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 3, "result":{"type": "exiled_citizens", "quantity": 1}},
+        "low_life_quality_and_shortage_exile": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "exiled_citizens", "quantity": 1}},
+    },
+    "weekly":{
+        "low_life_quality": {
+            "status": "inactive",  
+            "ellapsed_time": 0, 
+            "threshold": 4, 
+            "result": {
+                "type": "exiled_citizens", 
+                "quantity": 1
+            }
+        },
+        "low_water_income": {"status": "inactive", "ellapsed_time": 0, "threshold": 2, "result":{"type": "exiled_citizens", "quantity": 1}},
+        "low_food_income": {"status": "inactive", "ellapsed_time": 0, "threshold": 3, "result":{"type": "exiled_citizens", "quantity": 1}},
+        "food_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "exiled_citizens", "quantity": 1}},
+        "low_life_quality_and_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "dead_citizens", "quantity": 1}},
     }
 }
 

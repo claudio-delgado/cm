@@ -2143,39 +2143,41 @@ class panel{
             //Build building groups accordions
             let building_groups = Object.keys(buildings)
             let d2 = new element("div", "w-100 flex flex-wrap gap-1", [{"key":"data-accordion", "value":"collapse"}], d1.getNode(), `accordion-newBuilding-groups`); d2.create()
-            building_groups.forEach((building_group, b_index) => {
-                let group_name = building_group.replace("_", " ")
+            building_groups.forEach((snake_building_group, b_index) => {
+                let group_name = snake_building_group.replace("_", " ")
                 group_name.charAt(0).toUpperCase() + group_name.slice(1)
                 d3 = new element("div", "w-100", [], d2.getNode()); d3.create()
                 //Build building groups accordion header
-                h2 = new element("h2", "w-100", [], d3.getNode(), `accordion-newBuilding-group-${b_index+1}`); h2.create()
-                b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-newBuilding-group-${b_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-newBuilding-group-${b_index+1}-body`}], h2.getNode())
+                let h2_attributes = [{"key": "data-building-group", "value":group_name}, {"key": "data-building-group-index", "value":b_index+1}]
+                h2 = new element("h2", "w-100", h2_attributes, d3.getNode(), `accordion-newBuilding-group-${snake_building_group}-header`); h2.create()
+                b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-newBuilding-group-${snake_building_group}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-newBuilding-group-${snake_building_group}-body`}], h2.getNode())
                 b.create()
                 s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, group_name, "", "capitalized"))
                 b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
                 enable_accordion_click(b.getNode())
                 //Build building types accordion body
-                d1 = new element("div", "w-100 border-b border-s border-e border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-newBuilding-group-${b_index+1}-header`}], d3.getNode(), `accordion-newBuilding-group-${b_index+1}-body`); d1.create()
-                let building_types = Object.keys(buildings[building_group])
-                d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-newBuilding-group-${b_index+1}-types`); d.create()
-                d1 = new element("div", "flex flex-wrap gap-1", [{"key":"data-accordion", "value":"collapse"}], d.getNode()); d1.create()
+                d1 = new element("div", "w-100 border-b border-s border-e border-gray-800 bg-gray-500 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-newBuilding-group-${snake_building_group}-header`}], d3.getNode(), `accordion-newBuilding-group-${snake_building_group}-body`); d1.create()
+                let building_types = Object.keys(buildings[snake_building_group])
+                d = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), `accordion-newBuilding-group-${snake_building_group}-types`); d.create()
+                d1 = new element("div", "flex flex-wrap gap-1", [], d.getNode()); d1.create()
                 let parent_div = d1.getNode()
-                building_types.forEach((building_type, bt_index) => {
-                    let type_name_raw = building_type.replace("_", " ")
-                    let type_name = type_name_raw.charAt(0).toUpperCase() + type_name_raw.slice(1)
+                building_types.forEach((snake_building_type, bt_index) => {
+                    let type_name = snake_building_type.replace("_", " ")
+                    let type_name_capital = type_name.charAt(0).toUpperCase() + type_name.slice(1)
                     let div = new element("div", "w-100", [], parent_div); div.create()
                     //Build building types accordion header
-                    h2 = new element("h2", "w-100", [], div.getNode(), `accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-header`); h2.create()
-                    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-body`}], h2.getNode())
+                    let h2_attributes = [{"key": "data-building-group", "value":group_name}, {"key": "data-building-group-index", "value":b_index+1}, {"key": "data-building-type", "value":type_name}, {"key": "data-building-type-index", "value":bt_index+1}]
+                    h2 = new element("h2", "w-100", h2_attributes, div.getNode(), `accordion-newBuilding-group-${snake_building_group}-type-${snake_building_type}-header`); h2.create()
+                    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 bg-gray-900 font-medium border border-gray-900 text-xs text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-newBuilding-group-${snake_building_group}-type-${snake_building_type}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-newBuilding-group-${snake_building_group}-type-${snake_building_type}-body`}], h2.getNode())
                     b.create()
-                    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, type_name, "", "capitalized"))
+                    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent(translate(language, type_name_capital, "", "capitalized"))
                     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
                     enable_accordion_click(b.getNode())
                     //Build building types accordion body
-                    d3 = new element("div", "w-100 border-b border-s border-e border-gray-800 bg-gray-400 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-header`}], div.getNode(), `accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-body`); d3.create()
-                    d = new element("div", "", [], d3.getNode(), `accordion-newBuilding-group-${b_index+1}-type-${bt_index+1}-rules`); d.create()
-                    //let rules = building_rules[type_name_raw] ? building_rules[type_name_raw].rules : null
-                    display_object_available_rules(d.getNode(), {"name": type_name_raw, "category": "buildings"})
+                    d3 = new element("div", "w-100 border-b border-s border-e border-gray-800 bg-gray-400 p-1 hidden gap-2", [{"key":"aria-labelledby","value":`accordion-newBuilding-group-${snake_building_group}-type-${snake_building_type}-header`}], div.getNode(), `accordion-newBuilding-group-${snake_building_group}-type-${snake_building_type}-body`); d3.create()
+                    d = new element("div", "", [], d3.getNode(), `accordion-newBuilding-group-${snake_building_group}-type-${snake_building_type}-rules`); d.create()
+                    //let rules = building_rules[type_name] ? building_rules[type_name].rules : null
+                    display_object_available_rules(d.getNode(), {"name": type_name, "category": "buildings"})
                 })
             })
         }

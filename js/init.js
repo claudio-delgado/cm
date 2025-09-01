@@ -7,7 +7,7 @@ var wagonsAmount, horsesAmount
 var colonyScore, colonyLifeQuality
 var rule_last_id = 0
 //Constants
-const zoneSearchHoursNeeded = 1
+const zoneSearchHoursNeeded = 10
 const minimalExpeditionDuration = 0 //In game hours
 const same_age_in_relationship_attraction_percent = 5
 //Expeditionaries xp gain
@@ -15,11 +15,15 @@ const resourcesExpeditionSuccessXPGain = 1
 const resourcesExpeditionFailXPGain = 0.25
 const ruinsExpeditionSuccessXPGain = 0.5
 const ruinsExpeditionFailXPGain = 0.1
+//Citizen vital needs
+const citizenDailyWaterNeeds = 2 //liquid litres per day
+const citizenDailyFoodNeeds = 1 //kilograms per day
 //User configuration variables
 var showModalZoneSearched = true
 //Temporary global variables
 var citizenIndex, expeditionIndex = 1, rule_id = 1, relationship_id = 1
 var currently_used_panel
+var initial_population = 10, initial_water_income = 28, initial_food_income = 20
 
 //Ruins expedition resource or product loots probabilities
 var ruinsExpeditionResourcesFoundProbability = 0.6, ruinsExpeditionProductsFoundProbability = 0.4

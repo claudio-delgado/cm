@@ -531,8 +531,9 @@ initColonyInfo()
 //Test functionality before screen initialization.
 searchingZone = true
 test_stock_add_products([{"type": "resources", "product": "wood", "value": 320}])
+test_stock_add_products([{"type": "resources", "product": "branch", "value": 200}])
 
-//Screen initialazation.
+//Screen initialization.
 accordion_news()
 add_news("Welcome")
 accordion_colony()
@@ -563,6 +564,7 @@ const process_worker_assignation = (citizen_index, assigned_where) => {
             let revenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
             document.getElementById("food-revenue").innerHTML = (revenue ? "+" : "") + revenue
         }
+        update_colony("vitalResourcesUpdate")
     } else {
         //Production rule assignment
         
@@ -585,6 +587,7 @@ const process_worker_deassignation = (citizen_index, deassigned_from_where) => {
             let revenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
             document.getElementById("food-revenue").innerHTML = (revenue ? "+" : "") + revenue
         }
+        update_colony("vitalResourcesUpdate")
     }
 }
 const toggle_assignable_worker = (e) => {
@@ -650,58 +653,64 @@ const toggle_assignable_worker = (e) => {
     
 }
 const assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignRolePanelExists = true) => {
-    //Check if citizen is idle or busy.
-    if(document.querySelector("#citizen-"+citizen_id+"-status").getAttribute("data-status") === "idle"){
-        //Check previous role if exists.
-        previousRole = document.querySelector("#citizen-"+citizen_id+"-role").getAttribute("data-role")
-        //If citizen have had another role previously, change all panels in which the role was involved
-        if(previousRole != translate(language, "Unassigned")){ 
-            post_conditions_changing_role(previousRole, citizen_id) 
-        }
-        //Update role in Citizen's info.
-        document.querySelector("#citizen-"+citizen_id+"-role").innerText = roleText
-        document.querySelector("#citizen-"+citizen_id+"-role").setAttribute("data-role", rolekey)
-        citizens[citizen_id].role = roleText
-        citizens[citizen_id].rolekey = rolekey
-        //Update role icon in Citizen's info.
-        document.querySelector("#citizen-"+citizen_id+"-role-icon").classList.remove("hidden")
-        document.querySelector("#citizen-"+citizen_id+"-role-icon").classList = "text-green-500 fa me-1 fa-"+roleIcon
-        if(assignRolePanelExists){
-            assignRolePanel.removePanel()
-            assignRolePanel.showPreviousOptions()
-        }
-        //New role is "Water bearer"?
-        if(["waterbearing", "fishing"].includes(rolekey)){
-            //Add citizen to Water Reservoir Assignable workers.
-            add_assignable_worker_to_mount(citizen_id, "waterReservoir")
-            //Add behavior when clicking selecting box. Toggle color from gray to green and process efects in other panels.
-            document.getElementById("waterReservoir-citizen-"+citizen_id+"-assign").addEventListener("click", 
-                toggle_assignable_worker
-            )
-            /*
-            document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "waterReservoir")
-            document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
-            */
-        }       
-        if(rolekey === "expeditioning"){
-            if(document.querySelector("#expeditions-newExpedition") != null){
-                add_available_worker_to_expedition(citizen_id, "newExpedition")
-                document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "newExpedition")
-                document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
+    //Check if citizen lives.
+    let living_citizen = document.querySelector("#accordion-citizen-"+citizen_id+"-header")
+    if(living_citizen){
+        let living_citizen_status
+        living_citizen_status = document.querySelector("#citizen-"+citizen_id+"-status").getAttribute("data-status") ? document.querySelector("#citizen-"+citizen_id+"-status").getAttribute("data-status") : null
+        //Check if citizen is idle or busy.
+        if(living_citizen_status === "idle"){
+            //Check previous role if exists.
+            previousRole = document.querySelector("#citizen-"+citizen_id+"-role").getAttribute("data-role")
+            //If citizen have had another role previously, change all panels in which the role was involved
+            if(previousRole != translate(language, "Unassigned")){ 
+                post_conditions_changing_role(previousRole, citizen_id) 
             }
+            //Update role in Citizen's info.
+            document.querySelector("#citizen-"+citizen_id+"-role").innerText = roleText
+            document.querySelector("#citizen-"+citizen_id+"-role").setAttribute("data-role", rolekey)
+            citizens[citizen_id].role = roleText
+            citizens[citizen_id].rolekey = rolekey
+            //Update role icon in Citizen's info.
+            document.querySelector("#citizen-"+citizen_id+"-role-icon").classList.remove("hidden")
+            document.querySelector("#citizen-"+citizen_id+"-role-icon").classList = "text-green-500 fa me-1 fa-"+roleIcon
+            if(assignRolePanelExists){
+                assignRolePanel.removePanel()
+                assignRolePanel.showPreviousOptions()
+            }
+            //New role is "Water bearer"?
+            if(["waterbearing", "fishing"].includes(rolekey)){
+                //Add citizen to Water Reservoir Assignable workers.
+                add_assignable_worker_to_mount(citizen_id, "waterReservoir")
+                //Add behavior when clicking selecting box. Toggle color from gray to green and process efects in other panels.
+                document.getElementById("waterReservoir-citizen-"+citizen_id+"-assign").addEventListener("click", 
+                    toggle_assignable_worker
+                )
+                /*
+                document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "waterReservoir")
+                document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
+                */
+            }       
+            if(rolekey === "expeditioning"){
+                if(document.querySelector("#expeditions-newExpedition") != null){
+                    add_available_worker_to_expedition(citizen_id, "newExpedition")
+                    document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "newExpedition")
+                    document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
+                }
+            }
+            /*
+            //Check if there is a new expedition panel opened to add expeditionary as available there.
+            let availableWorkersPanel = document.querySelector("#newExpedition-available-workers .availableWorkers")
+            if(availableWorkersPanel!=null){
+                add_available_worker_to_expedition(citizenIndex, "newExpedition")
+                document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
+                document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
+            }
+            */
+        } else {
+            modal_popup("Can't change role", "RoleCitizenBusy")
+            modal.show()
         }
-        /*
-        //Check if there is a new expedition panel opened to add expeditionary as available there.
-        let availableWorkersPanel = document.querySelector("#newExpedition-available-workers .availableWorkers")
-        if(availableWorkersPanel!=null){
-            add_available_worker_to_expedition(citizenIndex, "newExpedition")
-            document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
-            document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
-        }
-        */
-    } else {
-        modal_popup("Can't change role", "RoleCitizenBusy")
-        modal.show()
     }
 }
 //Relationship citizen manipulation
@@ -1332,7 +1341,9 @@ const test_pregnancy_status = () => {
 const test_citizen_fishing_roles = (citizens_id) => {
     //Assign role fishing to citizens up to 8, manually
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
+        if(citizens[citizen_index]){
+            assign_role_to_citizen(citizen_index, "fishing", translate(language, "Fisher", "f", "capitalized"), "fish", false)
+        }
     })
     /*
     citizen_index = 1;
@@ -1359,31 +1370,41 @@ const test_citizen_fishing_roles = (citizens_id) => {
 const test_citizen_builder_roles = (citizens_id) => {
     //Assign role construction to citizens up to 2, manually
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "construction", translate(language, "Builder", "f", "capitalized"), "trowel", false)
+        if(citizens[citizen_index]){
+            assign_role_to_citizen(citizen_index, "construction", translate(language, "Builder", "f", "capitalized"), "trowel", false)
+        }
     })
 }
 const test_citizen_waterBearer_roles = (citizens_id) => {
     //Assign role waterbearing to citizens in citizens_id array
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "waterbearing", translate(language, "Water bearer", "f", "capitalized"), "glass-water", false)
+        if(citizens[citizen_index]){
+            assign_role_to_citizen(citizen_index, "waterbearing", translate(language, "Water bearer", "f", "capitalized"), "glass-water", false)
+        }
     })
 }
 const test_citizen_stoneBreaker_roles = (citizens_id) => {
     //Assign role construction to citizens up to 2, manually
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "stonebreaking", translate(language, "Stone breaker", "f", "capitalized"), "pickaxe", false)
+        if(citizens[citizen_index]){
+            assign_role_to_citizen(citizen_index, "stonebreaking", translate(language, "Stone breaker", "f", "capitalized"), "pickaxe", false)
+        }
     })
 }
 const test_citizen_expeditionary_roles = (citizens_id) => {
     //Assign role construction to citizens up to 2, manually
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "expeditioning", translate(language, "Expeditionary", "", "capitalized"), "map-location-dot", false)
+        if(citizens[citizen_index]){
+            assign_role_to_citizen(citizen_index, "expeditioning", translate(language, "Expeditionary", "", "capitalized"), "map-location-dot", false)
+        }
     })
 }
 const test_citizen_woodcutter_roles = (citizens_id) => {
-    //Assign role construction to citizens up to 2, manually
+    //Assign role construction to citizens manually
     citizens_id.forEach((citizen_index) => {
-        assign_role_to_citizen(citizen_index, "woodcutting", translate(language, "Woodcutter", "", "capitalized"), "axe", false)
+        if(citizens[citizen_index]){
+            assign_role_to_citizen(citizen_index, "woodcutting", translate(language, "Woodcutter", "", "capitalized"), "axe", false)
+        }
     })
 }
 const test_familiar_relationships = () => {
@@ -1440,7 +1461,15 @@ const test_build_new_citizen = (data = {}) => {
     new_citizen.outfit = data.outfit ? data.outfit : "No"
     new_citizen.fertility = data.fertility ? data.fertility : 10 + Math.floor(Math.random() * 91)
     build_citizen(translation = true, new_citizen.id, new_citizen)
-    //build_citizen(translation = true, undefined, undefined)
+}
+const test_citizen_exile = (citizens_id) => {
+    citizens_id.forEach((citizen_index) => {
+        citizens.splice(citizen_index, 1)
+        document.getElementById("accordion-citizens").innerHTML = ""
+        citizens.forEach((citizen) => {
+            build_citizen(false, citizen.id, citizen)
+        })
+    })
 }
 
 //Avoid modal pop up when zone searched
@@ -1448,16 +1477,17 @@ showModalZoneSearched = false
 test_citizen_fishing_roles([1, 3, 4])
 test_citizen_builder_roles([2, 5, 6])
 test_build_new_citizen({"gender": "Femenine", "ageYears":"21", "ageWeeks": 0, "birthWeeks": 1092, "birthWeek":-1092})
+//test_citizen_exile([11])
 test_citizen_expeditionary_roles([7, 8, 9, 10, 11])
-test_build_new_citizen({"gender": "Masculine"})
-test_build_new_citizen({"gender": "Femenine"})
+test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
+test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
 test_citizen_stoneBreaker_roles([12, 13])
-test_build_new_citizen({"gender": "Masculine"})
-test_build_new_citizen({"gender": "Femenine"})
+test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
+test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
 test_citizen_waterBearer_roles([14])
-test_citizen_woodcutter_roles([15])/**/
-//test_pregnancy_status()
-//text_familiary_relationships()
+test_citizen_woodcutter_roles([15])
+test_pregnancy_status()
+test_familiar_relationships()
 add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6
 add_landform("huntingMount")
 add_landform("stoneMount")

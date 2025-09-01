@@ -1,6 +1,6 @@
 //Main time loop.
+var currentYear = currentWeek = currentDay = currentHour = 0
 const life_interval = setInterval(() => {
-    let currentYear = currentWeek = currentDay = currentHour = 0
     //Zone searched
     const zone_searched_actions = () => {
         searchingZone = false
@@ -16,6 +16,8 @@ const life_interval = setInterval(() => {
         buildings.shelter_related["campaign_tent"]["building_list"] = []
         for(i=0; i<5; i++){
             let building = {}
+            building.id = i+1
+            building_last_id = building.id
             building.name = translate(language, "Campaign tent") + " " + (i+1)
             building.capacity = shelter_capacities["campaign tent"]
             building.status = "Ended"
@@ -24,6 +26,7 @@ const life_interval = setInterval(() => {
             building.created.week = document.getElementById("currentWeek").innerHTML*1
             building.created.day = document.getElementById("currentDay").innerHTML*1
             building.created.hour = document.getElementById("currentHour").innerHTML*1
+            building.new = true
             buildings.shelter_related["campaign_tent"]["building_list"].push(building)
         }
         /*
@@ -88,6 +91,53 @@ const life_interval = setInterval(() => {
         yearPassed = dayPassed && Math.floor(daysPassed / 364) === daysPassed / 364
         document.querySelector("#currentYear").innerText = currentYear
     }
+    const check_critical_events = (frequency = "daily") => {
+        const random_citizen = () => {
+            let idle_citizens = citizens.filter(citizen => citizen.status === "idle")
+            if(idle_citizens.length){
+                random_citizen = Math.floor(Math.random() * idle_citizens.length)
+            } else {
+                let non_soldier_citizens = citizens.filter(citizen => citizen.rolekey !== "war")
+                if(non_soldier_citizens.length){
+                    random_citizen = Math.floor(Math.random() * non_soldier_citizens.length)
+                } else {
+                    random_citizen = Math.floor(Math.random() * citizens.length)
+                }
+            }
+            return random_citizen
+        }
+        Object.keys(population_loss_events[frequency]).forEach((critical_event_name) => {
+            let critical_event = population_loss_events[frequency][critical_event_name]
+            if(critical_event.status === "active"){
+                critical_event.ellapsed_hours++
+                let ellapsed_time = critical_event.ellapsed_time
+                let result_type = critical_event.result.type
+                let result_quantity = critical_event.result.quantity
+                let threshold = critical_event.threshold
+                let threshold_reached = threshold && ellapsed_time >= threshold
+                if(threshold_reached){
+                    //Critical event has reached needed time, so take actions required...
+                    for(i=0; i<result_quantity; i++){
+                        //Pick a candidate to be exiled from colony or die in colony.
+                        let random_citizen = random_citizen()
+                        if(result_type === "exiled_citizens"){
+                            citizens.splice(random_citizen.id, 1)
+                        } else {
+                            if(result_type === "dead_citizens"){
+                                citizens[random_citizen.id].status = "deceased"
+                                //TODO: If graveyards are built and there is enough room in any of them, add the deceased citizen to any of them.
+                            }
+                        }
+                    }
+                    //Update citizens panel
+                    document.getElementById("accordion-citizens").innerHTML = ""
+                    citizens.forEach((citizen) => {
+                        build_citizen(false, citizen.id, citizen)
+                    })
+                }
+            }
+        })
+    }
     //Day passed
     const update_all_citizens_xp = () => {
         //Update citizens xp
@@ -130,93 +180,87 @@ const life_interval = setInterval(() => {
         //Update resource extractions
         let dailyWaterGained = document.querySelector("#colony-water-income").innerText * 1 - document.querySelector("#colony-water-consumption").innerText * 1
         document.querySelectorAll("#colony-water-stock").forEach((value) => {
-            value.innerText = value.innerText * 1 + (dailyWaterGained)
+            value.innerText = Math.max(0, value.innerText * 1 + (dailyWaterGained))
         })
         let dailyFoodGained = document.querySelector("#colony-food-income").innerText * 1 - document.querySelector("#colony-food-consumption").innerText * 1
         document.querySelectorAll("#colony-food-stock").forEach((value) => {
-            value.innerText = value.innerText * 1 + (dailyFoodGained)
+            value.innerText = Math.max(0, value.innerText * 1 + (dailyFoodGained))
         })
     }
     const update_running_productions = () => {
+        const turn_workers_idle = (rule) => {
+            //Turn all rule workers to idle status...
+            rule.rule_definition.requirements.forEach((requirement) => {
+                if(requirement.type === "citizen"){
+                    requirement.workers.forEach((citizen_index) => {
+                        document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
+                        document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
+                        citizens[citizen_index].status = "idle"
+                    })    
+                }
+            })
+        }
+        const end_rule = (rule, rule_index) => {
+            rule.status = "ended"
+            let span_status = document.getElementById(`active-rule-${rule.id}-status`)
+            if(span_status != undefined){
+                span_status.innerHTML = translate(language, rule.status, "f", "capitalized")
+                span_status.closest("p").classList.remove("bg-gray-700")
+                span_status.closest("p").classList.add("bg-red-900")
+            }
+            good_rules_defined[rule_index].status = rule.status
+            return rule
+        }
         //Check production rules progress
-        let stock_changed = false
+        let stock_can_be_processed = false
         good_rules_defined.forEach((rule, rule_index) => {
             //Is the production rule running?
             if(rule.status == "running"){
                 //Decrement remaining hours.
                 rule.duration_remaining--
-                //Check if it's the last remaining hour and the result has to be obtained.
+                //Check if there are no more remaining hours and the result has to be obtained.
                 if(!rule.duration_remaining){
                     //Reset remaining hours with default rule's value.
                     rule.duration_remaining = rule.duration
-                    //Get rule workers.
-                    let xp_increase = rule.rule_definition.result.xp ? rule.rule_definition.result.xp * rule.rule_definition.result.quantity : 0
+                    //Iterate over all rule requirements and execute them.
+                    //This may involve checking those requirement goods which must decrease stock values, or check workers life.
                     rule.rule_definition.requirements.forEach((requirement) => {
+                        //If requirement is rule workers assigned...
                         if(requirement.type === "citizen" && requirement.workers && requirement.workers.length){
+                            //Check workers life...
+                            //Increase their XP if possible.
+                            let xp_increase = rule.rule_definition.result.xp ? rule.rule_definition.result.xp * rule.rule_definition.result.quantity : 0
                             requirement.workers.forEach((citizen_id) => {
                                 //Update worker xp.
                                 citizens[citizen_id].xp += xp_increase
                             })
                         }
-                    })
-                    //Iterate over all rule requirements and execute them.
-                    //This may involve checking those requirement goods which must decrease stock values, or check workers life.
-                    rule.rule_definition.requirements.forEach((requirement) => {
-                        //If rule is still running and the requirement object is a product, resource or part, try to decrease the stock.
+                        //If rule is still running (it may have stopped in previous cycle) and the requirement object is a product, resource or part, try to decrease the stock.
                         if(rule.status === "running" && requirement.consumable && ["product", "resource", "building part"].includes(requirement.type)){
-                            stock_changed = stock_values[requirement.type + "s"][language][translate(language, requirement.object)] >= requirement.quantity
-                            if(stock_changed){
+                            //Enough goods in stock to afford the requirement needs?
+                            stock_can_be_processed = stock_values[requirement.type + "s"][language][translate(language, requirement.object)] >= requirement.quantity
+                            if(stock_can_be_processed){
                                 //Decrement stock goods.
                                 stock_values[requirement.type + "s"][language][translate(language, requirement.object)] -= requirement.quantity
-                            } else { //Insufficient stock for the object
-                                rule.status = "ended"
-                                document.getElementById(`active-rule-${rule.id}-status`).innerHTML = translate(language, rule.status, "f", "capitalized")
-                                document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.remove("bg-gray-700")
-                                document.getElementById(`active-rule-${rule.id}-status`).closest("p").classList.add("bg-red-900")
-                                good_rules_defined[rule_index].status = rule.status
+                            } else { //Insufficient stock for the object => end rule.
+                                rule = end_rule(rule, rule_index)
                                 //Turn all rule workers to idle status...
-                                rule.rule_definition.requirements.forEach((requirement) => {
-                                    if(requirement.type === "citizen"){
-                                        requirement.workers.forEach((citizen_index) => {
-                                            document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
-                                            document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
-                                            citizens[citizen_index].status = "idle"
-                                        })    
-                                    }
-                                })
+                                turn_workers_idle(rule)
                             }
                         }
-                        //Check workers life...
                     })
                     //Obtain result...
                     if(rule.status === "running"){
-                        //All rule required goods consumed => result must be obtained.
+                        //All rule required goods consumed and workers processed => result must be obtained.
                         //Generate product, resource or building part.
                         stock_values[rule.category][language][translate(language, rule.object)] += rule.rule_definition.result.quantity * 1
-                        stock_changed = true
+                        stock_can_be_processed = true
                         //Check rule mode and if not cyclic, verify if there is any cycle left to iterate.
                         if(rule.production_limit != Infinity){
-                            if(rule.production_limit*1 == 1){ //No more cycles => suspend rule.
-                                rule.status = "ended"
-                                let span_status = document.getElementById(`active-rule-${rule.id}-status`)
-                                if(span_status != undefined){
-                                    span_status.innerHTML = translate(language, rule.status, "f", "capitalized")
-                                    span_status.closest("p").classList.remove("bg-gray-700")
-                                    span_status.closest("p").classList.add("bg-red-900")
-                                }
-                                good_rules_defined[rule_index].status = rule.status
+                            if(rule.production_limit*1 == 1){ //No more cycles => end rule.
+                                rule = end_rule(rule, rule_index)
                                 //Turn all rule workers to idle status...
-                                rule.rule_definition.requirements.forEach((requirement) => {
-                                    if(requirement.type === "citizen"){
-                                        requirement.workers.forEach((citizen_index) => {
-                                            if(span_status != undefined){
-                                                document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
-                                                document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
-                                            }
-                                            citizens[citizen_index].status = "idle"
-                                        })    
-                                    }
-                                })
+                                turn_workers_idle(rule)
                             } else {
                                 rule.production_limit-- //There are still cycles left to iterate.
                             }
@@ -225,42 +269,104 @@ const life_interval = setInterval(() => {
                 }
             }
         })
-        if(stock_changed){
+        if(stock_can_be_processed){
             stock_displayed = JSON.parse(JSON.stringify(stock_values))
             update_stock()
         }
-    /*
-        //Update running productions
-        good_rules_defined.forEach((product_rule, product_index) => {
-            if(product_rule.status === "running"){
-                let rule_object = product_rule.object
-                //Check if requirements are currently fulfilled.
-                let requirement_fulfilled = true
-                product_rule.rule_definition.requirements.forEach((req) => {
-                    if(!req.consumable){
-                        if(req.type === "citizen"){
-                            req.workers.forEach((citizen_index) => {
-                                requirement_fulfilled &&= (citizens[citizen_index].status === "working" && citizens[citizen_index].rolekey === req.role)
-                            })
-                        }
+    }
+    const update_running_constructions = () => {
+        const turn_workers_idle = (rule) => {
+            //Turn all rule workers to idle status...
+            rule.rule_definition.requirements.forEach((requirement) => {
+                if(requirement.type === "citizen"){
+                    requirement.workers.forEach((citizen_index) => {
+                        document.querySelector(`#citizen-${citizen_index}-status`).setAttribute("data-status", "idle")
+                        document.querySelector(`#citizen-${citizen_index}-status`).innerHTML = translate(language, "idle")
+                        citizens[citizen_index].status = "idle"
+                    })    
+                }
+            })
+        }
+        building_rules_defined.forEach((building_rule, rule_index) => {
+            if(building_rule.status == translate(language, "Under construction", "", "", false)){
+                let building_group = building_rule.group.replace(" ", "_")
+                let building_type = building_rule.type
+                building_rule.duration_remaining--
+                let progress = Math.round((1 - (building_rule.duration_remaining / building_rule.duration)) * 10000) / 100
+                let progress_span = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-progress`)
+                let status_span = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-status`)
+                let parent_paragraph = status_span.closest("p")
+                if(progress_span){
+                    progress_span.innerHTML = progress
+                }
+                //Building is finished.
+                if(!building_rule.duration_remaining){
+                    //Mark building as constructed.
+                    building_rules_defined[rule_index].status = "Ended"
+                    let constructed_in_span = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-constructed-in`)
+                    let constructed_in = constructed_in_span.parentElement
+                    constructed_in_span.remove()
+                    //Set new status
+                    let status_span = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-status`)
+                    status_span.innerHTML = translate(language, "Ended")
+                    //Show constructed in date.
+                    s1 = new element("span", "flex-none", [{"key":"data-i18n","value":""}], constructed_in); s1.create(); s1.appendContent(translate(language, "Year"))
+                    s1 = new element("span", "font-bold flex-none ms-1", [], constructed_in, `building-group-${building_group}-building-${building_type}-${building_rule.id}-createdYear`); s1.create(); s1.appendContent(document.getElementById("currentYear").innerHTML)
+                    s1 = new element("span", "flex-none ms-1", [{"key":"data-i18n","value":""}], constructed_in); s1.create(); s1.appendContent(translate(language, "Week"))
+                    s1 = new element("span", "font-bold flex-none ms-1", [], constructed_in, `building-group-${building_group}-building-${building_type}-${building_rule.id}-createdWeek`); s1.create(); s1.appendContent(document.getElementById("currentWeek").innerHTML)
+                    s1 = new element("span", "flex-none ms-1", [{"key":"data-i18n","value":""}], constructed_in); s1.create(); s1.appendContent(translate(language, "Day"))
+                    s1 = new element("span", "font-bold flex-none ms-1", [], constructed_in, `building-group-${building_group}-building-${building_type}-${building_rule.id}-createdDay`); s1.create(); s1.appendContent(document.getElementById("currentDay").innerHTML)
+                    s1 = new element("span", "flex-none ms-1", [], constructed_in, `building-group-${building_group}-building-${building_type}-${building_rule.id}-createdHour`); s1.create(); s1.appendContent(document.getElementById("currentHour").innerHTML)
+                    s1 = new element("span", "flex-none ms-1", [], constructed_in); s1.create(); s1.appendContent("hs.")
+                    let progress_title_div = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-progress-title`)
+                    let progress_div = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-progress`)
+                    //Turn all workers involved to idle status.
+                    turn_workers_idle(building_rule)
+                    //Remove progress divs and spans.
+                    progress_title_div.remove()
+                    progress_div.parentElement.remove()
+                    //Remove initiated in paragraph.
+                    document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-initiatedYear`).closest("p").remove()
+                    let risks_span = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-risks`)
+                    if(risks_span != undefined){
+                        //Move risks div next to "Constructed in"
+                        let risks_span_parent = risks_span.parentElement
+                        parent_paragraph.appendChild(risks_span)
+                        risks_span_parent.remove()
                     } else {
-                        //Check if product or resource quantity needed is available.
+                        //Enlarge status div.
+                        status_span.parentElement.classList.add("grow")
                     }
-                })
-                if(!requirement_fulfilled){
-                    product_rules[product_index].status = "ended"
-                    //TODO: Turn all rule workers to idle status...
-                } else {
-                    //Update product stock with new value.
-                    stock_values.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                    stock_values.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                    stock_displayed.products["EN"][rule_object]+= product_rule.rule_definition.result.quantity
-                    stock_displayed.products["ES"][translate("ES", rule_object)]+= product_rule.rule_definition.result.quantity
-                    update_stock()
+                    //If building is a shelter, update parcial and total capacity.
+                    if(building_group == "shelter_related"){
+                        let total_capacity_span = document.getElementById(`building-group-${building_group}-building-${building_type}-total-capacity`)
+                        let new_capacity_span = document.getElementById(`building-group-${building_group}-building-${building_type}-${building_rule.id}-capacity`)
+                        if(total_capacity_span != undefined && new_capacity_span != undefined){
+                            //Current building type parcial capacity.
+                            let partial_capacity = total_capacity_span.innerHTML*1
+                            let new_capacity = new_capacity_span.innerHTML*1
+                            partial_capacity+= new_capacity
+                            total_capacity_span.innerHTML = partial_capacity
+                            //Total shelters capacity
+                            let total_capacity = total_capacity_span.innerHTML*1
+                            total_capacity+= new_capacity
+                            total_capacity_span.innerHTML = total_capacity
+                        }
+                        update_colony("populationUpdate")
+                    }
+                    //Update player's score.
+                    let colony_score = document.getElementById("colonyScore").innerHTML*1 + get_score_bonus(building_type+"_built")
+                    document.getElementById("colonyScore").innerHTML = colony_score
+                    document.getElementById("colonyScoreUnit").innerHTML = translate(language, colony_score == 1 ? "point": "points")
+                    //Remove building rule.
+                    building_rules_defined.forEach((building, b_index) => {
+                        if(building.id == building_rule.id){
+                            building_rules_defined.splice(b_index, 1)
+                        }
+                    })
                 }
             }
         })
-    */
     }
     //Week passed
     const update_pregnacies_remaining_weeks = () => {
@@ -364,17 +470,16 @@ const life_interval = setInterval(() => {
         
         //Hour passed
             move_time()
-
+            //Perform updating tasks inside game panels that involve hourly changes
             update_running_productions()
-            
+            update_running_constructions()
+            //Process countdowns
+            processCountdowns()
         //End hourly events
         
         //Zone searched flag
         zoneSearched = currentYear === 1 && currentWeek === 1 && currentDay === 1 && currentHour*1 === zoneSearchHoursNeeded
 
-        //Perform updating tasks inside game panels that involve hourly changes
-        //Process countdowns
-        processCountdowns()
         
         //Perform updating tasks inside game panels that involve daily, weekly or yearly changes
         //Efectuar tareas de actualización de partes del juego que involucren avances diarios, semanales o anuales.
@@ -395,6 +500,8 @@ const life_interval = setInterval(() => {
             //Update resource extractions
             update_daily_resource_extractions()
 
+            //Check daily critical events like vital resources lack of income, shortage, or life quality low. 
+            check_critical_events("daily")
         }
 
         if(weekPassed){
@@ -412,6 +519,9 @@ const life_interval = setInterval(() => {
             
             //Update pregnancy remaining weeks for all pregnancies.
             update_pregnacies_remaining_weeks()
+
+            //Check daily critical events like vital resources lack of income, shortage, or life quality low. 
+            check_critical_events("weekly")
 
         }
 

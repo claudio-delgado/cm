@@ -391,7 +391,9 @@ const accordion_colony = () => {
         let h2 = new element("h2", "mt-3", [], parentElem, "accordion-menu-colony"); h2.create()
         let b = new element("button", "flex items-center justify-between w-full py-2 px-3 font-medium bg-gray-900 border border-gray-700 text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-colony-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-colony-body"}], h2.getNode())
         b.create()
-        let s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Colony")
+        let s = new element("span", "flex items-center gap-2", [], b.getNode()); s.create()
+        let i = new element("i", "hidden text-xs fa fa-beat fa-exclamation p-1 px-2 bg-red-900 text-white border border-white rounded", [], s.getNode(), "accordion-menu-colony-icon"); i.create()
+        let s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Colony")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Build colony accordion body
         d = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-colony"}], parentElem, "accordion-menu-colony-body"); d.create()
@@ -399,7 +401,7 @@ const accordion_colony = () => {
     let build_colony_name = () => {
         //First panel
         //Colony name and save button
-        p = new element("p", "flex pb-1 text-gray-400", [], d1.getNode()); p.create()
+        p = new element("p", "flex w-100 pb-1 text-gray-400", [], d1.getNode()); p.create()
         s = new element("span", "text-xs px-2 bg-gray-500 border border-gray-500 text-white flex-none py-2", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Name")
         s.appendHTML(": ")
@@ -409,10 +411,10 @@ const accordion_colony = () => {
     }
     let build_general_statistics = () => {
         //Statistics header
-        d2 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-statistics"); d2.create()
+        d2 = new element("div", "w-100 border border-gray-900", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-statistics"); d2.create()
         //Build general statistics accordion header
         h2 = new element("h2", "notificationUnread", [], d2.getNode(), "accordion-statistics-header"); h2.create()
-        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-statistics-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-statistics-body"}], h2.getNode())
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-statistics-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-statistics-body"}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
         s1 = new element("span", "new text-xs px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
@@ -420,7 +422,7 @@ const accordion_colony = () => {
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("General statistics")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Build general statistics accordion body
-        d3 = new element("div", "hidden flex flex-wrap gap-1 w-100 bg-gray-500 border-gray-300 p-1", [{"key":"aria-labelledby","value":"accordion-statistics-header"}], d2.getNode(), "accordion-statistics-body")
+        d3 = new element("div", "hidden flex flex-wrap gap-1 w-100 bg-gray-500 p-1", [{"key":"aria-labelledby","value":"accordion-statistics-header"}], d2.getNode(), "accordion-statistics-body")
         d3.create()
         
         //Score
@@ -431,7 +433,7 @@ const accordion_colony = () => {
         s1.appendHTML(": ")
         s1 = new element("span", "w-100 flex gap-1 border border-gray-800 p-0.5 px-1 bg-gray-400", [], p.getNode()); s1.create()
         s2 = new element("span", "font-bold flex-none text-gray-900", [], s1.getNode(), "colonyScore"); s2.create(); s2.appendContent(colonyScore.toString())
-        s2 = new element("span", "text-gray-900", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("points")
+        s2 = new element("span", "text-gray-900", [{"key":"data-i18n","value":""}], s1.getNode(), "colonyScoreUnit"); s2.create(); s2.appendContent("points")
         //Population
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
@@ -497,87 +499,98 @@ const accordion_colony = () => {
         s1.appendHTML(")")
     }
     let build_vital_resources = () => {
-        d2 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-vitalResources"); d2.create()
+        d2 = new element("div", "w-100 border border-gray-900", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-vitalResources"); d2.create()
         //Build vital resources accordion header
-        h2 = new element("h2", "notificationUnread", [], d2.getNode(), "accordion-vitalResources-header"); h2.create()
-        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-vitalResources-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-vitalResources-body"}], h2.getNode())
+        h2 = new element("h2", "", [], d2.getNode(), "accordion-vitalResources-header"); h2.create()
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-vitalResources-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-vitalResources-body"}], h2.getNode())
         b.create()
-        s = new element("span", "", [], b.getNode()); s.create()
+        s = new element("span", "flex items-center gap-2", [], b.getNode()); s.create()
+        i = new element("i", "hidden text-xs fa fa-beat fa-exclamation p-1 px-2 bg-red-900 text-white border border-white rounded", [], s.getNode(), "accordion-vitalResources-icon"); i.create()
         s1 = new element("span", "new text-xs px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
         s1.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Vital resources")
         b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
         //Build vital resources accordion body
-        d3 = new element("div", "hidden border-gray-300", [{"key":"aria-labelledby","value":"accordion-vitalResources-header"}], d2.getNode(), "accordion-vitalResources-body")
+        d3 = new element("div", "flex flex-wrap gap-1 p-1 hidden bg-gray-500", [{"key":"aria-labelledby","value":"accordion-vitalResources-header"}], d2.getNode(), "accordion-vitalResources-body")
         d3.create()
         //Water consumption
-        p = new element("p", "pb-0 text-xs text-gray-400", [], d3.getNode()); p.create()
+        p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "ps-2 pb-1 pt-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s1 = new element("span", "w-100 flex gap-2 items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-consumption-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Water consumption")
         s1.appendHTML(": ")
-        s1 = new element("span", "pt-2 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-        s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-water-consumption"); s2.create(); s2.appendContent("")
+        s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create() //bg-green-700 bg-red-900 , bg-yellow-600
+        let current_water_consumption = initial_population * citizenDailyWaterNeeds
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-water-consumption"); s2.create(); s2.appendContent(current_water_consumption.toString())
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units per day")
         //Water income
-        p = new element("p", "pb-0 text-xs text-gray-400", [], d3.getNode()); p.create()
+        p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s1 = new element("span", "w-100 flex gap-2 items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-income-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Water income")
         s1.appendHTML(": ")
-        s1 = new element("span", "grow flex-none text-green-400 bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-        s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-water-income"); s2.create(); s2.appendContent("30")
+        s1 = new element("span", "flex gap-1 grow border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-water-income"); s2.create(); s2.appendContent(initial_water_income.toString())
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units per day")
         //Water stock
-        p = new element("p", "pb-0 text-xs text-gray-400", [], d3.getNode()); p.create()
+        p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s1 = new element("span", "w-100 flex gap-2 items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-stock-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Water stock")
         s1.appendHTML(": ")
-        s1 = new element("span", "grow flex-none text-green-400 bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-        s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-water-stock"); s2.create(); s2.appendContent("75")
+        s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        let current_water_stock = stock_values.resources[language][translate(language, "water")]
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-water-stock"); s2.create(); s2.appendContent(current_water_stock.toString())
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
-        i = new element("i", "ms-1 me-2 fa fa-arrow-up", [], s1.getNode()); i.create()
+        i = new element("i", "ms-1 fa fa-arrow-up", [], s1.getNode(), "colony-water-stock-icon"); i.create()
         s1.appendHTML("(")
-        s2 = new element("span", "font-bold", [], s1.getNode(), "water-revenue"); s2.create(); s2.appendContent("+10")
+        s2 = new element("span", "font-bold", [], s1.getNode(), "water-revenue"); s2.create(); s2.appendContent(`+${initial_water_income - current_water_consumption}`)
         s1.appendHTML(")")
         //Food consumption
-        p = new element("p", "pb-0 text-xs text-gray-400", [], d3.getNode()); p.create()
+        p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-consumption-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Food consumption")
         s1.appendHTML(": ")
-        s1 = new element("span", "grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-        s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-food-consumption"); s2.create(); s2.appendContent("")
+        s1 = new element("span", "flex gap-1 grow border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create() //bg-red-900 , bg-yellow-600
+        let current_food_consumption = initial_population * citizenDailyFoodNeeds
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-food-consumption"); s2.create(); s2.appendContent(current_food_consumption.toString())
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units per day")
         //Food income
-        p = new element("p", "pb-0 text-xs text-gray-400", [], d3.getNode()); p.create()
+        p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "flex-none ps-2 pb-1 bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-income-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Food income")
         s1.appendHTML(": ")
-        s1 = new element("span", "grow flex-none text-green-400 bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-        s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-food-income"); s2.create(); s2.appendContent("20")
+        s1 = new element("span", "flex gap-1 grow border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-food-income"); s2.create(); s2.appendContent(initial_food_income.toString())
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units per day")
         //Food stock
-        p = new element("p", "pb-0 text-xs text-gray-400", [], d3.getNode()); p.create()
+        p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "ps-2 pb-2 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-stock-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Food stock")
         s1.appendHTML(": ")
-        s1 = new element("span", "pb-2 grow flex-none text-green-400 bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
-        s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-food-stock"); s2.create(); s2.appendContent("75")
+        s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        let current_food_stock = stock_values.resources[language][translate(language, "food")]
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-food-stock"); s2.create(); s2.appendContent(current_food_stock.toString())
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
-        i = new element("i", "ms-1 me-2 fa fa-arrow-up", [], s1.getNode()); i.create()
+        i = new element("i", "ms-1 fa fa-arrow-up", [], s1.getNode(), "colony-food-stock-icon"); i.create()
         s1.appendHTML("(")
-        s2 = new element("span", "font-bold", [], s1.getNode(), "food-revenue"); s2.create(); s2.appendContent("+10")
+        s2 = new element("span", "font-bold", [], s1.getNode(), "food-revenue"); s2.create(); s2.appendContent(`+${initial_food_income - current_food_consumption}`)
         s1.appendHTML(")")
     }
     let build_stock = () => {
-        d2 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-stock"); d2.create()
+        d2 = new element("div", "w-100 border border-gray-900", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-stock"); d2.create()
         //Build vital resources accordion header
         h2 = new element("h2", "notificationUnread", [], d2.getNode(), "accordion-stock-header"); h2.create()
-        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-stock-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-stock-body"}], h2.getNode())
+        b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-stock-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-stock-body"}], h2.getNode())
         b.create()
         s = new element("span", "", [], b.getNode()); s.create()
         s1 = new element("span", "new text-xs px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
@@ -700,13 +713,14 @@ const accordion_colony = () => {
     }
     let build_actions_available = () => {
         //Actions available
-        d2 = new element("div", "mt-2 border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), "colony-actions-title"); d2.create()
-        p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d2.getNode()); p.create()
+        d2 = new element("div", "w-100", [], d1.getNode(), "colony-actions-title"); d2.create()
+        d3 = new element("div", "w-100 border border-gray-800 bg-gray-500 text-xs", [], d2.getNode(), "colony-actions-title"); d3.create()
+        p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d3.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Actions available")
         i = new element("i", "mt-0 text-base fa fa-times invisible font-bold", [], p.getNode()); i.create()
         //Colony's actions
-        d2 = new element("div", "border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "colony-actions"); d2.create()
-        p = new element("p", "flex w-100 justify-between p-1 text-gray-300", [], d2.getNode()); p.create()
+        d3 = new element("div", "w-100 border border-gray-800 bg-gray-600 text-xs", [], d2.getNode(), "colony-actions"); d3.create()
+        p = new element("p", "flex w-100 justify-between p-1 text-gray-300", [], d3.getNode()); p.create()
         if(!zoneSearched){
             b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "searchZone"); b.create()
             i = new element("i", "fa fa-search me-2", [], b.getNode()); i.create()
@@ -716,7 +730,7 @@ const accordion_colony = () => {
         }
     }
     build_colony_accordion()
-    d1 = new element("div", "p-1 border border-gray-700 bg-gray-700", [], d.getNode()); d1.create()
+    d1 = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-700 bg-gray-700", [], d.getNode()); d1.create()
     build_colony_name()
     build_general_statistics()
     build_vital_resources()  
@@ -746,64 +760,121 @@ const add_building = (non_zero_index, type, parentElement) => {
     let building_group = parentElement.id.split("-")[1]
     let building_type = parentElement.id.split("-")[3]
     let current_building = buildings[building_group][building_type]["building_list"][index]
+    let building_finished = current_building.created !== null
     //Build building accordion container
-    d0 = new element("div", "w-100", [], parentElement, `building-group-${building_group}-building-${building_type}-${index}`); d0.create()
+    d0 = new element("div", "w-100", [], parentElement, `building-group-${building_group}-building-${building_type}-${non_zero_index}`); d0.create()
     //Build building accordion header
-    h2 = new element("h2", "notificationUnread w-100", [], d0.getNode(), `building-group-${building_group}-building-${building_type}-${index}-header`); h2.create()
-    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#building-group-${building_group}-building-${building_type}-${index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`building-group-${building_group}-building-${building_type}-${index}-body`}], h2.getNode())
+    let is_new_building = buildings[building_group][building_type]["building_list"][non_zero_index-1].new
+    let notification_unread = is_new_building ? "notificationUnread" : ""
+    h2 = new element("h2", `${notification_unread} w-100`, [], d0.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-header`); h2.create()
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#building-group-${building_group}-building-${building_type}-${non_zero_index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`building-group-${building_group}-building-${building_type}-${non_zero_index}-body`}], h2.getNode())
     b.create()
     enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
-    s1 = new element("span", "new text-xs px-1 py-0 font-bold rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
+    //Add NEW icon.`
+    let hidden = is_new_building ? "" : "hidden"
+    s1 = new element("span", `new ${hidden} text-xs px-1 py-0 font-bold rounded-sm bg-blue-900 text-blue-300 me-3`, [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent(translate(language, "NEW", "m"))
+    if(is_new_building){
+        //Update "newsNotifications" counter if exists.
+        let accordion_body = s1.getNode().closest("[aria-labelledby]")
+        if(accordion_body){
+            let accordion_header = accordion_body.parentElement.querySelector(`h2#${accordion_body.getAttribute("aria-labelledby")}`)
+            if(accordion_header){
+                accordion_header.querySelector("button span#newsNotifications").innerHTML++
+                accordion_header.querySelector("button span#newsNotifications").hidden = false
+            }
+        }
+    }
     enable_notification_events()
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(current_building.name)
-    //s1 = new element("span", "font-bold ms-1", [], s.getNode()); s1.create(); s1.appendContent(""+index)
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build building accordion body
-    d1 = new element("div", "hidden w-100", [{"key":"aria-labelledby","value":`building-group-${building_group}-building-${building_type}-${index}-header`}], d0.getNode(), `building-group-${building_group}-building-${building_type}-${index}-body`); d1.create()
+    d1 = new element("div", "hidden w-100", [{"key":"aria-labelledby","value":`building-group-${building_group}-building-${building_type}-${non_zero_index}-header`}], d0.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-body`); d1.create()
     d2 = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
-    //Campaign tent info
-    //First line: Constructed in...
+    //Building info
+    //Constructed in...
     p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "flex", [], p.getNode()); s.create()
     s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
-    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Constructed in", "f"))
+    s2 = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"f"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Constructed in", "f"))
     s1.appendHTML(": ")
     s = new element("span", "grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
-    s1 = new element("span", "flex-none", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year"))
-    s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdYear`); s1.create(); s1.appendContent(current_building.created.year.toString())
-    s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week"))
-    s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdWeek`); s1.create(); s1.appendContent(current_building.created.week.toString())
-    s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day"))
-    s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdDay`); s1.create(); s1.appendContent(current_building.created.day.toString())
-    s1 = new element("span", "flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-createdHour`); s1.create(); s1.appendContent(current_building.created.hour.toString().padStart(2, "0"))
-    s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.")
-    //Second line: Status: Finished...
+    if(building_finished){
+        s1 = new element("span", "flex-none", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year"))
+        s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-createdYear`); s1.create(); s1.appendContent(current_building.created.year.toString())
+        s1 = new element("span", "flex-none ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week"))
+        s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-createdWeek`); s1.create(); s1.appendContent(current_building.created.week.toString())
+        s1 = new element("span", "flex-none ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day"))
+        s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-createdDay`); s1.create(); s1.appendContent(current_building.created.day.toString())
+        s1 = new element("span", "flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-createdHour`); s1.create(); s1.appendContent(current_building.created.hour.toString().padStart(2, "0"))
+        s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.")
+    } else {
+        s1 = new element("span", "flex-none", [{"key":"data-i18n", "value":""}], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-constructed-in`); s1.create(); s1.appendContent(translate(language, "not finished yet", "", "capitalized"))
+    }
+    if(!building_finished){
+        //Started in...
+        p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}, {"key":"gender","value":"f"}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Started in", "f"))
+        s1.appendHTML(": ")
+        s = new element("span", "grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+        s1 = new element("span", "flex-none", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year"))
+        s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-initiatedYear`); s1.create(); s1.appendContent(current_building.initiated.year.toString())
+        s1 = new element("span", "flex-none ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week"))
+        s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-initiatedWeek`); s1.create(); s1.appendContent(current_building.initiated.week.toString())
+        s1 = new element("span", "flex-none ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day"))
+        s1 = new element("span", "font-bold flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-initiatedDay`); s1.create(); s1.appendContent(current_building.initiated.day.toString())
+        s1 = new element("span", "flex-none ms-1", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-initiatedHour`); s1.create(); s1.appendContent(current_building.initiated.hour.toString().padStart(2, "0"))
+        s1 = new element("span", "flex-none ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.")
+    }
+    //Status: Under construction / Finished...
     p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "flex", [], p.getNode()); s.create()
     s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
     s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Status"))
     s1.appendHTML(": ")
     s = new element("span", "flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
-    s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-status`); s1.create()
+    s1 = new element("span", "font-bold flex-none", [{"key":"data-i18n", "value":""}], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-status`); s1.create()
     s1.appendContent(translate(language, current_building.status, "f"))
-    s = new element("span", "font-bold p-0.5 px-1 grow bg-red-700 border border-gray-700 text-white", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fire hazard") + ": " + buildings[building_group][building_type].risk["fire hazard"]*100 +"%")
+    if(!building_finished){
+        //Building progress...
+        s = new element("span", "flex", [], p.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-progress-title`); s.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Progress"))
+        s1.appendHTML(": ")
+        s = new element("span", "flex grow gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+        let building_progress = Math.floor((1-current_building.duration_remaining*1/current_building.duration*1)*10000)/100
+        s1 = new element("span", "font-bold flex-none", [{"key":"data-i18n", "value":""}], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-progress`); s1.create()
+        s1.appendContent(building_progress.toString())
+        s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent("%")
+        if(buildings[building_group][building_type].risk != undefined){
+            p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
+        }
+    }
+    if(buildings[building_group][building_type].risk != undefined){
+        s = new element("span", "font-bold p-0.5 px-1 grow bg-red-700 border border-gray-700 text-white", [], p.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-risks`); s.create()
+        if(buildings[building_group][building_type].risk["fire hazard"] != undefined){
+            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Fire hazard"))
+            s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(": ")
+            s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(buildings[building_group][building_type].risk["fire hazard"]*100 +"%")
+        }
+    }
     //Third line: Shelter capacity...
     p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
     s = new element("span", "flex", [], p.getNode()); s.create()
     s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
-    s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Shelter capacity"))
+    if(building_group === "shelter_related"){
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Shelter capacity"))
+    } else {
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Building capacity"))
+    }
     s1.appendHTML(": ")
     s = new element("span", "grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
-    s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${index}-capacity`); s1.create(); s1.appendContent(current_building.capacity.toString())
+    let building_capacity = current_building.capacity != undefined ? current_building.capacity : 0
+    s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-capacity`); s1.create(); s1.appendContent(building_capacity.toString())
     s2 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s2.create(); s2.appendContent(translate(language, "citizens"))
-
-/*
-    //Forth line
-    p = new element("p", "ms-1 mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
-    s = new element("span", "font-bold p-0.5 px-1 rounded bg-red-500 text-white", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fire hazard"))
-    */
 }
 const accordion_buildings = (update = false) => {
     const new_building = (e) => {
@@ -825,9 +896,9 @@ const accordion_buildings = (update = false) => {
     //Build buildings accordion body
     d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-buildings"}], parentElem, "accordion-menu-buildings-body"); d1.create()
     d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
-    d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-buildings-groups"); d.create()
+    d = new element("div", "flex flex-wrap gap-1 mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-buildings-groups"); d.create()
     //Display no buildings message
-    p = new element("p", "ms-1 mb-1 text-xs text-red-400", [], d.getNode()); p.create()
+    p = new element("p", "w-100 ms-1 mb-1 text-xs text-red-400", [], d.getNode()); p.create()
     i = new element("i", "fa fa-empty-set me-1", [], p.getNode()); i.create()
     s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("There are no buildings in your colony!")
     //Actions available
@@ -1132,20 +1203,23 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     new_citizen.fertility = !citizen || citizen.fertility == undefined || citizen.fertility === null ? 10 + Math.floor(Math.random() * 91) : citizen.fertility
     new_citizen.weekOfDeath = !citizen || citizen.weekOfDeath == undefined || citizen.weekOfDeath === null ? 3120 + Math.floor(Math.random() * (4420-3120)) : citizen.weekOfDeath
     citizens[id] = new_citizen
-    //Build citizen accordion header
-    build_citizen_accordion_header()
-    //Build citizen accordion body
-    build_citizen_accordion_body()
-    if(new_citizen.father) { 
-        add_parent_to_citizen(citizens[new_citizen.father], citizens[new_citizen.id], "father") 
-        add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.father])
+    //Only display living citizens.
+    if(new_citizen.status !== "deceased"){
+        //Build citizen accordion header
+        build_citizen_accordion_header()
+        //Build citizen accordion body
+        build_citizen_accordion_body()
+        if(new_citizen.father) {
+            add_parent_to_citizen(citizens[new_citizen.father], citizens[new_citizen.id], "father") 
+            add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.father])
+        }
+        if(new_citizen.mother) { 
+            add_parent_to_citizen(citizens[new_citizen.mother], citizens[new_citizen.id], "mother") 
+            add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.mother])
+        }
+        enable_accordion_click(document.querySelector(`#accordion-citizen-${new_citizen.id}-header button`))
+        update_colony("populationUpdate")
     }
-    if(new_citizen.mother) { 
-        add_parent_to_citizen(citizens[new_citizen.mother], citizens[new_citizen.id], "mother") 
-        add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.mother])
-    }
-    enable_accordion_click(document.querySelector(`#accordion-citizen-${new_citizen.id}-header button`))
-    update_colony("populationUpdate")
     return new_citizen
 }
 const accordion_citizens = (amount = 10) => {
@@ -1202,8 +1276,10 @@ const accordion_citizens = (amount = 10) => {
         new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
         new_citizen.fertilityWeek = new_citizen.gender === "Femenine" ? 1 + Math.floor(Math.random() * 4) : null
 
-        build_citizen(translation = false, new_citizen.id, new_citizen)
-        //citizenBuilder(i)
+        //Only display living citizens.
+        if(new_citizen.status != "deceased"){
+            build_citizen(translation = false, new_citizen.id, new_citizen)
+        }       
     }
 }
 const accordion_relationships = () => {
@@ -1470,10 +1546,10 @@ const show_active_production_rules = (location, parent_div) => {
             s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Started in", "f"))
             s1.appendHTML(":")
             s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-weekText`); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
-            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-week`); s1.create(); s1.appendContent(rule.date_created.week.toString())
+            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-week`); s1.create(); s1.appendContent(rule.created.week.toString())
             s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-dayText`); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
-            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.date_created.day.toString())
-            s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.date_created.hour.toString())
+            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.created.day.toString())
+            s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.created.hour.toString())
             //Rule execution mode
             d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-limit", "value":"1"}], d1.getNode(), `rule-${rule_id}-production-mode`)
             d2.create();
@@ -1508,29 +1584,66 @@ const show_active_production_rules = (location, parent_div) => {
     }
 }
 let click_save_rule = (e) => {
-    //Identify rule index and other information
-    let rule_index = e.target.closest("button").id.split("-")[2]
-    let result_object = e.target.closest("button").getAttribute("data-product")
-    let result_category = e.target.closest("button").getAttribute("data-category")
-    let rule_panel_limit = document.getElementById(`rule-index-${rule_index}-production-mode`)
+    //Identify product information
+    let button_clicked = e.target.closest("button")
+    let result_object = button_clicked.getAttribute("data-product")
+    let snake_format_result_object = result_object.replace(" ", "_")
+    let result_category = button_clicked.getAttribute("data-category")
+    let id_added_text = "", rule_index, req_index
+    //For buildings...
+    let building_type, building_group, snake_format_group
+    if(result_category === "buildings"){
+        //Get building group and type.
+        let building_group_id = button_clicked.id.split("-")[2]
+        let building_type_elem = e.target.closest("[data-accordion='collapse']").parentNode.closest("[data-accordion='collapse']")
+        building_type = building_type_elem.querySelector("h2").getAttribute("data-building-type").replace(" ", "_")
+        let building_group_elem = building_type_elem.parentNode.parentNode//closest("[data-accordion='collapse']")
+        building_group = building_group_elem.querySelector("h2").getAttribute("data-building-group")
+        snake_format_group = building_group.replace(" ", "_")
+        let building_type_id = button_clicked.id.split("-")[4]
+        id_added_text = `newBuilding-group-${building_group_id}-type-${building_type_id}-`
+        rule_index = button_clicked.id.split("-")[7]
+        req_index = 9
+    } else {
+        rule_index = button_clicked.id.split("-")[2]
+        req_index = 4
+    }
+    let rules_div = document.getElementById(`${id_added_text}rule-index-${rule_index}-scheme-body`)
+    let rule_panel_limit = document.getElementById(`${id_added_text}rule-index-${rule_index}-production-mode`)
     let rule_production_limit = rule_panel_limit.getAttribute("data-limit") == "cyclic" ? Infinity : rule_panel_limit.getAttribute("data-limit")
-    let good_category = product_rules[result_object] != undefined ? "products" : "resources"
-    let good_rules = good_category === "products" ? product_rules : resource_rules
+    let object_category = product_rules[result_object] != undefined ? "products" : (resource_rules[result_object] != undefined ? "resources" : "buildings")
+    let object_rules = object_category === "products" ? product_rules : (object_category === "resources" ? resource_rules : building_rules)
     //Save rule
     let rule_created = {}
-    rule_last_id++
-    rule_created.id = rule_last_id
-    rule_created.index = rule_index
-    rule_created.date_created = {"week":document.getElementById("currentWeek").innerHTML, "day":document.getElementById("currentDay").innerHTML, "hour":document.getElementById("currentHour").innerHTML}
-    rule_created.object = result_object
-    rule_created.category = result_category
+    rule_created.id = 0
+    if(result_category === "buildings"){
+        buildings[snake_format_group][building_type].last_id++
+        rule_created.id = buildings[snake_format_group][building_type].last_id
+        rule_created.created = null
+        rule_created.initiated = {"year":document.getElementById("currentYear").innerHTML, "week":document.getElementById("currentWeek").innerHTML, "day":document.getElementById("currentDay").innerHTML, "hour":document.getElementById("currentHour").innerHTML}
+        rule_created.name = translate(language, result_object, "", "capitalized") + " " + rule_created.id
+        rule_created.group = building_group
+        rule_created.type = building_type
+        rule_created.status = translate(language, "under construction", "", "capitalized")
+        rule_created.new = true
+        if(building_group === "shelter related"){
+            rule_created.capacity = shelter_capacities[building_type.replace("_", " ")]
+        }
+    } else {
+        rule_last_id++
+        rule_created.index = rule_index
+        rule_created.id = rule_last_id
+        rule_created.created = {"week":document.getElementById("currentWeek").innerHTML, "day":document.getElementById("currentDay").innerHTML, "hour":document.getElementById("currentHour").innerHTML}
+        rule_created.object = result_object
+        rule_created.category = result_category
+        rule_created.status = "running"
+    }
     rule_created.production_limit = rule_production_limit
-    rule_created.rule_definition = JSON.parse(JSON.stringify(good_rules[rule_created.object].rules[0]))
-    rule_created.duration = document.getElementById(`rule-index-${rule_index}-duration`).getAttribute("data-hours")
+    rule_created.rule_definition = JSON.parse(JSON.stringify(object_rules[result_object].rules[0]))
+    rule_created.duration = document.getElementById(`${id_added_text}rule-index-${rule_index}-duration`).getAttribute("data-hours")
     rule_created.duration_remaining = rule_created.duration
-    rule_created.status = "running"
-    document.querySelectorAll(".rule-requirement").forEach((elem) => {
-        let requirement_index = elem.id.split("-")[4]
+    rules_div.querySelectorAll(".rule-requirement").forEach((elem) => {
+        let requirement_index = elem.id.split("-")[req_index]
         //Iterate rule's requirements
         rule_created.rule_definition.requirements.forEach((requirement_element, requirement_array_index) => {
             //Current requirement found?
@@ -1538,7 +1651,7 @@ let click_save_rule = (e) => {
                 //Check if current requirement demands workers
                 if(requirement_element.type === "citizen"){
                     //Search workers assigned to requirement
-                    let did = `#rule-index-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2.assigned`
+                    let did = `#${id_added_text}rule-index-${rule_index}-requirement-${requirement_index}-assignable-workers-area h2.assigned`
                     rule_created.rule_definition.requirements[requirement_array_index].workers = []
                     document.querySelectorAll(did).forEach((citizen_elem) => {
                         //Obtain citizen index from div panel
@@ -1550,36 +1663,55 @@ let click_save_rule = (e) => {
                         })
                         rule_created.rule_definition.requirements[requirement_array_index].workers.push(citizen_index)
                     })
-                    rule_created.rule_definition.result.quantity*= rule_created.rule_definition.requirements[requirement_array_index].workers.length
+                    if(result_category === "buildings"){
+                        rule_created.rule_definition.result.quantity = 1
+                    } else {
+                        rule_created.rule_definition.result.quantity*= rule_created.rule_definition.requirements[requirement_array_index].workers.length
+                    }
                     rule_created.rule_definition.requirements[requirement_array_index].quantity*= rule_created.rule_definition.requirements[requirement_array_index].workers.length
                 }
             }
         })
     })
-    good_rules_defined.push(rule_created)
-    //b.getNode().removeEventListener("click", click_save_rule)
-    let parent_id = e.target.closest(".newRule").parentElement.id
-    e.target.closest(".newRule").previousSibling.remove()
-    e.target.closest(".newRule").remove()
-    
+    let parent_id
+    if(result_category === "buildings"){
+        building_rules_defined.push(rule_created)
+        parent_id = e.target.closest(".newBuilding").parentElement.id
+        e.target.closest(".newBuilding").previousSibling.remove()
+        e.target.closest(".newBuilding").remove()
+    } else {
+        good_rules_defined.push(rule_created)
+        parent_id = e.target.closest(".newRule").parentElement.id
+        e.target.closest(".newRule").previousSibling.remove()
+        e.target.closest(".newRule").remove()
+    }
     let previous_panel_title_id = document.querySelector(`#${parent_id}`).children[1].id
-    let previous_panel_id = document.querySelector(`#${parent_id}`).children[1].querySelector("div").id
+    let previous_panel_id
+    if(result_category === "buildings"){
+        previous_panel_id = previous_panel_title_id.split("-title")[0]
+    } else {
+        previous_panel_id = document.querySelector(`#${parent_id}`).children[1].querySelector("div").id
+    }
     let previous = {"panelTitleId": previous_panel_title_id, "panelId": previous_panel_id}
 
     let object_data = {"language": language, "objectName": parent_id, "objectId": false, "optionName": "actions", 
                         "parentId": parent_id, "previous": previous, "location": ""}
     //Build new production rule panel
     let new_production_rule_panel = new panel("newRule", object_data)
-    //new_production_rule_panel.removePanel()
     new_production_rule_panel.showPreviousOptions()
+    if(result_category === "buildings"){
+        //Add building to buildings panel.
+        let snake_format_group = rule_created.group.replace(" ", "_")
+        buildings[snake_format_group][building_type]["building_list"].push(rule_created)
+        update_colony("buildingsUpdate")
+        //add_building(buildings[snake_format_group][building_type].last_id, rule_created.type, document.getElementById(`accordion-${snake_format_group}-building-${rule_created.type}-list`))
+    }
 }
 const new_rule_click_requirement = (click_target, requirement, elem, clicked_object) => {
     let rule_index
     var id_added_text = ""
     if(clicked_object.category === "buildings"){
-        let building_group = parent_div.id.split("-")[3]
-        let building_type = parent_div.id.split("-")[5]
-        id_added_text = `newBuilding-group-${building_group}-type-${building_type}-`
+        id_added_text = `newBuilding-group-${clicked_object.group}-type-${clicked_object.type}-`
     }
     let toggle_save_new_rule_action = (rule_index, requirements_fulfilled) => {
         let button = document.getElementById(`${id_added_text}rule-index-${rule_index}-confirm`)
@@ -1623,7 +1755,11 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_obj
             requirement_assigned_workers_amount = requirement_assigned_workers_ids.length
             //Update rule production time
             //Check if the good is a product or resource.
-            let good_rules = product_rules[result_product_object] != undefined ? product_rules : resource_rules
+            let good_rules = product_rules[result_product_object] != undefined ? 
+                                product_rules : 
+                                (resource_rules[result_product_object] != undefined ? 
+                                    resource_rules :
+                                    (building_rules))
             let rule = good_rules[result_product_object].rules[rule_index-1]
             if(rule.result.duration_type === "formula"){
                 let citizens_array = requirement_assigned_workers_ids
@@ -1634,10 +1770,10 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_obj
             document.getElementById(`${id_added_text}rule-index-${rule_index}-duration`).setAttribute("data-hours", duration)
             document.getElementById(`${id_added_text}rule-index-${rule_index}-duration`).innerHTML = minimal_date_expression(duration)
             //Update requirement new workers quantity
-            let requirement_name = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML
+            let requirement_name = document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML
             let requirement_name_array = requirement_name.split(" x ")
             document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).innerHTML = requirement_name_array[0] + " x " + Math.max(requirement_assigned_workers_amount, requirement.quantity) 
-            let requirement_marked_workers = document.querySelector(`#rule-index-${rule_index}-requirement-${requirement.index}-update span`)
+            let requirement_marked_workers = document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-update span`)
             if(requirement_assigned_workers_amount) {
                 requirement_marked_workers.innerHTML = requirement_assigned_workers_amount.toString()
                 requirement_marked_workers.classList.remove("hidden")
@@ -1660,10 +1796,12 @@ const new_rule_click_requirement = (click_target, requirement, elem, clicked_obj
                     document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.remove("bg-green-700", "border-gray-800")
                     document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).classList.add("bg-gray-700", "border-gray-900")
                 }
-                //Update result quantity
-                let result_product_quantity
-                result_product_quantity = requirement_assigned_workers_amount * good_rules[result_product_object].rules[rule_index-1].result.quantity
-                document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).innerText = translate(language, result_product_object, "", "capitalized")+" x "+result_product_quantity
+                if(clicked_object.category !== "buildings"){
+                    //Update result quantity
+                    let result_product_quantity
+                    result_product_quantity = requirement_assigned_workers_amount * good_rules[result_product_object].rules[rule_index-1].result.quantity
+                    document.querySelector(`#${id_added_text}rule-index-${rule_index}-result`).innerText = translate(language, result_product_object, "", "capitalized")+" x "+result_product_quantity
+                }
             } else {
                 //Unmark requirement as fulfilled.
                 document.querySelector(`#${id_added_text}rule-index-${rule_index}-requirement-${requirement.index}-name`).classList.remove("bg-green-700", "border-gray-800")
@@ -1809,12 +1947,16 @@ const new_rule_display_info = (rule, rule_index, clicked_object, current_mount =
                 } else {
                     //Requirement type is "building"
                     if(requirement.type === "building"){
+                        let snake_format_building = requirement.object.toLowerCase().replace(" ", "_")
                         //Check if required building exists as shelter but it doesn't have the amount needed.
-                        let building_required_amount = buildings["shelter_related"][requirement.object.toLowerCase()]
-                        if(building_required_amount != undefined && building_required_amount < requirement.quantity){
-                            requirement_cannot_be_fulfilled = true
-                        }
-                        building_required_amount = buildings["mounts_related"][requirement.object.toLowerCase()].building_list.length
+                        let building_required = buildings["shelter_related"][snake_format_building]
+                        let building_required_amount = 0
+                        //Shelter building needed?
+                        building_required_amount = building_required !== undefined ? building_required.building_list.length : building_required_amount
+                        requirement_cannot_be_fulfilled = building_required_amount < requirement.quantity
+                        //Mount building needed?
+                        building_required = buildings["mounts_related"][snake_format_building]
+                        building_required_amount = building_required !== undefined ? building_required.building_list.length : building_required_amount
                         //Check if required building exists as a mount placed building, but it doesn't have the amount needed.
                         if(building_required_amount != undefined && building_required_amount < requirement.quantity){
                             requirement_cannot_be_fulfilled = true
@@ -1982,11 +2124,11 @@ const new_rule_display_info = (rule, rule_index, clicked_object, current_mount =
         i2.getNode().addEventListener("click", reduce_cycles)
     }
     const display_scheme = () => {
-        let parent_div
+        let parent_div, id_added_text1 = ""
         if(clicked_object.category === "buildings"){
             id_added_text1 = `Building-group-${clicked_object.group}-type-${clicked_object.type}`
-            parent_div = document.getElementById(`accordion-new${id_added_text1}-production-rule-index-${rule_index}-body`)
         }
+        parent_div = document.getElementById(`accordion-new${id_added_text1}-production-rule-index-${rule_index}-body`)
         const refresh_scheme = (e) => {
             //Turn all possible workers to idle status if they exist.
             let rule_index = e.target.id.split("-")[2]
@@ -2023,7 +2165,11 @@ const new_rule_display_info = (rule, rule_index, clicked_object, current_mount =
         i = new element("i", "fa fa-plus me-2", [], b1.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b1.getNode()); s.create(); s.appendContent(translate(language, "Confirm rule"))
         //Add confirm rule click event
-        b1.getNode().addEventListener("click", click_save_rule)
+        /*if(clicked_object.category === "buildings"){
+            b1.getNode().addEventListener("click", click_save_building_rule)
+        } else {*/
+            b1.getNode().addEventListener("click", click_save_rule)
+        //}
         //Action: Cancel rule
         b2 = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d3.getNode(), `${id_added_text}rule-index-${rule_index}-cancel`); b2.create()
         i = new element("i", "fa fa-times me-2", [], b2.getNode()); i.create()
@@ -2080,7 +2226,7 @@ const display_object_available_rules = (parent_div, clicked_object, current_moun
             b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs font-medium border border-gray-800 gap-3 bg-gray-900 text-white", [{"key": "type", "value": "button"}, {"key": "aria-expanded", "value": "true"}, {"key": "data-accordion-target", "value": `#accordion-new${id_added_text}-production-rule-index-${r_index+1}-body`}, {"key": "aria-controls", "value": `accordion-new${id_added_text}-production-rule-index-${r_index+1}-body`}], h2.getNode())
             b.create()
             s = new element("span", "", [], b.getNode()); s.create()
-            let accordion_message = clicked_object.category == "buildings" ? translate(language, "Construction rule") : `${translate(language, "Rule") + (rules_amount > 1 ? " #"+r_index : "")} ${translate(language, "for")}`
+            let accordion_message = clicked_object.category == "buildings" ? translate(language, "Construction rule") + (rules_amount > 1 ? " #"+(r_index+1) : "") : `${translate(language, "Rule") + (rules_amount > 1 ? " #"+(r_index+1) : "")} ${translate(language, "for")}`
             s1 = new element("span", "", [{"key": "data-i18n", "value": ""}], s.getNode()); s1.create(); s1.appendContent(accordion_message)
             if(clicked_object.category !== "buildings"){
                 s1.appendHTML(":")
@@ -2450,6 +2596,9 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
 //Enable accordion button click event
 const enable_accordion_click = (accordion_item_button) => {
     let handle_accordion_click = (e) => {
+        if(e.target.classList.contains("new")){
+            return
+        }
         const target = e.target.closest("button")
         const accordion_item_body = document.querySelector(target.getAttribute('data-accordion-target'))
         //Trying to expand accordion item
@@ -2485,22 +2634,52 @@ const enable_accordion_click = (accordion_item_button) => {
 }
 const enable_notification_events = () => {
     let notification_handler = (e) => {
-        e.target.closest("h2").removeEventListener('click', notification_handler)
-        //Remove notification unread class and icon
-        e.target.closest("h2").classList.remove("notificationUnread")
-        if(e.target.type === "button" && e.target.querySelector(".new:first-of-type")){
-            e.target.querySelector(".new:first-of-type").remove()
-        } else if(e.target.parentElement.querySelector(".new:first-of-type")){
-            e.target.parentElement.querySelector(".new:first-of-type").remove()
+        let h2 = e.target.closest("h2")
+        e.target.removeEventListener('click', notification_handler)
+        if(h2 != null){
+            //Remove notification unread class and icon
+            h2.classList.remove("notificationUnread")
+            let h2_new = h2.querySelector(".new")
+            if(h2_new != undefined){
+                h2_new.remove()
+                //False new flag in memory...
+                //Check what object we are talking about...
+                let what_object = h2.id.split("-")[0]
+                if(what_object === "building"){
+                    buildings[h2.id.split("-")[2]][h2.id.split("-")[4]].building_list[h2.id.split("-")[5]-1].new = false
+                }
+            }
+            //Update parent notification counter.
+            let accordion_body_div = h2.closest("[aria-labelledby]")
+            if(accordion_body_div != undefined){
+                let h2_id = accordion_body_div.getAttribute("aria-labelledby")
+                let notification_h2 = document.getElementById(h2_id)
+                //Search #newsNotification under h2 found.
+                if(notification_h2 != undefined){
+                    let notification_span = notification_h2.querySelector("#newsNotifications")
+                    if(notification_span != undefined){
+                        notification_span.innerText = accordion_body_div.querySelectorAll(".notificationUnread").length
+                        notification_span.hidden = notification_span.innerText == 0
+                    }
+                }
+            }
         }
-        //Check if there is no notification siblings and then remove parent notification.
-        document.querySelector("#newsNotifications").innerText = document.querySelectorAll("#accordion-news .notificationUnread").length
-        document.querySelector("#newsNotifications").hidden = (document.querySelector("#newsNotifications").innerText === "0")
     }
     document.querySelectorAll(".notificationUnread").forEach((value, key) => {
         value.removeEventListener('click', notification_handler)
     })
     document.querySelectorAll(".notificationUnread").forEach((value, key) => {
+        let accordion_body_div = value.closest("[aria-labelledby]")
+        if(accordion_body_div != undefined){
+            let h2_id = accordion_body_div.getAttribute("aria-labelledby")
+            let notification_h2 = document.getElementById(h2_id)
+            if(notification_h2 != undefined){
+                let notification_span = notification_h2.querySelector("#newsNotifications")
+                if(notification_span != undefined){
+                    notification_span.hidden = false
+                }
+            }
+        }
         value.addEventListener('click', notification_handler)
     })
 }
@@ -2758,136 +2937,218 @@ const toggle_sort_stock = (type = "resources") => {
 }
 //Update accordions structure
 const update_colony = (event = "zoneSearched") => {
-    if(event === "zoneSearched" || event === "buildingsUpdate"){
-        //Check for new buildings
-        let parentElem = document.querySelector("#accordion-buildings-groups")
-        parentElem.classList.add("border", "border-gray-800")
-        //Remove all buildings from panel
-        parentElem.childNodes.forEach(elem => elem.remove())
-        
-        //Create existing buildings groups
-        let building_groups = Object.keys(buildings)
-        building_groups.forEach((current_group) => {
-            //Check if current type in the group has at least one building placed in the colony.
-            let current_type_empty = true
-            Object.keys(buildings[current_group]).forEach((building_name) => {
-                //Is there any current group building in the colony?
-                if(buildings[current_group][building_name]["building_list"].length){
-                    current_type_empty = false
-                }
-            })
-            //If shelters group => show accordion (even if there is no shelter building)
-            //If not, only show the group accordion if there is at least a building created in the colony.
-            if(current_group == "shelter_related" || !current_type_empty){
-                //Create current group accordion header
-                let translatable_current_group = current_group.replace("_", " ")
-                header1 = new element("h2", "notificationUnread", [], parentElem, `accordion-${current_group}-buildings-header`); header1.create()
-                button1 = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-${current_group}-buildings-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-${current_group}-buildings-body`}], header1.getNode(), `accordion-${current_group}-buildings`)
-                button1.create()
-                enable_accordion_click(button1.getNode())
-                span = new element("span", "", [], button1.getNode()); span.create()
-                span1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], span.getNode())
-                span1.create(); span1.appendContent("NEW")
-                span1 = new element("span", "", [{"key":"data-i18n","value":""}], span.getNode()); span1.create(); span1.appendContent(translate(language, translatable_current_group, "", "capitalized"))
-                button1.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-                //Build current group accordion body
-                body1 = new element("div", "hidden p-1 bg-gray-500", [{"key":"aria-labelledby","value":`#accordion-${current_group}-buildings-header`}], parentElem, `accordion-${current_group}-buildings-body`); body1.create()
-                if(!current_type_empty){
-                    //If shelters group => show total colony shelter capacity.
+    var parentElem, current_type_empty
+    let zone_already_searched = event === "zoneSearched"
+    let buildings_update_exists = zone_already_searched || event === "buildingsUpdate"
+    let population_update_exists = zone_already_searched || event === "populationUpdate"
+    let only_update_vital_resources = population_update_exists || event == "vitalResourcesUpdate"
+    let current_population = Object.keys(citizens).length
+    const show_building_group_accordion = (current_group) => {
+        //Create current group accordion header
+        let translatable_current_group = current_group.replace("_", " ")
+        header1 = new element("h2", "w-100 notificationUnread", [], parentElem, `accordion-${current_group}-buildings-header`); header1.create()
+        button1 = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-${current_group}-buildings-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-${current_group}-buildings-body`}], header1.getNode(), `accordion-${current_group}-buildings`)
+        button1.create()
+        enable_accordion_click(button1.getNode())
+        span = new element("span", "", [], button1.getNode()); span.create()
+        span1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], span.getNode())
+        span1.create(); span1.appendContent("NEW")
+        span1 = new element("span", "", [{"key":"data-i18n","value":""}], span.getNode()); span1.create(); span1.appendContent(translate(language, translatable_current_group, "", "capitalized"))
+        button1.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        //Build current group accordion body
+        body1 = new element("div", "hidden w-100 p-1 bg-gray-500", [{"key":"aria-labelledby","value":`#accordion-${current_group}-buildings-header`}], parentElem, `accordion-${current_group}-buildings-body`); body1.create()
+        if(!current_type_empty){
+            //If shelters group => show total colony shelter capacity.
+            if(current_group === "shelter_related"){
+                //Show building type shelter capacity.
+                p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], body1.getNode()); p.create()
+                s = new element("span", "flex", [], p.getNode()); s.create()
+                s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Total shelter capacity"))
+                s1.appendHTML(": ")
+                s = new element("span", "grow flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
+                s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${current_group}-total-capacity`); s1.create()
+                s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "citizens"))
+            }
+            let total_shelter_capacity = 0
+            //Create building types.
+            Object.keys(buildings[current_group]).forEach((building_type) => {
+                if(buildings[current_group][building_type]["building_list"].length){
+                    let building_plural = buildings[current_group][building_type].plural
+                    //Build current building type accordion.
+                    d = new element("div", "border border-gray-900", [{"key":"data-accordion","value":"collapse"}], body1.getNode(), `accordion-${current_group}-building-${building_type}`); d.create()
+                    //Build current building type accordion header
+                    h2 = new element("h2", "", [], d.getNode(), `accordion-${current_group}-building-${building_type}-header`); h2.create()
+                    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-${current_group}-building-${building_type}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-${current_group}-building-${building_type}-body`}], h2.getNode())
+                    b.create()
+                    enable_accordion_click(b.getNode())
+                    s = new element("span", "", [], b.getNode()); s.create()
+                    s1 = new element("span", "text-xs fa fa-beat font-medium me-3 px-2 py-1 rounded-sm bg-blue-900 text-blue-300", [], s.getNode(), "newsNotifications"); s1.create()//; s1.appendContent("5")
+                    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, building_plural))
+                    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+                    //Build current building type accordion body
+                    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-${current_group}-building-${building_type}-header`}], d.getNode(), `accordion-${current_group}-building-${building_type}-body`); d1.create()
+                    d3 = new element("div", "p-1 bg-gray-600 text-xs", [], d1.getNode()); d3.create()
                     if(current_group === "shelter_related"){
                         //Show building type shelter capacity.
-                        p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], body1.getNode()); p.create()
+                        p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], d3.getNode()); p.create()
                         s = new element("span", "flex", [], p.getNode()); s.create()
                         s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
                         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Total shelter capacity"))
                         s1.appendHTML(": ")
                         s = new element("span", "grow flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
-                        s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${current_group}-total-capacity`); s1.create()
+                        s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${current_group}-building-${building_type}-total-capacity`); s1.create()
                         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "citizens"))
                     }
-                    let total_shelter_capacity = 0
-                    //Create building types.
-                    Object.keys(buildings[current_group]).forEach((building_type) => {
-                        if(buildings[current_group][building_type]["building_list"].length){
-                            let building_plural = buildings[current_group][building_type].plural
-                            //Build current building type accordion.
-                            d = new element("div", "border border-gray-900", [{"key":"data-accordion","value":"collapse"}], body1.getNode(), `accordion-${current_group}-building-${building_type}`); d.create()
-                            //Build current building type accordion header
-                            h2 = new element("h2", "notificationUnread", [], d.getNode(), `accordion-${current_group}-building-${building_type}-header`); h2.create()
-                            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-${current_group}-building-${building_type}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-${current_group}-building-${building_type}-body`}], h2.getNode())
-                            b.create()
-                            enable_accordion_click(b.getNode())
-                            s = new element("span", "", [], b.getNode()); s.create()
-                            s1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
-                            s1.create(); s1.appendContent("NEW")
-                            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, building_plural))
-                            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-                            //Build current building type accordion body
-                            d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":`accordion-${current_group}-building-${building_type}-header`}], d.getNode(), `accordion-${current_group}-building-${building_type}-body`); d1.create()
-                            d3 = new element("div", "p-1 bg-gray-600 text-xs", [], d1.getNode()); d3.create()
-                            if(current_group === "shelter_related"){
-                                //Show building type shelter capacity.
-                                p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], d3.getNode()); p.create()
-                                s = new element("span", "flex", [], p.getNode()); s.create()
-                                s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
-                                s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Total shelter capacity"))
-                                s1.appendHTML(": ")
-                                s = new element("span", "grow flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900", [], p.getNode()); s.create()
-                                s1 = new element("span", "font-bold flex-none", [], s.getNode(), `building-group-${current_group}-building-${building_type}-total-capacity`); s1.create()
-                                s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "citizens"))
-                            }
-                            d = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500", [{"key":"data-accordion","value":"collapse"}], d3.getNode(), `accordion-${current_group}-building-${building_type}-list`); d.create()
-                            if(current_group === "shelter_related"){
-                                let building_type_shelter_capacity = 0
-                                buildings[current_group][building_type]["building_list"].forEach((building, b_index) => {
-                                    building_type_shelter_capacity += building.capacity
-                                    //Add current building accordion with their contents.
-                                    let building_text = translate(language, buildings[current_group][building_type].name)
-                                    add_building(b_index + 1, building_text.charAt(0).toUpperCase()+building_text.slice(1), d.getNode())
-                                })
-                                document.getElementById(`building-group-${current_group}-building-${building_type}-total-capacity`).innerHTML = get_shelter_capacity()
-                                total_shelter_capacity += building_type_shelter_capacity
-                            }
+                    d = new element("div", "flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500", [{"key":"data-accordion","value":"collapse"}], d3.getNode(), `accordion-${current_group}-building-${building_type}-list`); d.create()
+                    if(["shelter_related", "mounts_related"].includes(current_group)){
+                        let building_type_shelter_capacity = 0
+                        buildings[current_group][building_type]["building_list"].forEach((building, b_index) => {
+                            building_type_shelter_capacity += building.capacity
+                            //Add current building accordion with their contents.
+                            let building_text = translate(language, buildings[current_group][building_type].name)
+                            //buildings[current_group][building_type].last_id++
+                            add_building(b_index+1, building_text.charAt(0).toUpperCase()+building_text.slice(1), d.getNode())
+                        })
+                        buildings[current_group][building_type].last_id = buildings[current_group][building_type]["building_list"].length
+                        let total_building_capacity_span = document.getElementById(`building-group-${current_group}-building-${building_type}-total-capacity`)
+                        if(total_building_capacity_span != undefined){
+                            total_building_capacity_span.innerHTML = get_shelter_capacity()
+                            total_shelter_capacity += building_type_shelter_capacity
                         }
-                    })
-                    if(current_group === "shelters"){
-                        document.getElementById(`building-group-${current_group}-total-capacity`).innerHTML = total_shelter_capacity.toString()
                     }
-                } else {
-                    //Show empty message. (only for shelters)
                 }
+            })
+            if(current_group === "shelter_related"){
+                document.getElementById(`building-group-${current_group}-total-capacity`).innerHTML = total_shelter_capacity.toString()
             }
-        })
-    }
-    if(event === "zoneSearched" || event === "populationUpdate"){
-        //Updates derived from increasing population.
-        //1) Update colony water and food consumption.
-        document.getElementById("colony-water-consumption").innerHTML = Object.keys(citizens).length * 2
-        document.getElementById("water-revenue").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
-        document.getElementById("colony-food-consumption").innerHTML = Object.keys(citizens).length * 1
-        document.getElementById("food-revenue").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
-        //2) Update total population
-        document.getElementById("colonyPopulation").innerHTML = Object.keys(citizens).length.toString()   
-        //3) Update life quality mood
-        if(document.getElementById("colonyLifeQualitySituation") != undefined){
-            let current_life_quality = document.getElementById("colonyLifeQuality").innerHTML*1
-            let colony_life_quality_satisfaction = colony_satisfaction(current_life_quality, Object.keys(citizens).length*1)
-            document.getElementById("colonyLifeQualitySituation").classList.remove("bg-red-800", "bg-yellow-600", "bg-green-500", "bg-green-600", "bg-green-700")
-            document.getElementById("colonyLifeQualitySituation").classList.add(colony_life_quality_satisfaction.color)
-            document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.remove("fa-face-meh", "fa-face-weary", "fa-face-smile", "fa-face-laugh", "fa-face-laugh-squint")
-            document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.add(colony_life_quality_satisfaction.icon)
-            document.getElementById("colonyLifeQualityImpression").innerHTML = translate(language, colony_life_quality_satisfaction.word)
+        } else {
+            //Show empty message. (only for shelters)
         }
     }
+    const update_vital_indicators = (indicator_type, revenue) => {
+        let icon = document.getElementById(`colony-${indicator_type}-stock-icon`)
+        let consumption = document.getElementById(`colony-${indicator_type}-consumption`)
+        let income = document.getElementById(`colony-${indicator_type}-income`)
+        var colony_icon = document.getElementById("accordion-menu-colony-icon")
+        var vital_resources_icon = document.getElementById("accordion-vitalResources-icon")
+        let consumption_icon = document.getElementById(`accordion-${indicator_type}-consumption-icon`)
+        let income_icon = document.getElementById(`accordion-${indicator_type}-income-icon`)
+        let stock_icon = document.getElementById(`accordion-${indicator_type}-stock-icon`)
 
-    if(event === "zoneSearched" || event === "populationUpdate" || event === "buildingsUpdate"){
-        //4) Check new shelter capacity
+        const set_class = (element, new_class, removable_classes) => {
+            element.classList.remove(removable_classes[0], removable_classes[1])
+            element.classList.add(new_class)
+        }
+        const check_colony_criticity = (indicator_type) => {
+            if((indicator_type == "water" && document.getElementById("accordion-food-consumption-icon").classList.contains("hidden")) ||
+               (indicator_type == "food" && document.getElementById("accordion-water-consumption-icon").classList.contains("hidden"))){
+                vital_resources_icon.classList.add("hidden")
+                colony_icon.classList.add("hidden")
+            }
+        }
+       
+        if(revenue === 0){
+            //Undo critical situation.
+            consumption_icon.classList.add("hidden"); income_icon.classList.add("hidden"); stock_icon.classList.add("hidden")
+            //Check if vital resources criticity has disappeared...
+            check_colony_criticity(indicator_type)
+            set_class(icon, "fa-minus", ["fa-arrow-up", "fa-arrow-down"])
+            set_class(icon.parentElement, "bg-yellow-600", ["bg-green-700", "bg-red-900"])
+            set_class(consumption.parentElement, "bg-yellow-600", ["bg-green-700", "bg-red-900"])
+            set_class(income.parentElement, "bg-yellow-600", ["bg-green-700", "bg-red-900"])
+        } else {
+            if(revenue > 0){
+                //Undo critical situation.
+                consumption_icon.classList.add("hidden"); income_icon.classList.add("hidden"); stock_icon.classList.add("hidden")
+                //Check if vital resources criticity has disappeared...
+                check_colony_criticity(indicator_type)
+                set_class(icon, "fa-arrow-up", ["fa-minus", "fa-arrow-down"])
+                set_class(icon.parentElement, "bg-green-700", ["bg-yellow-600", "bg-red-900"])
+                set_class(consumption.parentElement, "bg-green-700", ["bg-yellow-600", "bg-red-900"])
+                set_class(income.parentElement, "bg-green-700", ["bg-yellow-600", "bg-red-900"])
+            } else {
+                //Critical situation.
+                vital_resources_icon.classList.remove("hidden")
+                colony_icon.classList.remove("hidden")
+                consumption_icon.classList.remove("hidden"); income_icon.classList.remove("hidden"); stock_icon.classList.remove("hidden")
+                set_class(icon, "fa-arrow-down", ["fa-minus", "fa-arrow-up"])
+                set_class(icon.parentElement, "bg-red-900", ["bg-yellow-600", "bg-green-700"])
+                set_class(consumption.parentElement, "bg-red-900", ["bg-yellow-600", "bg-green-700"])
+                set_class(income.parentElement, "bg-red-900", ["bg-yellow-600", "bg-green-700"])
+            }
+        }
+    }
+    if(only_update_vital_resources){
+        //1) Update colony water and food consumption.
+        let water_income = document.getElementById("colony-water-income").innerHTML*1
+        let water_consumption = current_population * citizenDailyWaterNeeds
+        let water_revenue = water_income - water_consumption
+        let food_income = document.getElementById("colony-food-income").innerHTML*1
+        let food_consumption = current_population * citizenDailyFoodNeeds
+        let food_revenue = food_income - food_consumption
+        //1.1) Update colony water critical indicators.
+        document.getElementById("colony-water-consumption").innerHTML = water_consumption
+        document.getElementById("water-revenue").innerHTML = (water_revenue > 0 ? "+" : "") + water_revenue.toString()
+        update_vital_indicators("water", water_revenue)
+        //1.2) Update colony food critical indicators.
+        document.getElementById("colony-food-consumption").innerHTML = food_consumption
+        document.getElementById("food-revenue").innerHTML = (food_revenue > 0 ? "+" : "") + food_revenue.toString()
+        update_vital_indicators("food", food_revenue)
+    }
+    if(buildings_update_exists || population_update_exists){
+        //Update buildings in the colony, including new ones...
+        if(buildings_update_exists){
+            parentElem = document.querySelector("#accordion-buildings-groups")
+            parentElem.classList.add("border", "border-gray-800")
+            //Remove all buildings from panel
+            parentElem.innerHTML = ""
+            
+            //Create existing building groups
+            let building_groups = Object.keys(buildings)
+            building_groups.forEach((current_group) => {
+                //Check if current type in the group has at least one building placed in the colony.
+                current_type_empty = true
+                Object.keys(buildings[current_group]).forEach((building_name) => {
+                    //Is there any current group building in the colony?
+                    if(buildings[current_group][building_name]["building_list"].length){
+                        current_type_empty = false
+                    }
+                })
+                //If shelters group => show accordion (even if there is no shelter building)
+                //If not, only show the group accordion if there exists at least a building created in the colony.
+                if(["shelter_related"].includes(current_group) || !current_type_empty){
+                    show_building_group_accordion(current_group)
+                }
+            })
+        }
+        //Update colony new population and information derived from that event...
+        if(population_update_exists){
+            //Updates derived exclusively from increasing population.
+            //2) Update total population
+            document.getElementById("colonyPopulation").innerHTML = current_population.toString()
+            //3) Update life quality mood
+            if(document.getElementById("colonyLifeQualitySituation") != undefined){
+                let current_life_quality = document.getElementById("colonyLifeQuality").innerHTML*1
+                let colony_life_quality_satisfaction = colony_satisfaction(current_life_quality, current_population * 1)
+                document.getElementById("colonyLifeQualitySituation").classList.remove("bg-red-800", "bg-yellow-600", "bg-green-500", "bg-green-600", "bg-green-700")
+                document.getElementById("colonyLifeQualitySituation").classList.add(colony_life_quality_satisfaction.color)
+                document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.remove("fa-face-meh", "fa-face-weary", "fa-face-smile", "fa-face-laugh", "fa-face-laugh-squint")
+                document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.add(colony_life_quality_satisfaction.icon)
+                document.getElementById("colonyLifeQualityImpression").innerHTML = translate(language, colony_life_quality_satisfaction.word)
+            }
+            /*
+            
+            */
+        }
+        //Update shelter capacity related info
+        //1) Check new shelter capacity
         let current_shelter_capacity = get_shelter_capacity()
-        let colony_shelter_capacity_mood = shelter_capacity_mood(current_shelter_capacity, Object.keys(citizens).length.toString())
-        // Update shelter capacity mood
+        let colony_shelter_capacity_mood = shelter_capacity_mood(current_shelter_capacity, current_population.toString())
+        //2) Update shelter capacity mood
         if(document.getElementById("colonyShelterCapacityInfo") != undefined){
             let shelter_capacity_info = document.getElementById("colonyShelterCapacityInfo")
-            shelter_capacity_info.classList.remove("bg-red-800", "bg-yellow-400", "bg-green-700")
+            shelter_capacity_info.classList.remove("bg-red-800", "bg-yellow-600", "bg-green-700")
             shelter_capacity_info.classList.add(colony_shelter_capacity_mood.color)
             if(document.getElementById("colonyShelterCapacity") != undefined){
                 document.getElementById("colonyShelterCapacity").innerHTML = current_shelter_capacity.toString()
@@ -2902,7 +3163,7 @@ const update_colony = (event = "zoneSearched") => {
             }
         }
     }
-    if(event === "zoneSearched"){
+    if(zone_already_searched){
         //Add notification about zone searched
         update_stock()
         add_news()
@@ -3048,12 +3309,14 @@ const deassign_worker_to_mount = (citizenIndex, mountClass) => {
             document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
             let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
             document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+            //update_colony("vitalResourcesUpdate")
         }
         if(citizenRoleKey === "fishing"){
             //Add water income to Colony panel
             document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 - water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
             let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
             document.getElementById("food-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+            //update_colony("vitalResourcesUpdate")
         }
     }
     //If no available workers, then show "no available workers" text
@@ -3244,12 +3507,14 @@ const add_assigned_worker_to_mount = (citizenIndex, mountClass) => {
             document.getElementById("colony-water-income").innerHTML = document.getElementById("colony-water-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-water-income"]*1
             let waterRevenue = document.getElementById("colony-water-income").innerHTML*1 - document.getElementById("colony-water-consumption").innerHTML*1
             document.getElementById("water-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+            //update_colony("vitalResourcesUpdate")
         }
         if(citizenRoleKey === "fishing"){
             //Add water income to Colony panel
             document.getElementById("colony-food-income").innerHTML = document.getElementById("colony-food-income").innerHTML*1 + water_reservoirs[colony_water_reservoir]["daily-food-income"]*1
             let waterRevenue = document.getElementById("colony-food-income").innerHTML*1 - document.getElementById("colony-food-consumption").innerHTML*1
             document.getElementById("food-revenue").innerHTML = (waterRevenue ? "+" : "")+waterRevenue
+            //update_colony("vitalResourcesUpdate")
         }
     }
     //If no more available workers, then show "no available workers" text

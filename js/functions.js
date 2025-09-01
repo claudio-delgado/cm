@@ -421,3 +421,6 @@ const format_countdown_date_expression = (date_expression, object = false, index
     })
     return main_span
 }
+const get_score_bonus = (game_event) => {
+    return score_bonus[game_event]
+}

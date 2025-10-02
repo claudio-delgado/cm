@@ -57,6 +57,38 @@ const accordion_news = () => {
     d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "flex flex-wrap mx-1 gap-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-news"); d.create()
 }
+const add_news_content = (news) => {
+    let d = document.querySelector("#accordion-news")
+    //let id = document.querySelectorAll("#accordion-news h2").length + 1
+    //Build notification #id accordion div
+    d0 = new element("div", "w-100", [], d, `accordion-news-${news.id}`)
+    d0.create()
+    //Build notification #id accordion header
+    h2 = new element("h2", `${news.status === "unread" ? "notificationUnread" : ""} w-100`, [], d0.getNode(), `accordion-news-${news.id}-header`); h2.create()
+    b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-news-"+news.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-news-"+news.id+"-body"}], h2.getNode(), "accordion-news-"+news.id)
+    b.create()
+    enable_accordion_click(b.getNode())
+    s = new element("span", "", [], b.getNode()); s.create()
+    s1 = new element("span", `new ${news.status === "read" ? "hidden " : ""}text-xs px-1 py-0 font-bold rounded-sm bg-blue-900 text-blue-300 me-3`, [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
+    s1.create(); s1.appendContent(translate(language, "NEW", "f"))
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year", "", "capitalized"))
+    s1 = new element("span", "font-bold year", [], s.getNode()); s1.create(); s1.appendContent(news["received in"].year.toString())
+    s.appendHTML(", ")
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
+    s1 = new element("span", "font-bold week", [], s.getNode()); s1.create(); s1.appendContent(news["received in"].week.toString())
+    s.appendHTML(", ")
+    s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
+    s1 = new element("span", "font-bold day", [], s.getNode()); s1.create(); s1.appendContent(news["received in"].day.toString())
+    s.appendHTML(" (")
+    s1 = new element("span", "font-bold hour", [], s.getNode()); s1.create(); s1.appendContent(news["received in"].hour.toString())
+    s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.)")
+    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+    //Build notification #newsIndex accordion body
+    d1 = new element("div", "hidden w-100 text-white", [{"key":"aria-labelledby","value":`accordion-news-${news.id}-header`}], d0.getNode(), `accordion-news-${news.id}-body`)
+    d1.create()
+    d1.appendHTML(news.content)
+    enable_notification_events()
+}
 const add_news = (notificationType = "ZoneSearched", newsData) => {
     let d = document.querySelector("#accordion-news")
     let newsIndex = document.querySelectorAll("#accordion-news h2").length + 1
@@ -72,20 +104,21 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
     s1 = new element("span", "new text-xs px-1 py-0 font-bold rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"f"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent(translate(language, "NEW", "f"))
     s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Year", "", "capitalized"))
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentYear").innerText)
+    s1 = new element("span", "font-bold year", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentYear").innerText)
     s.appendHTML(", ")
     s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentWeek").innerText)
+    s1 = new element("span", "font-bold week", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentWeek").innerText)
     s.appendHTML(", ")
     s1 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentDay").innerText)
+    s1 = new element("span", "font-bold day", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentDay").innerText)
     s.appendHTML(" (")
-    s1 = new element("span", "font-bold", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentHour").innerText)
+    s1 = new element("span", "font-bold hour", [], s.getNode()); s1.create(); s1.appendContent(document.getElementById("currentHour").innerText)
     s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent("hs.)")
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build notification #newsIndex accordion body
     d1 = new element("div", "hidden w-100", [{"key":"aria-labelledby","value":`accordion-news-${newsIndex}-header`}], d0.getNode(), `accordion-news-${newsIndex}-body`)
     d1.create()
+    //Add notification content depending on type
     switch(notificationType){
         case "Welcome":
             d2 = new element("div", "p-2 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
@@ -401,11 +434,13 @@ const accordion_colony = () => {
     let build_colony_name = () => {
         //First panel
         //Colony name and save button
-        p = new element("p", "flex w-100 pb-1 text-gray-400", [], d1.getNode()); p.create()
-        s = new element("span", "text-xs px-2 bg-gray-500 border border-gray-500 text-white flex-none py-2", [], p.getNode()); s.create()
+        p = new element("p", "flex w-100 pb-1 gap-1 text-gray-400", [], d1.getNode()); p.create()
+        s = new element("span", "text-xs px-2 bg-gray-500 border border-gray-900 text-white flex-none py-2", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Name")
         s.appendHTML(": ")
-        t = new element("input", "text-xs grow bg-gray-600 text-white", [{"key":"type","value":"text"},{"key":"placeholder","value":"Type in your colony name"},{"key":"value","value":"Colonia12540"}], p.getNode(), "colonyName"); t.create()
+        d = new element("div", "flex grow relative bg-gray-700 text-gray-300 border-2 border-zinc-800", [], p.getNode()); d.create()
+        t = new element("input", "px-2 ps-7 text-xs uppercase placeholder:normal-case placeholder:text-gray-300 w-100 bg-gray-600 border border-gray-400 focus:text-white focus:bg-zinc-500", [{"key":"type","value":"text"},{"key":"placeholder","value":"Type in your colony name"},{"key":"value","value":"Colonia12540"}], d.getNode(), "colonyName"); t.create()
+        i = new element("i", "text-xs fa fa-pen absolute left-2 top-1/2 transform -translate-y-1/2", [], d.getNode()); i.create();
         b = new element("button", "text-xs flex-none px-2 button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"},{"key":"data-i18n","value":""}], p.getNode(), "newColonyNameSubmit")
         b.create(); b.appendContent("Save")
     }
@@ -626,7 +661,7 @@ const accordion_colony = () => {
                 s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
                 s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, resource, "", "capitalized"))
                 s1.appendHTML(": ")
-                formatedResource = resource.replaceAll(" ", "")
+                formatedResource = translate("EN", resource, "", "", false).replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
                 let stockValue = stock_displayed.resources[language][resource].toString()
                 s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedResource+"-stock"); s2.create(); s2.appendContent(stockValue)
@@ -662,7 +697,7 @@ const accordion_colony = () => {
                 s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
                 s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, product, "", "capitalized"))
                 s1.appendHTML(": ")
-                formatedProduct = product.replaceAll(" ", "")
+                formatedProduct = translate("EN", product, "", "", false).replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
                 let stockValue = stock_displayed.products[language][product].toString()
                 s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedProduct+"-stock"); s2.create(); s2.appendContent(stockValue)
@@ -699,7 +734,7 @@ const accordion_colony = () => {
                 s1 = new element("span", "ps-2 "+pt+" pb-0 flex-none bg-gray-500 border border-gray-500 text-white", [], s.getNode()); s1.create()
                 s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, part, "", "capitalized"))
                 s1.appendHTML(": ")
-                formatedPart = part.replaceAll(" ", "")
+                formatedPart = translate("EN", part, "", "", false).replaceAll(" ", "")
                 s1 = new element("span", pt+" pb-0 grow flex-none text-white bg-gray-500 border border-gray-500 px-1", [], s.getNode()); s1.create()
                 let stockValue = stock_displayed["building parts"][language][part].toString()
                 s2 = new element("span", "font-bold me-1", [], s1.getNode(), "colony-"+formatedPart+"-stock"); s2.create(); s2.appendContent(stockValue)
@@ -764,7 +799,7 @@ const add_building = (non_zero_index, type, parentElement) => {
     //Build building accordion container
     d0 = new element("div", "w-100", [], parentElement, `building-group-${building_group}-building-${building_type}-${non_zero_index}`); d0.create()
     //Build building accordion header
-    let is_new_building = buildings[building_group][building_type]["building_list"][non_zero_index-1].new
+    let is_new_building = buildings[building_group][building_type]["building_list"][non_zero_index-1].new*1
     let notification_unread = is_new_building ? "notificationUnread" : ""
     h2 = new element("h2", `${notification_unread} w-100`, [], d0.getNode(), `building-group-${building_group}-building-${building_type}-${non_zero_index}-header`); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#building-group-${building_group}-building-${building_type}-${non_zero_index}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`building-group-${building_group}-building-${building_type}-${non_zero_index}-body`}], h2.getNode())
@@ -1218,7 +1253,9 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             add_child_to_citizen(citizens[new_citizen.id], citizens[new_citizen.mother])
         }
         enable_accordion_click(document.querySelector(`#accordion-citizen-${new_citizen.id}-header button`))
-        update_colony("populationUpdate")
+        if(!progress_already_saved){
+            update_colony("populationUpdate")
+        }
     }
     return new_citizen
 }
@@ -1235,51 +1272,53 @@ const accordion_citizens = (amount = 10) => {
     d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-citizens"}], parentElem, "accordion-menu-citizens-body"); d1.create()
     d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
     d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-citizens"); d.create()
-    for(let i = 1; i<=amount; i++){
-        let new_citizen = {}
-        new_citizen.id = i
-        //Set relationship attributes null.
-        new_citizen.father = null
-        new_citizen.mother = null
-        new_citizen.children = []
-        new_citizen.couple = null
-        //Set role as unassigned
-        new_citizen.role = new_citizen.rolekey = "unassigned"
-        //Set aging attributes
-        //Set total weeks already lived by citizen (weeks age)
-        let citizenBirthweeks = 1092+ Math.floor(Math.random() * (1820-1092)) //Random ages only adults
-        //citizenBirthweeks = 0+ Math.floor(Math.random() * (3800-0)) //Random ages in all ranges
-        //citizenBirthweeks = 729 + Math.floor(Math.random() * (3300-729)) //Random ages from teens on (not so ancient)
-        new_citizen.birthWeeks = citizenBirthweeks //Weeks already lived.
-        //Set current game week in which citizen was born.
-        new_citizen.birthWeek = document.getElementById("passedWeeks").innerHTML*1 - citizenBirthweeks
-        //Set citizen age in years.
-        new_citizen.ageYears = Math.floor(citizenBirthweeks / 52)
-        //Set how many weeks has passed having the same age.
-        new_citizen.ageWeeks = citizenBirthweeks % 52
-        //Set week of citizen's future death
-        new_citizen.deathWeek = 3120 + Math.floor(Math.random() * (4420-3120))
-        //Set status to idle.
-        new_citizen.status = "idle"
-        //Set first half citizens as female and the rest as male.
-        new_citizen.gender = i <= Math.ceil(amount / 2) ? "Femenine" : "Masculine"
-        new_citizen.name = set_random_name(language, new_citizen.gender)
-        new_citizen.xp = 0
-        //Set own attributes, wished attributes and hated attributes (this last must not be a wished attribute)
-        new_citizen.attributes = getRandomAttributes(language)
-        new_citizen.wishedAttributes = getRandomAttributes(language)
-        new_citizen.hatedAttribute = getRandomAttributes(language, 1, new_citizen.wishedAttributes)[0]
-        //Left and right hand empty, no outfit.
-        new_citizen.leftHand = new_citizen.rightHand = ""
-        new_citizen.outfit = "No"
-        //Set fertility issues.
-        new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
-        new_citizen.fertilityWeek = new_citizen.gender === "Femenine" ? 1 + Math.floor(Math.random() * 4) : null
-
-        //Only display living citizens.
-        if(new_citizen.status != "deceased"){
-            build_citizen(translation = false, new_citizen.id, new_citizen)
-        }       
+    if(!progress_already_saved){
+        for(let i = 1; i<=amount; i++){
+            let new_citizen = {}
+            new_citizen.id = i
+            //Set relationship attributes null.
+            new_citizen.father = null
+            new_citizen.mother = null
+            new_citizen.children = []
+            new_citizen.couple = null
+            //Set role as unassigned
+            new_citizen.role = new_citizen.rolekey = "unassigned"
+            //Set aging attributes
+            //Set total weeks already lived by citizen (weeks age)
+            let citizenBirthweeks = 1092+ Math.floor(Math.random() * (1820-1092)) //Random ages only adults
+            //citizenBirthweeks = 0+ Math.floor(Math.random() * (3800-0)) //Random ages in all ranges
+            //citizenBirthweeks = 729 + Math.floor(Math.random() * (3300-729)) //Random ages from teens on (not so ancient)
+            new_citizen.birthWeeks = citizenBirthweeks //Weeks already lived.
+            //Set current game week in which citizen was born.
+            new_citizen.birthWeek = document.getElementById("passedWeeks").innerHTML*1 - citizenBirthweeks
+            //Set citizen age in years.
+            new_citizen.ageYears = Math.floor(citizenBirthweeks / 52)
+            //Set how many weeks has passed having the same age.
+            new_citizen.ageWeeks = citizenBirthweeks % 52
+            //Set week of citizen's future death
+            new_citizen.deathWeek = 3120 + Math.floor(Math.random() * (4420-3120))
+            //Set status to idle.
+            new_citizen.status = "idle"
+            //Set first half citizens as female and the rest as male.
+            new_citizen.gender = i <= Math.ceil(amount / 2) ? "Femenine" : "Masculine"
+            new_citizen.name = set_random_name(language, new_citizen.gender)
+            new_citizen.xp = 0
+            //Set own attributes, wished attributes and hated attributes (this last must not be a wished attribute)
+            new_citizen.attributes = getRandomAttributes(language)
+            new_citizen.wishedAttributes = getRandomAttributes(language)
+            new_citizen.hatedAttribute = getRandomAttributes(language, 1, new_citizen.wishedAttributes)[0]
+            //Left and right hand empty, no outfit.
+            new_citizen.leftHand = new_citizen.rightHand = ""
+            new_citizen.outfit = "No"
+            //Set fertility issues.
+            new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
+            new_citizen.fertilityWeek = new_citizen.gender === "Femenine" ? 1 + Math.floor(Math.random() * 4) : null
+    
+            //Only display living citizens.
+            if(new_citizen.status != "deceased"){
+                build_citizen(translation = false, new_citizen.id, new_citizen)
+            }       
+        }
     }
 }
 const accordion_relationships = () => {
@@ -1469,13 +1508,86 @@ const show_active_production_rules = (location, parent_div) => {
             }
         })
     }
+    const build_production_rule_header = (parent_div, rule) => {
+        //Current rule accordion header
+        dh = new element("div", "w-100", [], parent_div); dh.create()
+        h2 = new element("h2", "notificationUnread w-100", [], dh.getNode(), `accordion-active-rule-${rule.id}-header`); h2.create()
+        rules_found++
+        b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
+        b.create()
+        s = new element("span", "", [], b.getNode()); s.create()
+        s1 = new element("span", "font-bold text-xs", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendContent(translate(language, "Rule")); s1.appendHTML(` ${rule.id} -`)
+        s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendContent(`${translate(language, "Product")}:`)
+        s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
+        s1.appendHTML(`${translate(language, rule.object, "", "uppercase")}`)
+        b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
+        enable_accordion_click(b.getNode())
+    }
+    const build_status_and_date = (parent_div, rule) => {
+        //Rule status and start date
+        d = new element("div", "w-100 border border-gray-800 bg-gray-600 text-xs", [], parent_div, `rule-${rule_id}-production-status`); d.create()
+        let bg_class = rule.status === "ended" ? "bg-red-900" : "bg-gray-700"
+        p = new element("p", `items-center text-xs flex justify-between flex-wrap w-100 p-1 px-2 text-gray-200 ${bg_class}`, [], d.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Status"))
+        s1.appendHTML(":")
+        s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-status`); s1.create(); s1.appendContent(translate(language, rule.status, "", "capitalized"))
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Started in", "f"))
+        s1.appendHTML(":")
+        s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-weekText`); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
+        s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-week`); s1.create(); s1.appendContent(rule.created.week.toString())
+        s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-dayText`); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
+        s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.created.day.toString())
+        s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.created.hour.toString())
+    }
+    const build_execution_mode = (parent_div, rule) => {
+        d = new element("div", "w-100 border border-gray-800 bg-gray-600 text-xs", [{"key":"data-limit", "value":"1"}], parent_div, `rule-${rule_id}-production-mode`)
+        d.create();
+        p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 px-2 text-gray-200 bg-gray-700", [], d.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production mode"))
+        s.appendHTML(":")
+        let execution_mode = rule.production_limit == Infinity ? translate(language, "Cyclic") : translate(language, "Limited to") + " " + rule.production_limit + " " + translate(language, "cycle" + (rule.production_limit*1 > 1 ? "s" : ""))
+        s = new element("span", "ms-1 font-bold", [], p.getNode(), `active-rule-${rule.id}-production-mode`); s.create(); s.appendContent(execution_mode)
+    }
+    const build_production_time = (parent_div, rule) => {
+        d = new element("div", "w-100", [], parent_div, `rule-${rule_id}-production-time`); d.create()
+        p = new element("p", "items-center text-xs flex gap-1 w-100", [], d.getNode()); p.create()
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "flex-none border border-gray-800 p-1 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n", "value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Production time")); s2.create()
+        s2.appendHTML(":")
+        let duration = minimal_date_expression(rule.duration) 
+        s1 = new element("span", "flex gap-1 border border-gray-800 p-1 px-1 bg-gray-400", [{"key":"data-hours", "value":""}], p.getNode()); s1.create()
+        s2 = new element("span", "font-bold flex-none text-gray-900", [{"key":"data-hours", "value":""}], s1.getNode(), `rule-${rule_id}-production-duration`); s2.create(); s2.appendContent(duration)
+        s1 = new element("span", "flex-none border border-gray-800 p-1 px-1 bg-gray-700 border border-gray-500 text-white", [], p.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n", "value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, "Progress")); s2.create()
+        s2.appendHTML(":")
+        let progress = Math.round((1 - (rule.duration_remaining / rule.duration)) * 10000) / 100
+        div1 = new element("div", "grow h-100 border border-gray-800 bg-gray-700", [], p.getNode()); div1.create()
+        div2 = new element("div", "bg-blue-800 font-bold p-1 px-2 border-e border-gray-800 text-white h-100", [], div1.getNode(), `rule-${rule_id}-production-progress`); div2.create()
+        div2.appendContent(progress.toString()); div2.appendHTML("%"); div2.getNode().style = `width: ${progress}%`
+    }
+    const build_rule_scheme = (parent_div, rule) => {
+        d = new element("div", "w-100", [], parent_div); d.create()
+        d1 = new element("div", "w-100 border border-gray-800 bg-gray-700 text-xs", [{"key":"data-group", "value":"rule-display-custom-accordion"}, {"key":"data-body", "value":`rule-${rule.id}-scheme-body`}], d.getNode(), `rule-${rule.id}-scheme-title`); d1.create()
+        p = new element("p", "clickable flex justify-between items-center text-xs p-1 px-2 text-gray-200", [], d1.getNode()); p.create()
+        s = new element("span", "grow", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Rule scheme"))
+        i = new element("i", "collapsable mt-0 text-sm fa font-bold fa-chevron-down", [], p.getNode()); i.create()
+        d1 = new element("div", "hidden w-100 border border-gray-700 bg-gray-400 text-xs", [{"key":"data-rule-index", "value":rule.id}], d.getNode(), `rule-${rule.id}-scheme-body`); d1.create()
+        custom_accordion(`rule-${rule.id}-scheme-title`, expand_rule_scheme)
+    }
     const build_actions_available = (parent_div, rule) => {
-        d = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-700 text-xs", [{"key":"data-group", "value":"rule-display-custom-accordion"}, {"key":"data-body", "value":`rule-${rule.id}-actions-available-body`}], parent_div, `rule-${rule.id}-actions-available-title`); d.create()
-        p = new element("p", "clickable flex justify-between items-center text-xs p-1 ps-2 text-gray-200", [], d.getNode()); p.create()
+        d = new element("div", "w-100", [], parent_div); d.create()
+        d1 = new element("div", "w-100 border border-gray-800 bg-gray-700 text-xs", [{"key":"data-group", "value":"rule-display-custom-accordion"}, {"key":"data-body", "value":`rule-${rule.id}-actions-available-body`}], d.getNode(), `rule-${rule.id}-actions-available-title`); d1.create()
+        p = new element("p", "clickable flex justify-between items-center text-xs p-1 px-2 text-gray-200", [], d1.getNode()); p.create()
         s = new element("span", "grow", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Actions available"))
-        i = new element("i", "collapsable mt-0 me-2 text-sm fa font-bold fa-chevron-down", [], p.getNode()); i.create()        
-        d = new element("div", "hidden border border-gray-800 bg-gray-400 text-xs", [], parent_div, `rule-${rule.id}-actions-available-body`); d.create()
+        i = new element("i", "collapsable mt-0 text-sm fa font-bold fa-chevron-down", [], p.getNode()); i.create()        
+        d1 = new element("div", "hidden border border-gray-800 bg-gray-400 text-xs", [], d.getNode(), `rule-${rule.id}-actions-available-body`); d1.create()
         custom_accordion(`rule-${rule.id}-actions-available-title`, expand_actions_available)
     }
     //let parent_div = document.querySelector(".active-production-rules")
@@ -1517,63 +1629,14 @@ const show_active_production_rules = (location, parent_div) => {
             }
         })
         if(visible_rule){
-            //Current rule accordion header
-            dh = new element("div", "w-100", [], dr.getNode()); dh.create()
-            h2 = new element("h2", "notificationUnread w-100", [], dh.getNode(), `accordion-active-rule-${rule.id}-header`); h2.create()
-            rules_found++
-            b = new element("button", "unattached-click flex items-center justify-between w-full py-1 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-800 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-active-rule-${rule.id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-active-rule-${rule.id}-body`}], h2.getNode())
-            b.create()
-            s = new element("span", "", [], b.getNode()); s.create()
-            s1 = new element("span", "font-bold text-xs", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
-            s1.appendContent(translate(language, "Rule")); s1.appendHTML(` ${rule.id} -`)
-            s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
-            s1.appendContent(`${translate(language, "Product")}:`)
-            s1 = new element("span", "ms-1 text-blue-400", [{"key":"data-i18n","value":""}], s.getNode()); s1.create()
-            s1.appendHTML(`${translate(language, rule.object, "", "uppercase")}`)
-            b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-            enable_accordion_click(b.getNode())          
+            build_production_rule_header(dr.getNode(), rule)          
             //Current rule accordion body
-            d1 = new element("div", "hidden p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], dh.getNode(), `accordion-active-rule-${rule.id}-body`); d1.create()
-            //Rule status and start date
-            d2 = new element("div", "border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
-            let bg_class = rule.status === "ended" ? "bg-red-900" : "bg-gray-700"
-            p = new element("p", `items-center text-xs flex justify-between flex-wrap w-100 p-1 ps-2 text-gray-200 ${bg_class}`, [], d2.getNode()); p.create()
-            s = new element("span", "", [], p.getNode()); s.create()
-            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Status"))
-            s1.appendHTML(":")
-            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-status`); s1.create(); s1.appendContent(translate(language, rule.status, "", "capitalized"))
-            s = new element("span", "", [], p.getNode()); s.create()
-            s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Started in", "f"))
-            s1.appendHTML(":")
-            s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-weekText`); s1.create(); s1.appendContent(translate(language, "Week", "", "capitalized"))
-            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-week`); s1.create(); s1.appendContent(rule.created.week.toString())
-            s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-dayText`); s1.create(); s1.appendContent(translate(language, "Day", "", "capitalized"))
-            s1 = new element("span", "ms-1 font-bold", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.created.day.toString())
-            s1 = new element("span", "ms-1", [], s.getNode(), `active-rule-${rule.id}-day`); s1.create(); s1.appendContent(rule.created.hour.toString())
-            //Rule execution mode
-            d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [{"key":"data-limit", "value":"1"}], d1.getNode(), `rule-${rule_id}-production-mode`)
-            d2.create();
-            p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-2 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production mode"))
-            s.appendHTML(":")
-            let execution_mode = rule.production_limit == Infinity ? translate(language, "Cyclic") : translate(language, "Limited to") + " " + rule.production_limit + " " + translate(language, "cycle" + (rule.production_limit*1 > 1 ? "s" : ""))
-            s = new element("span", "ms-1 font-bold", [], p.getNode(), `active-rule-${rule.id}-production-mode`); s.create(); s.appendContent(execution_mode)
-            //Rule production time
-            d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-600 text-xs", [], d1.getNode()); d2.create()
-            p = new element("p", "items-center text-xs flex justify-start flex-wrap w-100 p-1 ps-2 text-gray-200 bg-gray-700", [], d2.getNode()); p.create()
-            s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Production time")); s.create()
-            s.appendHTML(":")
-            let duration = minimal_date_expression(rule.duration) 
-            s1 = new element("span", "ms-1 font-bold", [{"key":"data-hours", "value":""}], p.getNode()); s1.create(); s1.appendContent(duration)
-            //Rule scheme
-            d2 = new element("div", "mt-1 border-t border-b border-gray-800 bg-gray-700 text-xs", [{"key":"data-group", "value":"rule-display-custom-accordion"}, {"key":"data-body", "value":`rule-${rule.id}-scheme-body`}], d1.getNode(), `rule-${rule.id}-scheme-title`); d2.create()
-            p = new element("p", "clickable flex justify-between items-center text-xs p-1 ps-2 text-gray-200", [], d2.getNode()); p.create()
-            s = new element("span", "grow", [], p.getNode()); s.create()
-            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Rule scheme"))
-            i = new element("i", "collapsable mt-0 me-2 text-sm fa font-bold fa-chevron-down", [], p.getNode()); i.create()
-            d2 = new element("div", "hidden border-b border-s border-e border-gray-700 bg-gray-400 text-xs", [{"key":"data-rule-index", "value":rule.id}], d1.getNode(), `rule-${rule.id}-scheme-body`); d2.create()
-            custom_accordion(`rule-${rule.id}-scheme-title`, expand_rule_scheme)
-            build_actions_available(d1.getNode(), rule)
+            div = new element("div", "hidden flex flex-wrap gap-1 w-100 p-1 border-b border-s border-e border-gray-800 bg-gray-500 text-xs", [{"key":"aria-labelledby","value":`accordion-active-rule-${rule.id}-header`}], dh.getNode(), `accordion-active-rule-${rule.id}-body`); div.create()
+            build_status_and_date(div.getNode(), rule)
+            build_execution_mode(div.getNode(), rule)
+            build_production_time(div.getNode(), rule)
+            build_rule_scheme(div.getNode(), rule)
+            build_actions_available(div.getNode(), rule)
         }
     })
     if(!rules_found){
@@ -2165,11 +2228,7 @@ const new_rule_display_info = (rule, rule_index, clicked_object, current_mount =
         i = new element("i", "fa fa-plus me-2", [], b1.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b1.getNode()); s.create(); s.appendContent(translate(language, "Confirm rule"))
         //Add confirm rule click event
-        /*if(clicked_object.category === "buildings"){
-            b1.getNode().addEventListener("click", click_save_building_rule)
-        } else {*/
-            b1.getNode().addEventListener("click", click_save_rule)
-        //}
+        b1.getNode().addEventListener("click", click_save_rule)
         //Action: Cancel rule
         b2 = new element("button", "text-xs text-white grow p-2 ms-2 button border border-gray-400 bg-red-900", [{"key":"type", "value":"button"}], d3.getNode(), `${id_added_text}rule-index-${rule_index}-cancel`); b2.create()
         i = new element("i", "fa fa-times me-2", [], b2.getNode()); i.create()
@@ -2186,13 +2245,8 @@ const new_rule_display_info = (rule, rule_index, clicked_object, current_mount =
                     citizens[citizen_index].status = "idle"
                 })
             })
-            let object_data = {"language": language, "objectName": "active-production-rules", "objectId": false, "optionName": "actions", 
-                                "panelId": "productions-newRule", "panelTitleId": "productions-newRule-title", "parentId": "accordion-landform-1-body", "location": "waterReservoir",
-                                "previous":{"panelId": "productions-actions", "panelTitleId": "productions-actions-title"}
-                            }            
-            let new_production_rule_panel = new panel("newRule", object_data)
-            new_production_rule_panel.removePanel()
-            new_production_rule_panel.showPreviousOptions()
+            //Call panel title cancel button from here.
+            e.target.closest(".newRule").parentElement.querySelector("i.cancel-panel").click()
         })
     }
     display_duration()
@@ -2257,9 +2311,44 @@ const accordion_landforms = () => {
     add_landform("waterReservoir")
 }
 const accordion_expeditions = () => {
-    let d
-    let build_actions_available = () => {
+    let build_finished_expeditions = () => {
+        //Build finished expeditions title
+        d = new element("div", "w-100", [], d2.getNode()); d.create()
+        d1 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d.getNode(), "successful-expeditions-title")
+        d1.create();
+        p = new element("p", "text-xs flex justify-between p-1 px-2 text-gray-200", [], d1.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Succesfully expeditions")
+        //Build finished expeditions area
+        d1 = new element("div", "activeExpeditions p-1 px-2 border border-gray-800 bg-gray-600 text-xs", [], d.getNode(), "successful-expeditions-area")
+        d1.create();
+        p = new element("p", "empty text-xs flex justify-between text-gray-200", [], d1.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Resources expeditions");
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ");
+        s1 = new element("span", "font-bold", [], s.getNode(), "resourcesSuccessfullExpeditions"); s1.create(); s1.appendContent("0")
+        s = new element("span", "", [], p.getNode()); s.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Ruins expeditions");
+        s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ");
+        s1 = new element("span", "font-bold", [], s.getNode(), "ruinsSuccessfullExpeditions"); s1.create(); s1.appendContent("0")
+    }
+    let build_active_expeditions = () => {
+        //Build Active expeditions title
+        d = new element("div", "w-100", [], d2.getNode()); d.create()
+        d1 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d.getNode(), "active-expeditions-title")
+        d1.create();
+        p = new element("p", "text-xs flex justify-between p-1 ps-2 text-gray-200", [], d1.getNode()); p.create()
+        s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Active expeditions")
+        //Build Active expeditions area
+        d1 = new element("div", "activeExpeditions flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-600 text-xs", [], d.getNode(), "active-expeditions-area")
+        d1.create();
+        p = new element("p", "empty text-xs flex justify-between text-gray-200", [], d1.getNode()); p.create()
+        s = new element("span", "", [], p.getNode()); s.create()
+        i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
+        s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s.getNode()); s1.create(); s1.appendContent("None")
+    }
+    let build_actions_available = (d2) => {
         //Actions available
+        d = new element("div", "w-100", [], d2.getNode(), "expeditions-actions"); d.create()
         d1 = new element("div", "border border-gray-800 bg-gray-500 text-xs", [], d.getNode(), "expeditions-actions-title"); d1.create()
         p = new element("p", "flex justify-between p-1 ps-2 text-xs text-gray-200 bg-gray-800", [], d1.getNode()); p.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent("Actions available")
@@ -2271,7 +2360,9 @@ const accordion_expeditions = () => {
         i = new element("i", "fa fa-plus me-2", [], b.getNode()); i.create()
         s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent("New expedition")
         b.getNode().addEventListener("click", function(e){
-            let objectData = {"language": language, "objectName": "expeditions", "objectId": false, "optionName": "actions", "parentId": "expeditions"}
+            let objectData = {"language": language, "objectName": "expeditions", "objectId": false, "optionName": "actions", "parentId": "new-expedition"}
+            d3 = new element("div", "w-100 hidden", [], d2.getNode(), "new-expedition"); d3.create()
+            document.getElementById("new-expedition").classList.remove("hidden")
             //Build panel
             newExpeditionPanel = new panel("newExpedition", objectData)
             newExpeditionPanel.hidePreviousOptions()
@@ -2288,40 +2379,10 @@ const accordion_expeditions = () => {
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build expeditions accordion body
     d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-expeditions"}], parentElem, "accordion-menu-expeditions-body"); d1.create()
-    d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
-    d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "expeditions"); d.create()
-
-    //Build Succesfully expeditions title
-    d1 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d.getNode(), "active-expeditions-title")
-    d1.create();
-    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d1.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Succesfully expeditions")
-    //Build Successfully expeditions area
-    d1 = new element("div", "activeExpeditions p-2 ps-2 mb-2 border border-gray-800 bg-gray-600 text-xs", [], d.getNode(), "successfully-expeditions-area")
-    d1.create();
-    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], d1.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Resources expeditions");
-    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ");
-    s1 = new element("span", "font-bold", [], s.getNode(), "resourcesSuccessfullExpeditions"); s1.create(); s1.appendContent("0")
-    s = new element("span", "", [], p.getNode()); s.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Ruins expeditions");
-    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ");
-    s1 = new element("span", "font-bold", [], s.getNode(), "ruinsSuccessfullExpeditions"); s1.create(); s1.appendContent("0")
-    //Build Active expeditions title
-    d1 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d.getNode(), "active-expeditions-title")
-    d1.create();
-    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d1.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Active expeditions")
-    //Build Active expeditions area
-    d1 = new element("div", "activeExpeditions p-2 ps-2 mb-2 border border-gray-800 bg-gray-600 text-xs", [], d.getNode(), "active-expeditions-area")
-    d1.create();
-    p = new element("p", "empty ms-1 text-xs flex justify-between text-gray-200", [], d1.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""},{"key":"gender","value":"f"}], s.getNode()); s1.create(); s1.appendContent("None")
-    
-    build_actions_available()
+    d2 = new element("div", "w-100 p-1 flex flex-wrap gap-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
+    build_finished_expeditions()
+    build_active_expeditions()
+    build_actions_available(d2)
 }
 const build_actions_available_panel = (parent_elem) => {
     const build_actions_available_subpanel = (body_div) => {
@@ -2493,6 +2554,13 @@ const modal_popup = (modalTitle, modalType, modalData = {}) => {
         s = new element("span", `mt-1 px-2 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributes_colors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
+    let popupSaveProgress = () => {
+        p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
+        p.create(); p.appendContent(translate(language, "Your citizens have already searched all the zone and they discovered many new things."))
+        p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
+        p.create(); p.appendContent(translate(language, "Please, read the notification you received in your News panel to check the report of your citizen's research."))
+        document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
+    }
     format_popup()
     //Build modal pop up structure
     document.getElementById("modalTitle").innerHTML = translate(language, modalTitle)
@@ -2510,9 +2578,9 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
     //Expedition type text
     let expeditionType = expeditionData.type === "of resources" ? "Resources" : "Ruins"
     //Build current expedition accordion header
-    d2 = new element("div", "accordion-active-expedition", [{"key":"data-accordion", "value":"collapse"}], parentElem, "accordion-expedition-"+expeditionData.id); d2.create()
+    d2 = new element("div", "accordion-active-expedition w-100", [{"key":"data-accordion", "value":"collapse"}], parentElem, "accordion-expedition-"+expeditionData.id); d2.create()
     h2 = new element("h2", expeditionType.toLowerCase()+"Expedition", [], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-header"); h2.create()
-    b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 bg-gray-900 font-medium border border-gray-700 text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-expedition-"+expeditionData.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-expedition-"+expeditionData.id+"-body"}], h2.getNode())
+    b = new element("button", "unattached-click flex items-center justify-between w-full p-1 px-2 bg-gray-900 font-medium border border-gray-700 text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-expedition-"+expeditionData.id+"-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-expedition-"+expeditionData.id+"-body"}], h2.getNode())
     b.create()
     enable_accordion_click(b.getNode())
     s = new element("span", "", [], b.getNode()); s.create()
@@ -2522,13 +2590,15 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build current expedition accordion body
     d3 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-expedition-"+expeditionData.id+"-header"}], d2.getNode(), "accordion-expedition-"+expeditionData.id+"-body"); d3.create()
-    d4 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d3.getNode()); d4.create()
-    d5 = new element("div", "", [{"key":"data-accordion","value":"collapse"}], d4.getNode(), "expedition-"+expeditionData.id); d5.create()
+    d4 = new element("div", "border border-gray-700 bg-gray-500", [], d3.getNode()); d4.create()
+    d5 = new element("div", "p-1 flex flex-wrap gap-1", [{"key":"data-accordion","value":"collapse"}], d4.getNode(), "expedition-"+expeditionData.id); d5.create()
     //Departure date...
-    p = new element("p", "mx-1 py-1 empty text-xs text-gray-200", [], d5.getNode()); p.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Departed in"))
-    s1 = new element("span", "", [], p.getNode()); s1.create(); s1.appendContent(": ")
-    s1 = new element("span", "px-1 ms-2 rounded border border-gray-500", [], p.getNode()); s1.create()
+    p = new element("p", "w-100 flex gap-1 text-xs text-gray-200", [], d5.getNode()); p.create()
+    s = new element("span", "flex border border-gray-800 p-0.5 px-1 bg-gray-600 text-white", [], p.getNode()); s.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Departed in"))
+    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ")
+    s = new element("span", "flex grow", [], p.getNode()); s.create()
+    s1 = new element("span", "w-100 border border-gray-800 p-0.5 px-1 bg-gray-400 text-gray-800", [], s.getNode()); s1.create()
     s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(translate(language, "Year"))
     s2 = new element("span", "mx-1 font-bold", [{"key":"data-i18n","value":""}], s1.getNode(), "expedition-"+expeditionData.id+"-departed-year"); s2.create(); s2.appendHTML(expeditionData.departedIn.year)
     s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(translate(language, "Week"))
@@ -2538,31 +2608,33 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
     s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML(expeditionData.departedIn.hour.toString().padStart(2, "0"))
     s2 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendHTML("hs.") 
     //Returns in...
-    p = new element("p", "mx-1 py-1 empty text-xs text-gray-200", [], d5.getNode()); p.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Returns in"))
-    s1 = new element("span", "", [], p.getNode()); s1.create(); s1.appendContent(": ")
-    s2 = new element("span", "countdownTime activeExpedition px-1 ms-2 rounded border border-gray-500", [], p.getNode()); s2.create()
+    p = new element("p", "w-100 flex gap-1 items-center text-xs text-gray-200", [], d5.getNode()); p.create()
+    s = new element("span", "flex border border-gray-800 p-0.5 px-1 bg-gray-600 text-white", [], p.getNode()); s.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate(language, "Returns in"))
+    s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendContent(": ")
+    s2 = new element("span", "grow countdownTime activeExpedition p-1 py-0.5 border border-gray-800 bg-gray-400 text-gray-800", [], p.getNode()); s2.create()
     let hiddenClass = (expeditionData.returnsIn.years ? "" : "hidden ")
-    s1 = new element("span", hiddenClass+"countdown years font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-years"); s1.create(); s1.appendHTML(expeditionData.returnsIn.years)
+    s1 = new element("span", hiddenClass+"countdown years font-bold", [{"key":"data-i18n","value":""}, {"key":"data-expedition","value":expeditionData.id}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-years"); s1.create(); s1.appendHTML(expeditionData.returnsIn.years)
     let yearsText = expeditionData.returnsIn.years != 1 ? translate(language, "Years", "", "lowercase") : translate(language, "Years", "", "lowercase").slice(0, -1)
     s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-yearsText"); s1.create(); s1.appendHTML(yearsText)
     hiddenClass = (expeditionData.returnsIn.weeks ? "" : "hidden ")
-    s1 = new element("span", hiddenClass+"countdown weeks font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeks"); s1.create(); s1.appendHTML(expeditionData.returnsIn.weeks)
+    s1 = new element("span", hiddenClass+"countdown weeks font-bold", [{"key":"data-i18n","value":""}, {"key":"data-expedition","value":expeditionData.id}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeks"); s1.create(); s1.appendHTML(expeditionData.returnsIn.weeks)
     let weeksText = expeditionData.returnsIn.weeks != 1 ? translate(language, "Weeks", "", "lowercase") : translate(language, "Weeks", "", "lowercase").slice(0, -2)+"."
     s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-weeksText"); s1.create(); s1.appendHTML(weeksText)
     hiddenClass = (expeditionData.returnsIn.days ? "" : "hidden ")
-    s1 = new element("span", hiddenClass+"countdown days font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-days"); s1.create(); s1.appendHTML(expeditionData.returnsIn.days)
+    s1 = new element("span", hiddenClass+"countdown days font-bold", [{"key":"data-i18n","value":""}, {"key":"data-expedition","value":expeditionData.id}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-days"); s1.create(); s1.appendHTML(expeditionData.returnsIn.days)
     let daysText = expeditionData.returnsIn.days != 1 ? translate(language, "Days", "", "lowercase") : translate(language, "Days", "", "lowercase").slice(0, -1)
     s1 = new element("span", hiddenClass+"mx-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-daysText"); s1.create(); s1.appendHTML(daysText)
-    s1 = new element("span", "countdown hours font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hours"); s1.create(); s1.appendHTML(expeditionData.returnsIn.hours)
+    s1 = new element("span", "countdown hours font-bold", [{"key":"data-i18n","value":""}, {"key":"data-expedition","value":expeditionData.id}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hours"); s1.create(); s1.appendHTML(expeditionData.returnsIn.hours)
     s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s2.getNode(), "expedition-"+expeditionData.id+"-pending-hoursText"); s1.create(); s1.appendHTML("hs.")    
     //Expeditionaries and objects assigned...
     //Title
-    d3 = new element("div", "mt-2 border border-gray-800 bg-gray-800 text-xs", [], d5.getNode(), "expedition-"+expeditionData.id+"-assigned-workers-title"); d3.create()
-    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d3.getNode()); p.create()
-    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent("Assigned expeditionaries")
+    d2 = new element("div", "w-100 ", [], d5.getNode()); d2.create()
+    d3 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d2.getNode(), "expedition-"+expeditionData.id+"-assigned-workers-title"); d3.create()
+    p = new element("p", "text-xs flex justify-between p-1 ps-2 text-gray-200", [], d3.getNode()); p.create()
+    s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Assigned expeditionaries"))
     //Body
-    d3 = new element("div", "p-1 border border-gray-800 bg-gray-600 text-xs", [], d5.getNode(), "expedition-"+expeditionData.id+"-assigned-workers"); d3.create()
+    d3 = new element("div", "p-1 border border-gray-800 bg-gray-600 text-xs", [], d2.getNode(), "expedition-"+expeditionData.id+"-assigned-workers"); d3.create()
     h2 = new element("h2", "", [], d3.getNode()); h2.create()
     expeditionData.crew.forEach((crewMember) => {
         d4 = new element("div", crewMember.type+" flex items-center justify-between w-full p-1 text-xs bg-gray-900 font-medium border border-gray-700 gap-3 text-gray-400", [], h2.getNode())
@@ -2570,21 +2642,21 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
         s = new element("span", "", [], d4.getNode()); s.create()
         //Build expeditionary or horse crew div
         if(crewMember.type === "expeditionary"){
-            i = new element("i", "me-1 fa fa-"+(crewMember.gender === "F" ? "venus" : "mars")+" text-"+(crewMember.gender === "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-gender-icon"); i.create()
-            i = new element("i", "me-1 fa fa-"+(crewMember.age === "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-age-icon"); i.create()
-            i = new element("i", "me-1 fa fa-map-location-dot text-green-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-role-icon"); i.create()
-            s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-xp-icon"); 
+            i = new element("i", "me-1 fa fa-"+(crewMember.gender === "F" ? "venus" : "mars")+" text-"+(crewMember.gender === "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-gender-icon"); i.create()
+            i = new element("i", "me-1 fa fa-"+(crewMember.age === "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-age-icon"); i.create()
+            i = new element("i", "me-1 fa fa-map-location-dot text-green-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-role-icon"); i.create()
+            s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-xp-icon"); 
             s1.create(); s1.appendContent(Math.floor(crewMember.xp).toString())
-            s1 = new element("span", "ms-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-name"); s1.create(); s1.appendContent(crewMember.name)
+            s1 = new element("span", "ms-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-name"); s1.create(); s1.appendContent(crewMember.name)
             s = new element("span", "", [], d4.getNode()); s.create()
-            i = new element("i", "fa fa-eye me-1", [{"key":"data-index", "value":crewMember.index}], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.index+"-view-icon"); i.create()
+            i = new element("i", "fa fa-eye me-1", [{"key":"data-index", "value":crewMember.id}], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-view-icon"); i.create()
             i.getNode().addEventListener("click", modal_citizen_info)
             //Change citizen status.
-            document.querySelectorAll("#citizen-"+crewMember.index+"-status").forEach((status) => {
+            document.querySelectorAll("#citizen-"+crewMember.id+"-status").forEach((status) => {
                 status.innerText = translate(language, "Travelling")
                 status.setAttribute("data-status", "travelling")
             })
-            citizens[crewMember.index].status = "travelling"
+            citizens[crewMember.id].status = "travelling"
         } else {
             i = new element("i", "me-1 fa fa-horse text-white", [], s.getNode()); i.create()
             s1 = new element("span", "ms-1", [], s.getNode()); s1.create(); s1.appendContent(translate(language, "Horse", "", "capitalized"))
@@ -2753,7 +2825,7 @@ const add_landform = (landform_type = "waterReservoir") => {
         //First column
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Type")
         sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""}], s.getNode(), `landform-${landform_index}-type`); s1.create()
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""},{"key":"data-mount", "value":colony_water_reservoir}], s.getNode(), `landform-${landform_index}-type`); s1.create()
         s1.appendContent(colony_water_reservoir)
         //Next column
         s = new element("span", "", [], p.getNode()); s.create();
@@ -2833,7 +2905,7 @@ const update_stock = () => {
     document.querySelectorAll("#resources-stock-list p").forEach((elem) => elem.remove())
     let count = 0
     Object.keys(stock_displayed.resources[language]).forEach((resource) => {
-        formatedResource = resource.replaceAll(" ", "")
+        formatedResource = translate("EN", resource, "", "", false).replaceAll(" ", "")
         if(resource.toLowerCase() != "food" && resource.toLowerCase() != "alimento" && stock_displayed.resources[language][resource] >= 1){
             let pt = (!count++ ? "pt-2" : "pt-0")
             //Add dom node as last sibling
@@ -2848,7 +2920,7 @@ const update_stock = () => {
             s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent(translate(language, stockValue == 1 ? "unit" : "units"))
             //Update same value in other panels.
             if(resource === "water"){
-                document.getElementById("colony-water-stock").innerText = stockValue
+                document.querySelectorAll("#colony-water-stock").forEach((elem) => elem.innerText = stockValue)
             }
         }
     })
@@ -2866,7 +2938,7 @@ const update_stock = () => {
     document.querySelectorAll("#products-stock-list p").forEach((elem) => elem.remove())
     count = 0
     Object.keys(stock_displayed.products[language]).forEach((product) => {
-        formatedProduct = product.replaceAll(" ", "")
+        formatedProduct = translate("EN", product, "", "", false).replaceAll(" ", "")
         if(stock_displayed.products[language][product] >= 1){
             let pt = (!count++ ? "pt-2" : "pt-0")
             p = new element("p", "productStock pb-0 text-xs text-gray-400", [], parentElement); p.create()
@@ -2895,7 +2967,7 @@ const update_stock = () => {
     document.querySelectorAll("#building-parts-stock-list p").forEach((elem) => elem.remove())
     count = 0
     Object.keys(stock_displayed["building parts"][language]).forEach((building_part) => {
-        formated_building_part = building_part.replaceAll(" ", "")
+        formated_building_part = translate("EN", building_part, "", "", false).replaceAll(" ", "")
         if(stock_displayed["building parts"][language][building_part] >= 1){
             let pt = (!count++ ? "pt-2" : "pt-0")
             p = new element("p", "productStock pb-0 text-xs text-gray-400", [], parentElement); p.create()
@@ -3004,17 +3076,16 @@ const update_colony = (event = "zoneSearched") => {
                     if(["shelter_related", "mounts_related"].includes(current_group)){
                         let building_type_shelter_capacity = 0
                         buildings[current_group][building_type]["building_list"].forEach((building, b_index) => {
-                            building_type_shelter_capacity += building.capacity
+                            building_type_shelter_capacity += building.capacity*1
                             //Add current building accordion with their contents.
                             let building_text = translate(language, buildings[current_group][building_type].name)
-                            //buildings[current_group][building_type].last_id++
                             add_building(b_index+1, building_text.charAt(0).toUpperCase()+building_text.slice(1), d.getNode())
                         })
                         buildings[current_group][building_type].last_id = buildings[current_group][building_type]["building_list"].length
                         let total_building_capacity_span = document.getElementById(`building-group-${current_group}-building-${building_type}-total-capacity`)
                         if(total_building_capacity_span != undefined){
                             total_building_capacity_span.innerHTML = get_shelter_capacity()
-                            total_shelter_capacity += building_type_shelter_capacity
+                            total_shelter_capacity += building_type_shelter_capacity*1
                         }
                     }
                 }
@@ -3196,8 +3267,8 @@ const add_available_worker_to_expedition = (citizenIndex, newExpeditionClass) =>
     if(document.querySelector("."+newExpeditionClass+" .availableWorkers .empty")!=null){
         document.querySelector("."+newExpeditionClass+" .availableWorkers .empty").remove()
     }
-    h2 = new element("h2", "availableWorker", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
-    d = new element("div", "flex items-center justify-between w-full py-2 px-2 text-xs bg-gray-900 font-medium border border-gray-700 gap-3 text-gray-400", [], h2.getNode())
+    h2 = new element("h2", "availableWorker w-100", [], parentElem, "available-citizen-"+citizenIndex); h2.create()
+    d = new element("div", "flex items-center justify-between w-full p-1 px-2 text-xs bg-gray-900 font-medium border border-gray-700 gap-3 text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
     //Gender citizen icon
@@ -3207,8 +3278,8 @@ const add_available_worker_to_expedition = (citizenIndex, newExpeditionClass) =>
     //Role citizen icon
     i = new element("i", document.getElementById("citizen-"+citizenIndex+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
     //XP citizen icon
-    let citizenXP = document.getElementById("citizen-"+citizenIndex+"-xp-icon").innerText
-    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(Math.floor(citizenXP).toString())
+    let citizenXP = document.getElementById("citizen-"+citizenIndex+"-xp-icon").innerText*1
+    s1 = new element("span", `${citizenXP ? "" : "hidden"} rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1`, [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     let citizenName = document.getElementById("citizen-"+citizenIndex+"-name").innerText
     s1 = new element("span", "ms-1", [], s.getNode(), "citizen-"+citizenIndex+"-name"); s1.create(); s1.appendContent(citizenName)
@@ -3226,8 +3297,8 @@ const add_available_horse_to_expedition = () => {
     if(document.querySelector(".newExpedition .availableObjects .empty")!=null){
         document.querySelector(".newExpedition .availableObjects .empty").remove()
     }
-    h2 = new element("h2", "availableHorse", [], parentElem); h2.create()
-    d = new element("div", "flex items-center justify-content w-full py-2 px-2 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-700 gap-3 text-gray-400", [], h2.getNode())
+    h2 = new element("h2", "availableHorse w-100", [], parentElem); h2.create()
+    d = new element("div", "flex items-center justify-content w-full p-1 px-2 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-700 gap-3 text-gray-400", [], h2.getNode())
     d.create()
     s = new element("span", "grow", [], d.getNode()); s.create()
     //Add horse
@@ -3437,7 +3508,7 @@ const add_assigned_horse_to_expedition = (horseElement) => {
 const add_assigned_worker_to_expedition = (citizenIndex, newExpeditionClass) => {
     let parentAssigned = document.querySelector("."+newExpeditionClass+" .assignedWorkers")
     let parentAvailable = document.querySelector("."+newExpeditionClass+" .availableWorkers")
-    //Remove "no assigned workers" text, if exists
+    //Remove "no assigned workers" paragraph text, if exists
     if(document.querySelector("."+newExpeditionClass+" .assignedWorkers .empty")!=null){
         document.querySelector("."+newExpeditionClass+" .assignedWorkers .empty").remove()
     }

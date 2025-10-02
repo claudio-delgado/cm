@@ -6,61 +6,13 @@
     
     <title>Medieval colonies - alpha 1.0 - Home</title>
 
-    <!--link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" /-->
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <link href="v6.7.2/css/all.css" rel="stylesheet" />
     <link href="v6.7.2/css/sharp-solid.css" rel="stylesheet" />
     <link href="v6.7.2/css/sharp-regular.css" rel="stylesheet" />
-    <script src="js/init.js"></script>
     <script src="js/i18n.js"></script>
-    <script src="js/functions.js"></script>
-    <script src="js/useful.arrays.js"></script>
-    <script src="js/panel.js"></script>
-    <script src="js/export_template.js"></script>
-    <script type="module">
-        //Module to export the game progress to a json file.
-        import { JSONFile } from './js/modules/json.js'
-        import { Progress } from './js/modules/progress.js'
-        import { Modal } from './js/modules/modal.js'
-        
-        document.getElementById('saveProgress').addEventListener('click', (e) => {
-            let data = {"paragraphs":[
-                "You are about to change all life progress in your colony!", 
-                "This means that after saving current progress, all previous progress will be replaced by the new one.", 
-                "If you are decided to update your progress choose 'Ok', otherwise choose 'Cancel'."
-            ]}
-            let p_modal = new Modal("modalProgress")
-            p_modal.build()
-            p_modal.progress_modal("Warning!", data)
-            p_modal.show()
-            document.getElementById("modalFooterButton1").classList.remove("hidden")
-            document.getElementById("modalFooterButton1").addEventListener("click", (e) => {
-                if(document.activeElement) document.activeElement.blur()
-                let game_progress = new Progress()
-                game_progress.save_localstorage()
-                p_modal.hide()
-                let data = {"paragraphs":["Progress updated successfully. Let's go to home page and check the changes."]}
-                p_modal.progress_modal("Warning!", data)
-                document.getElementById("modalFooterButton1").classList.add("hidden")
-                document.getElementById("modalFooterButton2").innerHTML = translate(language, "Ok")
-                document.getElementById("modalFooterButton2").onclick = () => { window.location.href = "home.html" }
-                p_modal.show()
-            })
-            document.getElementById("modalFooterButton2").classList.remove("hidden")
-            document.getElementById("modalFooterButton2").innerHTML = translate(language, "Cancel")
-            document.getElementById("modalFooterButton2").addEventListener("click", (e) => {
-                if(document.activeElement) document.activeElement.blur() 
-                p_modal.hide()
-            })
-
-        })
-        document.getElementById('exportProgress').addEventListener('click', (e) => {
-            e.target.closest('div').classList.add('hidden')
-            let exported_json = new JSONFile()
-            exported_json.export()
-            return false
-        });
-    </script>
-    <!--script src="https://kit.fontawesome.com/2743a5dc06.js" crossorigin="anonymous"></script-->
+    <script src="js/init.js"></script>
+    <script src="js/dom.manipulation.js"></script>
     <link href="home.css" rel="stylesheet" />
     <style>
     </style>
@@ -82,7 +34,7 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
                     </svg>
                 </button>
-                <div class="w-full md:block md:w-auto" id="navbar-default">
+                <div class="hidden w-full md:block md:w-auto" id="navbar-default">
                     <ul class="font-medium flex flex-col p-1 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                         <li>
                             <button id="dropdownLanguage" data-dropdown-toggle="dropdownNavbarLanguage" class="flex items-center justify-between w-full py-1 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"><span data-i18n="navbar.menu.language">Language</span>
@@ -103,25 +55,7 @@
                             </div>
                         </li>
                         <li>
-                            <button id="dropdownProgress" data-dropdown-toggle="dropdownNavbarProgress" class="flex items-center justify-between w-full py-1 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
-                                <span data-i18n="navbar.menu.progress">Game progress</span>
-                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                                </svg>
-                            </button>
-                            <div id="dropdownNavbarProgress" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
-                                    <li>
-                                        <a id="saveProgress" onclick="this.closest('div').classList.add('hidden')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-i18n>Save</a>
-                                    </li>
-                                    <li>
-                                        <a href="upload.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-i18n>Import</a>
-                                    </li>
-                                    <li>
-                                        <a id="exportProgress" onclick="" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-i18n>Export</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <a href="./home.html" class="block py-2 px-3 text-white rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white" aria-current="page">Home</a>
                         </li>
                         <li>
                             <a href="#" class="block py-2 px-3 text-white rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page" data-i18n>Quit game</a>
@@ -130,14 +64,27 @@
                 </div>
             </div>
             <div class="max-w-screen-xl text-xs dark:text-white dark:bg-gray-800 border-gray-100 flex flex-wrap justify-between mx-auto p-2">
-                <div><span data-i18n>Weeks lived</span> : <span class="font-bold" id="passedWeeks">0</span></div>
-                <div class="justify-end px-1 rounded border border-gray-500"><span id='yearDef'><span data-i18n>Year</span> <span class="font-bold" id="currentYear">1</span></span> <span id='weekDef'><span class="capital" data-i18n>Week</span> <span class="font-bold" id="currentWeek">1</span></span> <span id='dayDef'><span class="capital" data-i18n>Day</span> <span class="font-bold" id="currentDay">1</span></span> <span id="currentHour">00</span></div>
+                <div><span class="text-base" data-i18n>Update game progress</span>
             </div>
         </nav>
     </header>
-    <div id="accordion-menu" class="mx-2 mb-2 z-0" data-accordion="collapse"></div>  
-    <!-- Main modal>
-     <div id="modalPopup" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="content" class="mx-2 my-2 z-0">
+        <div class="bg-gray-900 border border-gray-700 p-1">
+            <label class="block mb-2 ms-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input" data-i18n>Upload file</label>
+            <input class="block w-full text-sm text-gray-300 border cursor-pointer focus:outline-none bg-gray-600 border-gray-600" id="file_input" type="file">
+            <div class="my-2 py-2 text-xs text-gray-400 bg-gray-800 border border-gray-400" id="uploadInfo">
+                <p class="font-bold text-yellow-400 p-1 px-3" data-i18n id="infoTitle">File format required</p>
+                <p class="text-yellow-400 px-1 my-1 px-3 info">1) <span data-i18n>File must has been generated only by the game and not edited manually</span>.</p>
+                <p class="text-yellow-400 px-1 my-1 px-3 info">2) <span data-i18n>File must respect original format in order to work and be processed succesfully</span>.</p>
+            </div>
+            <button id="processFile" class="hidden text-xs text-white w-100 grow p-2 button border border-gray-400 bg-gray-800" id="processFile">
+                <i id="" class="fa fa-check me-2"></i>
+                <span id="" data-i18n="" class="">Process file</span>
+            </button>
+        </div>
+    </div>  
+    <!-- Main modal -->
+    <div id="modalPopup" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative px-3 mx-0 w-full">
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
@@ -151,20 +98,42 @@
                 </div>
                 <div id="modalBody" class="p-4">
                 </div>
-                <div id="modalFooter" class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <div id="modalFooter" class="flex items-center gap-2 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                     <button id="modalFooterButton1" data-i18n data-modal-hide="modalPopup" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"></button>
-                    <button id="modalFooterButton2" data-i18n data-modal-hide="modalPopup" type="button" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"></button>
+                    <button id="modalFooterButton2" data-i18n data-modal-hide="modalPopup" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"></button>
                 </div>
             </div>
         </div>
-    </div -->
+    </div>
 </body>
-<script src="js/dom.manipulation.js"></script>
-<script src="js/time.process.js"></script>
-<script src="js/home.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+<script type="module">
+    //Module to import the game progress from a json file.
+    import { JSONFile } from './js/modules/json.js';
+    import { Modal } from './js/modules/modal.js';
+    
+
+    
+    const try_to_process_file = (e) => {
+        let p_modal = new Modal()
+        p_modal.progress_modal()
+        modal.show()
+        document.getElementById("modalFooterButton1").classList.remove("hidden")
+        document.getElementById("modalFooterButton1").addEventListener("click", (e) => {
+            if(document.activeElement) document.activeElement.blur()
+            let imported_json = new JSONFile()
+            imported_json.import()
+        })
+        document.getElementById("modalFooterButton2").innerHTML = translate(language, "Cancel")
+        document.getElementById("modalFooterButton2").addEventListener("click", (e) => {
+            if(document.activeElement) document.activeElement.blur() 
+            modal.hide()
+        })
+    }
+    document.getElementById("processFile").addEventListener("click", try_to_process_file)
+</script>
 <script>
+
     // set the modal menu element
     const $targetEl = document.getElementById('modalPopup');
     // instance options object
@@ -189,6 +158,15 @@
             //console.log('modal has been toggled');
         },
     };
-   const modal = new Modal($targetEl, options, instanceOptions);
+    const modal = new Modal($targetEl, options, instanceOptions);
+    translate_all(language)
+    document.getElementById('file_input').addEventListener('change', function(e) {
+        if(e.target.value){
+            document.getElementById("processFile").classList.remove("hidden")
+        } else {
+            document.getElementById("processFile").classList.add("hidden")
+        }
+    })
+    
 </script>
 </html>

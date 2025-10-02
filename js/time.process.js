@@ -1,7 +1,7 @@
 //Main time loop.
 var currentYear = currentWeek = currentDay = currentHour = 0
 const life_interval = setInterval(() => {
-    //Zone searched
+    //Actions to perform after zone was searched
     const zone_searched_actions = () => {
         searchingZone = false
         lifeStarted = true
@@ -29,20 +29,6 @@ const life_interval = setInterval(() => {
             building.new = true
             buildings.shelter_related["campaign_tent"]["building_list"].push(building)
         }
-        /*
-        //Update initial shelter capacity
-        s1 = document.querySelector("#colonyShelterCapacityInfo")
-        s1.classList.remove("text-red-400")
-        s1.classList.add("text-green-400")
-        document.querySelector("#shelterCapacityIcon").remove()
-        document.querySelector("#colonyShelterCapacity").innerHTML = shelter_capacities["campaign tent"] * buildings.shelter_related["campaign tent"]
-        s1.innerHTML+= " ("
-        s2 = new element("span", "me-1", [{"key":"data-i18n","value":""}], s1); s2.create(); s2.appendContent(translate(language, "Occupation"))
-        s2 = new element("span", "font-bold", [], s1, "colonyShelterOccupation"); s2.create(); s2.appendContent("67%")
-        s1.innerHTML+= ")"
-        i = new element("i", "ms-1 fa fa-face-smile", [], s1, "shelterCapacityIcon"); i.create()
-        update_colony()
-        */
         //Update initial buildings
         if(showModalZoneSearched) { 
             modal_popup("Zone researched!", "ZoneSearched") 
@@ -73,22 +59,22 @@ const life_interval = setInterval(() => {
         //Daily flag
         dayPassed = (currentHour === "00")
         //Update days.
-        daysPassed+= (dayPassed ? 1 : 0)
+        game_days_passed+= (dayPassed ? 1 : 0)
         currentDay = Number(document.querySelector("#currentDay").innerText)
-        currentDay = 1 + (daysPassed % 7)
+        currentDay = 1 + (game_days_passed % 7)
         document.querySelector("#currentDay").innerText = currentDay
         //Update weeks.
         currentWeek = Number(document.querySelector("#currentWeek").innerText)
-        currentWeek = 1 + (Math.floor(daysPassed / 7) % 52)
+        currentWeek = 1 + (Math.floor(game_days_passed / 7) % 52)
         //Weekly flag
-        weekPassed = dayPassed && Math.floor(daysPassed / 7) === daysPassed / 7
+        weekPassed = dayPassed && Math.floor(game_days_passed / 7) === game_days_passed / 7
         document.querySelector("#currentWeek").innerText = currentWeek
-        document.querySelector("#passedWeeks").innerText = Math.floor(daysPassed / 7)
+        document.querySelector("#passedWeeks").innerText = Math.floor(game_days_passed / 7)
         //Update years.
         currentYear = Number(document.querySelector("#currentYear").innerText)
-        currentYear = 1 + Math.floor(daysPassed / 364)
+        currentYear+= !(game_days_passed / 364)
         //Yearly flag
-        yearPassed = dayPassed && Math.floor(daysPassed / 364) === daysPassed / 364
+        yearPassed = dayPassed && !(game_days_passed / 364)
         document.querySelector("#currentYear").innerText = currentYear
     }
     const check_critical_events = (frequency = "daily") => {
@@ -218,6 +204,13 @@ const life_interval = setInterval(() => {
             if(rule.status == "running"){
                 //Decrement remaining hours.
                 rule.duration_remaining--
+                let progress = Math.round((1 - (rule.duration_remaining / rule.duration)) * 10000) / 100
+                let progress_int = Math.floor(progress)
+                let progress_span = document.getElementById(`rule-${rule.id}-production-progress`)
+                if(progress_span){
+                    progress_span.innerHTML = progress+"%"
+                    progress_span.style = `width: ${progress_int}%`
+                }
                 //Check if there are no more remaining hours and the result has to be obtained.
                 if(!rule.duration_remaining){
                     //Reset remaining hours with default rule's value.
@@ -483,9 +476,9 @@ const life_interval = setInterval(() => {
         
         //Perform updating tasks inside game panels that involve daily, weekly or yearly changes
         //Efectuar tareas de actualización de partes del juego que involucren avances diarios, semanales o anuales.
-        //console.log("y"+currentYear+"w"+currentWeek+"d"+currentDay+"h"+currentHour+", daysPassed: "+daysPassed+" dayPassed: "+dayPassed+", weekPassed: "+weekPassed)
+        //console.log("y"+currentYear+"w"+currentWeek+"d"+currentDay+"h"+currentHour+", game_days_passed: "+game_days_passed+" dayPassed: "+dayPassed+", weekPassed: "+weekPassed)
         
-        if(zoneSearched){
+        if(zoneSearched && !progress_already_saved){
             zone_searched_actions()
         }
 
@@ -538,12 +531,14 @@ const processCountdowns = () => {
     const remove_countdown = (elem) => {
         //Remove countdown
         if(elem.classList.contains("activeExpedition")){
-            let expeditionType = elem.closest(".accordion-active-expedition").querySelector("h2").classList.contains("resourcesExpedition") 
+            let h2 = elem.closest(".accordion-active-expedition").querySelector("h2")
+            let expedition_id = h2.id.split("-")[2]
+            let expeditionType = h2.classList.contains("resourcesExpedition") 
                                 ? "resources"
-                                : elem.closest(".accordion-active-expedition").querySelector("h2").classList.contains("ruinsExpedition") 
+                                : h2.classList.contains("ruinsExpedition") 
                                     ? "ruins"
                                     : "combat"
-            endActiveExpedition(expeditionType)
+            endActiveExpedition(expedition_id, expeditionType)
         }
     }
     const days_toggle_visibility = (elem) => {
@@ -581,15 +576,25 @@ const processCountdowns = () => {
     }
     const decrement_years = (elem) => {
         //weeks = 0 & days === 0 & hours === 00
+        let countdown_years = elem.querySelector(".countdown.years")
         //If years > 0 => decrement them
-        if(1*elem.querySelector(".countdown.years").innerText){
+        if(1*countdown_years.innerText){
             //Decrement pending years
-            years = 1*elem.querySelector(".countdown.years").innerText - 1
-            elem.querySelector(".countdown.years").innerText = years.toString()
+            years = 1*countdown_years.innerText - 1
+            countdown_years.innerText = years.toString()
             //Hide years if they are 0
             if(!years){
                 elem.querySelector("#"+prefix+"-years").classList.add("hidden")
                 elem.querySelector("#"+prefix+"-yearsText").classList.add("hidden")
+            }
+            //Check if it's an expedition countdown to also update memory structure array.
+            let expedition_id = countdown_years.getAttribute("data-expedition")
+            if(expedition_id){
+                expeditions.forEach((expedition) => {
+                    if(expedition.id == expedition_id) {
+                        expedition.returnsIn.years = countdown_years.innerText
+                    }
+                })
             }
             //Set weeks to max value - 1 => weeks = 51
             elem.querySelector(".countdown.weeks").innerText = "51"
@@ -605,15 +610,25 @@ const processCountdowns = () => {
     }
     const decrement_weeks = (elem) => {
         //days === 0 & hours === 00
+        let countdown_weeks = elem.querySelector(".countdown.weeks")
         //If weeks > 0 => decrement them
-        if(1*elem.querySelector(".countdown.weeks").innerText){
+        if(1*countdown_weeks.innerText){
             //Decrement pending weeks
-            weeks = 1*elem.querySelector(".countdown.weeks").innerText - 1
-            elem.querySelector(".countdown.weeks").innerText = weeks.toString()
+            weeks = 1*countdown_weeks.innerText - 1
+            countdown_weeks.innerText = weeks.toString()
             //Hide weeks if they are 0 and years is hidden
             if(!weeks && elem.querySelector(".countdown.years").classList.contains("hidden")){
                 elem.querySelector("#"+prefix+"-weeks").classList.add("hidden")
                 elem.querySelector("#"+prefix+"-weeksText").classList.add("hidden")
+            }
+            //Check if it's an expedition countdown to also update memory structure array.
+            let expedition_id = countdown_weeks.getAttribute("data-expedition")
+            if(expedition_id){
+                expeditions.forEach((expedition) => {
+                    if(expedition.id == expedition_id) {
+                        expedition.returnsIn.weeks = countdown_weeks.innerText
+                    }
+                })
             }
             //Set days to max value - 1 => days = 6
             elem.querySelector(".countdown.days").innerText = "6"
@@ -627,16 +642,26 @@ const processCountdowns = () => {
     }
     const decrement_days = (elem) => {
         //hours === 00
+        let countdown_days = elem.querySelector(".countdown.days")
         //If days > 0 => decrement them
-        if(1*elem.querySelector(".countdown.days").innerText){
+        if(1*countdown_days.innerText){
             //Decrement pending days
-            days = 1*elem.querySelector(".countdown.days").innerText - 1
-            elem.querySelector(".countdown.days").innerText = days.toString()
+            days = 1*countdown_days.innerText - 1
+            countdown_days.innerText = days.toString()
             //Hide days if they are 0 and both weeks and years are hidden
             if(!days && elem.querySelector(".countdown.weeks").classList.contains("hidden")
                     && elem.querySelector(".countdown.years").classList.contains("hidden")){
                 elem.querySelector("#"+prefix+"-days").classList.add("hidden")
                 elem.querySelector("#"+prefix+"-daysText").classList.add("hidden")
+            }
+            //Check if it's an expedition countdown to also update memory structure array.
+            let expedition_id = countdown_days.getAttribute("data-expedition")
+            if(expedition_id){
+                expeditions.forEach((expedition) => {
+                    if(expedition.id == expedition_id) {
+                        expedition.returnsIn.days = countdown_days.innerText
+                    }
+                })
             }
             //Set hours to max value - 1 => hours = 23
             hours = "23"
@@ -649,8 +674,18 @@ const processCountdowns = () => {
     }
     const decrement_hours = (elem) => {
         //Decrement pending hours
-        hours = 1*elem.querySelector(".countdown.hours").innerText - 1
-        elem.querySelector(".countdown.hours").innerText = hours.toString().padStart(2, "0")
+        let countdown_hours = elem.querySelector(".countdown.hours")
+        hours = 1*countdown_hours.innerText - 1
+        countdown_hours.innerText = hours.toString().padStart(2, "0")
+        //Check if it's an expedition countdown to also update memory structure array.
+        let expedition_id = countdown_hours.getAttribute("data-expedition")
+        if(expedition_id){
+            expeditions.forEach((expedition) => {
+                if(expedition.id == expedition_id) {
+                    expedition.returnsIn.hours = countdown_hours.innerText
+                }
+            })
+        }
         //Arrange unit number: singular or plural
         elem.querySelector("#"+prefix+"-hoursText").innerText = hours === 1 ? "h" : "hs"
     }

@@ -46,7 +46,7 @@ const expedition_required_time = (expeditionType, succesfullExpeditions, horsesA
                 "years": inGameClockYears, 
                 "weeks": inGameClockWeeks, 
                 "days": inGameClockDays, 
-                "hours": inGameClockHours/*, 
+                "hours": inGameClockHours ? inGameClockHours : "1"/*, 
                 "minutes": inGameClockMinutes*/
             }
         },
@@ -95,7 +95,7 @@ const expedition_carriage_capacity = (expeditionaryXP, mountedExpeditionary) => 
     return Math.ceil((expeditionaryXP / 10) + 1/2) + 2 * mountedExpeditionary
 }
 const age_index = (age) => age <= 5 ? 0 : (age <= 14 ? 1 : (age <= 21 ? 2 : (age <= 50 ? 3 : (age <= 65 ? 4 : 5))))
-const age_icons = (age) => person_icons[age_index(age)]["EN"].icon
+const age_icons = (age) => person_icons[age_index(age)].icon
 const age_group = (age) => age_groups[age_index(age)]["EN"].icon
 
 //Colony information functions
@@ -186,7 +186,7 @@ const get_shelter_capacity = () => {
     let shelter_capacity = 0
     Object.keys(buildings.shelter_related).forEach(shelter => {
         buildings.shelter_related[shelter].building_list.forEach(building => {
-           shelter_capacity += building.capacity
+           shelter_capacity += building.capacity*1
         })
     })
     return shelter_capacity
@@ -423,4 +423,35 @@ const format_countdown_date_expression = (date_expression, object = false, index
 }
 const get_score_bonus = (game_event) => {
     return score_bonus[game_event]
+}
+//Order object keys.
+const order_keys = (unordered, order = "ASC") => {
+    // Sorting the object by keys
+    //In ascending way
+    if(order === "ASC"){
+        const ordered = Object.keys(unordered)
+            .sort() // Sort the keys alphabetically
+            .reduce((obj, key) => {
+                obj[key] = unordered[key]; // Rebuild the object with sorted keys
+                return obj;
+            }, {});
+        return (ordered)
+    } else { //In desscending way
+        const ordered = Object.keys(unordered)
+            .sort((a, b) => unordered[b] - unordered[a]).map(function(key) { 
+                return [key, unordered[key]]; 
+            });
+        return (ordered)
+    }
+}
+
+function getLocalStorageUsedSpaceKB() {
+  let totalBytes = 0;
+  for (const key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      // Keys and values both contribute to storage space
+      totalBytes += (key.length + localStorage[key].length) * 2; 
+    }
+  }
+  return (totalBytes / 1024).toFixed(2); // Convert to KB and format
 }

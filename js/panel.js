@@ -10,18 +10,17 @@ const panelClasses = {
 class panel{
     constructor(panel_name, data){
         //data is an object with additional information about the object used on the panel.
+        this.object_id = data.objectId
+        this.object_name = data.objectName
+        this.option_name = data.optionName
         this.panel = {}
         this.panel.name = panel_name
-        this.object_name = data.objectName
-        this.object_id = data.objectId
-        this.option_name = data.optionName
         this.panel.id = data.panelId ? 
                         data.panelId :
                         this.object_name+(this.object_id ? "-"+this.object_id : "")+"-"+this.panel.name 
         this.panel.titleId = data.panelTitleId ? 
-                        data.panelTitleId :
-                        this.panel.id+"-title" 
-        this.data = data
+                             data.panelTitleId :
+                             this.panel.id+"-title" 
         this.panel.previous = {}
         this.panel.previous.id = data.previous && data.previous.panelId ? 
                                     data.previous.panelId : 
@@ -31,6 +30,8 @@ class panel{
                                         data.previous.panelTitleId :
                                         this.panel.previous.id+"-title"
         this.panel.previous.title = document.querySelector("#"+this.panel.previous.titleId)
+        this.data = data
+        
         this.is_displayed = false
         currently_used_panel = this
     }
@@ -43,8 +44,12 @@ class panel{
         }
     }
     showPreviousOptions(){
-        this.panel.previous.body.classList.remove("hidden")
-        this.panel.previous.title.classList.remove("hidden")
+        if(this.panel.previous.body != null){
+            this.panel.previous.body.classList.remove("hidden")
+        }
+        if(this.panel.previous.title != null){
+            this.panel.previous.title.classList.remove("hidden")
+        }
     }
     removePanel(){
         document.querySelector("#"+this.panel.titleId).remove()
@@ -61,7 +66,7 @@ class panel{
             p = new element("p", "flex justify-between items-center p-1 ps-2 text-xs", [], d1.getNode())
             p.create()
         }
-        const set_general_features = () => {
+        const set_title_info = () => {
             switch(this.panel.name){
                 case "assignRole": 
                     i = new element("i", "me-2 fa "+panelClasses.assignRole.i, [], paragraph); i.create()
@@ -104,14 +109,14 @@ class panel{
         }
                 
         //Build title div.
-        build_title_div(upper_spacing ? null : upper_spacing)
+        build_title_div(upper_spacing ? "" : upper_spacing)
         paragraph = document.querySelector(`#${this.panel.titleId} p`)
         
         //--Build span with icon before. Set general panel features.
-        set_general_features()
+        set_title_info()
         
         //Build close icon to the right
-        i = new element("i", "mt-0 me-1 text-base fa fa-times font-bold", [], paragraph); i.create()
+        i = new element("i", "mt-0 me-1 text-base fa fa-times font-bold cancel-panel", [], paragraph); i.create()
         i.getNode().addEventListener("click", (e) => {
             if(this.panel.name === "newExpedition"){
                 //Make assigned expeditionaries or army available restoring status of all of them.
@@ -2267,32 +2272,43 @@ class panel{
         }
         if(this.panel.name === "newExpedition"){
             //Specific New Expedition panel
-            p.create()
+            p.create(); p.getNode().classList.remove("px-1"); p.getNode().classList.add("expeditionType")
             //Build type of expedition options
-            s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Type"))
-            s = new element("span", "", [], p.getNode()); s.create(); s.appendHTML(": ")
-            s = new element("span", "expeditionType grow flex", [], p.getNode()); s.create()
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-green-800", [{"key":"data-type", "value":"of resources"},{"key":"data-i18n", "value":""}], s.getNode())
-            b.create(); b.appendContent(translate(language, "of resources"))
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-blue-800", [{"key":"data-type", "value":"of ruins"},{"key":"data-i18n", "value":""}], s.getNode())
-            b.create(); b.appendContent(translate(language, "of ruins"))
-            b = new element("button", "text-xs text-white ms-2 grow p-1 button border border-gray-400 bg-red-800", [{"key":"data-type", "value":"of combat"},{"key":"data-i18n", "value":""}], s.getNode())
-            b.create(); b.appendContent(translate(language, "of combat"))
+            s1 = new element("span", "flex", [], p.getNode()); s1.create();
+            s2 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s1.getNode()); s2.create()
+            s = new element("span", "", [{"key":"data-i18n", "value":""}], s2.getNode()); s.create(); s.appendContent(translate(language, "Type"))
+            s = new element("span", "", [], s2.getNode()); s.create(); s.appendHTML(": ")
+            s = new element("span", "grow flex", [], s2.getNode()); s.create()
+            b = new element("button", "text-xs text-white grow p-1 py-0.5 button border border-gray-400 bg-green-800", [{"key":"data-type", "value":"of resources"},{"key":"data-i18n", "value":""}], p.getNode())
+            b.create(); 
+            i = new element("i", "fa fa-shovel text-xs", [], b.getNode()); i.create()
+            let s3 = new element("span", "ms-1", [], b.getNode()); s3.create(); s3.appendContent(translate(language, "of resources"))
+            b = new element("button", "text-xs text-white grow p-1 py-0.5 button border border-gray-400 bg-blue-800", [{"key":"data-type", "value":"of ruins"},{"key":"data-i18n", "value":""}], p.getNode())
+            b.create(); 
+            i = new element("i", "fa fa-landmark text-xs", [{"key":"data-type", "value":"of ruins"}], b.getNode()); i.create()
+            s3 = new element("span", "ms-1", [{"key":"data-type", "value":"of ruins"}], b.getNode()); s3.create(); s3.appendContent(translate(language, "of ruins"))
+            b = new element("button", "text-xs text-white grow p-1 py-0.5 button border border-gray-400 bg-red-800", [{"key":"data-type", "value":"of combat"},{"key":"data-i18n", "value":""}], p.getNode())
+            b.create(); 
+            i = new element("i", "fa fa-sword text-xs", [{"key":"data-type", "value":"of ruins"}], b.getNode()); i.create()
+            s3 = new element("span", "ms-1", [{"key":"data-type", "value":"of ruins"}], b.getNode()); s3.create(); s3.appendContent(translate(language, "of combat"))
             //Button events
-            document.querySelectorAll(".expeditionType button").forEach((value) => {
+            document.querySelectorAll(".expeditionType [data-type]").forEach((value) => {
                 value.addEventListener("click", (e) => {
+                    let clicked_button = e.target.closest("button")
                     //Build expedition type legend with colors.
-                    let type = e.target.getAttribute("data-type")
-                    let background = e.target.classList.contains("bg-blue-800") ? "blue" : (e.target.classList.contains("bg-green-800") ? "green" : "red")
+                    let type = clicked_button.getAttribute("data-type")
+                    let background = clicked_button.classList.contains("bg-blue-800") ? "blue-800" : (clicked_button.classList.contains("bg-green-800") ? "green-700" : "red-800")
                     document.querySelectorAll(".expeditionType button").forEach((button) => button.classList.add("hidden"))
-                    let typeText = "Expedition to "+(e.target.getAttribute("data-type") === "of resources" ? "discover resources mounts" : (e.target.getAttribute("data-type") === "of ruins" ? "discover ruins" : "attack other colonies"))
-                    s1 = new element("span", "ms-2 p-1 px-1 text-white border border-gray-400 bg-"+background+"-800", [{"key":"data-i18n", "value":""},{"key":"data-type", "value":e.target.getAttribute("data-type")}], s.getNode())
+                    let typeText = "Expedition to "+(type === "of resources" ? "discover resources mounts" : (type === "of ruins" ? "discover ruins" : "attack other colonies"))
+                    s1 = new element("span", "grow p-1 py-0.5 text-white border border-gray-800 bg-"+background, [{"key":"data-i18n", "value":""},{"key":"data-type", "value":type}], s.getNode().closest("p"))
                     s1.create(); s1.appendContent(translate(language, typeText))
                     //Build needed time text
-                    let p1 = new element("p", "w-100 mt-2 items-center flex-wrap px-1 text-gray-300", [], d1.getNode()); p1.create()
-                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Required travel time"))
-                    s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
-                    s = new element("span", "ms-1 px-1 rounded bg-gray-700 border border-gray-500", [], p1.getNode(), "expeditionRequiredTime"); s.create()
+                    let p1 = new element("p", "mt-1 flex w-100 gap-1 justify-between items-center flex-wrap text-gray-300", [], d1.getNode()); p1.create()
+                    s = new element("span", "flex", [], p1.getNode()); s.create()
+                    s2 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s2.create()
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s2.getNode()); s1.create(); s1.appendContent(translate(language, "Required travel time"))
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s2.getNode()); s1.create(); s1.appendContent(": ")
+                    s = new element("span", "grow flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 border border-gray-500 font-bold text-gray-800", [], p1.getNode(), "expeditionRequiredTime"); s.create()
                     //Initially hidden required time information
                     s2 = new element("span", "hidden", [], s.getNode(), "newExpedition-required-info"); s2.create()
                     s1 = new element("span", "hidden font-bold", [{"key":"data-i18n","value":""}], s2.getNode(), "newExpedition-required-years"); s1.create()
@@ -2311,10 +2327,13 @@ class panel{
                     s1 = new element("span", "unknownTime", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"m"}], s.getNode(), "newExpeditionTime"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "m"))
                     s1 = new element("span", "unknownTime", [], s.getNode()); s1.create(); s1.appendHTML(")")
                     //Build mount discovery probability text
-                    p1 = new element("p", "w-100 items-center flex-wrap pb-2 px-1 text-gray-300", [], d1.getNode()); p1.create()
-                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], p1.getNode()); s1.create(); s1.appendContent(translate(language, "Mount discovery probability"))
-                    s1 = new element("span", "", [], p1.getNode()); s1.create(); s1.appendHTML(": ")
-                    s = new element("span", "ms-1 font-bold", [], p1.getNode(), "expeditionProbability"); s.create()
+                    p1 = new element("p", "mt-1 flex w-100 gap-1 justify-between items-center flex-wrap text-gray-300", [], d1.getNode()); p1.create()
+                    //p1 = new element("p", "w-100 items-center flex-wrap pb-2 px-1 text-gray-300", [], d1.getNode()); p1.create()
+                    s = new element("span", "flex", [], p1.getNode()); s.create()
+                    s2 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white", [], s.getNode()); s2.create()
+                    s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s2.getNode()); s1.create(); s1.appendContent(translate(language, "Mount discovery probability"))
+                    s1 = new element("span", "", [], s2.getNode()); s1.create(); s1.appendHTML(": ")
+                    s = new element("span", "grow px-1 py-0.5 bg-gray-400 border border-gray-800 font-bold text-gray-800", [], p1.getNode(), "expeditionProbability"); s.create()
                     s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML("(")
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""},{"key":"gender", "value":"f"}], s.getNode(), "newExpeditionProbability"); s1.create(); s1.appendContent(translate(language, "Unknown yet", "f"))
                     s1 = new element("span", "", [], s.getNode()); s1.create(); s1.appendHTML(")")
@@ -2324,15 +2343,15 @@ class panel{
                     s1.appendContent(translate(language, "Warning! Time is stopped. Search the zone in the Colony panel to start your game."))
                     //Build New expedition available actions title
                     d3 = document.getElementById("expeditions-newExpedition")
-                    d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-actions-title")
+                    d2 = new element("div", "mt-1 border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-actions-title")
                     d2.create();
                     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d2.getNode()); p.create()
                     s1 = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s1.create(); s1.appendContent(translate(language, "Actions available"))
                     //Build New expedition available actions area
-                    d2 = new element("div", "activeExpeditions p-2 ps-3 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-actions-area")
+                    d2 = new element("div", "activeExpeditions p-1 border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), "newExpedition-actions-area")
                     d2.create()
                     p = new element("p", "empty w-100 text-xs flex justify-between text-gray-200", [], d2.getNode()); p.create()
-                    b = new element("button", "hidden unattached-click text-xs grow p-2 me-1 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
+                    b = new element("button", "hidden unattached-click text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), "expeditionStart"); b.create()
                     i = new element("i", "mt-0.5 fa fa-play", [], b.getNode()); i.create()
                     s1 = new element("span", "ms-2 grow", [{"key":"data-i18n", "value":""}], b.getNode()); s1.create()
                     s1.appendContent(translate(language, "Start resources mounts expedition"))
@@ -2344,10 +2363,10 @@ class panel{
                     let assignedType = type === "of combat" ? "army" : "workers"
                     d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType+"-title")
                     d.create()
-                    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
+                    p = new element("p", "text-xs flex justify-between p-1 ps-2 text-gray-200", [], d.getNode()); p.create()
                     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Assigned "+(assignedType === "workers" ? "expeditionaries" : assignedType)))
                     //Build workers assigned panel
-                    d = new element("div", "assigned"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType)
+                    d = new element("div", "assigned"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), "newExpedition-assigned-"+assignedType)
                     d.create()
                     p = new element("p", "empty text-xs flex justify-between text-gray-200", [], d.getNode()); p.create()
                     s = new element("span", "", [], p.getNode()); s.create()
@@ -2357,10 +2376,10 @@ class panel{
                     //Build available workers/army title
                     d = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType+"-title")
                     d.create()
-                    p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
+                    p = new element("p", "text-xs flex justify-between p-1 ps-2 text-gray-200", [], d.getNode()); p.create()
                     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Available "+(assignedType === "workers" ? "expeditionaries" : assignedType)))
                     //Build available workers/army panel
-                    d = new element("div", "available"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" p-2 ps-3 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType)
+                    d = new element("div", "available"+(assignedType.charAt(0).toUpperCase()+assignedType.slice(1))+" flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), "newExpedition-available-"+assignedType)
                     d.create()
                     if(type != "of combat"){
                         //Check if there are available expeditionaries to add here. If not, place the "No workers available" text instead.
@@ -2407,7 +2426,7 @@ class panel{
                     p = new element("p", "text-xs flex justify-between p-1 ps-3 text-gray-200", [], d.getNode()); p.create()
                     s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Other objects available"))
                     //Build available other objects panel
-                    d = new element("div", "availableObjects p-2 ps-3 border border-gray-800 bg-gray-600 text-xs", [], d1.getNode(), "newExpedition-available-objects")
+                    d = new element("div", "availableObjects flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-500 text-xs", [], d1.getNode(), "newExpedition-available-objects")
                     d.create()
                     //Any horses in stock?
                     if(stock_displayed.products.EN.horse*1){

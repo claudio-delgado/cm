@@ -63,18 +63,18 @@ const naming = {
                 "Nidia", "Nieves", "Nika", "Nilda", "Nina", "Noara", "Noel", "Noelia", "Noemi", "Nora", "Norma", "Nova", "Nubia", 
                 "Nuna", "Nuria", "Nuriel", "Odelia", "Ofelia", "Olena", "Olesia", "Olga", "Oliana", "Olimpia", "Olivia", "Ona",
                 "Onella", "Oona", "Oriana", "Ornella", "Paloma", "Pamela", "Pandora", "Paola", "Patricia", "Patsy", "Patty", "Paula",
-                "Paulina", "Pepa", "Penélope", "Penny", "Perla", "Pía", "Pilar", "Polly", "Priscilla", "Pura", "Rafaela", "Raquel",
-                "Rebecca", "Renata", "Rihana", "Rita", "Roberta", "Robertina", "Rocío", "Romina", "Rosa", "Rosalia", "Rosana",
-                "Rosario", "Rosaura", "Roxana", "Roxy", "Runa", "Ruth", "Sabina", "Sabrina", "Safira", "Sahira", "Salena", "Sally", 
-                "Salma", "Samantha", "Samara", "Samira", "Sandra", "Sandrina", "Sandy", "Santina", "Sarah", "Saskia", "Savanna", 
-                "Scarlet", "Selena", "Selia", "Selma", "Serafina", "Serena", "Shelly", "Silvana", "Silvia", "Silvina", "Siomara", 
-                "Sissy", "Sofía", "Sol", "Solange", "Soledad", "Sonia", "Soraya", "Stefania", "Stella", "Susana", "Suyai", "Sveta", 
-                "Taiana", "Talia", "Tamara", "Tanya", "Tatiana", "Tayra", "Telma", "Teresa", "Teresita", "Tiara", "Tina", "Tiziana", 
-                "Triana", "Tricia", "Trinidad", "Trudy", "Tulia", "Uma", "Urania", "Uriana", "Úrsula", "Valentina", "Valeria", 
-                "Vanesa", "Vania", "Vanina", "Venezia", "Venus", "Vera", "Verónica", "Vicky", "Victoria", "Vilma", "Violeta", 
-                "Virginia", "Virna", "Vivian", "Viviana", "Wanda", "Winona", "Xena", "Xenia", "Xiana", "Xiara", "Ximena", "Xiomara", 
-                "Yael", "Yamila", "Yanet", "Yanina", "Yara", "Yasmin", "Yesica", "Yolanda", "Yori", "Yuki", "Zaira", "Zelda", 
-                "Zenia", "Zoe"
+                "Paulina", "Pepa", "Penélope", "Penny", "Pepita", "Perla", "Pía", "Pilar", "Polly", "Priscilla", "Pura", "Rafaela", 
+                "Raquel", "Rebecca", "Renata", "Rihana", "Rita", "Roberta", "Robertina", "Rocío", "Romina", "Rosa", "Rosalia", 
+                "Rosana", "Rosario", "Rosaura", "Roxana", "Roxy", "Runa", "Ruth", "Sabina", "Sabrina", "Safira", "Sahira", "Salena",  
+                "Sally", "Salma", "Samantha", "Samara", "Samira", "Sandra", "Sandrina", "Sandy", "Santina", "Sarah", "Saskia", 
+                "Savanna", "Scarlet", "Selena", "Selia", "Selma", "Serafina", "Serena", "Shelly", "Silvana", "Silvia", "Silvina", 
+                "Siomara", "Sissy", "Sofía", "Sol", "Solange", "Soledad", "Sonia", "Soraya", "Stefania", "Stella", "Susana", "Suyai", 
+                "Sveta", "Taiana", "Talia", "Tamara", "Tanya", "Tatiana", "Tayra", "Telma", "Teresa", "Teresita", "Tiara", "Tina", 
+                "Tiziana", "Triana", "Tricia", "Trinidad", "Trudy", "Tulia", "Uma", "Urania", "Uriana", "Úrsula", "Valentina", 
+                "Valeria", "Vanesa", "Vania", "Vanina", "Venezia", "Venus", "Vera", "Verónica", "Vicky", "Victoria", "Vilma", 
+                "Violeta", "Virginia", "Virna", "Vivian", "Viviana", "Wanda", "Winona", "Xena", "Xenia", "Xiana", "Xiara", "Ximena", 
+                "Xiomara", "Yael", "Yamila", "Yanet", "Yanina", "Yara", "Yasmin", "Yesica", "Yolanda", "Yori", "Yuki", "Zaira", 
+                "Zelda", "Zenia", "Zoe"
             ],
             "M": [
                 "Aaron", "Abel", "Abelardo", "Abraham", "Adam", "Adelino", "Adolfino", "Adolfo", "Adonis", "Adrián", "Adriano",
@@ -114,8 +114,8 @@ const naming = {
                 "Manuel", "Marce", "Marcelo", "Marco", "Marcos", "Mariano", "Mario", "Martín", "Martiniano", "Martino", "Mateo", "Matías", 
                 "Mauricio", "Mauro", "Maximiliano", "Máximo", "Melito", "Miguel", "Mikael", "Milo", "Milton", "Mirko", "Nelson", "Néstor", 
                 "Nicolás", "Nino", "Norberto", "Octavio", "Odo", "Omar", "Oscar", "Pablo", "Paco", "Pancho", "Paolo", "Pascual", 
-                "Patricio", "Paulo", "Pedro", "Pepita", "Pepe", "Pepin", "Pepito", "Rafael", "Ramiro", "Ramón", "Raúl", "Ricardo", 
-                "Roberto", "Rodolfo", "Rodrigo", "Rolando", "Román", "Rubén", "Samuel", "Sandro", "Santino", "Saúl", "Sebastián", 
+                "Patricio", "Paulo", "Pedro", "Pepe", "Pepin", "Pepito", "Rafael", "Ramiro", "Ramón", "Raúl", "Ricardo", "Roberto", 
+                "Rodolfo", "Rodrigo", "Rolando", "Román", "Rubén", "Samuel", "Sandro", "Santino", "Saúl", "Sebastián", "Serafín", 
                 "Sergio", "Silvano", "Silvestre", "Silvio", "Simón", "Stéfano", "Tadeo", "Teo", "Tiago", "Tiberio", "Tim", "Tincho", 
                 "Tito", "Tiziano", "Tobías", "Toby", "Tomás", "Tommy", "Travis", "Tristán", "Tulio", "Ubaldo", "Udo", "Ulises", "Umberto", 
                 "Uriel", "Valentín", "Valentino", "Valerio", "Vero", "Vicente", "Víctor", "Victoriano", "Viggo", "Virgilio", "Virginio", 
@@ -371,7 +371,26 @@ const score_bonus = {
     "mineral_mount_found": 10,
     "wood_mount_found": 5,
 }
-//Important objects
+
+const mounts = {
+    "descriptions": {
+        "Water reservoir": {"owned":0, "camelCase":"waterReservoir", "discovery-probability-1":"1", "role-keys-related":["waterBearing", "fishing"]}, 
+        "Hunting mount": {"owned":0, "camelCase":"huntingMount", "discovery-probability-1":"0.50", "role-keys-related":["hunting"]}, 
+        "Stone mount": {"owned":0, "camelCase":"stoneMount", "discovery-probability-1":"0.23", "discovery-probability-2":"0.45", "role-keys-related":["stonebreaking"]}, 
+        "Wood mount": {"owned":0, "camelCase":"woodMount", "discovery-probability-1":"0.15", "discovery-probability-2":"0.3", "role-keys-related":["woodcutting"]}, 
+        "Clay mount": {"owned":0, "camelCase":"clayMount", "discovery-probability-1":"0.07", "discovery-probability-2":"0.15", "role-keys-related":["stonebreaking"]},
+        "Mineral mount": {"owned":0, "camelCase":"mineralMount", "discovery-probability-1":"0.05", "discovery-probability-2":"0.1", "role-keys-related":["mining"]},
+    },
+    "camelCase":{
+        "waterReservoir": "Water reservoir",
+        "huntingMount": "Hunting mount",
+        "stoneMount": "Stone mount",
+        "woodMount": "Wood mount",
+        "clayMount": "Clay mount",
+        "mineralMount": "Mineral mount"
+    }
+}
+//Stock related.
 var wagon_goods = {
     "resources": {
         "wooden trunk": 50,
@@ -1619,58 +1638,6 @@ const stock_classified = {
         }
     }
 }
-//Loot multipliers due to granularity of resource or product obtained.
-const granularity_loot_multipliers = {
-    "granularity1" : {"minMultiplier":1, "maxMultiplier":5},
-    "granularity2" : {"minMultiplier":5, "maxMultiplier":10},
-    "granularity3" : {"minMultiplier":10, "maxMultiplier":30},
-    "granularity4" : {"minMultiplier":30, "maxMultiplier":60},
-    "granularity5" : {"minMultiplier":60, "maxMultiplier":100},
-    "granularity6" : {"minMultiplier":100, "maxMultiplier":300},
-    "category1": {"reductionCoeficient": 1},
-    "category2": {"reductionCoeficient": 0.85},
-    "category3": {"reductionCoeficient": 0.7},
-    "category4": {"reductionCoeficient": 0.5},
-    "category5": {"reductionCoeficient": 0.3},
-    "category6": {"reductionCoeficient": 0.05},
-}
-const order_keys = (unordered, order = "ASC") => {
-    // Sorting the object by keys
-    //In ascending way
-    if(order === "ASC"){
-        const ordered = Object.keys(unordered)
-            .sort() // Sort the keys alphabetically
-            .reduce((obj, key) => {
-                obj[key] = unordered[key]; // Rebuild the object with sorted keys
-                return obj;
-            }, {});
-        return (ordered)
-    } else { //In desscending way
-        const ordered = Object.keys(unordered)
-            .sort((a, b) => unordered[b] - unordered[a]).map(function(key) { 
-                return [key, unordered[key]]; 
-            });
-        return (ordered)
-    }
-}
-const mounts = {
-    "descriptions": {
-        "Water reservoir": {"owned":0, "camelCase":"waterReservoir", "discovery-probability-1":"1", "role-keys-related":["waterBearing", "fishing"]}, 
-        "Hunting mount": {"owned":0, "camelCase":"huntingMount", "discovery-probability-1":"0.50", "role-keys-related":["hunting"]}, 
-        "Stone mount": {"owned":0, "camelCase":"stoneMount", "discovery-probability-1":"0.23", "discovery-probability-2":"0.45", "role-keys-related":["stonebreaking"]}, 
-        "Wood mount": {"owned":0, "camelCase":"woodMount", "discovery-probability-1":"0.15", "discovery-probability-2":"0.3", "role-keys-related":["woodcutting"]}, 
-        "Clay mount": {"owned":0, "camelCase":"clayMount", "discovery-probability-1":"0.07", "discovery-probability-2":"0.15", "role-keys-related":["stonebreaking"]},
-        "Mineral mount": {"owned":0, "camelCase":"mineralMount", "discovery-probability-1":"0.05", "discovery-probability-2":"0.1", "role-keys-related":["mining"]},
-    },
-    "camelCase":{
-        "waterReservoir": "Water reservoir",
-        "huntingMount": "Hunting mount",
-        "stoneMount": "Stone mount",
-        "woodMount": "Wood mount",
-        "clayMount": "Clay mount",
-        "mineralMount": "Mineral mount"
-    }
-}
 const location_goods = {
     "clayMount":{
         "EN": ["clay", "sand", "soil"],
@@ -1998,6 +1965,24 @@ const categorized_goods = {
         }
     }
 }
+//Expedition related.
+const expeditions = []
+//Loot multipliers due to granularity of resource or product obtained.
+const granularity_loot_multipliers = {
+    "granularity1" : {"minMultiplier":1, "maxMultiplier":5},
+    "granularity2" : {"minMultiplier":5, "maxMultiplier":10},
+    "granularity3" : {"minMultiplier":10, "maxMultiplier":30},
+    "granularity4" : {"minMultiplier":30, "maxMultiplier":60},
+    "granularity5" : {"minMultiplier":60, "maxMultiplier":100},
+    "granularity6" : {"minMultiplier":100, "maxMultiplier":300},
+    "category1": {"reductionCoeficient": 1},
+    "category2": {"reductionCoeficient": 0.85},
+    "category3": {"reductionCoeficient": 0.7},
+    "category4": {"reductionCoeficient": 0.5},
+    "category5": {"reductionCoeficient": 0.3},
+    "category6": {"reductionCoeficient": 0.05},
+}
+//Shelter and building capacities.
 const shelter_capacities = {
     "campaign tent": 3,
     "cottage": 9,
@@ -2010,6 +1995,7 @@ const shelter_capacities = {
 const facility_capacities = {
     "quarry": 5,
 }
+//Buildings.
 const building_info = {
     "name": "Campaign tent 1",
     "capacity": 3,
@@ -2066,6 +2052,7 @@ const buildings = {
         "tavern": { "name": "tavern", "plural": "taverns", "last_id": 0, "building_list":[]}, //taberna
     }
 }
+//Building, resource and product rules.
 const building_rules = {
     "campaign tent": {
         "rules": [{
@@ -3220,6 +3207,7 @@ var population_loss_events = {
     }
 }
 
+//All attraction stages needed to reach 70% and all their information.
 const attraction_stages = [
     {"stage": 1, "description": "Strong interest of", "percent": "50"}, //45 40
     {"stage": 2, "description": "Strong interest of", "percent": "50"}, //45 40
@@ -3254,7 +3242,6 @@ const attraction_stages = [
     {"stage": 29, "description": "Dislikes something", "percent": "-25"}, //-30 -35
     {"stage": 30, "description": "Dislikes something", "percent": "-25"}, //-30 -35
 ]
-
 //Pregnancy object template.
 const pregnancy = {
     "mother": 0, //id of pregnant citizen

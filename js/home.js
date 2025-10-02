@@ -3,7 +3,7 @@
 const initColonyInfo = () => {
     language = "ES", colonyScore = 0, colonyLifeQuality = 10
     citizensFemaleAmount = 5, citizensMaleAmount = 5
-    daysPassed = 0, dayPassed = false, weekPassed = false
+    game_days_passed = 0, dayPassed = false, weekPassed = false
     wagonsAmount = 3, horsesAmount = 6
     //colony_water_reservoir = water_reservoirs[Math.floor(Math.random() * water_reservoirs.length)].name
     colony_water_reservoir = Object.keys(water_reservoirs)[Math.floor(Math.random() * Object.keys(water_reservoirs).length)]
@@ -36,7 +36,7 @@ const searchZone = (e) => {
     e.target.removeEventListener("click", searchZone)
 }
 
-const endActiveExpedition = (expeditionType) => {
+const endActiveExpedition = (expedition_id, expeditionType) => {
     let mountResourceFound, ruinsFound = true
     let loot //For ruins expedition.
     let expeditionariesAssigned = 0
@@ -45,11 +45,10 @@ const endActiveExpedition = (expeditionType) => {
     //Expeditionaries are back in town, so restore their status to idle.
     //Also calculate max and avg XP to later obtain probability of expedition success.
     document.querySelectorAll(".accordion-active-expedition").forEach((elem) => {
-        let expeditionIndex = elem.id.split("-")[2]
         expeditionaries = [], mountedExpeditionaries = false
-        mountedExpeditionaries = elem.querySelector("#expedition-"+expeditionIndex+"-assigned-horses h2:first-child") != null &&
-                                 elem.querySelector("#expedition-"+expeditionIndex+"-assigned-horses h2:first-child") != undefined
-        elem.querySelectorAll("#expedition-"+expeditionIndex+"-assigned-workers h2 div.expeditionary").forEach((citizen) => {
+        mountedExpeditionaries = elem.querySelector("#expedition-"+expedition_id+"-assigned-horses h2:first-child") != null &&
+                                 elem.querySelector("#expedition-"+expedition_id+"-assigned-horses h2:first-child") != undefined
+        elem.querySelectorAll("#expedition-"+expedition_id+"-assigned-workers h2 div.expeditionary").forEach((citizen) => {
             let expeditionary = {}
             let citizenIndex = citizen.querySelector("i").id.split("-")[3]
             expeditionary.xp = document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp")
@@ -227,8 +226,7 @@ const endActiveExpedition = (expeditionType) => {
     }
     //Update xp to all expeditionaries according to expedition results.
     document.querySelectorAll(".accordion-active-expedition").forEach((elem) => {
-        let expeditionIndex = elem.id.split("-")[2]
-        elem.querySelectorAll("#expedition-"+expeditionIndex+"-assigned-workers h2 div.expeditionary").forEach((citizen) => {
+        elem.querySelectorAll("#expedition-"+expedition_id+"-assigned-workers h2 div.expeditionary").forEach((citizen) => {
             let citizenIndex = citizen.querySelector("i").id.split("-")[3]
             let realCitizenXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp")
             //Calculate new experience according to expedition time.
@@ -281,6 +279,11 @@ const endActiveExpedition = (expeditionType) => {
         }
     }
     //Remove active expedition
+    expeditions.forEach((expedition, e_index) => {
+        if(expedition.id == expedition_id){
+            expeditions.splice(e_index, 1)
+        }
+    })
     document.querySelector(".accordion-active-expedition").remove()
     let d = document.getElementById("active-expeditions-area")
     //If no other active expedition, show empty text.
@@ -526,16 +529,24 @@ const test_stock_add_products = (stock_addings = []) => {
     })
 }
 
+
 initColonyInfo()
 
 //Test functionality before screen initialization.
-searchingZone = true
+searchingZone = testing_mode //testing_mode defined in init.js
 test_stock_add_products([{"type": "resources", "product": "wood", "value": 320}])
 test_stock_add_products([{"type": "resources", "product": "branch", "value": 200}])
 
 //Screen initialization.
 accordion_news()
-add_news("Welcome")
+if(!progress_already_saved){
+    add_news("Welcome")
+} else {
+    let colony_data = JSON.parse(localStorage.getItem("colony"))
+    lifeStarted = colony_data["colony"]["zone searched"] === "yes"
+    zoneSearched = lifeStarted
+    searchingZone = colony_data["colony"]["zone searched"] === "in process"
+}
 accordion_colony()
 accordion_buildings()
 accordion_citizens()
@@ -686,10 +697,6 @@ const assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignR
                 document.getElementById("waterReservoir-citizen-"+citizen_id+"-assign").addEventListener("click", 
                     toggle_assignable_worker
                 )
-                /*
-                document.getElementById("citizen-"+citizen_id+"-assign").setAttribute("data-class", "waterReservoir")
-                document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
-                */
             }       
             if(rolekey === "expeditioning"){
                 if(document.querySelector("#expeditions-newExpedition") != null){
@@ -698,15 +705,6 @@ const assign_role_to_citizen = (citizen_id, rolekey, roleText, roleIcon, assignR
                     document.getElementById("citizen-"+citizen_id+"-assign").addEventListener("click", handleToggleWorker)
                 }
             }
-            /*
-            //Check if there is a new expedition panel opened to add expeditionary as available there.
-            let availableWorkersPanel = document.querySelector("#newExpedition-available-workers .availableWorkers")
-            if(availableWorkersPanel!=null){
-                add_available_worker_to_expedition(citizenIndex, "newExpedition")
-                document.getElementById("citizen-"+citizenIndex+"-assign").setAttribute("data-class", "newExpedition")
-                document.getElementById("citizen-"+citizenIndex+"-assign").addEventListener("click", handleToggleWorker)
-            }
-            */
         } else {
             modal_popup("Can't change role", "RoleCitizenBusy")
             modal.show()
@@ -1093,12 +1091,12 @@ const handleToggleHorse = (e) => {
     if(e.target.classList.contains("fa-plus")){
         add_assigned_horse_to_expedition(e.target.closest("h2"))
     } else {
-        deassign_worker_to_expedition(e.target.closest("h2"))
+        deassign_horse_to_expedition(e.target.closest("h2"))
     }
     //Check amount of citizens and horses already assigned.
     let expeditionariesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedWorker").length
     let horsesAlreadyAssigned = document.querySelectorAll(".assignedWorkers .assignedHorse").length
-    let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType span:last-child").getAttribute("data-type")
+    let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType > span:last-child").getAttribute("data-type")
     if(expeditionariesAlreadyAssigned){
         //Calculate required expedition time.
         let timeRequired = expedition_required_time(expeditionType, expeditionType === "of resources" ? resourcesExpeditionsDone : ruinsExpeditionsDone, (expeditionariesAlreadyAssigned <= horsesAlreadyAssigned) ? expeditionariesAlreadyAssigned : 0)
@@ -1140,9 +1138,10 @@ const handleToggleHorse = (e) => {
     }
     e.target.addEventListener("click", handleToggleHorse)
 }
-//Assignment and deassignment of workers in differnte panels (landforms and new expedition)
+//Assignment and deassignment of workers in different panels (landforms and new expedition)
 const handleToggleWorker = (e) => {
     const handleStartExpedition = (event) => {
+        expedition_last_id++
         event.target.removeEventListener("click", handleStartExpedition)
         let expeditionType = event.target.closest("button#expeditionStart").getAttribute("data-type")
         //Prepare expedition data to add in new Active Expedition panel.
@@ -1156,7 +1155,7 @@ const handleToggleWorker = (e) => {
         let returnsInYears = document.getElementById("newExpedition-required-years").innerText
         //Define data to be parsed while building active expedition panel.
         let expeditionData = {
-            "id": expeditionIndex,
+            "id": expedition_last_id,
             "type": expeditionType,
             "departedIn":{"year":departedInYears, "week":departedInWeeks, "day":departedInDays, "hour":departedInHours},
             "returnsIn":{"years":returnsInYears, "weeks":returnsInWeeks, "days":returnsInDays, "hours":returnsInHours},
@@ -1165,7 +1164,7 @@ const handleToggleWorker = (e) => {
         let expeditionMember
         document.querySelectorAll("#newExpedition-assigned-workers h2").forEach((elem) => {
             expeditionMember = {}
-            expeditionMember.index = elem.id.split("-")[2]
+            expeditionMember.id = elem.id.split("-")[2]
             expeditionMember.type = elem.classList.contains("assignedWorker") ? "expeditionary" : "horse"
             if(expeditionMember.type === "expeditionary"){
                 expeditionMember.name = elem.querySelector("div span span:last-child").innerText
@@ -1185,18 +1184,19 @@ const handleToggleWorker = (e) => {
             }
             expeditionData.crew.push(expeditionMember)
         })
+        //Update expedition in memory array.
+        expeditions.push(expeditionData)
         //Display active expedition with all its data
         build_active_expedition(document.getElementById("active-expeditions-area"), expeditionData)
-        //enableAccordions("#accordion-expedition-"+expeditionIndex+" [data-accordion-target]")
+        //enableAccordions("#accordion-expedition-"+expedition_last_id+" [data-accordion-target]")
         //Remove new expedition panel.
         newExpeditionPanel.removePanel()
         newExpeditionPanel.showPreviousOptions()
-        expeditionIndex++
     }
     let getExpeditionType = () => {
         //Get expedition type
         let expeditionTypeText
-        let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType span:last-child").getAttribute("data-type")
+        let expeditionType = document.querySelector("#expeditions-newExpedition .expeditionType > span:last-child").getAttribute("data-type")
         //Define type description to be included in "Start expedition" button
         switch (expeditionType){
             case "of resources": expeditionTypeText = "Start resources mounts expedition"; break
@@ -1472,30 +1472,165 @@ const test_citizen_exile = (citizens_id) => {
     })
 }
 
+const update_all_colony_data = () => {
+    let colony_data = JSON.parse(localStorage.getItem("colony"))
+    if(colony_data){
+        if(lifeStarted || searchingZone){
+            let reprocess_offline_time = true
+            //Iterate localStorage structure and update colony data
+            if(colony_data["colony"]["name"]) document.querySelector("#colonyName").value = colony_data["colony"]["name"]
+            if(colony_data["colony"]["life quality"]) document.querySelector("#colonyLifeQuality").innerHTML = colony_data["colony"]["life quality"]*1
+            if(colony_data["colony"]["score"]) document.querySelector("#colonyScore").innerHTML = colony_data["colony"]["score"]*1
+            if(colony_data["colony"]["power"]) document.querySelector("#colonyPower").innerHTML = colony_data["colony"]["power"]*1
+            if(colony_data["colony"]["oppression"]) document.querySelector("#colonyOppression").innerHTML = colony_data["colony"]["oppression"]*1
+            //Evaluate what has changed between last session and current session.
+            let last_login_real_time = new Date(colony_data["date"] + " " + colony_data["time"])
+            let current_real_time = new Date()
+            
+            //Already saved time
+            let last_login_game_date_in_hours = colony_data["time lived"]["weeks"] * 7 * 24
+            last_login_game_date_in_hours += (colony_data["time lived"]["current time"]["day"] - 1) * 24
+            last_login_game_date_in_hours += colony_data["time lived"]["current time"]["hour"]*1
+            //Offline time.
+            //How many real seconds offline?
+            let seconds_offline = Math.floor((current_real_time - last_login_real_time) / 1000) //Time difference in seconds.
+            let int_offline_game_hours_passed = Math.floor(seconds_offline / 1.79) //In-game hours passed since last session.
+            let int_offline_game_weeks_passed = Math.floor(int_offline_game_hours_passed / 24 / 7) 
+            let int_offline_game_years_passed = Math.floor(int_offline_game_hours_passed / 24 / 7 / 52) 
+            //Accumulated time passed (saved time + offline time)
+            let total_game_hours_passed = last_login_game_date_in_hours + int_offline_game_hours_passed
+            let total_game_days_passed = total_game_hours_passed / 24
+            let total_game_weeks_passed = total_game_days_passed / 7
+            let total_game_years_passed = total_game_weeks_passed / 52
+            game_days_passed = Math.floor(total_game_days_passed)
+            let int_remaining_game_year_weeks = Math.floor((total_game_years_passed - Math.floor(total_game_years_passed)) * 52)
+            let int_remaining_game_week_days = Math.floor((total_game_weeks_passed - Math.floor(total_game_weeks_passed)) * 7)
+            let int_remaining_game_day_hours = Math.floor((total_game_hours_passed - Math.floor(total_game_days_passed) * 24))
+            //Update colony time passed
+            document.getElementById("passedWeeks").innerHTML = Math.floor(total_game_weeks_passed)//last_online_game_weeks_lived + int_offline_game_weeks_passed
+            document.getElementById("currentYear").innerHTML = 1 + Math.floor(total_game_years_passed)//last_online_game_year + int_offline_game_years_passed
+            document.getElementById("currentWeek").innerHTML = 1 + int_remaining_game_year_weeks//int_remaining_game_year_weeks
+            document.getElementById("currentDay").innerHTML = 1 + int_remaining_game_week_days
+            document.getElementById("currentHour").innerHTML = int_remaining_game_day_hours.toString().padStart(2, "0")//(int_offline_game_hours_passed - (int_offline_game_days_passed * 24)).toString().padStart(2, "0")
+            //Update goods stock.
+            Object.keys(colony_data["colony"]["global stock"]["resources"]).forEach((resource) => {
+                if(resource !== "food" && document.getElementById(`colony-${resource}-stock`)){
+                    document.getElementById(`colony-${resource}-stock`).innerHTML = colony_data["colony"]["global stock"]["resources"][resource]*1
+                }
+            })
+            Object.keys(colony_data["colony"]["global stock"]["products"]).forEach((product) => {
+                if(document.getElementById(`colony-${product}-stock`)){
+                    document.getElementById(`colony-${product}-stock`).innerHTML = colony_data["colony"]["global stock"]["products"][product]*1
+                }
+            })
+            Object.keys(colony_data["colony"]["global stock"]["building parts"]).forEach((building_part) => {
+                if(document.getElementById(`colony-${building_part}-stock`)){
+                    document.getElementById(`colony-${building_part}-stock`).innerHTML = colony_data["colony"]["global stock"]["building parts"][building_part]*1
+                }
+            })
+            //Update news.
+            colony_data["latest news"].forEach((news) => {
+                let news_id = news.id
+                let news_received_in = news["received in"].day + " " + news["received in"].hour*1 + " " + news["received in"].week*1 + " " + news["received in"].year*1
+                let news_status = news.status
+                let news_content = news.content
+                add_news_content(news)
+            })
+            //Update unread notifications counter.
+            if(document.querySelectorAll("#accordion-news h2 .new:not(.hidden)").length){
+                document.querySelector("#accordion-menu-news #newsNotifications").classList.remove("hidden")
+                document.querySelector("#accordion-menu-news #newsNotifications").innerHTML = document.querySelectorAll("#accordion-news h2 .new:not(.hidden)").length
+            }
+            //Update landforms.
+            colony_data["landforms"].forEach((landform) => {
+                let array_category = landform.category.split(" ")
+                let categoryCamel = array_category[0]+array_category[1].charAt(0).toUpperCase()+array_category[1].slice(1)
+                if(!document.querySelector(`div .${categoryCamel}`)){
+                    add_landform(categoryCamel)
+                } else {
+                    //Water reservoirs always exist in colonies.
+                    if(categoryCamel === "waterReservoir"){
+                        document.querySelector(`#landform-${landform.id}-type`).innerHTML = translate(language, landform.type)
+                    }
+                }
+            })
+            //Update buildings.
+            buildings.shelter_related["campaign_tent"]["building_list"] = []
+            colony_data["buildings"]["shelter related"]["campaign tent"].forEach((building, i) => {
+                building_last_id = building.id
+                buildings.shelter_related["campaign_tent"]["building_list"].push(building)
+            })
+            //Update citizens.
+            document.getElementById("accordion-citizens").innerHTML = ""
+            citizens = []
+            colony_data["citizens"].list.forEach((citizen) => {
+                //Based on time passed...
+                if(citizen.status != "deceased"){
+                    //Update citizen age
+                    let age_in_weeks = Number(citizen.ageYears) * 52 + Number(citizen.ageWeeks)
+                    let new_age_in_weeks = age_in_weeks + int_offline_game_weeks_passed
+                    let new_age_years = new_age_in_weeks / 52
+                    let int_new_age_years = Math.floor(new_age_years)
+                    let new_age_weeks = (new_age_years - int_new_age_years) * 52
+                    let int_new_age_weeks = Math.floor(new_age_weeks)
+                    citizen.ageYears = int_new_age_years
+                    citizen.ageWeeks = int_new_age_weeks
+                    citizen.birthWeeks = Number(citizen.birthWeeks) + int_offline_game_weeks_passed
+                    //Check life or death
+                    if(Number(citizen.birthWeeks) > Number(citizen.weekOfDeath)){
+                        //Citizen died of natural causes.
+                        citizen.status = "deceased"
+                    }
+                    //Update citizen fertility
+                    citizen.fertility = Math.max(0, Number(citizen.fertility) - int_offline_game_years_passed)
+                    build_citizen(translation = true, citizen.id, citizen)
+                }
+            })
+            update_colony("buildingsUpdate")
+        }
+       return true
+    }
+}
+
+//Read progress from localStorage and update colony data
+
+let colony_updated = progress_already_saved && update_all_colony_data()
 //Avoid modal pop up when zone searched
 showModalZoneSearched = false
 test_citizen_fishing_roles([1, 3, 4])
 test_citizen_builder_roles([2, 5, 6])
-test_build_new_citizen({"gender": "Femenine", "ageYears":"21", "ageWeeks": 0, "birthWeeks": 1092, "birthWeek":-1092})
-//test_citizen_exile([11])
+if(testing_mode){
+    test_build_new_citizen({"gender": "Femenine", "ageYears":"21", "ageWeeks": 0, "birthWeeks": 1092, "birthWeek":-1092})
+    //test_citizen_exile([11])
+    test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
+    test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
+    test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
+    test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
+}
 test_citizen_expeditionary_roles([7, 8, 9, 10, 11])
-test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
-test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
 test_citizen_stoneBreaker_roles([12, 13])
-test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
-test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
 test_citizen_waterBearer_roles([14])
 test_citizen_woodcutter_roles([15])
-test_pregnancy_status()
-test_familiar_relationships()
+//test_pregnancy_status()
+//test_familiar_relationships()
 add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6
+/*
 add_landform("huntingMount")
+resourcesExpeditionsDone++
 add_landform("stoneMount")
+resourcesExpeditionsDone++
 add_landform("clayMount")
+resourcesExpeditionsDone++
 add_landform("mineralMount")
+resourcesExpeditionsDone++
 add_landform("woodMount")
-//daysPassed = 5
+resourcesExpeditionsDone++
+*/
+//game_days_passed = 5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if(!(lifeStarted || searchingZone)){
+    document.querySelector("#searchZone").addEventListener("click", searchZone)
+}
 
-document.querySelector("#searchZone").addEventListener("click", searchZone)
+console.log(`Used localStorage space: ${getLocalStorageUsedSpaceKB()} KB`);

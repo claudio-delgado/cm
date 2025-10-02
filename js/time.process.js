@@ -71,10 +71,10 @@ const life_interval = setInterval(() => {
         document.querySelector("#currentWeek").innerText = currentWeek
         document.querySelector("#passedWeeks").innerText = Math.floor(game_days_passed / 7)
         //Update years.
+        yearPassed = dayPassed && !(game_days_passed % 364)
         currentYear = Number(document.querySelector("#currentYear").innerText)
-        currentYear+= !(game_days_passed / 364)
+        currentYear+= yearPassed
         //Yearly flag
-        yearPassed = dayPassed && !(game_days_passed / 364)
         document.querySelector("#currentYear").innerText = currentYear
     }
     const check_critical_events = (frequency = "daily") => {

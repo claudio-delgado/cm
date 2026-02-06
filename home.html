@@ -6,48 +6,96 @@
     
     <title>Medieval colonies - alpha 1.0 - Home</title>
 
-    <!--link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" /-->
     <link href="v6.7.2/css/all.css" rel="stylesheet" />
     <link href="v6.7.2/css/sharp-solid.css" rel="stylesheet" />
     <link href="v6.7.2/css/sharp-regular.css" rel="stylesheet" />
+    <!-- Uncomment this link when debugging -->
+    <!--link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" -->
+    <!-- Comment this when debugging -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="js/classes/numeric.js"></script>
+    <script src="js/useful.arrays.js"></script>
+    <script src="js/classes/functions.js"></script>
+    <script src="js/classes/dom.js"></script>
+    <script src="js/classes/modal.js"></script>
+    <script src="js/classes/game_time.js"></script>
+    <script src="js/classes/news.js"></script>
+    <script src="js/classes/colony.js"></script>
+    <script src="js/classes/building.js"></script>
+    <script src="js/classes/citizen.js"></script>
+    <script src="js/classes/pregnancy.js"></script>
+    <script src="js/classes/relationship.js"></script>
+    <script src="js/classes/landform.js"></script>
+    <script src="js/classes/expedition.js"></script>
     <script src="js/init.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/functions.js"></script>
-    <script src="js/useful.arrays.js"></script>
     <script src="js/panel.js"></script>
     <script src="js/export_template.js"></script>
+
     <script type="module">
         //Module to export the game progress to a json file.
         import { JSONFile } from './js/modules/json.js'
         import { Progress } from './js/modules/progress.js'
-        import { Modal } from './js/modules/modal.js'
+        import { ModalBox } from './js/modules/modal.js'
         
+        document.getElementById('resetProgress').addEventListener('click', (e) => {
+            let data = {"paragraphs":[
+                "You are about to reset all life progress in your colony!", 
+                "This means that after resetting current progress, all previous progress will be deleted.", 
+                "If you are decided to restart your game choose 'Ok', otherwise choose 'Cancel'."
+            ]}
+            let p_modal = new ModalBox("modalProgress")
+            p_modal.build()
+            p_modal.progress_modal("Warning!", data)
+            p_modal.show()
+            document.getElementById("modalBoxFooterButton1").classList.remove("hidden")
+            document.getElementById("modalBoxFooterButton1").addEventListener("click", (e) => {
+                localStorage.removeItem("colony")
+                if(document.activeElement) document.activeElement.blur() 
+                p_modal.hide()
+                let data = {"paragraphs":["Progress updated successfully. Let's go to home page and check the changes."]}
+                p_modal.progress_modal("Warning!", data)
+                document.getElementById("modalBoxFooterButton1").classList.add("hidden")
+                document.getElementById("modalBoxFooterButton2").innerHTML = translate(language, "Ok")
+                document.getElementById("modalBoxFooterButton2").onclick = () => { window.location.href = "home.html" }
+                p_modal.show()
+            })
+            document.getElementById("modalBoxFooterButton2").classList.remove("hidden")
+            document.getElementById("modalBoxFooterButton2").innerHTML = translate(language, "Cancel")
+            document.getElementById("modalBoxFooterButton2").addEventListener("click", (e) => {
+                if(document.activeElement) document.activeElement.blur() 
+                p_modal.hide()
+            })
+        })
         document.getElementById('saveProgress').addEventListener('click', (e) => {
             let data = {"paragraphs":[
                 "You are about to change all life progress in your colony!", 
                 "This means that after saving current progress, all previous progress will be replaced by the new one.", 
                 "If you are decided to update your progress choose 'Ok', otherwise choose 'Cancel'."
             ]}
-            let p_modal = new Modal("modalProgress")
+            let p_modal = new ModalBox("modalProgress")
             p_modal.build()
             p_modal.progress_modal("Warning!", data)
             p_modal.show()
-            document.getElementById("modalFooterButton1").classList.remove("hidden")
-            document.getElementById("modalFooterButton1").addEventListener("click", (e) => {
+            document.getElementById("modalBoxFooterButton1").classList.remove("hidden")
+            document.getElementById("modalBoxFooterButton1").addEventListener("click", (e) => {
                 if(document.activeElement) document.activeElement.blur()
                 let game_progress = new Progress()
+                game_progress.build_data()
                 game_progress.save_localstorage()
                 p_modal.hide()
                 let data = {"paragraphs":["Progress updated successfully. Let's go to home page and check the changes."]}
                 p_modal.progress_modal("Warning!", data)
-                document.getElementById("modalFooterButton1").classList.add("hidden")
-                document.getElementById("modalFooterButton2").innerHTML = translate(language, "Ok")
-                document.getElementById("modalFooterButton2").onclick = () => { window.location.href = "home.html" }
+                document.getElementById("modalBoxFooterButton1").classList.add("hidden")
+                document.getElementById("modalBoxFooterButton2").innerHTML = translate(language, "Ok")
+                document.getElementById("modalBoxFooterButton2").onclick = () => { window.location.href = "home.html" }
                 p_modal.show()
             })
-            document.getElementById("modalFooterButton2").classList.remove("hidden")
-            document.getElementById("modalFooterButton2").innerHTML = translate(language, "Cancel")
-            document.getElementById("modalFooterButton2").addEventListener("click", (e) => {
+            document.getElementById("modalBoxFooterButton2").classList.remove("hidden")
+            document.getElementById("modalBoxFooterButton2").innerHTML = translate(language, "Cancel")
+            document.getElementById("modalBoxFooterButton2").addEventListener("click", (e) => {
                 if(document.activeElement) document.activeElement.blur() 
                 p_modal.hide()
             })
@@ -112,6 +160,9 @@
                             <div id="dropdownNavbarProgress" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
                                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                                     <li>
+                                        <a id="resetProgress" onclick="this.closest('div').classList.add('hidden')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-i18n>Reset</a>
+                                    </li>
+                                    <li>
                                         <a id="saveProgress" onclick="this.closest('div').classList.add('hidden')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-i18n>Save</a>
                                     </li>
                                     <li>
@@ -135,9 +186,14 @@
             </div>
         </nav>
     </header>
-    <div id="accordion-menu" class="mx-2 mb-2 z-0" data-accordion="collapse"></div>  
-    <!-- Main modal>
-     <div id="modalPopup" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="accordion-menu" class="mx-2 mb-2 z-0" data-accordion="collapse">
+        <div id="gameOverDiv" class="hidden max-w-screen-xl my-1 text-xs text-white bg-red-900 border border-gray-100 mx-auto p-2">
+            <p class="flex flex-wrap items-center"><i class="text-sm fa fa-face-frown me-1"></i><span data-i18n>Your game is over.</span></p>
+            <p class="pt-2"><span><span data-i18n>You can start a new one by clicking</span>: <span class="font-bold" data-i18n>Game progress</span> + <span class="font-bold" data-i18n>Reset</span> <span data-i18n>in the upper menu.</span></span></p>
+        </div>
+    </div>  
+    <!-- Main modal -->
+    <div id="modalPopup" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative px-3 mx-0 w-full">
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
@@ -157,13 +213,8 @@
                 </div>
             </div>
         </div>
-    </div -->
+    </div>
 </body>
-<script src="js/dom.manipulation.js"></script>
-<script src="js/time.process.js"></script>
-<script src="js/home.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 <script>
     // set the modal menu element
     const $targetEl = document.getElementById('modalPopup');
@@ -191,4 +242,7 @@
     };
    const modal = new Modal($targetEl, options, instanceOptions);
 </script>
+<script src="js/dom.manipulation.js"></script>
+<script src="js/time.process.js"></script>
+<script src="js/home.js"></script>
 </html>

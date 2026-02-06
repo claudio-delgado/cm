@@ -1,13 +1,4 @@
 //See init.js to check global variables and constants.
-
-const initColonyInfo = () => {
-    language = "ES", colonyScore = 0, colonyLifeQuality = 10
-    citizensFemaleAmount = 5, citizensMaleAmount = 5
-    game_days_passed = 0, dayPassed = false, weekPassed = false
-    wagonsAmount = 3, horsesAmount = 6
-    //colony_water_reservoir = water_reservoirs[Math.floor(Math.random() * water_reservoirs.length)].name
-    colony_water_reservoir = Object.keys(water_reservoirs)[Math.floor(Math.random() * Object.keys(water_reservoirs).length)]
-}
 const loadInitialRandomGoods = () => {
     stock_values.resources["EN"]["stone"]+= 800 + Math.floor(Math.random() * (1000 - 800))
     stock_values.resources["ES"][translate(language, "stone")] = stock_values.resources["EN"]["stone"]
@@ -77,15 +68,15 @@ const endActiveExpedition = (expedition_id, expeditionType) => {
             //Calculate type of mount discovered
             let mountResourceType = Math.random()
             if(!huntingMountDiscovered){
-                data.mountResourceType = mountResourceType < mounts.descriptions["Mineral mount"]["discovery-probability-1"] ? "mineralMount" :
-                                        mountResourceType < mounts.descriptions["Clay mount"]["discovery-probability-1"] ? "clayMount" :
-                                        mountResourceType < mounts.descriptions["Wood mount"]["discovery-probability-1"] ? "woodMount" :
-                                        mountResourceType < mounts.descriptions["Stone mount"]["discovery-probability-1"] ? "stoneMount" : "huntingMount"
+                data.mountResourceType = mountResourceType < landforms.descriptions["Mineral mount"]["discovery-probability-1"] ? "mineralMount" :
+                                        mountResourceType < landforms.descriptions["Clay mount"]["discovery-probability-1"] ? "clayMount" :
+                                        mountResourceType < landforms.descriptions["Wood mount"]["discovery-probability-1"] ? "woodMount" :
+                                        mountResourceType < landforms.descriptions["Stone mount"]["discovery-probability-1"] ? "stoneMount" : "huntingMount"
                 huntingMountDiscovered = data.mountResourceType === "Hunting"
             } else {
-                data.mountResourceType = mountResourceType < mounts.descriptions["Mineral mount"]["discovery-probability-2"] ? "mineralMount" :
-                                        mountResourceType < mounts.descriptions["Clay mount"]["discovery-probability-2"] ? "clayMount" :
-                                        mountResourceType < mounts.descriptions["Wood mount"]["discovery-probability-2"] ? "WoodMount" : "stoneMount"
+                data.mountResourceType = mountResourceType < landforms.descriptions["Mineral mount"]["discovery-probability-2"] ? "mineralMount" :
+                                        mountResourceType < landforms.descriptions["Clay mount"]["discovery-probability-2"] ? "clayMount" :
+                                        mountResourceType < landforms.descriptions["Wood mount"]["discovery-probability-2"] ? "WoodMount" : "stoneMount"
             }
         }
     }
@@ -295,7 +286,7 @@ const endActiveExpedition = (expedition_id, expeditionType) => {
     }
 }
 
-const citizenDescription = (gender, birthWeeks, language, texts, attributes, genderPlacement) => {
+const citizenDescription = (gender, weeksAlive, language, texts, attributes, genderPlacement) => {
     let textAttr = "", prefix = "", gen = (gender === "Femenine" || gender === "Femenino" ? "F" : "M"), adjective = "", text = ""
     let connector, noun
     if(language === "ES" && (texts === "Ella es una" || texts === "El es un")) { connector = " y " }
@@ -304,18 +295,18 @@ const citizenDescription = (gender, birthWeeks, language, texts, attributes, gen
     if(language === "EN" && !(texts === "She is a" || texts === "He is a")) { connector = " or " }
     //Check citizen age
     switch(true){
-        case birthWeeks <= 311: noun = (gen === "F" ? "beba" : "bebé"); break
-        case birthWeeks > 311 && birthWeeks <= 727: noun = (gen === "F" ? "nena" : "nene"); break
-        case birthWeeks > 727 && birthWeeks <= 1091: noun = (gen === "F" ? "chica" : "chico"); break
-        case birthWeeks > 1091 && birthWeeks <= 3379: noun = (gen === "F" ? "mujer" : "hombre"); break
-        case birthWeeks > 3379: noun = (gen === "F" ? "anciana" : "anciano"); break
+        case weeksAlive <= 311: noun = (gen === "F" ? "beba" : "bebé"); break
+        case weeksAlive > 311 && weeksAlive <= 727: noun = (gen === "F" ? "nena" : "nene"); break
+        case weeksAlive > 727 && weeksAlive <= 1091: noun = (gen === "F" ? "chica" : "chico"); break
+        case weeksAlive > 1091 && weeksAlive <= 3379: noun = (gen === "F" ? "mujer" : "hombre"); break
+        case weeksAlive > 3379: noun = (gen === "F" ? "anciana" : "anciano"); break
     }
     noun = translate(language, noun)
     if(language === "EN"){
         attributes.forEach(function(value, index){
             prefix = (index<2 ? (index ? ", " : " ") : connector)
             adjective = attributes_adjectives[language][value]
-            textAttr+= prefix+"<strong class='"+attributes_colors[language][value]+"'>"+adjective+"</strong>"
+            textAttr+= prefix+"<strong class='"+attributes_colors[language][value].text+"'>"+adjective+"</strong>"
         })
         text+= texts+(genderPlacement=="left"?" "+noun:"")+" "+textAttr+(genderPlacement=="right"?" "+noun:"")
     }
@@ -324,22 +315,22 @@ const citizenDescription = (gender, birthWeeks, language, texts, attributes, gen
             prefix = (index<2 ? (index ? ", " : " ") : (value === "Inteligencia" && connector === " y " ? " e " : connector))
             if(typeof attributes_adjectives[language][value] === "undefined") debugger
             adjective = attributes_adjectives[language][value][gen]
-            textAttr+= prefix+"<strong class='"+attributes_colors[language][value]+"'>"+adjective+"</strong>"
+            textAttr+= prefix+"<strong class='"+attributes_colors[language][value].text+"'>"+adjective+"</strong>"
         })
         text+= texts+(genderPlacement=="left"?" "+noun:"")+" "+textAttr+(genderPlacement=="right"?" "+noun:"")
     }
     return text
 }
-const updateCitizenDescription = (citizenIndex, gender, birthWeeks, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
+const updateCitizenDescription = (citizenIndex, gender, weeksAlive, citizenOwnAttributes, citizenWishedAttributes, citizenHatedAttribute) => {
     let descriptionText1 = {"ES" : {"F": "Ella es una", "M": "El es un"}, "EN" : {"F": "She is a", "M": "He is a"}}
     let descriptionText2 = {"ES" : {"F": "A ella le gusta un", "M": "A él le gusta una"}, "EN" : {"F": "She likes a", "M": "He likes a"}}
     let descriptionText3 = {"ES" : {"F": "Ella prefiere que no sea", "M": "Él prefiere que no sea"}, "EN" : {"F": "She prefers a no", "M": "He prefers a no"}}
     let other_gender = gender === "Femenine" ? "Masculine" : "Femenine"
-    citizenBio = citizenDescription(gender, birthWeeks, language, descriptionText1[language][gender.charAt(0)], citizenOwnAttributes, language=="ES" ? "left" : "right")+"."
+    citizenBio = citizenDescription(gender, weeksAlive, language, descriptionText1[language][gender.charAt(0)], citizenOwnAttributes, language=="ES" ? "left" : "right")+"."
     //Only show possible future partner features if he or she is no baby.
-    if(birthWeeks >= 728){
-        citizenBio+= "</br>"+citizenDescription(other_gender, birthWeeks, language, descriptionText2[language][gender.charAt(0)], citizenWishedAttributes, language=="ES" ? "left" : "right")+".</br>"
-        citizenBio+= citizenDescription(other_gender, birthWeeks, language, descriptionText3[language][gender.charAt(0)], citizenHatedAttribute, language=="ES" ? "none" : "right")
+    if(weeksAlive >= 728){
+        citizenBio+= "</br>"+citizenDescription(other_gender, weeksAlive, language, descriptionText2[language][gender.charAt(0)], citizenWishedAttributes, language=="ES" ? "left" : "right")+".</br>"
+        citizenBio+= citizenDescription(other_gender, weeksAlive, language, descriptionText3[language][gender.charAt(0)], citizenHatedAttribute, language=="ES" ? "none" : "right")
     }
     //Place description in citizen's description panel, removing previous one if existed.
     document.querySelector("#citizen-"+citizenIndex+"-description").innerHTML = "\""+citizenBio+"\""
@@ -399,37 +390,6 @@ const set_random_name = (language, gender = ["Femenine", "Masculine"][Math.floor
     if(family === undefined) debugger
     return name + ", " + family
 }
-const setRandomNames = (language) => {
-    //Assign random names for all citizens
-    var femaleNames = naming['names'][language]['F']
-    var maleNames = naming['names'][language]['M']
-    //Assign random families for all citizens
-    var femaleFamilies = naming['families'][language]['F']
-    var maleFamilies = naming['families'][language]['M']
-    //Iterate over each citizen and assign names and families
-    for(let i = 1; i<=Object.keys(citizens).length; i++){
-        let randomCitizenName = "", randomCitizenFamily = "", iconGroup = "", genderClass = "", genderColour = ""
-        if(i<=Object.keys(citizens).length/2){
-            iconGroup = "fa"; genderClass = "fa-venus"; genderColour = "text-red-500"
-            randomCitizenName = femaleNames[Math.floor(Math.random() * femaleNames.length)]
-            femaleNames = femaleNames.filter(item => item !== randomCitizenName)
-            randomCitizenFamily = femaleFamilies[Math.floor(Math.random() * femaleFamilies.length)]
-            femaleFamilies = femaleFamilies.filter(item => item !== randomCitizenFamily)
-        } else {
-            iconGroup = "fa"; genderClass = "fa-mars"; genderColour = "text-blue-500"
-            randomCitizenName = maleNames[Math.floor(Math.random() * maleNames.length)]
-            maleNames = maleNames.filter(item => item !== randomCitizenName)
-            randomCitizenFamily = maleFamilies[Math.floor(Math.random() * maleFamilies.length)]
-            maleFamilies = maleFamilies.filter(item => item !== randomCitizenFamily)
-        
-        }
-        document.querySelector("#citizen-"+i+"-gender-icon").classList.remove("hidden")
-        document.querySelector("#citizen-"+i+"-gender-icon").classList.add(iconGroup, genderClass, genderColour)
-        citizens[i].name = randomCitizenName+", "+randomCitizenFamily
-        document.querySelector("#citizen-"+i+"-name").innerHTML = citizens[i].name
-        //"<i id='citizen-"+i+"-gender-icon' class='text-red-500 fa fa-venus me-1'></i><i id='citizen-"+i+"-role-icon' class='text-green-500 hidden fa me-1'></i></i><span class='text-yellow-500 border border-yellow-500 rounded px-1 me-1'>2</span>"+
-    }
-}
 const getRandomAttributes = (language, amount = 3, excludeThis = []) => {
     let attributeGroups = JSON.parse(JSON.stringify(attributes[language]))
     //Excluir los atributos necesarios.
@@ -453,6 +413,21 @@ const getRandomAttributes = (language, amount = 3, excludeThis = []) => {
         citizenAttributes.push(randomAttribute)
     }
     return citizenAttributes
+}
+const get_random_citizen_to_remove = () => {
+    let idle_citizens = get_non_zero_index_array(citizens.filter(citizen => citizen.status === "idle"))
+    let candidate = 0
+    if(idle_citizens.length){
+        candidate = 1 + Math.floor(Math.random() * idle_citizens.length)
+    } else {
+        let non_soldier_citizens = get_non_zero_index_array(citizens.filter(citizen => citizen.rolekey !== "war"))
+        if(non_soldier_citizens.length){
+            candidate = 1 + Math.floor(Math.random() * non_soldier_citizens.length)
+        } else {
+            candidate = 1 + Math.floor(Math.random() * citizens.length)
+        }
+    }
+    return candidate
 }
 const custom_accordion = (header_element_id = null, callback = () => {}) => {
     let header_element = document.getElementById(header_element_id) != undefined ? document.getElementById(header_element_id) : null
@@ -529,31 +504,82 @@ const test_stock_add_products = (stock_addings = []) => {
     })
 }
 
-
-initColonyInfo()
-
 //Test functionality before screen initialization.
 searchingZone = testing_mode //testing_mode defined in init.js
-test_stock_add_products([{"type": "resources", "product": "wood", "value": 320}])
-test_stock_add_products([{"type": "resources", "product": "branch", "value": 200}])
+//test_stock_add_products([{"type": "resources", "product": "wood", "value": 320}])
+//test_stock_add_products([{"type": "resources", "product": "branch", "value": 200}])
 
 //Screen initialization.
-accordion_news()
-if(!progress_already_saved){
-    add_news("Welcome")
-} else {
+//accordion_colony()
+//Initial stock.
+colony.add_resource_stock({good: "water", stock: Colony.initial_wagons_amount * 25})
+colony.add_resource_stock({good: "food", stock: Colony.initial_wagons_amount * 25})
+colony.add_resource_stock({good: "wood", stock: Colony.initial_wagons_amount * 100})
+colony.add_resource_stock({good: "wooden trunk", stock: Colony.initial_wagons_amount * 50})
+colony.add_product_stock({good: "nail", stock: Colony.initial_wagons_amount * 2500})
+colony.add_product_stock({good: "hammer", stock: Colony.initial_wagons_amount * 50})
+colony.add_product_stock({good: "shovel", stock: Colony.initial_wagons_amount * 80})
+colony.add_product_stock({good: "trowel", stock: Colony.initial_wagons_amount * 100})
+colony.add_product_stock({good: "saw", stock: Colony.initial_wagons_amount * 80})
+colony.add_product_stock({good: "hay", stock: Colony.initial_wagons_amount * 100})
+colony.add_product_stock({good: "rope", stock: Colony.initial_wagons_amount * 300})
+colony.add_product_stock({good: "rag", stock: Colony.initial_wagons_amount * 250})
+colony.add_product_stock({good: "wagon", stock: Colony.initial_wagons_amount})
+colony.add_product_stock({good: "horse", stock: 6})
+//colony.add_building_part_stock({good: "shed", stock: 1})
+//colony.add_building_part_stock({good: "table", stock: 1})
+
+colony.draw_news()
+News.load_message("welcome")
+if(progress_already_saved) {
     let colony_data = JSON.parse(localStorage.getItem("colony"))
     lifeStarted = colony_data["colony"]["zone searched"] === "yes"
     zoneSearched = lifeStarted
     searchingZone = colony_data["colony"]["zone searched"] === "in process"
 }
-accordion_colony()
-accordion_buildings()
-accordion_citizens()
-accordion_relationships()
-accordion_landforms()
-accordion_expeditions()
+colony.draw_colony()
+//accordion_buildings()
+colony.draw_buildings(empty = true)
+//accordion_citizens()
+//Create citizens
+for(let i = 1; i <= 10; i++){
+    let citizen_template = {"weeksAlive": i==11 ? 3200 : (i==11 ? 800 : Numeric.random_integer(1092, 1890/*750,3500*/)), "gender": i <= 5 ? "Femenine" : "Masculine", "fertility":Numeric.random_integer(1, 50)}
+    if(i<=5) citizen_template.fertilityWeek = 1
+    //Test expeditionaries.
+    if(Numeric.random_integer() >= 0.5){
+        citizen_template.role = "expeditionary"
+        citizen_template.rolekey = "expeditioning"
+    }
+    let new_citizen = new Citizen(citizen_template)
+    colony.add_citizen(new_citizen)
+}
+colony.draw_citizens()
+colony.citizens.get(1).couple = colony.citizens.get(6)
+//colony.citizens.get(1).ageYears = 26
+/*
+colony.citizens.get(1).fertility.week = 2
+colony.citizens.get(1).attributes = ["Fuerza", "Inteligencia", "Compañerismo"]
+colony.citizens.get(1).wishedAttributes = ["Creatividad", "Astucia", "Inteligencia"]*/
+colony.citizens.get(6).couple = colony.citizens.get(1)
+//colony.citizens.get(6).ageYears = 56
+/*
+colony.citizens.get(6).attributes = ["Astucia", "Destreza", "Creatividad"]
+colony.citizens.get(6).wishedAttributes = ["Fuerza", "Inteligencia", "Compañerismo"]
+colony.citizens.get(6).name = "Iván, El terrible"*/
+//document.getElementById("citizen-6-name").innerText = colony.citizens.get(6).name
+colony.add_couple(colony.citizens.get(1), colony.citizens.get(6))
+//accordion_relationships()
+colony.draw_relationships()
+colony.draw_landforms()
+colony.draw_expeditions()
+//accordion_expeditions()
 accordion_productions()
+/*
+let landform_template = {"name": translate(language, Landform.fromCamelCase.mineralMount), "category": "mineralMount"}
+let new_landform = new Landform(landform_template)
+colony.add_landform(new_landform)
+new_landform.draw()
+*/
 translate_all(language)
 
 enable_notification_events()
@@ -770,7 +796,7 @@ const draw_children_of_citizen = (a_citizen) => {
     for(let index = 0; index < a_citizen.children.length; index++){
         let a_child = citizens[a_citizen.children[index]]
         //Add child.
-        p = new element("p", "ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], children_div); p.create()
+        p = new element("p", "mt-1 mb-1 text-xs flex w-100 justify-between gap-2 text-white", [], children_div); p.create()
         h2 = new element("h2", "grow", [], p.getNode()); h2.create()
         d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
         s = new element("span", "", [], d2.getNode()); s.create()
@@ -787,28 +813,31 @@ const draw_children_of_citizen = (a_citizen) => {
     }
 }
 const add_child_to_citizen = (a_child, a_citizen) => {
-    citizens[a_citizen.id].children.push(a_child.id)
-    //Add child to specific panel.
-    if(document.querySelector(`#citizen-${a_citizen.id}-children p.empty`) != undefined){
-        //Remove "None" message.
-        document.querySelector(`#citizen-${a_citizen.id}-children p.empty`).remove()
+    //Check if child already exists as children of a_citizen.
+    if(!citizens[a_citizen.id].children.includes(a_child.id)){
+        citizens[a_citizen.id].children.push(a_child.id)
+        //Add child to specific panel.
+        if(document.querySelector(`#citizen-${a_citizen.id}-children p.empty`) != undefined){
+            //Remove "None" message.
+            document.querySelector(`#citizen-${a_citizen.id}-children p.empty`).remove()
+        }
+        let children_div = document.querySelector(`#citizen-${a_citizen.id}-children`)
+        //Add child.
+        p = new element("p", "mt-1 mb-1 text-xs flex w-100 justify-between gap-2 text-white", [], children_div); p.create()
+        h2 = new element("h2", "grow", [], p.getNode()); h2.create()
+        d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
+        s = new element("span", "", [], d2.getNode()); s.create()
+        let gender_class = a_child.gender.charAt(0) === "F" ? "venus" : "mars"
+        let gender_color = a_child.gender.charAt(0) === "F" ? "red" : "blue"
+        i = new element("i", `fa fa-${gender_class} text-${gender_color}-500`, [], s.getNode()); i.create()
+        let child_type = a_child.gender.charAt(0) === "F" ? "Daughter" : "Son"
+        s1 = new element("span", `font-bold bg-gray-600 border border-gray-500 text-${gender_color}-400 px-1 ms-1`, [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
+        s1.appendContent(translate(language, child_type, "", "capitalized"))
+        s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_child.name)
+        s = new element("span", "", [], d2.getNode()); s.create()
+        i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_child.id}], s.getNode(), `child-${a_child.id}-view-info`); i.create()
+        i.getNode().addEventListener("click", modal_citizen_info)
     }
-    let children_div = document.querySelector(`#citizen-${a_citizen.id}-children`)
-    //Add child.
-    p = new element("p", "ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], children_div); p.create()
-    h2 = new element("h2", "grow", [], p.getNode()); h2.create()
-    d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [], h2.getNode()); d2.create()
-    s = new element("span", "", [], d2.getNode()); s.create()
-    let gender_class = a_child.gender.charAt(0) === "F" ? "venus" : "mars"
-    let gender_color = a_child.gender.charAt(0) === "F" ? "red" : "blue"
-    i = new element("i", `fa fa-${gender_class} text-${gender_color}-500`, [], s.getNode()); i.create()
-    let child_type = a_child.gender.charAt(0) === "F" ? "Daughter" : "Son"
-    s1 = new element("span", `font-bold bg-gray-600 border border-gray-500 text-${gender_color}-400 px-1 ms-1`, [{"key":"data-i18n", "value":""}], s.getNode()); s1.create()
-    s1.appendContent(translate(language, child_type, "", "capitalized"))
-    s1 = new element("span", "ms-2 text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(a_child.name)
-    s = new element("span", "", [], d2.getNode()); s.create()
-    i = new element("i", "fa fa-eye", [{"key":"data-index", "value":a_child.id}], s.getNode(), `child-${a_child.id}-view-info`); i.create()
-    i.getNode().addEventListener("click", modal_citizen_info)
 }
 const cancel_relationship = (e) => {
     //Check if target belongs to a button or a div.
@@ -842,7 +871,7 @@ const cancel_relationship = (e) => {
     //Remove relationship if it exists.
     document.querySelectorAll(`[data-citizen-1="${citizen_id}"], [data-citizen-2="${citizen_id}"]`).forEach((elem) => {
         elem.remove()
-        let relationships_div = document.getElementById("citizen-relationships")
+        let relationships_div = document.getElementById("couple-relationships")
         //If no relationships left, show "Not defined" message.
         if(!relationships_div.children.length){
             p = new element("p", "empty ms-1 mt-1 mb-2 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], relationships_div); p.create()
@@ -880,7 +909,7 @@ const draw_couple_of_citizen = (a_citizen) => {
     couple_div.querySelectorAll("p").forEach((elem) => elem.remove())
     let a_couple = citizens[a_citizen.couple]
     //Add couple to citizen.
-    p = new element("p", `ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white`, [], couple_div); p.create()
+    p = new element("p", `mt-1 mb-1 text-xs flex w-100 justify-between gap-2 text-white`, [], couple_div); p.create()
     h2 = new element("h2", "grow", [], p.getNode(), `citizen-${a_citizen.id}-couple-${a_couple.id}`); h2.create()
     d2 = new element("div", "flex items-center justify-between gap-1 w-full py-1 px-2 text-xs text-gray-400 bg-gray-700 border border-gray-200", [{"key":"data-citizen-id", "value":a_citizen.id}], h2.getNode()); d2.create()
     s = new element("span", "", [], d2.getNode()); s.create()
@@ -897,6 +926,106 @@ const draw_couple_of_citizen = (a_citizen) => {
     if(document.querySelector(`#citizen-${a_couple.id}-couple p.empty`) != undefined){
         //Remove "None" message.
         document.querySelector(`#citizen-${a_couple.id}-couple p.empty`).remove()
+    }
+}
+//Show all content information for current relationship
+const draw_relationship = (d1, a_citizen, a_couple) => {
+    for(couple_index = 0; couple_index < 2; couple_index++){
+        let current_citizen = !couple_index % 2 ? a_citizen : a_couple
+        //Citizen's information
+        let citizen_is_woman = current_citizen.gender.charAt(0) === "F"
+        d2 = new element("div", "mt-1 mb-1 mx-1 px-1 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
+        p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s0 = new element("span", "flex", [], p.getNode()); s0.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+        s2.appendContent(translate(language, current_citizen.gender.charAt(0) === "F" ? "she is" : "he is", "", "capitalized")); s2.appendHTML(":")
+        s0 = new element("span", `grow flex gap-1 border border-gray-900 p-0.5 px-1 bg-gray-400 text-${citizen_is_woman ? "red-800" : "blue-800"}`, [], p.getNode()); s0.create()
+        s1 = new element("span", "font-bold flex-none", [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.name)
+        let woman_class = citizen_is_woman ? "woman" : ""
+        s0 = new element("span", `fertility ${woman_class} flex gap-1`, [], p.getNode()); s0.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+        s2.appendContent(translate(language, "Fertility", "", "capitalized")); s2.appendHTML(":")
+        let fertility_color = current_citizen.fertility >= 70 ? "text-green-700" : (current_citizen.fertility >= 45 ? "text-yellow-500" : (current_citizen.fertility >= 25 ? "text-orange-500" : (current_citizen.fertility >= 10 ? "text-red-600" : "fa-beat text-red-800")))
+        s0 = new element("span", `flex gap-1 border border-gray-900 p-0.5 px-1 ${fertility_color} bg-gray-400`, [], p.getNode()); s0.create()
+        s1 = new element("span", `fertility font-bold flex-none`, [], s0.getNode(), `citizen-${current_citizen.id}-fertility`); s1.create(); s1.appendContent(current_citizen.fertility.toString())
+        if(citizen_is_woman){
+            p = new element("p", "w-100 flex items-center gap-1 p-0 mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
+            let month_week = (document.getElementById("currentWeek").innerHTML*1 % 4) ? document.getElementById("currentWeek").innerHTML*1 % 4 : 4
+            let comparison_icon = month_week == current_citizen.fertilityWeek ? "fa-equals" : "fa-not-equal"
+            let fertility_class = month_week == current_citizen.fertilityWeek ? {"bg":"bg-green-600", "border": "border-green-500", "text":"text-green-500"} : {"bg":"bg-red-800", "border": "border-red-400", "text":"text-red-400"}
+            s0 = new element("span", "flex", [], p.getNode()); s0.create()
+            s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+            s2 = new element("span", `fertility-week`, [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+            s2.appendContent(translate(language, "Fertile week", "", "capitalized")); s2.appendHTML(":")
+            s0 = new element("span", `flex gap-1 border border-gray-400 p-0.5 px-1 text-gray-200 ${fertility_class.bg}`, [], p.getNode()); s0.create()
+            s1 = new element("span", `fertility-week value relationship font-bold flex-none`, [], s0.getNode(), `citizen-${current_citizen.id}-fertilityWeek`); s1.create(); s1.appendContent(current_citizen.fertilityWeek.toString())
+            s0 = new element("span", `flex items-center gap-1 border border-gray-500 p-1 px-1 text-gray-900 bg-gray-800`, [], p.getNode()); s0.create()
+            i = new element("i", `fertility-week mx-1 ${fertility_class.text} week-comparison fa ${comparison_icon}`, [], s0.getNode()); i.create()
+            s0 = new element("span", "flex", [], p.getNode()); s0.create()
+            s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+            s2 = new element("span", `fertility-week`, [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+            s2.appendContent(translate(language, "Month week", "", "capitalized")); s2.appendHTML(":")
+            s0 = new element("span", `flex gap-1 border border-gray-400 p-0.5 px-1 text-gray-200 ${fertility_class.bg}`, [], p.getNode()); s0.create()
+            s1 = new element("span", `fertility-week month-week relationship font-bold flex-none`, [], s0.getNode(), `citizen-${current_citizen.id}-monthWeek`); s1.create(); s1.appendContent(month_week.toString())
+            s0 = new element("span", `flex grow gap-1 border border-gray-400 p-0.5 px-1 text-gray-200 ${fertility_class.bg}`, [], p.getNode()); s0.create()
+            let fertility_situation = month_week == current_citizen.fertilityWeek ? "She's fertile this week" : "She's not fertile this week"
+            s1 = new element("span", `fertility-situation font-bold flex-none p-0 px-1`, [], s0.getNode(), `citizen-${current_citizen.id}-fertility-situation`); s1.create(); s1.appendContent(translate(language, fertility_situation))
+        }
+        //Attributes.
+        p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s0 = new element("span", "flex", [], p.getNode()); s0.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+        s2.appendContent(translate(language, current_citizen.gender.charAt(0) === "F" ? "her attributes are" : "his attributes are", current_citizen.gender.charAt(0), "capitalized")); s2.appendHTML(":")
+        bg_color = attributes_colors[language][current_citizen.attributes[0]].bg
+        text_color = attributes_colors[language][current_citizen.attributes[0]].text
+        border_color = attributes_colors[language][current_citizen.attributes[0]].border
+        s0 = new element("span", `grow flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.attributes[0])
+        bg_color = attributes_colors[language][current_citizen.attributes[1]].bg
+        text_color = attributes_colors[language][current_citizen.attributes[1]].text
+        border_color = attributes_colors[language][current_citizen.attributes[1]].border
+        s0 = new element("span", `grow flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.attributes[1])
+        bg_color = attributes_colors[language][current_citizen.attributes[2]].bg
+        text_color = attributes_colors[language][current_citizen.attributes[2]].text
+        border_color = attributes_colors[language][current_citizen.attributes[2]].border
+        s0 = new element("span", `grow flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.attributes[2])
+        //Wished attributes (wishes).
+        p = new element("p", "w-100 flex gap-1 p-0 mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s0 = new element("span", "flex", [], p.getNode()); s0.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+        s2.appendContent(translate(language, current_citizen.gender.charAt(0) === "F" ? "her wishes are" : "his wishes are", current_citizen.gender.charAt(0), "capitalized")); s2.appendHTML(":")
+        bg_color = attributes_colors[language][current_citizen.wishedAttributes[0]].bg
+        text_color = attributes_colors[language][current_citizen.wishedAttributes[0]].text
+        border_color = attributes_colors[language][current_citizen.wishedAttributes[0]].border
+        s0 = new element("span", `grow flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.wishedAttributes[0])
+        bg_color = attributes_colors[language][current_citizen.wishedAttributes[1]].bg
+        text_color = attributes_colors[language][current_citizen.wishedAttributes[1]].text
+        border_color = attributes_colors[language][current_citizen.wishedAttributes[1]].border
+        s0 = new element("span", `grow flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.wishedAttributes[1])
+        bg_color = attributes_colors[language][current_citizen.wishedAttributes[2]].bg
+        text_color = attributes_colors[language][current_citizen.wishedAttributes[2]].text
+        border_color = attributes_colors[language][current_citizen.wishedAttributes[2]].border
+        s0 = new element("span", `grow flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.wishedAttributes[2])
+        //Hated attribute
+        p = new element("p", "w-100 flex gap-1 p-0 text-xs text-gray-200", [], d2.getNode()); p.create()
+        s0 = new element("span", "flex", [], p.getNode()); s0.create()
+        s1 = new element("span", "w-100 flex-none border border-gray-500 p-0.5 px-1 bg-gray-800 text-white", [], s0.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create()
+        s2.appendContent(translate(language, "dislikes attribute", "", "capitalized")); s2.appendHTML(":")
+        bg_color = attributes_colors[language][current_citizen.hatedAttribute].bg
+        text_color = attributes_colors[language][current_citizen.hatedAttribute].text
+        border_color = attributes_colors[language][current_citizen.hatedAttribute].border
+        s0 = new element("span", `flex justify-center gap-1 border ${border_color} ${text_color} p-0.5 px-1 ${bg_color}`, [], p.getNode()); s0.create()
+        s1 = new element("span", `font-bold flex-none text-black`, [], s0.getNode()); s1.create(); s1.appendContent(current_citizen.hatedAttribute)
     }
 }
 const add_couple_to_citizen = (a_couple, a_citizen) => {
@@ -947,7 +1076,7 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     
     //Build relationship.
     //Check if there is no relationship yet.
-    let relationships_div = document.querySelector("#citizen-relationships")
+    let relationships_div = document.querySelector("#couple-relationships")
     if(![undefined, null].includes(relationships_div.querySelector("p.empty"))){
         //Remove "None" message.
         relationships_div.querySelector("p.empty").remove()
@@ -966,107 +1095,7 @@ const add_couple_to_citizen = (a_couple, a_citizen) => {
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build new relationship accordion body
     d1 = new element("div", "hidden text-xs text-gray-200 border border-gray-800 bg-gray-600", [{"key":"aria-labelledby","value":`accordion-relationship-${relationship_id}-title`}], d.getNode(), `accordion-relationship-${relationship_id}-body`); d1.create()
-    //Citizen's information
-    d2 = new element("div", "mt-1 mb-1 mx-1 px-2 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
-    p = new element("p", "flex", [], d2.getNode()); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) === "F" ? "she is" : "he is", "", "capitalized"))
-    s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(a_citizen.name)
-    let woman_class = citizen_is_woman ? "woman" : ""
-    p = new element("p", `fertility ${woman_class} flex items-center text-gray-400`, [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility", "", "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    let fertility_color = a_citizen.fertility >= 70 ? "text-green-500" : (a_citizen.fertility >= 45 ? "text-yellow-500" : (a_citizen.fertility >= 25 ? "text-orange-500" : (a_citizen.fertility >= 10 ? "text-red-400" : ("text-red-500"))))
-    s = new element("span", `fertility ms-1 font-bold ${fertility_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.fertility.toString())
-    if(citizen_is_woman){
-        let month_week = (document.getElementById("currentWeek").innerHTML*1 % 4) ? document.getElementById("currentWeek").innerHTML*1 % 4 : 4
-        let comparison_icon = month_week === a_citizen.fertilityWeek ? "fa-equals" : "fa-not-equal"
-        let fertility_class = month_week === a_citizen.fertilityWeek ? "text-green-500" : ""
-        s = new element("span", "me-1", [], p.getNode()); s.create(); s.appendContent(",")
-        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week", "", "capitalized"))
-        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
-        s = new element("span", `fertility-week ${fertility_class} value ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(a_citizen.fertilityWeek.toString())
-        i = new element("i", `fertility-week mx-1 ${fertility_class} week-comparison fa ${comparison_icon}`, [], p.getNode()); i.create()
-        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week", "", "capitalized"))
-        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
-        s = new element("span", `fertility-week ${fertility_class} month-week ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(month_week.toString())
-    }
-    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) === "F" ? "her attributes are" : "his attributes are", a_citizen.gender.charAt(0), "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributes_colors[language][a_citizen.attributes[0]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[0])
-    text_color = attributes_colors[language][a_citizen.attributes[1]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[1])
-    text_color = attributes_colors[language][a_citizen.attributes[2]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.attributes[2])
-    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, a_citizen.gender.charAt(0) === "F" ? "her wished attributes are" : "his wished attributes are", a_citizen.gender.charAt(0), "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributes_colors[language][a_citizen.wishedAttributes[0]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[0])
-    text_color = attributes_colors[language][a_citizen.wishedAttributes[1]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[1])
-    text_color = attributes_colors[language][a_citizen.wishedAttributes[2]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.wishedAttributes[2])
-    p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes attribute", "", "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    text_color = attributes_colors[language][a_citizen.hatedAttribute]
-    s = new element("span", `ms-1 px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_citizen.hatedAttribute)
-    //Couple's information
-    d2 = new element("div", "mt-1 mb-1 mx-1 px-2 py-1 border border-gray-800 bg-gray-700", [], d1.getNode()); d2.create()
-    p = new element("p", "flex", [], d2.getNode()); p.create()
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "and", "", "capitalized"))
-    s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, !couple_is_woman ? "he is" : "she is"))
-    s = new element("span", "font-bold", [], p.getNode()); s.create(); s.appendContent(a_couple.name)   
-    woman_class = couple_is_woman ? "woman" : ""
-    p = new element("p", "fertility flex items-center text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(translate(language, "Fertility", "", "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    fertility_color = a_couple.fertility >= 70 ? "text-green-500" : (a_couple.fertility >= 45 ? "text-yellow-500" : (a_couple.fertility >= 25 ? "text-orange-500" : (a_couple.fertility >= 10 ? "text-red-400" : ("text-red-500"))))
-    s = new element("span", `fertility ${woman_class} ms-1 font-bold ${fertility_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertility.toString())
-    if(couple_is_woman){
-        let month_week = (document.getElementById("currentWeek").innerHTML*1 % 4) ? document.getElementById("currentWeek").innerHTML*1 % 4 : 4
-        let comparison_icon = month_week === a_couple.fertilityWeek ? "fa-equals" : "fa-not-equal"
-        let fertility_class = month_week === a_couple.fertilityWeek ? "text-green-500" : ""
-        s = new element("span", "me-1", [], p.getNode()); s.create(); s.appendContent(",")
-        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Fertile week", "", "capitalized"))
-        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
-        s = new element("span", `fertility-week ${fertility_class} value ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(a_couple.fertilityWeek.toString())
-        i = new element("i", `fertility-week mx-1 ${fertility_class} week-comparison fa ${comparison_icon}`, [], p.getNode()); i.create()
-        s = new element("span", `fertility-week ${fertility_class}`, [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Month week", "", "capitalized"))
-        s = new element("span", `fertility-week ${fertility_class}`, [], p.getNode()); s.create(); s.appendContent(":")
-        s = new element("span", `fertility-week ${fertility_class} month-week ms-1 font-bold`, [], p.getNode()); s.create(); s.appendContent(month_week.toString())
-    }
-    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, couple_is_woman ? "her attributes are" : "his attributes are", a_couple.gender.charAt(0), "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributes_colors[language][a_couple.attributes[0]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[0])
-    text_color = attributes_colors[language][a_couple.attributes[1]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[1])
-    text_color = attributes_colors[language][a_couple.attributes[2]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.attributes[2])
-    p = new element("p", "flex text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, couple_is_woman ? "her wished attributes are" : "his wished attributes are", a_couple.gender.charAt(0), "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    p = new element("p", "py-1 my-1", [], d2.getNode()); p.create()
-    text_color = attributes_colors[language][a_couple.wishedAttributes[0]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[0])
-    text_color = attributes_colors[language][a_couple.wishedAttributes[1]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[1])
-    text_color = attributes_colors[language][a_couple.wishedAttributes[2]]
-    s = new element("span", `px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.wishedAttributes[2])
-    p = new element("p", "flex items-center text-gray-400", [], d2.getNode()); p.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "dislikes attribute", "", "capitalized"))
-    s = new element("span", "", [], p.getNode()); s.create(); s.appendContent(":")
-    text_color = attributes_colors[language][a_couple.hatedAttribute]
-    s = new element("span", `ms-1 px-2 py-0.5 me-1 text-center border border-gray-500 rounded bg-gray-800 text-xs font-bold ${text_color}`, [], p.getNode()); s.create(); s.appendContent(a_couple.hatedAttribute)
+    draw_relationship(d1, a_citizen, a_couple)
     enable_accordion_click(b.getNode())
     //Actions available
     //Title
@@ -1328,6 +1357,247 @@ const handleToggleWorker = (e) => {
     e.target.addEventListener("click", handleToggleWorker)
 }
 
+//Update everything in the colony since last login.
+const update_all_colony_data = () => {
+    let colony_data = JSON.parse(localStorage.getItem("colony"))
+    const get_time_passed = (colony_data) => {
+        let time_passed = {}
+        time_passed.last_login_real_time = new Date(colony_data["date"] + " " + colony_data["time"])
+        time_passed.current_real_time = new Date()
+        //Already lived (and saved) time
+        time_passed.last_login_game_date_in_hours = colony_data["time lived"]["weeks"] * 7 * 24
+        time_passed.last_login_game_date_in_hours += (colony_data["time lived"]["current time"]["day"] - 1) * 24
+        time_passed.last_login_game_date_in_hours += colony_data["time lived"]["current time"]["hour"]*1
+        //Offline time.
+        //How many real seconds offline?
+        time_passed.seconds_offline = Math.floor((time_passed.current_real_time - time_passed.last_login_real_time) / 1000) //Time difference in seconds.
+        time_passed.int_offline_game_hours = Math.floor(time_passed.seconds_offline / 1.79) //In-game hours passed since last session.
+        time_passed.int_offline_game_days = Math.floor(time_passed.int_offline_game_hours / 24) //In-game days passed since last session.
+        time_passed.int_offline_game_weeks = Math.floor(time_passed.int_offline_game_hours / 24 / 7) 
+        time_passed.int_offline_game_years = Math.floor(time_passed.int_offline_game_hours / 24 / 7 / 52) 
+        //Accumulated time passed (since game began) (saved time + offline time)
+        time_passed.total_game_hours = time_passed.last_login_game_date_in_hours + time_passed.int_offline_game_hours
+        time_passed.total_game_days = time_passed.total_game_hours / 24
+        time_passed.total_game_weeks = time_passed.total_game_days / 7
+        time_passed.total_game_years = time_passed.total_game_weeks / 52
+        game_days_passed = Math.floor(time_passed.total_game_days)
+        time_passed.int_remaining_game_year_weeks = Math.floor((time_passed.total_game_years - Math.floor(time_passed.total_game_years)) * 52)
+        time_passed.int_remaining_game_week_days = Math.floor((time_passed.total_game_weeks - Math.floor(time_passed.total_game_weeks)) * 7)
+        time_passed.int_remaining_game_day_hours = Math.floor((time_passed.total_game_hours - Math.floor(time_passed.total_game_days) * 24))
+        return time_passed
+    }
+    //Is there any progress previously saved?
+    if(colony_data){
+        if(lifeStarted || searchingZone){
+            //Iterate localStorage structure and update colony data
+            
+            //Print colony main information.
+            if(colony_data["colony"]["name"]) document.querySelector("#colonyName").value = colony_data["colony"]["name"]
+            if(colony_data["colony"]["life quality"]) document.querySelector("#colonyLifeQuality").innerHTML = colony_data["colony"]["life quality"]*1
+            if(colony_data["colony"]["score"]) document.querySelector("#colonyScore").innerHTML = colony_data["colony"]["score"]*1
+            if(colony_data["colony"]["power"]) document.querySelector("#colonyPower").innerHTML = colony_data["colony"]["power"]*1
+            if(colony_data["colony"]["oppression"]) document.querySelector("#colonyOppression").innerHTML = colony_data["colony"]["oppression"]*1
+            
+            //Evaluate what has changed between last session and current session.
+            let time_passed = get_time_passed(colony_data)
+            
+            //Update colony time passed
+            document.getElementById("passedWeeks").innerHTML = Math.floor(time_passed.total_game_weeks)//last_online_game_weeks_lived + int_offline_game_weeks_passed
+            document.getElementById("currentYear").innerHTML = 1 + Math.floor(time_passed.total_game_years)//last_online_game_year + int_offline_game_years_passed
+            document.getElementById("currentWeek").innerHTML = 1 + time_passed.int_remaining_game_year_weeks//int_remaining_game_year_weeks
+            document.getElementById("currentDay").innerHTML = 1 + time_passed.int_remaining_game_week_days
+            document.getElementById("currentHour").innerHTML = time_passed.int_remaining_game_day_hours.toString().padStart(2, "0")//(int_offline_game_hours_passed - (int_offline_game_days_passed * 24)).toString().padStart(2, "0")
+            
+            //Update goods stock.
+            Object.keys(colony_data["colony"]["global stock"]["resources"]).forEach((resource) => {
+                if(resource !== "food" && document.getElementById(`colony-${resource}-stock`)){
+                    document.querySelectorAll(`#colony-${resource}-stock`).forEach(elem => elem.innerHTML = colony_data["colony"]["global stock"]["resources"][resource]*1)
+                }
+            })
+            Object.keys(colony_data["colony"]["global stock"]["products"]).forEach((product) => {
+                if(document.getElementById(`colony-${product}-stock`)){
+                    document.getElementById(`colony-${product}-stock`).innerHTML = colony_data["colony"]["global stock"]["products"][product]*1
+                }
+            })
+            Object.keys(colony_data["colony"]["global stock"]["building parts"]).forEach((building_part) => {
+                if(document.getElementById(`colony-${building_part}-stock`)){
+                    document.getElementById(`colony-${building_part}-stock`).innerHTML = colony_data["colony"]["global stock"]["building parts"][building_part]*1
+                }
+            })
+            //TODO: Decrease stock if an attack was received and current player lost while offline. 
+            //TODO: Update stock if a building process finished while offline.
+            
+            //Update news.
+            colony_data["latest news"].forEach((news) => {
+                add_news_content(news)
+            })
+            //Update unread notifications counter.
+            if(document.querySelectorAll("#accordion-news h2 .new:not(.hidden)").length){
+                document.querySelector("#accordion-menu-news #newsNotifications").classList.remove("hidden")
+                document.querySelector("#accordion-menu-news #newsNotifications").innerHTML = document.querySelectorAll("#accordion-news h2 .new:not(.hidden)").length
+            }
+
+            
+            //Turn zero index citizens array into non-zero index array for easier management.
+            colony_data["citizens"].list = get_non_zero_index_array(colony_data["citizens"].list)
+            
+//if(!colony_data["pregnancies"].length){ colony_data["citizens"].list.forEach((citizen) => { if(citizen.status == "pregnant") citizen.status = "idle" }) }
+
+            //Update citizens.
+            document.getElementById("accordion-citizens").innerHTML = ""
+            citizens = []
+            
+            colony_data["citizens"].list.forEach((citizen) => {
+                //Based on time passed...
+                let citizen_alive = citizen.status != "deceased"
+                //Update citizen age
+                let age_in_weeks = Number(citizen.ageYears) * 52 + Number(citizen.ageWeeks)
+                let new_age_in_weeks = age_in_weeks + (citizen_alive ? time_passed.int_offline_game_weeks : 0)
+                let new_age_years = new_age_in_weeks / 52
+                let int_new_age_years = Math.floor(new_age_years)
+                let new_age_weeks = (new_age_years - int_new_age_years) * 52
+                let int_new_age_weeks = Math.floor(new_age_weeks)
+                citizen.ageYears = int_new_age_years
+                citizen.ageWeeks = int_new_age_weeks
+                citizen.weeksAlive = Number(citizen.weeksAlive) + (citizen_alive ? time_passed.int_offline_game_weeks : 0)
+                //Check life or death
+                citizen.status = Number(citizen.weeksAlive) > Number(citizen.weekOfDeath) ? "deceased" : citizen.status
+                //Update citizen fertility
+                citizen.fertility = Math.max(0, Number(citizen.fertility) - (citizen_alive ? time_passed.int_offline_game_years : 0))
+//citizen.status = citizen.status == "working" ? "idle" : citizen.status
+                build_citizen(translation = true, citizen.id, citizen)
+                //Check waterbearers and fishermen to add to water reservoir.
+                if(citizen.rolekey === "waterbearing" || citizen.rolekey === "fishing"){
+                }
+            })
+            //Update relationships.
+            citizens.forEach((citizen) => {
+                if(citizen.couple != null && citizen.couple > citizen.id){
+                    add_couple_to_citizen(citizens[citizen.couple], citizen)
+                }
+            })
+            //Update pregnancies.
+            colony_data["pregnancies"].forEach((pregnancy) => {
+                pregnancy.remaining_weeks = Math.max(0, pregnancy.remaining_weeks - time_passed.int_offline_game_weeks)
+                if(pregnancy.remaining_weeks === 0){
+                    //Change mother status.
+                    citizens[pregnancy.mother].status = "idle"
+                    document.querySelectorAll(`#citizen-${pregnancy.mother}-status`).forEach((elem) => {elem.innerHTML = translate(language, "Idle")})  
+                    //TODO: Children must be born now.
+                    for(let i=0; i < pregnancy.children; i++){
+                        test_build_new_citizen({"father":pregnancy.father, "mother":pregnancy.mother, "birthWeek": Math.floor(time_passed.total_game_weeks), "ageYears":0, "ageWeeks":0, "weeksAlive":0})
+                    }
+                    //Remove pregnancy from array.
+                    pregnancies = pregnancies.filter((p) => p.mother != pregnancy.mother)
+                } else {
+                    document.querySelectorAll(`#citizen-${pregnancy.mother}-status`).forEach((elem) => {elem.innerHTML = translate(language, "Pregnant")})
+                    document.querySelectorAll(`citizen-${pregnancy.mother}-pregnancy-weeks`).innerHTML = pregnancy.remaining_weeks
+                    document.querySelectorAll(`citizen-${pregnancy.mother}-pregnancy-weeks`).parentElement.querySelectorAll(".pregnant").classList.remove("hidden")
+                    pregnancies.push(pregnancy)
+                }
+            })
+            
+            //Build citizens array ordered by week of death in ascending order.
+            let citizens_by_death = JSON.parse(JSON.stringify(citizens))
+            delete citizens_by_death[0]
+            citizens_by_death.sort((c1, c2) => Number(c1.weekOfDeath) - Number(c2.weekOfDeath))
+            citizens_by_death = get_non_zero_index_array(citizens_by_death)
+            //Update landforms.
+            colony_data["landforms"].forEach((landform) => {
+                let array_category = landform.category.split(" ")
+                let categoryCamel = array_category[0]+array_category[1].charAt(0).toUpperCase()+array_category[1].slice(1)
+                if(!document.querySelector(`div .${categoryCamel}`)){
+                    add_landform(categoryCamel)
+                } else {
+                    //Water reservoirs always exist in colonies.
+                    if(categoryCamel === "waterReservoir"){
+                        document.querySelector(`#landform-${landform.id}-type`).innerHTML = translate(language, landform.type)
+                        document.querySelector(`#landform-${landform.id}-type`).setAttribute("data-type-key", landform.type)
+                        //Calculate parcial resources income and stock while offline, considering possible historical citizen death.
+                        let daily_water_consumption = Number(colony_data["colony"]["vital resources"]["water"]["daily consumption"])
+                        let daily_food_consumption = Number(colony_data["colony"]["vital resources"]["food"]["daily consumption"])//water_reservoirs[landform.type]["daily-food-income"]*1
+                        let daily_water_income = Number(colony_data["colony"]["vital resources"]["water"]["daily income"])
+                        let daily_food_income = Number(colony_data["colony"]["vital resources"]["food"]["daily income"])//water_reservoirs[landform.type]["daily-food-income"]*1
+                        let daily_water_revenue = daily_water_income - daily_water_consumption
+                        let daily_food_revenue = daily_food_income - daily_food_consumption
+                        let water_capacity = daily_water_consumption * water_storage_capacity_multiplier
+                        let food_capacity = daily_food_consumption * food_storage_capacity_multiplier
+                        let last_water_stock = Math.min(water_capacity, colony_data["colony"]["vital resources"]["water"]['stock']*1)
+                        let last_food_stock = Math.min(food_capacity, colony_data["colony"]["vital resources"]["food"]['stock']*1)
+                        let new_water_stock = Math.max(0, Math.min(water_capacity, last_water_stock + daily_water_revenue * time_passed.int_offline_game_days))
+                        let new_food_stock = Math.max(0, Math.min(food_capacity, last_food_stock + daily_food_revenue * time_passed.int_offline_game_days))
+                        let last_checkpoint_game_weeks_passed = time_passed.last_login_game_date_in_hours / 24 / 7
+                        citizens_by_death.forEach((citizen) => {
+                            //If dead citizen found, decrease daily water consumption.
+                            if(citizen.weekOfDeath < time_passed.total_game_weeks){
+                                let partial_weeks_passed = citizen.weekOfDeath - last_checkpoint_game_weeks_passed
+                                //Stock calculation before citizen death.
+                                new_water_stock = Math.max(0, Math.min(water_capacity, last_water_stock + daily_water_revenue * partial_weeks_passed * 7))
+                                new_food_stock = Math.max(0, Math.min(food_capacity, last_food_stock + daily_food_revenue * partial_weeks_passed * 7))
+                                //All resources recalculations after citizen death.
+                                daily_water_consumption -= citizenDailyWaterNeeds
+                                daily_food_consumption -= citizenDailyFoodNeeds
+                                //TODO: Check if dead citizen was assigned to this landform.
+                                //Recalculate daily revenues.
+                                daily_water_revenue = daily_water_income - daily_water_consumption
+                                daily_food_revenue = daily_food_income - daily_food_consumption
+                                //Prepare storage to recalculate after citizen's death.
+                                water_capacity = daily_water_consumption * water_storage_capacity_multiplier
+                                food_capacity = daily_food_consumption * food_storage_capacity_multiplier
+                                last_water_stock = new_water_stock
+                                last_food_stock = new_food_stock
+                                last_checkpoint_game_weeks_passed = citizen.weekOfDeath
+                            }
+                        })
+                        //Calculate last period of resources stock. (after all possible deaths)
+                        let partial_weeks_passed = time_passed.total_game_weeks - last_checkpoint_game_weeks_passed
+                        new_water_stock = Math.floor(Math.max(0, Math.min(water_capacity, last_water_stock + daily_water_revenue * partial_weeks_passed * 7)))
+                        new_food_stock = Math.floor(Math.max(0, Math.min(food_capacity, last_food_stock + daily_food_revenue * partial_weeks_passed * 7)))
+                        
+                        //Check for water crisis.
+                        if(new_water_stock === 0 && daily_water_revenue < 0){
+                            population_loss_events["daily"]["water_shortage"].status = int_offline_game_days_passed > 0 ? "active" : "inactive"
+                            //Check days passed with water crisis and take actions.
+                            check_critical_events("daily", int_offline_game_days_passed)
+                        } else {
+                            population_loss_events["daily"]["water_shortage"].status = "inactive"
+                        }
+                        //Check for water crisis.
+                        if(new_food_stock === 0 && daily_food_revenue < 0){
+                            population_loss_events["weekly"]["food_shortage"].status = int_offline_game_weeks_passed > 0 ? "active" : "inactive"
+                            //Check weeks passed with water crisis and take actions.
+                            check_critical_events("weekly", int_offline_game_weeks_passed)
+                        } else {
+                            population_loss_events["weekly"]["food_shortage"].status = "inactive"
+                        }
+                        //Update resources consumption and income values according to current population.
+                        
+                        document.querySelectorAll(`#colony-water-consumption`).forEach(elem => elem.innerHTML = daily_water_consumption.toString())
+                        document.querySelectorAll(`#colony-food-consumption`).forEach(elem => elem.innerHTML = daily_food_consumption.toString())
+                        document.querySelectorAll(`#colony-water-income`).forEach(elem => elem.innerHTML = daily_water_income.toString())
+                        document.querySelectorAll(`#colony-food-income`).forEach(elem => elem.innerHTML = daily_food_income.toString())
+                        document.querySelectorAll(`#colony-water-stock`).forEach(elem => elem.innerHTML = new_water_stock.toString())
+                        document.querySelectorAll(`#colony-food-stock`).forEach(elem => elem.innerHTML = new_food_stock.toString())
+                        document.querySelectorAll(`#water-revenue`).forEach(elem => elem.innerHTML = (daily_water_revenue>=0 ? "+" : "") + daily_water_revenue.toString())
+                        document.querySelectorAll(`#food-revenue`).forEach(elem => elem.innerHTML = (daily_food_revenue>=0 ? "+" : "") + daily_food_revenue.toString())
+                        document.querySelectorAll(`#colony-water-capacity`).forEach(elem => elem.innerHTML = water_capacity.toString())
+                        document.querySelectorAll(`#colony-food-capacity`).forEach(elem => elem.innerHTML = food_capacity.toString())
+                    }
+                }
+            })
+            //Update buildings.
+            buildings.shelter_related["campaign_tent"]["building_list"] = []
+            colony_data["buildings"]["shelter related"]["campaign tent"].forEach((building, i) => {
+                building_last_id = building.id
+                buildings.shelter_related["campaign_tent"]["building_list"].push(building)
+            })
+            
+            update_colony("offlineTimeProcessed")
+        }
+       return true
+    }
+}
+
 //Testing functionality after screen initialization.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1450,7 +1720,7 @@ const test_build_new_citizen = (data = {}) => {
     new_citizen.rolekey = data.rolekey ? data.rolekey : "unassigned"
     new_citizen.birthWeek = data.birthWeek ? data.birthWeek : document.getElementById("passedWeeks").innerHTML*1 - 780 //Just born assumed
     new_citizen.ageYears = data.ageYears ? data.ageYears : 15 //Just born assumed
-    new_citizen.birthWeeks = data.birthWeeks ? data.birthWeeks : 780 //Weeks already lived.
+    new_citizen.weeksAlive = data.weeksAlive ? data.weeksAlive : 780 //Weeks already lived.
     new_citizen.ageWeeks = data.ageWeeks ? data.ageWeeks : 0 //Just born assumed
     new_citizen.status = data.status ? data.status : "idle"
     new_citizen.gender = data.gender ? data.gender : ["Femenine", "Masculine"][Math.floor(Math.random()*2)]
@@ -1472,165 +1742,61 @@ const test_citizen_exile = (citizens_id) => {
     })
 }
 
-const update_all_colony_data = () => {
-    let colony_data = JSON.parse(localStorage.getItem("colony"))
-    if(colony_data){
-        if(lifeStarted || searchingZone){
-            let reprocess_offline_time = true
-            //Iterate localStorage structure and update colony data
-            if(colony_data["colony"]["name"]) document.querySelector("#colonyName").value = colony_data["colony"]["name"]
-            if(colony_data["colony"]["life quality"]) document.querySelector("#colonyLifeQuality").innerHTML = colony_data["colony"]["life quality"]*1
-            if(colony_data["colony"]["score"]) document.querySelector("#colonyScore").innerHTML = colony_data["colony"]["score"]*1
-            if(colony_data["colony"]["power"]) document.querySelector("#colonyPower").innerHTML = colony_data["colony"]["power"]*1
-            if(colony_data["colony"]["oppression"]) document.querySelector("#colonyOppression").innerHTML = colony_data["colony"]["oppression"]*1
-            //Evaluate what has changed between last session and current session.
-            let last_login_real_time = new Date(colony_data["date"] + " " + colony_data["time"])
-            let current_real_time = new Date()
-            
-            //Already saved time
-            let last_login_game_date_in_hours = colony_data["time lived"]["weeks"] * 7 * 24
-            last_login_game_date_in_hours += (colony_data["time lived"]["current time"]["day"] - 1) * 24
-            last_login_game_date_in_hours += colony_data["time lived"]["current time"]["hour"]*1
-            //Offline time.
-            //How many real seconds offline?
-            let seconds_offline = Math.floor((current_real_time - last_login_real_time) / 1000) //Time difference in seconds.
-            let int_offline_game_hours_passed = Math.floor(seconds_offline / 1.79) //In-game hours passed since last session.
-            let int_offline_game_weeks_passed = Math.floor(int_offline_game_hours_passed / 24 / 7) 
-            let int_offline_game_years_passed = Math.floor(int_offline_game_hours_passed / 24 / 7 / 52) 
-            //Accumulated time passed (saved time + offline time)
-            let total_game_hours_passed = last_login_game_date_in_hours + int_offline_game_hours_passed
-            let total_game_days_passed = total_game_hours_passed / 24
-            let total_game_weeks_passed = total_game_days_passed / 7
-            let total_game_years_passed = total_game_weeks_passed / 52
-            game_days_passed = Math.floor(total_game_days_passed)
-            let int_remaining_game_year_weeks = Math.floor((total_game_years_passed - Math.floor(total_game_years_passed)) * 52)
-            let int_remaining_game_week_days = Math.floor((total_game_weeks_passed - Math.floor(total_game_weeks_passed)) * 7)
-            let int_remaining_game_day_hours = Math.floor((total_game_hours_passed - Math.floor(total_game_days_passed) * 24))
-            //Update colony time passed
-            document.getElementById("passedWeeks").innerHTML = Math.floor(total_game_weeks_passed)//last_online_game_weeks_lived + int_offline_game_weeks_passed
-            document.getElementById("currentYear").innerHTML = 1 + Math.floor(total_game_years_passed)//last_online_game_year + int_offline_game_years_passed
-            document.getElementById("currentWeek").innerHTML = 1 + int_remaining_game_year_weeks//int_remaining_game_year_weeks
-            document.getElementById("currentDay").innerHTML = 1 + int_remaining_game_week_days
-            document.getElementById("currentHour").innerHTML = int_remaining_game_day_hours.toString().padStart(2, "0")//(int_offline_game_hours_passed - (int_offline_game_days_passed * 24)).toString().padStart(2, "0")
-            //Update goods stock.
-            Object.keys(colony_data["colony"]["global stock"]["resources"]).forEach((resource) => {
-                if(resource !== "food" && document.getElementById(`colony-${resource}-stock`)){
-                    document.getElementById(`colony-${resource}-stock`).innerHTML = colony_data["colony"]["global stock"]["resources"][resource]*1
-                }
-            })
-            Object.keys(colony_data["colony"]["global stock"]["products"]).forEach((product) => {
-                if(document.getElementById(`colony-${product}-stock`)){
-                    document.getElementById(`colony-${product}-stock`).innerHTML = colony_data["colony"]["global stock"]["products"][product]*1
-                }
-            })
-            Object.keys(colony_data["colony"]["global stock"]["building parts"]).forEach((building_part) => {
-                if(document.getElementById(`colony-${building_part}-stock`)){
-                    document.getElementById(`colony-${building_part}-stock`).innerHTML = colony_data["colony"]["global stock"]["building parts"][building_part]*1
-                }
-            })
-            //Update news.
-            colony_data["latest news"].forEach((news) => {
-                let news_id = news.id
-                let news_received_in = news["received in"].day + " " + news["received in"].hour*1 + " " + news["received in"].week*1 + " " + news["received in"].year*1
-                let news_status = news.status
-                let news_content = news.content
-                add_news_content(news)
-            })
-            //Update unread notifications counter.
-            if(document.querySelectorAll("#accordion-news h2 .new:not(.hidden)").length){
-                document.querySelector("#accordion-menu-news #newsNotifications").classList.remove("hidden")
-                document.querySelector("#accordion-menu-news #newsNotifications").innerHTML = document.querySelectorAll("#accordion-news h2 .new:not(.hidden)").length
-            }
-            //Update landforms.
-            colony_data["landforms"].forEach((landform) => {
-                let array_category = landform.category.split(" ")
-                let categoryCamel = array_category[0]+array_category[1].charAt(0).toUpperCase()+array_category[1].slice(1)
-                if(!document.querySelector(`div .${categoryCamel}`)){
-                    add_landform(categoryCamel)
-                } else {
-                    //Water reservoirs always exist in colonies.
-                    if(categoryCamel === "waterReservoir"){
-                        document.querySelector(`#landform-${landform.id}-type`).innerHTML = translate(language, landform.type)
-                    }
-                }
-            })
-            //Update buildings.
-            buildings.shelter_related["campaign_tent"]["building_list"] = []
-            colony_data["buildings"]["shelter related"]["campaign tent"].forEach((building, i) => {
-                building_last_id = building.id
-                buildings.shelter_related["campaign_tent"]["building_list"].push(building)
-            })
-            //Update citizens.
-            document.getElementById("accordion-citizens").innerHTML = ""
-            citizens = []
-            colony_data["citizens"].list.forEach((citizen) => {
-                //Based on time passed...
-                if(citizen.status != "deceased"){
-                    //Update citizen age
-                    let age_in_weeks = Number(citizen.ageYears) * 52 + Number(citizen.ageWeeks)
-                    let new_age_in_weeks = age_in_weeks + int_offline_game_weeks_passed
-                    let new_age_years = new_age_in_weeks / 52
-                    let int_new_age_years = Math.floor(new_age_years)
-                    let new_age_weeks = (new_age_years - int_new_age_years) * 52
-                    let int_new_age_weeks = Math.floor(new_age_weeks)
-                    citizen.ageYears = int_new_age_years
-                    citizen.ageWeeks = int_new_age_weeks
-                    citizen.birthWeeks = Number(citizen.birthWeeks) + int_offline_game_weeks_passed
-                    //Check life or death
-                    if(Number(citizen.birthWeeks) > Number(citizen.weekOfDeath)){
-                        //Citizen died of natural causes.
-                        citizen.status = "deceased"
-                    }
-                    //Update citizen fertility
-                    citizen.fertility = Math.max(0, Number(citizen.fertility) - int_offline_game_years_passed)
-                    build_citizen(translation = true, citizen.id, citizen)
-                }
-            })
-            update_colony("buildingsUpdate")
-        }
-       return true
+
+const test_things = () => {
+    //Avoid modal pop up when zone searched
+    //showModalZoneSearched = false
+    test_citizen_fishing_roles([1, 3, 4])
+    test_citizen_builder_roles([2, 5, 6])
+    if(testing_mode){
+        test_build_new_citizen({"gender": "Femenine", "ageYears":"21", "ageWeeks": 0, "weeksAlive": 1092, "birthWeek":-1092})
+        //test_citizen_exile([11])
+        test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
+        test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
+        test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
+        test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
     }
+    test_citizen_expeditionary_roles([7, 8, 9, 10])
+    test_citizen_stoneBreaker_roles([12, 13])
+    test_citizen_waterBearer_roles([14])
+    test_citizen_woodcutter_roles([15])
+    //test_pregnancy_status()
+    //test_familiar_relationships()
+    //add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6
+    /*
+    add_landform("huntingMount")
+    resourcesExpeditionsDone++
+    add_landform("stoneMount")
+    resourcesExpeditionsDone++
+    add_landform("clayMount")
+    resourcesExpeditionsDone++
+    add_landform("mineralMount")
+    resourcesExpeditionsDone++
+    add_landform("woodMount")
+    resourcesExpeditionsDone++
+    */
+    //game_days_passed = 5
 }
-
-//Read progress from localStorage and update colony data
-
-let colony_updated = progress_already_saved && update_all_colony_data()
-//Avoid modal pop up when zone searched
-showModalZoneSearched = false
-test_citizen_fishing_roles([1, 3, 4])
-test_citizen_builder_roles([2, 5, 6])
-if(testing_mode){
-    test_build_new_citizen({"gender": "Femenine", "ageYears":"21", "ageWeeks": 0, "birthWeeks": 1092, "birthWeek":-1092})
-    //test_citizen_exile([11])
-    test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
-    test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
-    test_build_new_citizen({"gender": "Masculine"/*, "status":"deceased"*/})
-    test_build_new_citizen({"gender": "Femenine"/*, "status":"deceased"*/})
-}
-test_citizen_expeditionary_roles([7, 8, 9, 10, 11])
-test_citizen_stoneBreaker_roles([12, 13])
-test_citizen_waterBearer_roles([14])
-test_citizen_woodcutter_roles([15])
-//test_pregnancy_status()
-//test_familiar_relationships()
-add_couple_to_citizen(citizens[1], citizens[6]) //1 pareja de 6
-/*
-add_landform("huntingMount")
-resourcesExpeditionsDone++
-add_landform("stoneMount")
-resourcesExpeditionsDone++
-add_landform("clayMount")
-resourcesExpeditionsDone++
-add_landform("mineralMount")
-resourcesExpeditionsDone++
-add_landform("woodMount")
-resourcesExpeditionsDone++
-*/
-//game_days_passed = 5
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-if(!(lifeStarted || searchingZone)){
-    document.querySelector("#searchZone").addEventListener("click", searchZone)
-}
+//if(!(lifeStarted || searchingZone)){
+    //document.querySelector("#searchZone").addEventListener("click", searchZone)
+//}
 
-console.log(`Used localStorage space: ${getLocalStorageUsedSpaceKB()} KB`);
+//Read progress from localStorage and update colony data
+//let colony_updated = progress_already_saved && update_all_colony_data()
+
+//if(!colony_updated) test_things()
+//console.log(`Used localStorage space: ${getLocalStorageUsedSpaceKB()} KB`);
+
+/*
+for(let citizen_index = 0; citizen_index < 10; citizen_index++){
+    let citizen_template = {"weeksAlive": Numeric.random_integer(52, 4500)}
+    my_citizen = new Citizen(citizen_template)
+    colony.add_citizen(my_citizen)
+}
+let citizen_template = {"weeksAlive": Numeric.random_integer(52, 4500)}
+my_citizen = new Citizen(citizen_template)
+colony.add_citizen(my_citizen)
+my_citizen.draw({"parentElement":document.getElementById("accordion-citizens")})
+*/

@@ -1,4 +1,4 @@
-export class Modal{
+export class ModalBox{
     constructor(container_id = "modalPopup") {
         let container_div = document.createElement("div")
         container_div.id = container_id
@@ -12,10 +12,10 @@ export class Modal{
         first_level.appendChild(second_level)
         this.container.appendChild(first_level)
         let header = document.createElement("div")
-        header.id = "modalHeader"
+        header.id = "modalBoxHeader"
         header.classList.add("flex", "items-center", "justify-between", "p-4", "md:p-5", "border-b", "rounded-t", "dark:border-gray-600", "border-gray-200")
         let h3 = document.createElement("h3")
-        h3.id = "modalTitle"
+        h3.id = "modalBoxTitle"
         h3.setAttribute("data-i18n", "")
         h3.classList.add("text-xl", "font-semibold", "text-gray-900", "dark:text-white")
         header.appendChild(h3)
@@ -31,20 +31,20 @@ export class Modal{
         header.appendChild(button)
         second_level.appendChild(header)
         let body = document.createElement("div")
-        body.id = "modalBody"
+        body.id = "modalBoxBody"
         body.classList.add("p-4")
         second_level.appendChild(body)
         let footer = document.createElement("div")
-        footer.id = "modalFooter"
+        footer.id = "modalBoxFooter"
         footer.classList.add("flex", "items-center", "gap-2", "p-4", "md:p-5", "border-t", "border-gray-200", "rounded-b", "dark:border-gray-600")
         let button1 = document.createElement("button")
-        button1.id = "modalFooterButton1"
+        button1.id = "modalBoxFooterButton1"
         button1.setAttribute("type", "button")
         button1.setAttribute("data-i18n", "")
         button1.setAttribute("data-modal-hide", this.container.id)
         button1.classList.add("text-white", "bg-blue-700", "hover:bg-blue-800", "focus:ring-4", "focus:outline-none", "focus:ring-blue-300", "font-medium", "rounded-lg", "text-sm", "px-5", "py-2.5", "text-center", "dark:bg-blue-600", "dark:hover:bg-blue-700", "dark:focus:ring-blue-800")
         let button2 = document.createElement("button")
-        button2.id = "modalFooterButton2"
+        button2.id = "modalBoxFooterButton2"
         button2.setAttribute("type", "button")
         button2.setAttribute("data-i18n", "")
         button2.setAttribute("data-modal-hide", this.container.id)
@@ -64,8 +64,8 @@ export class Modal{
         document.getElementById(this.container.id).classList.add("hidden")
     }
     progress_modal = (title_text = "Warning!", data = false) => {
-        let title = document.getElementById("modalTitle")
-        let body = document.getElementById("modalBody")
+        let title = document.getElementById("modalBoxTitle")
+        let body = document.getElementById("modalBoxBody")
         title.innerHTML= translate(language, title_text)
         title.classList.remove("text-base")
         title.classList.add("text-xl")
@@ -85,11 +85,11 @@ export class Modal{
             p.create(); p.appendContent(translate(language, "If you are decided to update your progress choose 'Ok', otherwise choose 'Cancel'."))
         }
         if(!data || data.buttons == undefined || data.buttons == null){
-            document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
-            document.getElementById("modalFooterButton2").innerText = translate(language, "Cancel")
+            document.getElementById("modalBoxFooterButton1").innerText = translate(language, "Ok")
+            document.getElementById("modalBoxFooterButton2").innerText = translate(language, "Cancel")
         } else {
-            document.getElementById("modalFooterButton1").innerText = translate(language, data.button1)
-            document.getElementById("modalFooterButton2").innerText = translate(language, data.button2)
+            document.getElementById("modalBoxFooterButton1").innerText = translate(language, data.button1)
+            document.getElementById("modalBoxFooterButton2").innerText = translate(language, data.button2)
         }
     }
 }

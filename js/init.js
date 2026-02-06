@@ -1,16 +1,23 @@
 //Long term global variables
-var language = "ES", citizensFemaleAmount, citizensMaleAmount
+var language = "ES"/*, citizensFemaleAmount, citizensMaleAmount*/
+var colony = new Colony(), breeding_data = {}
 var citizens = [], pregnancies = []
 var game_days_passed = 0, dayPassed = weekPassed = yearPassed = false, searchingZone = zoneSearched = lifeStarted = false
 var colony_water_reservoir = "", resourcesExpeditionsDone = 0, ruinsExpeditionsDone = 0, huntingMountDiscovered = false
 var wagonsAmount, horsesAmount
 var colonyScore, colonyLifeQuality
 var rule_last_id = 0, expedition_last_id = 0
-var testing_mode = false
+var testing_mode = false, game_is_over = false
 var progress_already_saved = !testing_mode && JSON.parse(localStorage.getItem("colony")) !== null
 //Constants
-const zoneSearchHoursNeeded = 1
+const gameHourRealDuration = 1790 //real seconds
+const zoneSearchHoursNeeded = 1//4
 const minimalExpeditionDuration = 0 //In game hours
+const water_storage_capacity_multiplier = 20
+const food_storage_capacity_multiplier = 10
+//Aging
+const minimal_couple_age_years = 15
+const maximal_couple_age_years_difference = 40
 const same_age_in_relationship_attraction_percent = 5
 //Expeditionaries xp gain
 const resourcesExpeditionSuccessXPGain = 1
@@ -25,7 +32,7 @@ var showModalZoneSearched = true
 //Temporary global variables
 var citizenIndex, rule_id = 1, relationship_id = 1
 var currently_used_panel
-var initial_population = 10, initial_water_income = 28, initial_food_income = 20
+var initial_population = 10, initial_water_income = initial_population * citizenDailyWaterNeeds, initial_food_income = initial_population * citizenDailyFoodNeeds
 //Ruins expedition resource or product loots probabilities
 var ruinsExpeditionResourcesFoundProbability = 0.6, ruinsExpeditionProductsFoundProbability = 0.4
 var ruinsExpeditionStoneMountResourcesProbability = 0.3

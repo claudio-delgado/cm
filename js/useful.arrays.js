@@ -261,32 +261,35 @@ const naming = {
     }
 }
 
+const physical_attributes_classes = {"text": "text-orange-500", "border": "border-orange-500", "bg": "bg-gray-800"}
+const mental_attributes_classes = {"text": "text-sky-500", "border": "border-sky-500", "bg": "bg-gray-800"}
+const behavioral_attributes_classes = {"text": "text-green-500", "border": "border-green-500", "bg": "bg-gray-800"}
 const attributes_colors = {
     "EN" : {
-        "Strength" : "text-orange-500", "Agility" : "text-orange-500", "Dexterity" : "text-orange-500",
-        "Intelligence" : "text-sky-500", "Creativity" : "text-sky-500", "Cunning" : "text-sky-500",
-        "Bravery" : "text-green-500", "Charisma" : "text-green-500", "Sympathy" : "text-green-500", "Protection" : "text-green-500", "Partnership" : "text-green-500"
+        "Strength" : physical_attributes_classes, "Agility" : physical_attributes_classes, "Dexterity" : physical_attributes_classes,
+        "Intelligence" : mental_attributes_classes, "Creativity" : mental_attributes_classes, "Cunning" : mental_attributes_classes,
+        "Bravery" : behavioral_attributes_classes, "Charisma" : behavioral_attributes_classes, "Charm" : behavioral_attributes_classes, "Protection" : behavioral_attributes_classes, "Partnership" : behavioral_attributes_classes
     },
     "ES" : {
-        "Fuerza" : "text-orange-500", "Agilidad" : "text-orange-500", "Destreza" : "text-orange-500",
-        "Inteligencia" : "text-sky-500", "Creatividad" : "text-sky-500", "Astucia" : "text-sky-500",
-        "Valentía" : "text-green-500", "Carisma" : "text-green-500", "Simpatía" : "text-green-500", "Protección" : "text-green-500", "Compañerismo" : "text-green-500"
+        "Fuerza" : physical_attributes_classes, "Agilidad" : physical_attributes_classes, "Destreza" : physical_attributes_classes,
+        "Inteligencia" : mental_attributes_classes, "Creatividad" : mental_attributes_classes, "Astucia" : mental_attributes_classes,
+        "Valentía" : behavioral_attributes_classes, "Carisma" : behavioral_attributes_classes, "Simpatía" : behavioral_attributes_classes, "Protección" : behavioral_attributes_classes, "Compañerismo" : behavioral_attributes_classes
     }
 }
 const attributes = {
     "EN" : [
         {"name": "Physical", "attributes": ["Strength", "Agility", "Dexterity"]},
         {"name": "Mentals", "attributes": ["Intelligence", "Creativity", "Cunning"]},
-        {"name": "Personality", "attributes": ["Bravery", "Charisma", "Sympathy", "Protection", "Partnership"]},
+        {"name": "Personality", "attributes": ["Bravery", "Charisma", "Charm"/*Charm*/, "Protection", "Partnership"]},
     ],
     "ES" : [
-        {"name": "Físicos", "color": "text-orange-500", "attributes": ["Fuerza", "Agilidad", "Destreza"]},
-        {"name": "Mentales", "color": "text-sky-500", "attributes": ["Inteligencia", "Creatividad", "Astucia"]},
-        {"name": "Personalidad", "color": "text-green-500", "attributes": ["Valentía", "Carisma", "Simpatía", "Protección", "Compañerismo"]},
+        {"name": "Físicos", "attributes": ["Fuerza", "Agilidad", "Destreza"]},
+        {"name": "Mentales", "attributes": ["Inteligencia", "Creatividad", "Astucia"]},
+        {"name": "Personalidad", "attributes": ["Valentía", "Carisma", "Simpatía", "Protección", "Compañerismo"]},
     ]
 }
 const attributes_adjectives = {
-    "EN": {"Agility":"agile", "Strength":"strong", "Dexterity":"dexterous", "Intelligence":"smart", "Creativity":"creative", "Cunning":"cunning", "Sympathy":"easy going", "Charisma":"charismatic", "Protection":"protective", "Partnership":"good partner", "Bravery":"brave"},
+    "EN": {"Agility":"agile", "Strength":"strong", "Dexterity":"dexterous", "Intelligence":"smart", "Creativity":"creative", "Cunning":"cunning", "Charm"/*Charm*/:"delighted"/*charming*/, "Charisma":"charismatic", "Protection":"protective", "Partnership":"good partner", "Bravery":"brave"},
     "ES": {"Agilidad":{"F":"ágil", "M":"ágil"}, "Fuerza":{"F":"fuerte", "M":"fuerte"}, "Destreza":{"F":"muy diestra", "M":"muy diestro"}, "Inteligencia":{"F":"inteligente", "M":"inteligente"}, "Creatividad":{"F":"creativa", "M":"creativo"}, "Astucia":{"F":"astuta", "M":"astuto"}, "Simpatía":{"F":"simpática", "M":"simpático"}, "Carisma":{"F":"carismática", "M":"carismático"}, "Protección":{"F":"protectora", "M":"protector"}, "Compañerismo":{"F":"compañera", "M":"compañero"}, "Valentía":{"F":"valiente", "M":"valiente"}}
 }
 const role_icons = [ 
@@ -310,6 +313,22 @@ const role_icons = [
     {"EN": "woodcutter", "ES": {"F":"leñadora", "M":"leñador"}, "key":"woodcutting", "icon": "axe"}, 
 ]
 const age_groups = ["baby", "child", "teen", "adult", "grown adult", "ancient"]
+const age_groups_translated = {
+    "baby": {"EN": {"F": "baby", "M":"baby"}, "ES":{"F": "beba", "M":"bebé"}},
+    "child": {"EN": {"F": "little girl", "M":"little boy"}, "ES":{"F": "nena", "M":"nene"}},
+    "teen": {"EN": {"F": "girl", "M":"boy"}, "ES":{"F": "chica", "M":"chico"}},
+    "adult": {"EN": {"F": "woman", "M":"man"}, "ES":{"F": "mujer", "M":"hombre"}},
+    "grown adult": {"EN": {"F": "grown woman", "M":"grown man"}, "ES":{"F": "mujer madura", "M":"hombre maduro"}}, 
+    "ancient": {"EN": {"F": "ancient woman", "M":"ancient man"}, "ES":{"F": "anciana", "M":"anciano"}}
+}
+const age_groups_articles = {
+    "baby": {"EN": {"F": "a", "M": "a"}, "ES":{"F": "una", "M":"un"}},
+    "child": {"EN": {"F": "a", "M": "a"}, "ES":{"F": "una", "M":"un"}},
+    "teen": {"EN": {"F": "a", "M": "a"}, "ES":{"F": "una", "M":"un"}},
+    "adult": {"EN": {"F": "a", "M": "a"}, "ES":{"F": "una", "M":"un"}},
+    "grown adult": {"EN": {"F": "a", "M": "a"}, "ES":{"F": "una", "M":"un"}}, 
+    "ancient": {"EN": {"F": "an", "M": "an"}, "ES":{"F": "una", "M":"un"}}
+}
 const age_week_limits = {
     "baby":{"min":0, "max":311}, 
     "child":{"min":312, "max":727}, 
@@ -323,7 +342,7 @@ const person_icons = [
     {"EN": "child", "ES": {"M":"niño", "F":"niña"}, "text":"xs", "icon": "child"}, 
     {"EN": "teen", "ES": "adolescente", "text":"sm", "icon": "person-walking"},
     {"EN": "adult", "ES": {"M":"adulto", "F":"adulta"}, "text":"base", "icon": "person"}, 
-    {"EN": "grown adult", "ES": {"M":"adulto mayor", "F":"adulta mayor", "text":"sm", "icon": "person-circle-exclamation"}},
+    {"EN": "grown adult", "ES": {"M":"adulto mayor", "F":"adulta mayor", "text":"sm"}, "icon": "person-circle-exclamation"},
     {"EN": "ancient", "ES": {"M":"anciano", "F":"anciana"}, "text":"xs", "icon": "person-cane"}, 
     {"EN": "pregnant", "ES": "embarazada", "text":"xs", "icon": "person-pregnant"},
 ]
@@ -372,14 +391,48 @@ const score_bonus = {
     "wood_mount_found": 5,
 }
 
-const mounts = {
+const landforms = {
     "descriptions": {
-        "Water reservoir": {"owned":0, "camelCase":"waterReservoir", "discovery-probability-1":"1", "role-keys-related":["waterBearing", "fishing"]}, 
-        "Hunting mount": {"owned":0, "camelCase":"huntingMount", "discovery-probability-1":"0.50", "role-keys-related":["hunting"]}, 
-        "Stone mount": {"owned":0, "camelCase":"stoneMount", "discovery-probability-1":"0.23", "discovery-probability-2":"0.45", "role-keys-related":["stonebreaking"]}, 
-        "Wood mount": {"owned":0, "camelCase":"woodMount", "discovery-probability-1":"0.15", "discovery-probability-2":"0.3", "role-keys-related":["woodcutting"]}, 
-        "Clay mount": {"owned":0, "camelCase":"clayMount", "discovery-probability-1":"0.07", "discovery-probability-2":"0.15", "role-keys-related":["stonebreaking"]},
-        "Mineral mount": {"owned":0, "camelCase":"mineralMount", "discovery-probability-1":"0.05", "discovery-probability-2":"0.1", "role-keys-related":["mining"]},
+        "Water reservoir": {
+            "owned":0, "camelCase":"waterReservoir", 
+            "discovery-probability-1":"1", 
+            "role-keys-related":["waterbearing", "fishing"],
+            "min-capacity":{"lake":15000, "lagoon":10000, "river":5000, "stream":2000}, 
+            "max-capacity":{"lake":25000, "lagoon":15000, "river":10000, "stream":5000}, 
+        "Hunting mount": {
+            "owned":0, "camelCase":"huntingMount", 
+            "discovery-probability-1":"0.50", "role-keys-related":["hunting"]},
+            "min-capacity":{"small":3000, "medium":5000, "large":10000, "huge":20000},
+            "max-capacity":{"small":5000, "medium":10000, "large":20000, "huge":50000},
+        },
+        "Stone mount": {
+            "owned":0, "camelCase":"stoneMount", 
+            "discovery-probability-1":"0.23", "discovery-probability-2":"0.45", 
+            "role-keys-related":["stonebreaking"],
+            "min-capacity":{"small":2000, "medium":4000, "large":8000, "huge":15000},
+            "max-capacity":{"small":4000, "medium":8000, "large":15000, "huge":30000},
+        }, 
+        "Wood mount": {
+            "owned":0, "camelCase":"woodMount", 
+            "discovery-probability-1":"0.15", "discovery-probability-2":"0.3", 
+            "role-keys-related":["woodcutting"],
+            "min-capacity":{"small":5000, "medium":10000, "large":20000, "huge":40000},
+            "max-capacity":{"small":10000, "medium":20000, "large":40000, "huge":80000}, 
+        },
+        "Clay mount": {
+            "owned":0, "camelCase":"clayMount", 
+            "discovery-probability-1":"0.07", "discovery-probability-2":"0.15", 
+            "role-keys-related":["stonebreaking"],
+            "min-capacity":{"small":5000, "medium":10000, "large":20000, "huge":40000},
+            "max-capacity":{"small":10000, "medium":20000, "large":40000, "huge":80000}, 
+        },
+        "Mineral mount": {
+            "owned":0, "camelCase":"mineralMount", 
+            "discovery-probability-1":"0.05", "discovery-probability-2":"0.1", 
+            "role-keys-related":["mining"],
+            "min-capacity":{"small":1000, "medium":2000, "large":3500, "huge":6000},
+            "max-capacity":{"small":2000, "medium":3500, "large":6000, "huge":9000}, 
+        }
     },
     "camelCase":{
         "waterReservoir": "Water reservoir",
@@ -3167,27 +3220,45 @@ var good_rules_defined = [
     }
 ]
 good_rules_defined = []
+//Water reservoirs worker daily production...
 const water_reservoirs = {
     "Lake": {
-        "daily-water-income":"10", 
-        "daily-food-income":"5"
+        "daily-water-income":"4", 
+        "daily-food-income":"2"
     }, 
     "Lagoon":{
-        "daily-water-income":"7", 
-        "daily-food-income":"3"
+        "daily-water-income":"3", 
+        "daily-food-income":"2"
     }, 
     "River":{
-        "daily-water-income":"5", 
+        "daily-water-income":"2", 
         "daily-food-income":"2"
     }, 
     "Stream":{
-        "daily-water-income":"3", 
+        "daily-water-income":"1", 
         "daily-food-income":"1"
     }
 }
+var_population_loss_warning = {
+    "water_shortage": {
+        "warning_text":"Warning! Your colony is close to suffer thirst.", 
+        "warning_info":"Water stock is empty and citizens may start to abandon the colony soon.", 
+        "warning_tips":["Try to add water bearers to your water reservoir.","If water reservoir is full, try to add water bearers to other mounts.","Try to reduce your population by exiling some citizens."]
+    },
+    "food_shortage": {
+        "warning_text":"Warning! Your colony is close to suffer starvation.", 
+        "warning_info":"Food stock is empty and citizens may start to abandon the colony soon.",
+        "warning_tips":["Try to add fishers to your water reservoir.","Try to add hunters to a hunting mount.","Try to reduce your population by exiling some citizens."]
+    }
+}
 var population_loss_events = {
+    /*
+        water_shortage: When water stock is 0.
+        food_shortage: When food stock is 0.
+        low_life_quality: When life quality is lower than 50% of population.
+    */
     "daily": {
-        "water_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 3, "result":{"type": "exiled_citizens", "quantity": 1}},
+        "water_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 3, "result":{"type": "exiled_citizens", "quantity": 1}, "event_text":"Danger! Your colony is suffering from a masive thurst!", "event_info":"Citizens will start to abandon the colony every day!", "event_tips":["Try to add water bearers to your water reservoir.","If water reservoir is full, try to add water bearers to other mounts.","Try to reduce your population by exiling some citizens."]},
         "low_life_quality_and_shortage_exile": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "exiled_citizens", "quantity": 1}},
     },
     "weekly":{
@@ -3202,7 +3273,7 @@ var population_loss_events = {
         },
         "low_water_income": {"status": "inactive", "ellapsed_time": 0, "threshold": 2, "result":{"type": "exiled_citizens", "quantity": 1}},
         "low_food_income": {"status": "inactive", "ellapsed_time": 0, "threshold": 3, "result":{"type": "exiled_citizens", "quantity": 1}},
-        "food_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "exiled_citizens", "quantity": 1}},
+        "food_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "exiled_citizens", "quantity": 1}, "warning_text":"Danger! Your colony is suffering from a masive starvation!", "warning_info":"Citizens will start to abandon the colony every week!", "warning_tips":["Try to add fishers to your water reservoir.","Try to add hunters to a hunting mount.","Try to reduce your population by exiling some citizens."]},
         "low_life_quality_and_shortage": {"status": "inactive", "ellapsed_time": 0, "threshold": 1, "result":{"type": "dead_citizens", "quantity": 1}},
     }
 }
@@ -3215,20 +3286,20 @@ const attraction_stages = [
     {"stage": 4, "description": "Big love of", "percent": "40"}, //30
     {"stage": 5, "description": "Great passion of", "percent": "30"}, //25
     {"stage": 6, "description": "Great passion of", "percent": "30"}, //25
-    {"stage": 7, "description": "Compatibility of", "percent": "10"}, //5
-    {"stage": 8, "description": "Compatibility of", "percent": "10"}, //5
-    {"stage": 9, "description": "Is too young", "percent": {0: "2.5", 1: "-8", 2: "-14", 3: "-21"}}, //-6 -12 -15
-    {"stage": 10, "description": "Is too young", "percent": {0: "2.5", 1: "-8", 2: "-14", 3: "-21"}}, //-6 -12 -15
-    {"stage": 11, "description": "Is too old", "percent": {0: "2.5", 1: "-5", 2: "-9", 3: "-14"}}, //-3 -7 -10
-    {"stage": 12, "description": "Is too old", "percent": {0: "2.5", 1: "-5", 2: "-9", 3: "-14"}}, //-3 -7 -10
+    {"stage": 7, "description": "Compatibility of", "percent": "5"}, //5 for each compatible class
+    {"stage": 8, "description": "Compatibility of", "percent": "5"}, //5 for each compatible class
+    {"stage": 9, "description": "Is too young", "percent": {0: "2.5", 1: "-8", 2: "-18", 3: "-30"}}, //-6 -12 -15
+    {"stage": 10, "description": "Is too young", "percent": {0: "2.5", 1: "-8", 2: "-18", 3: "-30"}}, //-6 -12 -15
+    {"stage": 11, "description": "Is too old", "percent": {0: "2.5", 1: "-5", 2: "-10", 3: "-20"}}, //-3 -7 -10
+    {"stage": 12, "description": "Is too old", "percent": {0: "2.5", 1: "-5", 2: "-10", 3: "-20"}}, //-3 -7 -10
     {"stage": 13, "description": "They feel age difference"},
     
     {"stage": 14, "description": "Great admiration of", "percent": "20"}, //15 20
     {"stage": 15, "description": "Great admiration of", "percent": "20"}, //15 20
     {"stage": 16, "description": "Physical attraction of", "percent": {2: "15", 3: "40"}},
     {"stage": 17, "description": "Physical attraction of", "percent": {2: "15", 3: "40"}},
-    {"stage": 18, "description": "Mental attraction of", "percent": {2: "12", 3: "35"}},
-    {"stage": 19, "description": "Mental attraction of", "percent": {2: "12", 3: "35"}},
+    {"stage": 18, "description": "Intellectual attraction of", "percent": {2: "12", 3: "35"}},
+    {"stage": 19, "description": "Intellectual attraction of", "percent": {2: "12", 3: "35"}},
     {"stage": 20, "description": "They feel things in common", "percent": {1: "5", 2: "15", 3: "35"}},
     
     {"stage": 21, "description": "Feels protected", "percent": "25"}, //20 15

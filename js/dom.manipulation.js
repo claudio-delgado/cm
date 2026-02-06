@@ -49,7 +49,7 @@ const accordion_news = () => {
     b = new element("button", "flex items-center justify-between w-full py-2 px-3 text-gray-400 bg-gray-900 font-medium border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-news-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-news-body"}], h2.getNode())
     b.create()
     s = new element("span", "", [], b.getNode()); s.create()
-    s1 = new element("span", "text-xs fa fa-beat font-medium me-3 px-2 py-1 rounded-sm bg-blue-900 text-blue-300", [], s.getNode(), "newsNotifications"); s1.create(); s1.appendContent("0")
+    s1 = new element("span", "text-xs hidden fa fa-beat font-medium me-3 px-2 py-1 rounded-sm bg-blue-900 text-blue-300", [], s.getNode(), "newsNotifications"); s1.create()
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Recent news")
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build news accordion body
@@ -203,7 +203,7 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
             s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((wagon_goods.resources.food).toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("units of")
             s = new element("span", "font-bold ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent("food")
-            p = new element("p", "mb-0 p-1 px-2 rounded font-bold text-white border-red-600 bg-red-600", [], d2.getNode(), "searchZoneWarning"); p.create()
+            p = new element("p", "mb-0 p-2 px-3 rounded font-bold text-white border border-white bg-red-900", [], d2.getNode(), "searchZoneWarning"); p.create()
             s = new element("span", "me-1", [{"key":"data-i18n","value":""}], p.getNode()); s.create(); s.appendContent("Warning! Time is stopped. Search the zone in the Colony panel to start your game.")
             break
         case "ZoneSearched":
@@ -212,7 +212,7 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
             p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your citizens have succesfully discovered the following things:"))
             p = new element("p", "mb-2 text-gray-200", [], d2.getNode()); p.create()
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
-            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent(get_shelter_capacity().toString())
+            s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent(buildings.shelter_related.campaign_tent.building_list.length.toString())
             s = new element("span", "ms-1", [{"key":"data-i18n","value":""}], li.getNode()); s.create(); s.appendContent(translate(language, "campaign tents", "", "lowercase"))
             li = new element("li", "ms-2 p-0", [], p.getNode()); li.create()
             s = new element("span", "font-bold ms-1", [], li.getNode()); s.create(); s.appendContent((stock_displayed.resources[language][translate(language, "stone")]).toString())
@@ -257,7 +257,7 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
             p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Your expeditionaries have returned from the expedition!"))
             if(data.successfullExpedition){
                 p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "They have succesfully discovered:"))
-                let mount_description = mounts.camelCase[data.mountResourceType] == "Water reservoir" ? mounts.camelCase[data.mountResourceType]+" mount" : mounts.camelCase[data.mountResourceType]
+                let mount_description = landforms.camelCase[data.mountResourceType] == "Water reservoir" ? landforms.camelCase[data.mountResourceType]+" mount" : landforms.camelCase[data.mountResourceType]
                 p = new element("p", "font-bold mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, mount_description))
             } else {
                 p = new element("p", "mb-2 text-gray-200", [{"key":"data-i18n","value":""}], d2.getNode()); p.create(); p.appendContent(translate(language, "Unfortunetely, they were not able to find any resources mount."))
@@ -278,7 +278,7 @@ const add_news = (notificationType = "ZoneSearched", newsData) => {
             break
     }
     document.querySelector("#newsNotifications").innerText++
-    document.querySelector("#newsNotifications").hidden = false
+    document.querySelector("#newsNotifications").classList.remove("hidden")
     enable_notification_events()
 }
 const add_colony_stock_filters = (stockType = "resources", action = "none", value = null) => {
@@ -435,12 +435,12 @@ const accordion_colony = () => {
         //First panel
         //Colony name and save button
         p = new element("p", "flex w-100 pb-1 gap-1 text-gray-400", [], d1.getNode()); p.create()
-        s = new element("span", "text-xs px-2 bg-gray-500 border border-gray-900 text-white flex-none py-2", [], p.getNode()); s.create()
+        s = new element("span", "text-xs px-2 bg-gray-500 border border-gray-900 text-white flex items-center", [], p.getNode()); s.create()
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Name")
         s.appendHTML(": ")
-        d = new element("div", "flex grow relative bg-gray-700 text-gray-300 border-2 border-zinc-800", [], p.getNode()); d.create()
-        t = new element("input", "px-2 ps-7 text-xs uppercase placeholder:normal-case placeholder:text-gray-300 w-100 bg-gray-600 border border-gray-400 focus:text-white focus:bg-zinc-500", [{"key":"type","value":"text"},{"key":"placeholder","value":"Type in your colony name"},{"key":"value","value":"Colonia12540"}], d.getNode(), "colonyName"); t.create()
-        i = new element("i", "text-xs fa fa-pen absolute left-2 top-1/2 transform -translate-y-1/2", [], d.getNode()); i.create();
+        d = new element("div", "flex grow relative bg-gray-700 text-gray-300 border border-zinc-800", [], p.getNode()); d.create()
+        t = new element("input", "px-2 ps-6 text-xs uppercase placeholder:normal-case placeholder:text-gray-300 w-100 bg-gray-600 border border-gray-400 focus:text-white focus:bg-zinc-500 h-6", [{"key":"type","value":"text"},{"key":"placeholder","value":"Type in your colony name"},{"key":"value","value":"Colonia12540"}], d.getNode(), "colonyName"); t.create()
+        i = new element("i", "ps-2 text-xs fa fa-pen absolute left-2 top-1/2 transform -translate-y-1/2", [], d.getNode()); i.create();
         b = new element("button", "text-xs flex-none px-2 button border border-gray-400 bg-gray-800", [{"key":"type","value":"button"},{"key":"data-i18n","value":""}], p.getNode(), "newColonyNameSubmit")
         b.create(); b.appendContent("Save")
     }
@@ -551,8 +551,8 @@ const accordion_colony = () => {
         //Water consumption
         p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "w-100 flex gap-2 items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
-        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-consumption-icon"); i.create()
+        s1 = new element("span", "w-100 flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-consumption-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Water consumption")
         s1.appendHTML(": ")
         s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create() //bg-green-700 bg-red-900 , bg-yellow-600
@@ -562,8 +562,8 @@ const accordion_colony = () => {
         //Water income
         p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "w-100 flex gap-2 items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
-        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-income-icon"); i.create()
+        s1 = new element("span", "w-100 flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-income-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Water income")
         s1.appendHTML(": ")
         s1 = new element("span", "flex gap-1 grow border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
@@ -572,8 +572,8 @@ const accordion_colony = () => {
         //Water stock
         p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
-        s1 = new element("span", "w-100 flex gap-2 items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
-        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-stock-icon"); i.create()
+        s1 = new element("span", "w-100 flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        i = new element("i", "hidden me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-water-stock-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Water stock")
         s1.appendHTML(": ")
         s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
@@ -584,11 +584,25 @@ const accordion_colony = () => {
         s1.appendHTML("(")
         s2 = new element("span", "font-bold", [], s1.getNode(), "water-revenue"); s2.create(); s2.appendContent(`+${initial_water_income - current_water_consumption}`)
         s1.appendHTML(")")
+        //Water stock storage
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "w-100 flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Storage capacity")
+        s1.appendHTML(": ")
+        s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        let current_water_capacity = current_water_consumption * water_storage_capacity_multiplier
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-water-capacity"); s2.create(); s2.appendContent(current_water_capacity.toString())
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+        s1 = new element("span", "flex grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        let current_water_capacity_percent = Math.floor((current_water_stock / current_water_capacity) * 100)
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-water-capacity-percent"); s2.create(); s2.appendContent(current_water_capacity_percent.toString())
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("%")
+        
         //Food consumption
         p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
-        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-consumption-icon"); i.create()
+        i = new element("i", "hidden me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-consumption-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Food consumption")
         s1.appendHTML(": ")
         s1 = new element("span", "flex gap-1 grow border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create() //bg-red-900 , bg-yellow-600
@@ -599,7 +613,7 @@ const accordion_colony = () => {
         p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
-        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-income-icon"); i.create()
+        i = new element("i", "hidden me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-income-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Food income")
         s1.appendHTML(": ")
         s1 = new element("span", "flex gap-1 grow border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
@@ -609,7 +623,7 @@ const accordion_colony = () => {
         p = new element("p", "w-100 flex gap-1 text-xs", [], d3.getNode()); p.create()
         s = new element("span", "flex", [], p.getNode()); s.create()
         s1 = new element("span", "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
-        i = new element("i", "hidden text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-stock-icon"); i.create()
+        i = new element("i", "hidden me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded", [], s1.getNode(), "accordion-food-stock-icon"); i.create()
         s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Food stock")
         s1.appendHTML(": ")
         s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
@@ -620,6 +634,37 @@ const accordion_colony = () => {
         s1.appendHTML("(")
         s2 = new element("span", "font-bold", [], s1.getNode(), "food-revenue"); s2.create(); s2.appendContent(`+${initial_food_income - current_food_consumption}`)
         s1.appendHTML(")")
+        //Food stock storage
+        s = new element("span", "flex", [], p.getNode()); s.create()
+        s1 = new element("span", "w-100 flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white", [], s.getNode()); s1.create()
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("Storage capacity")
+        s1.appendHTML(": ")
+        s1 = new element("span", "flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        let current_food_capacity = current_food_consumption * food_storage_capacity_multiplier
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-food-capacity"); s2.create(); s2.appendContent(current_food_capacity.toString())
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("units")
+        s1 = new element("span", "flex grow items-center border border-gray-800 p-0.5 px-1 bg-green-700 text-white", [], p.getNode()); s1.create()
+        let current_food_capacity_percent = Math.floor((current_food_stock / current_food_capacity) * 100)
+        s2 = new element("span", "font-bold flex-none", [], s1.getNode(), "colony-food-capacity-percent"); s2.create(); s2.appendContent(current_food_capacity_percent.toString())
+        s2 = new element("span", "", [{"key":"data-i18n","value":""}], s1.getNode()); s2.create(); s2.appendContent("%")
+        //Water or food starvation warning
+        p = new element("p", "w-100 hidden p-1 px-2 flex flex-wrap text-xs items-center border border-gray-600 p-0.5 bg-red-900 text-white", [], d3.getNode(), "vital_resources_warning"); p.create()
+        s1 = new element("span", "w-100 font-bold", [], p.getNode(), "vital_resources_warning_text"); s1.create()
+        s1.appendContent(translate(language, "Warning! Your colony is suffering from a massive thirst!", "", "capitalize"))
+        s1 = new element("span", "w-100", [], p.getNode(), "vital_resources_warning_info"); s1.create()
+        s1.appendContent(translate(language, "Citizens will start to abandon the colony every day!", "", "capitalize"))
+        s = new element("span", "w-100 flex items-center", [], p.getNode()); s.create()
+        i = new element("i", "mx-2 fa fa-circle-small mt-1", [], s.getNode()); i.create()
+        s1 = new element("span", "w-100", [], s.getNode(), "vital_resources_warning_tip_1"); s1.create()
+        s1.appendContent(translate(language, "Try to add water bearers to your water reservoir.", "", "capitalize"))
+        s = new element("span", "w-100 flex items-center", [], p.getNode()); s.create()
+        i = new element("i", "mx-2 fa fa-circle-small mt-1", [], s.getNode()); i.create()
+        s1 = new element("span", "w-100", [], s.getNode(), "vital_resources_warning_tip_2"); s1.create()
+        s1.appendContent(translate(language, "If water reservoir is full, try to add water bearers to other mounts.", "", "capitalize"))
+        s = new element("span", "w-100 flex items-center", [], p.getNode()); s.create()
+        i = new element("i", "mx-2 fa fa-circle-small mt-1", [], s.getNode()); i.create()
+        s1 = new element("span", "w-100", [], s.getNode(), "vital_resources_warning_tip_3"); s1.create()
+        s1.appendContent(translate(language, "Try to reduce your population by exiling some citizens.", "", "capitalize"))
     }
     let build_stock = () => {
         d2 = new element("div", "w-100 border border-gray-900", [{"key":"data-accordion","value":"collapse"}], d1.getNode(), "accordion-stock"); d2.create()
@@ -947,12 +992,13 @@ const accordion_buildings = (update = false) => {
     p = new element("p", "flex w-100 justify-between p-1 gap-1 text-gray-300", [], d2.getNode()); p.create()
     b = new element("button", "text-xs grow p-2 button border border-gray-400 bg-gray-800", [], p.getNode(), `buildings-actions-new`); b.create()
     i = new element("i", "fa fa-trowel", [], b.getNode()); i.create()
-    s = new element("span", "ms-2", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Build new building"))
+    s = new element("span", "ms-2", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Construct new building"))
     b.getNode().addEventListener("click", new_building)
 }
 const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     let new_citizen = {}
-    let accordion_citizens = document.getElementById("accordion-citizens")
+    let accordion_citizens_div = new element("div", "w-100", [], document.getElementById("accordion-citizens"), `accordion-citizen-${id}-div`); accordion_citizens_div.create()
+    let accordion_citizens = accordion_citizens_div.getNode()
     let build_citizen_accordion_header = () => {
         h2 = new element("h2", "notificationUnread", [], accordion_citizens, `accordion-citizen-${id}-header`); h2.create()
         b = new element("button", "unattached-click font-medium flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-citizen-${id}-body`},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-citizen-${id}-body`}], h2.getNode())
@@ -963,19 +1009,21 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         //Add icons to name
         let citizen_gender = new_citizen.gender != undefined ? new_citizen.gender : undefined
         let citizen_gender_icon_class = citizen_gender != undefined ? (citizen_gender === "Femenine" ? "fa-venus text-red-500" : "fa-mars text-blue-500") : "hidden"
-        let citizen_age_icon_class = new_citizen.ageYears != undefined 
-                                            ?  `fa-${age_icons(new_citizen.ageYears)}`
+        let citizen_age_group_icon_class = new_citizen.ageYears != undefined 
+                                            ?  `fa-${age_index(new_citizen.ageYears)+1}`
                                             : "hidden fa"
         let citizen_role_icon_class = "hidden"
         if(citizen.role != undefined){
             role_icons.forEach((role) => {
-                if(role.key === new_citizen.role){
-                    citizen_role_icon_class = `fa-${role.icon}`
+                if(role.key === new_citizen.rolekey){
+                    citizen_role_icon_class = `text-green-500 fa-${role.icon}`
                 }
             })
         }
         i = new element("i", `me-1 fa ${citizen_gender_icon_class}`, [], s.getNode(), `citizen-${id}-gender-icon`); i.create()
-        i = new element("i", `me-1 fa text-white ${citizen_age_icon_class}`, [], s.getNode(), `citizen-${id}-age-icon`); i.create()
+        s1 = new element("span", "", [], s.getNode()); s1.create()
+        i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${id}-age-icon`); i.create()
+        i = new element("i", `ms-0.5 me-1 fa text-white ${citizen_age_group_icon_class}`, [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), `citizen-${id}-age-group-icon`); i.create()
         i = new element("i", `me-1 fa ${citizen_role_icon_class}`, [], s.getNode(), `citizen-${id}-role-icon`); i.create()
         s1 = new element("span", "hidden rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), `citizen-${id}-xp-icon`); s1.create(); s1.appendContent(new_citizen.xp.toString())
         s1 = new element("span", "ms-1", [{"key":"data-i18n","value":""}], s.getNode(), `citizen-${id}-name`); s1.create(); s1.appendContent(new_citizen.name)
@@ -1028,14 +1076,13 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             //Citizen's role
             s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Role" : translate(language, "Role"))
             s.appendHTML(": ")
-            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), `citizen-${id}-role`); s1.create(); s1.appendContent(!needs_translation ? "Unassigned" : translate(language, "Unassigned"))
+            s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}, {"key":"data-role", "value":new_citizen.rolekey}], s.getNode(), `citizen-${id}-role`); s1.create(); s1.appendContent(!needs_translation ? new_citizen.role : translate(language, new_citizen.role))
             s.appendHTML(".")
             //Citizen's experience
             s = new element("span", "", [], p.getNode()); s.create()
             s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Experience" : translate(language, "Experience"))
             s.appendHTML(": ")
-            s1 = new element("span", "font-bold", [{"key":"data-xp", "value":"0"}], s.getNode(), `citizen-${id}-xp`); s1.create(); s1.appendContent(new_citizen.xp.toString())
-            s.appendHTML(".")
+            s1 = new element("span", "font-bold", [{"key":"data-xp", "value":new_citizen.xp}], s.getNode(), `citizen-${id}-xp`); s1.create(); s1.appendContent((Number(new_citizen.xp).toFixed(2)).toString())
         }
         let show_forth_line = (d2) => {
             p = new element("p", "mx-1 flex justify-between mb-1 text-xs text-gray-200", [], d2.getNode()); p.create()
@@ -1061,17 +1108,19 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             s1 = new element("span", "font-bold", [{"key":"data-i18n", "value":""}], s.getNode(), `citizen-${id}-outfit`); s1.create(); s1.appendContent(!needs_translation ? new_citizen.outfit : translate(language, new_citizen.outfit))
             s.appendHTML(".")
             //Citizen's fertility
-            s = new element("span", "", [], p.getNode()); s.create()
-            s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Fertility" : translate(language, "Fertility"))
-            s.appendHTML(": ")
-            s1 = new element("span", "font-bold", [], s.getNode(), `citizen-${id}-fertility`); s1.create(); s1.appendContent(new_citizen.fertility.toString())
-            s.appendHTML(".")
-            if(new_citizen.gender == "Femenine"){
-                let visible_fertility = new_citizen.ageYears >= 15
-                s1 = new element("span", `ms-1 fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode()); s1.create(); s1.appendContent("(")
-                s1 = new element("span", `fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode()); s1.create(); s1.appendContent(translate(language, "week"))
-                s1 = new element("span", `ms-1 font-bold fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode(), `citizen-${id}-fertility-week`); s1.create(); s1.appendContent(new_citizen.fertilityWeek.toString()+"/4")
-                s1 = new element("span", `fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode()); s1.create(); s1.appendContent(")")                
+            let visible_fertility = new_citizen.ageYears >= 15
+            if(visible_fertility){
+                s = new element("span", "", [], p.getNode()); s.create()
+                s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Fertility" : translate(language, "Fertility"))
+                s.appendHTML(": ")
+                s1 = new element("span", "font-bold", [], s.getNode(), `citizen-${id}-fertility`); s1.create(); s1.appendContent(new_citizen.fertility.toString())
+                s.appendHTML(".")
+                if(new_citizen.gender == "Femenine"){
+                    s1 = new element("span", `ms-1 fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode()); s1.create(); s1.appendContent("(")
+                    s1 = new element("span", `fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode()); s1.create(); s1.appendContent(translate(language, "week"))
+                    s1 = new element("span", `ms-1 font-bold fertility-week value${!visible_fertility ? " hidden" : ""}`, [], s.getNode(), `citizen-${id}-fertility-week`); s1.create(); s1.appendContent(new_citizen.fertilityWeek.toString())
+                    s1 = new element("span", `fertility-week ${!visible_fertility ? "hidden" : ""}`, [], s.getNode()); s1.create(); s1.appendContent("/4)")                
+                }
             }
         }
         let show_relationships = (d1) => {
@@ -1092,12 +1141,12 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                     draw_parents_of_citizen(citizens[id])
                 }
                 //Citizen's children title
-                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-600 text-xs`, [], body_div, `citizen-${id}-children-title`); d2.create()
+                d2 = new element("div", `${visible_teen_class}border border-gray-800 bg-gray-600 text-xs`, [], body_div, `citizen-${id}-children-title`); d2.create()
                 p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
                 s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Children"))
                 //Citizen's children area
-                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-500 text-xs`, [], body_div, `citizen-${id}-children`); d2.create()
-                p = new element("p", "empty ms-1 mt-1 mb-1 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
+                d2 = new element("div", `px-1 ${visible_teen_class}border border-gray-800 bg-gray-500 text-xs`, [], body_div, `citizen-${id}-children`); d2.create()
+                p = new element("p", "empty mt-1 mb-1 text-xs flex w-100 justify-between gap-2 text-white", [], d2.getNode()); p.create()
                 s = new element("span", "", [], p.getNode()); s.create()
                 i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                 s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"m"}], s.getNode()); s1.create()
@@ -1106,12 +1155,12 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                     draw_children_of_citizen(citizens[id])
                 }
                 //Citizen's couple title
-                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-600 text-xs`, [], body_div, `citizen-${id}-couple-title`); d2.create()
+                d2 = new element("div", `${visible_teen_class}border border-gray-800 bg-gray-600 text-xs`, [], body_div, `citizen-${id}-couple-title`); d2.create()
                 p = new element("p", "flex justify-between gap-1 items-center p-1 ps-2 text-xs text-gray-200 bg-gray-600", [], d2.getNode()); p.create()
                 s = new element("span", "", [{"key":"data-i18n", "value":""}], p.getNode()); s.create(); s.appendContent(translate(language, "Current couple"))
                 //Citizen's couple area
-                d2 = new element("div", `${visible_teen_class} border border-gray-800 bg-gray-500 text-xs`, [], body_div, `citizen-${id}-couple`); d2.create()
-                p = new element("p", "empty ms-1 text-xs flex w-100 justify-between gap-2 p-1 text-white", [], d2.getNode()); p.create()
+                d2 = new element("div", `px-1 ${visible_teen_class}border border-gray-800 bg-gray-500 text-xs`, [], body_div, `citizen-${id}-couple`); d2.create()
+                p = new element("p", "empty text-xs flex w-100 justify-between gap-2 text-white", [], d2.getNode()); p.create()
                 s = new element("span", "", [], p.getNode()); s.create()
                 i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
                 s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
@@ -1120,10 +1169,10 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                     draw_couple_of_citizen(citizens[id])
                 }
             }
-            let visible_teen_class = new_citizen.ageYears >= 14 ? "" : "hidden"
+            let visible_teen_class = new_citizen.ageYears >= 14 ? "" : "hidden "
             d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [{"key":"data-body", "value":`citizen-${id}-relationships-body`}, {"key":"data-group", "value":`citizen-${id}-custom-accordion`}], d1.getNode(), `citizen-${id}-relationships-title`); d2.create()
             //Citizen's relationships title
-            p = new element("p", "clickable flex justify-between items-center p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
+            p = new element("p", "clickable flex justify-between items-center p-1 text-xs text-gray-200", [], d2.getNode()); p.create()
             s = new element("span", "grow", [], p.getNode()); s.create()
             s1 = new element("span", "", [{"key":"data-i18n", "value":""}], s.getNode()); s1.create(); s1.appendContent(!needs_translation ? "Relationships of" : translate(language, "Relationships of"))
             s1 = new element("span", "ms-1 text-xs text-gray-200", [], s.getNode()); s1.create(); s1.appendContent(citizens[id].name.split(",")[0])
@@ -1136,6 +1185,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
             let build_actions_available = (body_div) => {
                 let citizen_id = body_div.id.split("-")[1]
                 let citizen_can_search_couple = citizens[citizen_id] && citizens[citizen_id].ageYears >= 14
+                let citizen_can_be_exiled = citizens[citizen_id] && citizens[citizen_id].status == "idle"
                 let citizen_can_get_role_assigned = citizens[citizen_id] && citizens[citizen_id].ageYears >= 6 && citizens[citizen_id].status != "pregnant"
                 //Remove all contents of body_div
                 body_div.innerHTML = ""
@@ -1170,7 +1220,14 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
                         })
                     })
                 }
-                if(!citizen_can_search_couple && !citizen_can_get_role_assigned) {
+                if(citizen_can_be_exiled){
+                    b = new element("button", "exile text-xs text-white grow p-2 button border border-gray-400 bg-red-900", [], p.getNode(), `exile-${citizen_id}`); b.create()
+                    i = new element("i", "fa fa-hand-wave me-2", [], b.getNode()); i.create()
+                    s = new element("span", "", [{"key":"data-i18n", "value":""}], b.getNode()); s.create(); s.appendContent(translate(language, "Exile citizen"))
+                    b.getNode().addEventListener("click", function(e){
+                    })
+                }
+                if(!citizen_can_be_exiled && !citizen_can_search_couple && !citizen_can_get_role_assigned) {
                     s = new element("span", "text-white", [], p.getNode()); s.create()
                     i = new element("i", "fa fa-light fa-empty-set mx-1", [], s.getNode()); i.create()
                     s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create(); 
@@ -1198,7 +1255,7 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
         p = new element("p", "ms-1 text-xs text-gray-200", [], d2.getNode()); p.create()
         s = new element("span", "", [], p.getNode(), `citizen-${id}-description`); s.create()
         //Update description
-        updateCitizenDescription(id, new_citizen.gender, new_citizen.birthWeeks, citizens[id].attributes, citizens[id].wishedAttributes, [citizens[id].hatedAttribute])
+        updateCitizenDescription(id, new_citizen.gender, new_citizen.weeksAlive, citizens[id].attributes, citizens[id].wishedAttributes, [citizens[id].hatedAttribute])
         //Citizen's properties title
         d2 = new element("div", "border border-gray-800 bg-gray-800 text-xs", [], d1.getNode()); d2.create()
         p = new element("p", "p-1 ps-2 text-xs text-gray-200", [], d2.getNode()); p.create()
@@ -1225,10 +1282,10 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     new_citizen.couple = !citizen || citizen.couple == undefined || citizen.couple === null ? null : citizen.couple
     new_citizen.role = !citizen || citizen.role == undefined || citizen.role === null ? "unassigned" : citizen.role
     new_citizen.rolekey = !citizen || citizen.rolekey == undefined || citizen.rolekey === null ? "unassigned" : citizen.rolekey
-    new_citizen.birthWeek = !citizen || citizen.birthWeek == undefined || citizen.birthWeek === null ? document.getElementById("passedWeeks").innerHTML*1 : citizen.birthWeek
-    new_citizen.birthWeeks = !citizen || citizen.birthWeeks == undefined || citizen.birthWeeks === null ? 0 : citizen.birthWeeks
     new_citizen.ageYears = !citizen || citizen.ageYears == undefined || citizen.ageYears === null ? 0 : citizen.ageYears
     new_citizen.ageWeeks = !citizen || citizen.ageWeeks == undefined || citizen.ageWeeks === null ? 0 : citizen.ageWeeks
+    new_citizen.weeksAlive = new_citizen.ageYears * 52 + new_citizen.ageWeeks
+    new_citizen.birthWeek = !citizen || citizen.birthWeek == undefined || citizen.birthWeek === null ? document.getElementById("passedWeeks").innerHTML*1 : citizen.birthWeek
     new_citizen.status = !citizen || citizen.status == undefined || citizen.status === null ? "idle" : citizen.status
     new_citizen.xp = !citizen || citizen.xp == undefined || citizen.xp === null ? 0 : citizen.xp
     new_citizen.leftHand = !citizen || citizen.leftHand == undefined || citizen.leftHand === null ? "" : citizen.leftHand
@@ -1237,9 +1294,13 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     new_citizen.fertilityWeek = (!citizen || citizen.fertilityWeek == undefined || citizen.fertilityWeek === null) ? (new_citizen.gender === "Femenine" ? 1 + Math.floor(Math.random() * 4) : null) : citizen.fertilityWeek
     new_citizen.fertility = !citizen || citizen.fertility == undefined || citizen.fertility === null ? 10 + Math.floor(Math.random() * 91) : citizen.fertility
     new_citizen.weekOfDeath = !citizen || citizen.weekOfDeath == undefined || citizen.weekOfDeath === null ? 3120 + Math.floor(Math.random() * (4420-3120)) : citizen.weekOfDeath
+    new_citizen.attributes = !citizen || citizen.attributes == undefined || citizen.attributes === null ? undefined : citizen.attributes
+    new_citizen.wishedAttributes = !citizen || citizen.wishedAttributes == undefined || citizen.wishedAttributes === null ? undefined : citizen.wishedAttributes
+    new_citizen.hatedAttribute = !citizen || citizen.hatedAttribute == undefined || citizen.hatedAttribute === null ? undefined : citizen.hatedAttribute
     citizens[id] = new_citizen
-    //Only display living citizens.
-    if(new_citizen.status !== "deceased"){
+    //Only draw and display living citizens.
+    let new_citizen_alive = new_citizen.status != "deceased"
+    if(new_citizen_alive){
         //Build citizen accordion header
         build_citizen_accordion_header()
         //Build citizen accordion body
@@ -1259,90 +1320,20 @@ const build_citizen = (needs_translation = false, id = 0, citizen = false) => {
     }
     return new_citizen
 }
-const accordion_citizens = (amount = 10) => {
-    //Build citizens accordion
-    let parentElem = document.getElementById("accordion-menu")
-    //Build citizens accordion header
-    h2 = new element("h2", "mt-3", [], parentElem, "accordion-menu-citizens"); h2.create()
-    b = new element("button", "flex items-center font-medium justify-between w-full py-2 px-3 bg-gray-900 border border-gray-700 text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-citizens-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-citizens-body"}], h2.getNode())
-    b.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Citizens")
-    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-    //Build citizens accordion body
-    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-citizens"}], parentElem, "accordion-menu-citizens-body"); d1.create()
-    d2 = new element("div", "py-1 border border-gray-700 bg-gray-700", [], d1.getNode()); d2.create()
-    d = new element("div", "mx-1", [{"key":"data-accordion","value":"collapse"}], d2.getNode(), "accordion-citizens"); d.create()
-    if(!progress_already_saved){
-        for(let i = 1; i<=amount; i++){
-            let new_citizen = {}
-            new_citizen.id = i
-            //Set relationship attributes null.
-            new_citizen.father = null
-            new_citizen.mother = null
-            new_citizen.children = []
-            new_citizen.couple = null
-            //Set role as unassigned
-            new_citizen.role = new_citizen.rolekey = "unassigned"
-            //Set aging attributes
-            //Set total weeks already lived by citizen (weeks age)
-            let citizenBirthweeks = 1092+ Math.floor(Math.random() * (1820-1092)) //Random ages only adults
-            //citizenBirthweeks = 0+ Math.floor(Math.random() * (3800-0)) //Random ages in all ranges
-            //citizenBirthweeks = 729 + Math.floor(Math.random() * (3300-729)) //Random ages from teens on (not so ancient)
-            new_citizen.birthWeeks = citizenBirthweeks //Weeks already lived.
-            //Set current game week in which citizen was born.
-            new_citizen.birthWeek = document.getElementById("passedWeeks").innerHTML*1 - citizenBirthweeks
-            //Set citizen age in years.
-            new_citizen.ageYears = Math.floor(citizenBirthweeks / 52)
-            //Set how many weeks has passed having the same age.
-            new_citizen.ageWeeks = citizenBirthweeks % 52
-            //Set week of citizen's future death
-            new_citizen.deathWeek = 3120 + Math.floor(Math.random() * (4420-3120))
-            //Set status to idle.
-            new_citizen.status = "idle"
-            //Set first half citizens as female and the rest as male.
-            new_citizen.gender = i <= Math.ceil(amount / 2) ? "Femenine" : "Masculine"
-            new_citizen.name = set_random_name(language, new_citizen.gender)
-            new_citizen.xp = 0
-            //Set own attributes, wished attributes and hated attributes (this last must not be a wished attribute)
-            new_citizen.attributes = getRandomAttributes(language)
-            new_citizen.wishedAttributes = getRandomAttributes(language)
-            new_citizen.hatedAttribute = getRandomAttributes(language, 1, new_citizen.wishedAttributes)[0]
-            //Left and right hand empty, no outfit.
-            new_citizen.leftHand = new_citizen.rightHand = ""
-            new_citizen.outfit = "No"
-            //Set fertility issues.
-            new_citizen.fertility = 10 + Math.floor(Math.random() * 91)
-            new_citizen.fertilityWeek = new_citizen.gender === "Femenine" ? 1 + Math.floor(Math.random() * 4) : null
-    
-            //Only display living citizens.
-            if(new_citizen.status != "deceased"){
-                build_citizen(translation = false, new_citizen.id, new_citizen)
-            }       
-        }
-    }
+
+//TODO: Quitar siguiente función luego de pasar todo a objectos y clases.
+const get_citizen_by_index = (citizen_index, citizens_array = citizens) => {
+    return citizens_array[citizen_index]
 }
-const accordion_relationships = () => {
-    //Build relationships accordion
-    let parentElem = document.getElementById("accordion-menu")
-    //Build relationships accordion header
-    h2 = new element("h2", "mt-3", [], parentElem, "accordion-menu-relationships"); h2.create()
-    b = new element("button", "flex items-center justify-between w-full py-2 px-3 font-medium bg-gray-900 border border-gray-700 text-gray-400 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":"#accordion-menu-relationships-body"},{"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":"accordion-menu-relationships-body"}], h2.getNode())
-    b.create()
-    s = new element("span", "", [{"key":"data-i18n","value":""}], b.getNode()); s.create(); s.appendContent("Relationships")
-    b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
-    //Build relationships accordion body
-    d1 = new element("div", "hidden", [{"key":"aria-labelledby","value":"accordion-menu-relationships"}], parentElem, "accordion-menu-relationships-body"); d1.create()
-    //Relationships area
-    d2 = new element("div", "py-1 pb-0 border border-gray-200 border-gray-700 bg-gray-500", [], d1.getNode(), "citizen-relationships"); d2.create()
-    p = new element("p", "empty ms-1 mt-1 mb-2 text-xs flex w-100 justify-between gap-2 px-1 text-white", [], d2.getNode()); p.create()
-    s = new element("span", "", [], p.getNode()); s.create()
-    i = new element("i", "fa fa-light fa-empty-set me-1", [], s.getNode()); i.create()
-    s1 = new element("span", "", [{"key":"data-i18n", "value":""}, {"key":"gender", "value":"f"}], s.getNode()); s1.create()
-    s1.appendContent("Not defined (Make couples in Citizen's panel)")
+//TODO: Quitar siguiente función luego de pasar todo a objectos y clases.
+const get_citizen_by_id = (citizen_id, citizens_array = citizens) => {
+    let citizen_found = null
+    citizens_array.forEach((citizen) => {
+        if(citizen.id == citizen_id) citizen_found = citizen
+    })
+    return citizen_found
 }
-const get_citizen_by_index = (citizen_index) => {
-    return citizens[citizen_index]
-}
+//TODO: Quitar siguiente función luego de pasar todo a objectos y clases.
 const modal_citizen_info = (e) => {
     let citizen_index = e.target.getAttribute("data-index")
     let citizen = get_citizen_by_index(citizen_index)
@@ -1350,6 +1341,7 @@ const modal_citizen_info = (e) => {
     modal_popup(citizen.name, "ViewCitizenInfo", citizen)
     modal.show()
 }
+//TODO: Quitar siguiente función luego de pasar todo a objectos y clases.
 const show_citizen_attributes = (e) => {
     let parent_h2 = e.target.closest("h2")
     if(e.target.classList.contains("fa-down")){
@@ -1416,8 +1408,10 @@ const show_active_production_rules = (location, parent_div) => {
                             let gender_class = current_citizen.gender === "Feminine" ? "fa-venus" : "fa-mars"
                             let gender_colour_class = current_citizen.gender === "feminine" ? "text-red-500" : "text-blue-500"
                             i = new element("i", `me-1 fa ${gender_class} ${gender_colour_class}`, [], s.getNode(), `citizen-${assigned_worker_index}-gender-icon`); i.create()
-                            let age_class = (current_citizen.ageYears <= 5 ? "fa-baby" : (current_citizen.ageYears < 15 ? "fa-child" : (current_citizen.ageYears < 21 ? "fa-person-walking" : (current_citizen.ageYears < 50 ? "fa-person" : (current_citizen.ageYears < 65 ? "fa-person" : "fa-person-cane"))))); 
-                            i = new element("i", `text-white me-1 fa ${age_class}`, [], s.getNode(), `citizen-${assigned_worker_index}-age-icon`); i.create()
+                            let age_class = `fa-${age_index(current_citizen.ageYears)+1}`
+                            s1 = new element("span", "", [], s.getNode()); s1.create()
+                            i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${assigned_worker_index}-age-icon`); i.create()
+                            i = new element("i", `ms-0.5 me-1 fa text-white ${age_class}`, [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), `citizen-${assigned_worker_index}-age-group-icon`); i.create()
                             let role_class = ""
                             role_icons.forEach((role) => {
                                 if(role.key === current_citizen.role){
@@ -1993,7 +1987,7 @@ const new_rule_display_info = (rule, rule_index, clicked_object, current_mount =
             //Create span with product name, add square brackets in case it's not consumable
             //Check if current requirement is fulfilled.
             let is_location_requirement = requirement.type === "location"
-            let location_requirement_fulfilled = (is_location_requirement && (requirement.object === current_mount || mounts.descriptions[requirement.object].owned))
+            let location_requirement_fulfilled = (is_location_requirement && (requirement.object === current_mount || landforms.descriptions[requirement.object].owned))
             requirement_fulfilled = location_requirement_fulfilled
             let requirement_cannot_be_fulfilled = is_location_requirement && !requirement_fulfilled
             a_requirement_cannot_be_fulfilled ||= requirement_cannot_be_fulfilled
@@ -2554,11 +2548,15 @@ const modal_popup = (modalTitle, modalType, modalData = {}) => {
         s = new element("span", `mt-1 px-2 text-center border border-gray-800 rounded bg-gray-700 text-xs font-bold ${attributes_colors["EN"][eng_attribute]}`, [], p.getNode()); s.create(); s.appendContent(translate(language, modalData.hatedAttribute, "", "uppercase"))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
-    let popupSaveProgress = () => {
+    let popupGameOver = () => {
         p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
-        p.create(); p.appendContent(translate(language, "Your citizens have already searched all the zone and they discovered many new things."))
+        p.create(); p.appendContent(translate(language, "Bad news..."))
         p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
-        p.create(); p.appendContent(translate(language, "Please, read the notification you received in your News panel to check the report of your citizen's research."))
+        p.create(); p.appendContent(translate(language, "I'm afraid your colony has come to an end."))
+        p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
+        p.create(); p.appendContent(translate(language, "You have ran out of citizens. They either died or abandon your colony, and so, your game is over."))
+        p = new element("p", "text-base py-2 text-gray-400", [{"key":"data-i18n","value":""}], parent)
+        p.create(); p.appendContent(translate(language, "Don't worry. You can always start all over again in a new colony and try to use a better strategy."))
         document.getElementById("modalFooterButton1").innerText = translate(language, "Ok")
     }
     format_popup()
@@ -2568,6 +2566,7 @@ const modal_popup = (modalTitle, modalType, modalData = {}) => {
     if(modalType === "ZoneSearched"){ popupZoneSearched() }
     if(modalType === "RoleCitizenBusy"){ popupCannotChangeRole() }
     if(modalType === "ViewCitizenInfo"){ popupViewCitizenInfo() }
+    if(modalType === "GameOver"){ popupGameOver() }
 }
 const build_active_expedition = (parentElem, expeditionData = {}) => {
     //Build current active expeditions
@@ -2642,8 +2641,11 @@ const build_active_expedition = (parentElem, expeditionData = {}) => {
         s = new element("span", "", [], d4.getNode()); s.create()
         //Build expeditionary or horse crew div
         if(crewMember.type === "expeditionary"){
-            i = new element("i", "me-1 fa fa-"+(crewMember.gender === "F" ? "venus" : "mars")+" text-"+(crewMember.gender === "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-gender-icon"); i.create()
-            i = new element("i", "me-1 fa fa-"+(crewMember.age === "adult" ? "person" : "child")+" text-white", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-age-icon"); i.create()
+            i = new element("i", "me-1 fa fa-"+(crewMember.gender === "F" ? "venus" : "mars")+" text-"+(crewMember.gender === "F" ? "red" : "blue")+"-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-gender-icon"); i.create()            
+            let age_class = `fa-${age_index(crewMember.ageYears)+1}`
+            s1 = new element("span", "", [], s.getNode()); s1.create()
+            i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${crewMember.id}-age-icon`); i.create()
+            i = new element("i", `ms-0.5 me-1 fa text-white ${age_class}`, [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), `citizen-${crewMember.id}-age-group-icon`); i.create()
             i = new element("i", "me-1 fa fa-map-location-dot text-green-500", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-role-icon"); i.create()
             s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "expedition-"+expeditionData.id+"-citizen-"+crewMember.id+"-xp-icon"); 
             s1.create(); s1.appendContent(Math.floor(crewMember.xp).toString())
@@ -2690,12 +2692,12 @@ const enable_accordion_click = (accordion_item_button) => {
             target.setAttribute('aria-expanded', 'true');
             target.children[1].classList.remove("rotate-180")
             target.classList.remove("text-gray-500", "text-gray-400")
-            target.classList.add("bg-gray-100", "bg-gray-800", "text-gray-900", "text-white")
+            target.classList.add("bg-gray-800", "text-gray-900", "text-white")
         } else { //Trying to collapse accordion item
             accordion_item_body.classList.add('hidden');
             target.setAttribute('aria-expanded', 'false');
             target.children[1].classList.add("rotate-180")
-            target.classList.remove("bg-gray-100", "bg-gray-800", "text-gray-900", "text-white")
+            target.classList.remove("bg-gray-800", "text-gray-900", "text-white")
             target.classList.add("text-gray-500", "text-gray-400")
         }
     }
@@ -2798,9 +2800,9 @@ const add_landform = (landform_type = "waterReservoir") => {
     let d = document.querySelector("#accordion-landforms")
     let landforms_amount = document.querySelectorAll("#accordion-landforms > h2").length
     let landform_index = landforms_amount + 1
-    let landform_title = mounts.camelCase[landform_type]
+    let landform_title = landforms.camelCase[landform_type]
     //Add landform to "mounts" structure.
-    mounts.descriptions[landform_title].owned++
+    landforms.descriptions[landform_title].owned++
     //Build landform #landformIndex accordion header
     h2 = new element("h2", `${landforms_amount ? "mt-1" : ""} notificationUnread`, [], d, `accordion-landform-${landform_index}-header`); h2.create()
     b = new element("button", "unattached-click flex items-center justify-between w-full py-2 px-3 text-xs text-gray-400 bg-gray-900 font-medium border border-gray-700 gap-3", [{"key":"type","value":"button"}, {"key":"data-accordion-target","value":`#accordion-landform-${landform_index}-body`}, {"key":"aria-expanded","value":"false"},{"key":"aria-controls","value":`accordion-landform-${landform_index}-body`}], h2.getNode(), `accordion-landform-${landform_index}`)
@@ -2810,7 +2812,7 @@ const add_landform = (landform_type = "waterReservoir") => {
     s1 = new element("span", "new text-xs font-medium px-1.5 py-0.5 hidden rounded-sm bg-blue-900 text-blue-300 me-3", [{"key":"gender","value":"m"}, {"key":"data-i18n","value":""}], s.getNode())
     s1.create(); s1.appendContent("NEW")
     s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent(translate_panel ? translate(language, landform_title) : landform_title)
-    let current_mount_index = mounts.descriptions[landform_title].owned
+    let current_mount_index = landforms.descriptions[landform_title].owned
     s1.appendHTML(landform_type !== "waterReservoir" ? ` ${current_mount_index}` : "")
     b.appendHTML("<svg data-accordion-icon class=\"w-3 h-3 rotate-180 shrink-0\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 10 6\"><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5 5 1 1 5\"/></svg>")
     //Build current landform accordion body
@@ -2825,8 +2827,15 @@ const add_landform = (landform_type = "waterReservoir") => {
         //First column
         s1 = new element("span", "", [{"key":"data-i18n","value":""}], s.getNode()); s1.create(); s1.appendContent("Type")
         sp = new element("span", "", [], s.getNode()); sp.create(); sp.appendContent(": ")
-        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""},{"key":"data-mount", "value":colony_water_reservoir}], s.getNode(), `landform-${landform_index}-type`); s1.create()
+        s1 = new element("span", "font-bold", [{"key":"data-i18n","value":""},{"key":"data-type-key", "value":colony_water_reservoir}], s.getNode(), `landform-${landform_index}-type`); s1.create()
         s1.appendContent(colony_water_reservoir)
+        //If colony has water income, add income increment based on new reservoir type.
+        let water_income_increment =  document.querySelector("#colony-water-income") != undefined ? water_reservoirs[colony_water_reservoir]["daily-water-income"]*1 : 0
+        document.querySelector("#colony-water-income").innerHTML = document.querySelector("#colony-water-income").innerHTML*1 + water_income_increment
+        //If colony has food income, add income increment based on new reservoir type.
+        let food_income_increment =  document.querySelector("#colony-food-income") != undefined ? water_reservoirs[colony_water_reservoir]["daily-food-income"]*1 : 0
+        document.querySelector("#colony-food-income").innerHTML = document.querySelector("#colony-food-income").innerHTML*1 + food_income_increment
+        update_colony("vitalResourcesUpdate")
         //Next column
         s = new element("span", "", [], p.getNode()); s.create();
     }
@@ -2867,10 +2876,10 @@ const add_landform = (landform_type = "waterReservoir") => {
         let assignable_worker_found = false
         document.querySelectorAll(".citizen").forEach((elem) => {
             let citizen_index = elem.id.split("-")[2]
-            let citizen_role = document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
+            let citizen_role = citizens[citizen_index].rolekey//document.getElementById(`citizen-${citizen_index}-role`).getAttribute("data-role")
             let citizen_status = document.getElementById(`citizen-${citizen_index}-status`).getAttribute("data-status")
             let citizen_already_listed = document.getElementById(`${landform_type}-assignable-citizen-${citizen_index}`) != undefined
-            if(mounts.descriptions[landform_title]["role-keys-related"].includes(citizen_role) && citizen_status === "idle" && !citizen_already_listed){
+            if(landforms.descriptions[landform_title]["role-keys-related"].includes(citizen_role) && citizen_status === "idle" && !citizen_already_listed){
                 assignable_worker_found = true
                 add_assignable_worker_to_mount(citizen_index, landform_type)
                 document.getElementById(`${landform_type}-citizen-${citizen_index}-assign`).addEventListener("click", 
@@ -3010,10 +3019,12 @@ const toggle_sort_stock = (type = "resources") => {
 //Update accordions structure
 const update_colony = (event = "zoneSearched") => {
     var parentElem, current_type_empty
-    let zone_already_searched = event === "zoneSearched"
-    let buildings_update_exists = zone_already_searched || event === "buildingsUpdate"
-    let population_update_exists = zone_already_searched || event === "populationUpdate"
-    let only_update_vital_resources = population_update_exists || event == "vitalResourcesUpdate"
+    let zone_just_searched = event === "zoneSearched"
+    let offline_time_being_processed = event === "offlineTimeProcessed"
+    let buildings_update_exists = zone_just_searched || offline_time_being_processed || event === "buildingsUpdate"
+    let population_update_exists = zone_just_searched || offline_time_being_processed || event === "populationUpdate"
+    let vital_resources_update_exists = event === "vitalResourcesUpdate"
+    let update_vital_resources = population_update_exists || vital_resources_update_exists || offline_time_being_processed
     let current_population = Object.keys(citizens).length
     const show_building_group_accordion = (current_group) => {
         //Create current group accordion header
@@ -3097,16 +3108,23 @@ const update_colony = (event = "zoneSearched") => {
             //Show empty message. (only for shelters)
         }
     }
-    const update_vital_indicators = (indicator_type, revenue) => {
+    const update_vital_indicators = (indicator_type, revenue_value) => {
         let icon = document.getElementById(`colony-${indicator_type}-stock-icon`)
         let consumption = document.getElementById(`colony-${indicator_type}-consumption`)
         let income = document.getElementById(`colony-${indicator_type}-income`)
+        let capacity = document.getElementById(`colony-${indicator_type}-capacity`)
+        let capacity_percent = document.getElementById(`colony-${indicator_type}-capacity-percent`)
         var colony_icon = document.getElementById("accordion-menu-colony-icon")
         var vital_resources_icon = document.getElementById("accordion-vitalResources-icon")
         let consumption_icon = document.getElementById(`accordion-${indicator_type}-consumption-icon`)
         let income_icon = document.getElementById(`accordion-${indicator_type}-income-icon`)
         let stock_icon = document.getElementById(`accordion-${indicator_type}-stock-icon`)
-
+        let storage_capacity = capacity.innerHTML*1
+        let stock = document.getElementById(`colony-${indicator_type}-stock`)
+        let stock_value = stock.innerHTML*1
+        let revenue = document.getElementById(`${indicator_type}-revenue`)
+        
+        //Helper to set class removing the previous ones.
         const set_class = (element, new_class, removable_classes) => {
             element.classList.remove(removable_classes[0], removable_classes[1])
             element.classList.add(new_class)
@@ -3119,7 +3137,7 @@ const update_colony = (event = "zoneSearched") => {
             }
         }
        
-        if(revenue === 0){
+        if(revenue_value === 0){
             //Undo critical situation.
             consumption_icon.classList.add("hidden"); income_icon.classList.add("hidden"); stock_icon.classList.add("hidden")
             //Check if vital resources criticity has disappeared...
@@ -3128,8 +3146,14 @@ const update_colony = (event = "zoneSearched") => {
             set_class(icon.parentElement, "bg-yellow-600", ["bg-green-700", "bg-red-900"])
             set_class(consumption.parentElement, "bg-yellow-600", ["bg-green-700", "bg-red-900"])
             set_class(income.parentElement, "bg-yellow-600", ["bg-green-700", "bg-red-900"])
+            if(indicator_type == "water"){
+                population_loss_events["daily"]["water_shortage"].status = "inactive"
+            }
+            if(indicator_type == "food"){
+                population_loss_events["weekly"]["food_shortage"].status = "inactive"
+            }
         } else {
-            if(revenue > 0){
+            if(revenue_value > 0){
                 //Undo critical situation.
                 consumption_icon.classList.add("hidden"); income_icon.classList.add("hidden"); stock_icon.classList.add("hidden")
                 //Check if vital resources criticity has disappeared...
@@ -3138,6 +3162,12 @@ const update_colony = (event = "zoneSearched") => {
                 set_class(icon.parentElement, "bg-green-700", ["bg-yellow-600", "bg-red-900"])
                 set_class(consumption.parentElement, "bg-green-700", ["bg-yellow-600", "bg-red-900"])
                 set_class(income.parentElement, "bg-green-700", ["bg-yellow-600", "bg-red-900"])
+                if(indicator_type == "water"){
+                    population_loss_events["daily"]["water_shortage"].status = "inactive"
+                }
+                if(indicator_type == "food"){
+                    population_loss_events["weekly"]["food_shortage"].status = "inactive"
+                }
             } else {
                 //Critical situation.
                 vital_resources_icon.classList.remove("hidden")
@@ -3147,10 +3177,27 @@ const update_colony = (event = "zoneSearched") => {
                 set_class(icon.parentElement, "bg-red-900", ["bg-yellow-600", "bg-green-700"])
                 set_class(consumption.parentElement, "bg-red-900", ["bg-yellow-600", "bg-green-700"])
                 set_class(income.parentElement, "bg-red-900", ["bg-yellow-600", "bg-green-700"])
+                set_class(stock.parentElement, "bg-red-900", ["bg-green-700", "bg-gray-700"])
+                //Show warning footer.
+
+            }
+        }
+
+        if(storage_capacity === stock_value){
+            set_class(icon, "fa-minus", ["fa-arrow-up", "fa-arrow-down"])
+            set_class(capacity.parentElement, "bg-red-900", ["bg-green-700"])
+            set_class(capacity_percent.parentElement, "bg-red-900", ["bg-green-700"])
+            set_class(stock.parentElement, "bg-gray-700", ["bg-green-700"])
+            revenue.innerHTML = "+0"
+        } else {
+            if(revenue_value > 0 && storage_capacity >= stock_value){
+                set_class(capacity.parentElement, "bg-green-700", ["bg-red-900"])
+                set_class(capacity_percent.parentElement, "bg-green-700", ["bg-red-900"])
+                set_class(stock.parentElement, "bg-green-700", ["bg-red-900", "bg-gray-700"])
             }
         }
     }
-    if(only_update_vital_resources){
+    if(update_vital_resources){
         //1) Update colony water and food consumption.
         let water_income = document.getElementById("colony-water-income").innerHTML*1
         let water_consumption = current_population * citizenDailyWaterNeeds
@@ -3160,10 +3207,14 @@ const update_colony = (event = "zoneSearched") => {
         let food_revenue = food_income - food_consumption
         //1.1) Update colony water critical indicators.
         document.getElementById("colony-water-consumption").innerHTML = water_consumption
+        document.getElementById("colony-water-capacity").innerHTML = water_consumption * water_storage_capacity_multiplier
+        document.getElementById("colony-water-capacity-percent").innerHTML = Math.floor(Math.min(100, (document.querySelector("#colony-water-stock").innerText*1 / document.querySelector("#colony-water-capacity").innerText*1) * 100))
         document.getElementById("water-revenue").innerHTML = (water_revenue > 0 ? "+" : "") + water_revenue.toString()
         update_vital_indicators("water", water_revenue)
         //1.2) Update colony food critical indicators.
         document.getElementById("colony-food-consumption").innerHTML = food_consumption
+        document.getElementById("colony-food-capacity").innerHTML = food_consumption * food_storage_capacity_multiplier
+        document.getElementById("colony-food-capacity-percent").innerHTML = Math.floor(Math.min(100, (document.querySelector("#colony-food-stock").innerText*1 / document.querySelector("#colony-food-capacity").innerText*1) * 100))
         document.getElementById("food-revenue").innerHTML = (food_revenue > 0 ? "+" : "") + food_revenue.toString()
         update_vital_indicators("food", food_revenue)
     }
@@ -3208,9 +3259,6 @@ const update_colony = (event = "zoneSearched") => {
                 document.getElementById("colonyLifeQualitySituation").querySelector("i").classList.add(colony_life_quality_satisfaction.icon)
                 document.getElementById("colonyLifeQualityImpression").innerHTML = translate(language, colony_life_quality_satisfaction.word)
             }
-            /*
-            
-            */
         }
         //Update shelter capacity related info
         //1) Check new shelter capacity
@@ -3234,7 +3282,7 @@ const update_colony = (event = "zoneSearched") => {
             }
         }
     }
-    if(zone_already_searched){
+    if(zone_just_searched){
         //Add notification about zone searched
         update_stock()
         add_news()
@@ -3274,7 +3322,9 @@ const add_available_worker_to_expedition = (citizenIndex, newExpeditionClass) =>
     //Gender citizen icon
     i = new element("i", document.getElementById("citizen-"+citizenIndex+"-gender-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-gender-icon"); i.create()
     //Age citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizenIndex+"-age-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-age-icon"); i.create()
+    s1 = new element("span", "", [], s.getNode()); s1.create()
+    i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${citizenIndex}-age-icon`); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizenIndex+"-age-group-icon").classList.toString(), [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), `citizen-${id}-age-group-icon`); i.create()
     //Role citizen icon
     i = new element("i", document.getElementById("citizen-"+citizenIndex+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
     //XP citizen icon
@@ -3328,15 +3378,17 @@ const add_assignable_worker_to_mount = (citizen_index, mount_class) => {
     iid = `citizen-${citizen_index}-gender-icon`
     i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
     //Age citizen icon
-    iid = `citizen-${citizen_index}-age-icon`
-    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    iid = `citizen-${citizen_index}-age-group-icon`
+    s1 = new element("span", "", [], s.getNode()); s1.create()
+    i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${citizen_index}-age-icon`); i.create()
+    i = new element("i", document.getElementById(iid).classList.toString(), [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), `citizen-${citizen_index}-age-group-icon`); i.create()
     //Role citizen icon
     iid = `citizen-${citizen_index}-role-icon`
     i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
     //XP citizen icon
     iid = `citizen-${citizen_index}-xp-icon`
-    let citizenXP = document.getElementById(iid).innerText*1
-    s1 = new element("span", `${citizenXP ? "" : "hidden "}rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1`, [], s.getNode(), iid); s1.create()
+    let citizenXP = Number(document.getElementById(iid).innerText)
+    s1 = new element("span", `${citizenXP >= 1 ? "" : "hidden "}rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1`, [], s.getNode(), iid); s1.create()
     s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     iid = `citizen-${citizen_index}-name`
@@ -3420,14 +3472,16 @@ const add_assigned_worker_to_rule_requirement = (citizen_index, parent_elem) => 
     d.create()
     s = new element("span", "", [], d.getNode()); s.create()
     //Gender citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizen_index+"-gender-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-gender-icon"); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizen_index+"-gender-icon").classList.toString(), [], s.getNode(), `citizen-${citizenIndex}-gender-icon`); i.create()
     //Age citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizen_index+"-age-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-age-icon"); i.create()
+    s1 = new element("span", "", [], s.getNode()); s1.create()
+    i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${citizenIndex}-age-icon`); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizenIndex+"-age-group-icon").classList.toString(), [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), `citizen-${citizenIndex}-age-group-icon`); i.create()
     //Role citizen icon
-    i = new element("i", document.getElementById("citizen-"+citizen_index+"-role-icon").classList.toString(), [], s.getNode(), "citizen-"+citizenIndex+"-role-icon"); i.create()
+    i = new element("i", document.getElementById("citizen-"+citizen_index+"-role-icon").classList.toString(), [], s.getNode(), `citizen-${citizenIndex}-role-icon`); i.create()
     //XP citizen icon
-    let citizenXP = document.getElementById("citizen-"+citizen_index+"-xp-icon").innerText
-    s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), "citizen-"+citizenIndex+"-xp-icon"); s1.create(); s1.appendContent(Math.floor(citizenXP).toString())
+    let citizenXP = Number(document.getElementById("citizen-"+citizen_index+"-xp-icon").innerText)
+    s1 = new element("span",  `${citizenXP >= 1 ? "" : "hidden "}rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1`, [], s.getNode(), `citizen-${citizenIndex}-xp-icon`); s1.create(); s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     let citizenName = document.getElementById("citizen-"+citizen_index+"-name").innerText
     s1 = new element("span", "ms-1", [], s.getNode(), "citizen-"+citizen_index+"-name"); s1.create(); s1.appendContent(citizenName)
@@ -3454,19 +3508,19 @@ const add_assignable_worker_to_rule_requirement = (citizen_index, parent_elem) =
     iid = `citizen-${citizen_index}-gender-icon`
     i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
     //Age citizen icon
-    iid = `citizen-${citizen_index}-age-icon`
-    i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
+    iid = `citizen-${citizen_index}-age-group-icon`
+    s1 = new element("span", "", [], s.getNode()); s1.create()
+    i = new element("i", `fa text-white fa-person`, [], s1.getNode(), `citizen-${citizen_index}-age-icon`); i.create()
+    i = new element("i", document.getElementById(iid).classList.toString(), [{"key": "style", "value": "font-size:50% !important"}], s1.getNode(), iid); i.create()
     //Role citizen icon
     iid = `citizen-${citizen_index}-role-icon`
     i = new element("i", document.getElementById(iid).classList.toString(), [], s.getNode(), iid); i.create()
     //Check if citizen has XP
-    let citizenXP = document.getElementById(`citizen-${citizen_index}-xp`).innerText
-    if(citizenXP*1 > 0) {
-        //XP citizen icon
-        iid = `citizen-${citizen_index}-xp-icon`
-        s1 = new element("span", "rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1", [], s.getNode(), iid); s1.create();
-        s1.appendContent(Math.floor(citizenXP).toString())
-    }
+    let citizenXP = Number(document.getElementById(`citizen-${citizen_index}-xp`).innerText)
+    //XP citizen icon
+    iid = `citizen-${citizen_index}-xp-icon`
+    s1 = new element("span", `${citizenXP >= 1 ? "" : "hidden "}rounded border border-yellow-400 px-0.5 py-0 text-yellow-400 me-1`, [], s.getNode(), iid); s1.create();
+    s1.appendContent(Math.floor(citizenXP).toString())
     //Citizen full name
     iid = `citizen-${citizen_index}-name`
     let citizenName = document.getElementById(iid).innerText

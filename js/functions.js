@@ -1,4 +1,3 @@
-
 const expedition_required_time = (expeditionType, succesfullExpeditions, horsesAssigned, maxXp = 0, avgXp = 0) => {
     //Returns the amount of ingame hours needed for an expedition.
     //It dependes on the current already succesfull expeditions done, mounted expeditionaries assigned and expeditionaries xp.
@@ -94,10 +93,18 @@ const expedition_probability = (expeditionType, succesfullExpeditions, expeditio
 const expedition_carriage_capacity = (expeditionaryXP, mountedExpeditionary) => {
     return Math.ceil((expeditionaryXP / 10) + 1/2) + 2 * mountedExpeditionary
 }
-const age_index = (age) => age <= 5 ? 0 : (age <= 14 ? 1 : (age <= 21 ? 2 : (age <= 50 ? 3 : (age <= 65 ? 4 : 5))))
+const age_index = (age) => age <= 5 ? 0 : (age <= 14 ? 1 : (age < 21 ? 2 : (age <= 50 ? 3 : (age <= 65 ? 4 : 5))))
 const age_icons = (age) => person_icons[age_index(age)].icon
-const age_group = (age) => age_groups[age_index(age)]["EN"].icon
+const age_group = (age) => age_groups[age_index(age)]
 
+//Array functions
+const get_non_zero_index_array = (zero_index_array) => {
+    let non_zero_index_array = []
+    zero_index_array.forEach((value, index) => {
+        non_zero_index_array[value.id] = value
+    })
+    return non_zero_index_array
+}
 //Colony information functions
 const colony_satisfaction = (lifeQuality, population) => {
     let satisfaction = {}
@@ -132,7 +139,7 @@ const colony_satisfaction = (lifeQuality, population) => {
 }
 const shelter_capacity_mood = (shelter_capacity, population) => {
     let satisfaction = {}
-    let occupation = Math.round((population / shelter_capacity) * 100)
+    let occupation = shelter_capacity ? Math.round((population / shelter_capacity) * 100) : 0
     satisfaction.occupation = occupation
     if(occupation < 95){
         if(occupation <= 75){
@@ -166,6 +173,12 @@ const shelter_capacity_mood = (shelter_capacity, population) => {
                 satisfaction.color = "bg-red-800"
             }
         }
+    }
+    //Special case at the beginning of the game when there is no shelter yet built.
+    if(population > 0 && shelter_capacity === 0){
+        satisfaction.word = "Dissapointment"
+        satisfaction.icon = "fa-face-weary"
+        satisfaction.color = "bg-red-800"
     }
     return satisfaction
 }
@@ -324,15 +337,15 @@ const pregnancy_amount_of_babies = (fertility_sum) => {
 }
 
 //Building parts or products coeficients.
-const age_group_by_birthweeks = (birthWeeks) => {
+const age_group_by_weeksAlive = (weeksAlive) => {
     let result = ""
     Object.keys(age_week_limits).forEach((group) => {
-        result = age_week_limits[group].min <= birthWeeks && birthWeeks <= age_week_limits[group].max ? group : result
+        result = age_week_limits[group].min <= weeksAlive && weeksAlive <= age_week_limits[group].max ? group : result
     })
     return result
 }
 const age_coeficient = (a_citizen) => {
-    let age_group = age_group_by_birthweeks(a_citizen.birthWeeks)
+    let age_group = age_group_by_weeksAlive(a_citizen.weeksAlive)
     return ["adult"].includes(age_group) ? 1 :(["teen", "grown adult"].includes(age_group) ? 0.5 :((["child", "ancient"].includes(age_group) ? 0.2 : 0)))
 }
 const log_base = (base, x) => {

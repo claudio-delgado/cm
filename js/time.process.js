@@ -1,7 +1,7 @@
 //Main time loop.
 var currentYear = currentWeek = currentDay = currentHour = 0
 const life_interval = setInterval(() => {
-    //Actions to perform after zone was searched
+    //Actions to perform after zone was searched Ok
     const zone_searched_actions = () => {
         searchingZone = false
         lifeStarted = true
@@ -50,7 +50,7 @@ const life_interval = setInterval(() => {
         }
         update_colony("zoneSearched")
     }
-    //Hour passed
+    //Hour passed Ok
     const move_time = () => {
         //Update hours.
         currentHour = Number(document.querySelector("#currentHour").innerText)
@@ -77,54 +77,8 @@ const life_interval = setInterval(() => {
         //Yearly flag
         document.querySelector("#currentYear").innerText = currentYear
     }
-    const check_critical_events = (frequency = "daily") => {
-        const random_citizen = () => {
-            let idle_citizens = citizens.filter(citizen => citizen.status === "idle")
-            if(idle_citizens.length){
-                random_citizen = Math.floor(Math.random() * idle_citizens.length)
-            } else {
-                let non_soldier_citizens = citizens.filter(citizen => citizen.rolekey !== "war")
-                if(non_soldier_citizens.length){
-                    random_citizen = Math.floor(Math.random() * non_soldier_citizens.length)
-                } else {
-                    random_citizen = Math.floor(Math.random() * citizens.length)
-                }
-            }
-            return random_citizen
-        }
-        Object.keys(population_loss_events[frequency]).forEach((critical_event_name) => {
-            let critical_event = population_loss_events[frequency][critical_event_name]
-            if(critical_event.status === "active"){
-                critical_event.ellapsed_hours++
-                let ellapsed_time = critical_event.ellapsed_time
-                let result_type = critical_event.result.type
-                let result_quantity = critical_event.result.quantity
-                let threshold = critical_event.threshold
-                let threshold_reached = threshold && ellapsed_time >= threshold
-                if(threshold_reached){
-                    //Critical event has reached needed time, so take actions required...
-                    for(i=0; i<result_quantity; i++){
-                        //Pick a candidate to be exiled from colony or die in colony.
-                        let random_citizen = random_citizen()
-                        if(result_type === "exiled_citizens"){
-                            citizens.splice(random_citizen.id, 1)
-                        } else {
-                            if(result_type === "dead_citizens"){
-                                citizens[random_citizen.id].status = "deceased"
-                                //TODO: If graveyards are built and there is enough room in any of them, add the deceased citizen to any of them.
-                            }
-                        }
-                    }
-                    //Update citizens panel
-                    document.getElementById("accordion-citizens").innerHTML = ""
-                    citizens.forEach((citizen) => {
-                        build_citizen(false, citizen.id, citizen)
-                    })
-                }
-            }
-        })
-    }
     //Day passed
+    //update_all_citizens_xp Ok
     const update_all_citizens_xp = () => {
         //Update citizens xp
         //Update permanently assigned water bearers or fishermen
@@ -135,8 +89,8 @@ const life_interval = setInterval(() => {
                 let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
                 document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
                     elem.setAttribute("data-xp", newXP.toFixed(5))
-                    elem.innerText = Math.floor(newXP)
-                    if(elem.innerText > 0 && elem.classList.contains("hidden")){
+                    elem.innerText = elem.id == "citizen-"+citizenIndex+"-xp" ? newXP.toFixed(2) : Math.floor(newXP)
+                    if(elem.innerText >= 1 && elem.classList.contains("hidden")){
                         elem.classList.remove("hidden")
                     }
                 })
@@ -144,34 +98,23 @@ const life_interval = setInterval(() => {
             }
         })
     }
-    const update_fish_and_water_assigned_workers = () => {
-        //Update permanently assigned water bearers or fishermen
-        document.querySelectorAll('.citizen-properties [data-role="waterbearing"], .citizen-properties [data-role="fishing"]').forEach((citizen) => {
-            let citizenIndex = citizen.id.split("-")[1]
-            //Only update xp when waterbearer/fishermen is currently working (at the water reservoir)
-            if(document.querySelector("#citizen-"+citizenIndex+"-status").getAttribute("data-status") === "working"){
-                let newXP = 1*document.querySelector("#citizen-"+citizenIndex+"-xp").getAttribute("data-xp") + (1/30)
-                document.querySelectorAll("#citizen-"+citizenIndex+"-xp, #citizen-"+citizenIndex+"-xp-icon").forEach((elem) => {
-                    elem.setAttribute("data-xp", newXP.toFixed(5))
-                    elem.innerText = Math.floor(newXP)
-                    if(elem.innerText > 0 && elem.classList.contains("hidden")){
-                        elem.classList.remove("hidden")
-                    }
-                })
-                citizens[citizenIndex].xp = newXP
-            }
-        })
-    }
+    //update_resource_extractions Ok
     const update_daily_resource_extractions = () => {
-        //Update resource extractions
         let dailyWaterGained = document.querySelector("#colony-water-income").innerText * 1 - document.querySelector("#colony-water-consumption").innerText * 1
+        let water_capacity = document.querySelector("#colony-water-capacity").innerText * 1
         document.querySelectorAll("#colony-water-stock").forEach((value) => {
-            value.innerText = Math.max(0, value.innerText * 1 + (dailyWaterGained))
+            value.innerText = Math.min(water_capacity, Math.max(0, value.innerText * 1 + (dailyWaterGained)))
         })
+        document.querySelector("#colony-water-capacity-percent").innerHTML = Math.floor(Math.min(100, (document.querySelector("#colony-water-stock").innerText*1 / document.querySelector("#colony-water-capacity").innerText*1) * 100))
         let dailyFoodGained = document.querySelector("#colony-food-income").innerText * 1 - document.querySelector("#colony-food-consumption").innerText * 1
+        let food_capacity = document.querySelector("#colony-food-capacity").innerText * 1
         document.querySelectorAll("#colony-food-stock").forEach((value) => {
-            value.innerText = Math.max(0, value.innerText * 1 + (dailyFoodGained))
+            value.innerText = Math.min(food_capacity, Math.max(0, value.innerText * 1 + (dailyFoodGained)))
         })
+        document.querySelector("#colony-food-capacity-percent").innerHTML = Math.floor(Math.min(100, (document.querySelector("#colony-food-stock").innerText*1 / document.querySelector("#colony-food-capacity").innerText*1) * 100))
+        if(document.querySelector("#colony-water-stock").innerHTML*1 == water_capacity || document.querySelector("#colony-food-stock").innerHTML*1 == food_capacity){
+            update_colony("vitalResourcesUpdate")
+        }
     }
     const update_running_productions = () => {
         const turn_workers_idle = (rule) => {
@@ -362,6 +305,7 @@ const life_interval = setInterval(() => {
         })
     }
     //Week passed
+    //Update pregnancies Ok
     const update_pregnacies_remaining_weeks = () => {
         //Update pregnancy remaining weeks for all pregnancies.
         pregnancies.forEach((pregnancy) => {
@@ -398,26 +342,44 @@ const life_interval = setInterval(() => {
             }
         })
     }
+    //Update month week Ok
     const update_month_week = () => {
         //Update month week in every breeding attempt panel (also fertility week color)
-        document.querySelectorAll("p.fertility.woman").forEach((elem) => {
-            let fertility_week = elem.querySelector(".fertility-week.value").innerHTML
-            let month_week = (document.querySelector("#currentWeek").innerHTML*1) % 4
+        document.querySelectorAll("p .fertility-week.value").forEach((elem) => {
+            let fertility_week = Number(elem.innerHTML)
+            let month_week = Number(document.querySelector("#currentWeek").innerHTML) % 4
             month_week = !month_week ? 4 : month_week
-            elem.querySelector(".fertility-week.month-week").innerHTML = month_week
-            if(fertility_week === month_week){
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-gray-300"))
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-green-500"))
-                elem.querySelector(".fertility-week.week-comparison").classList.add("fa-equals")
-                elem.querySelector(".fertility-week.week-comparison").classList.remove("fa-not-equal")
-            } else {
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.remove("text-green-500"))
-                elem.querySelectorAll(".fertility-week").forEach((elem) => elem.classList.add("text-gray-300"))
-                elem.querySelector(".fertility-week.week-comparison").classList.add("fa-not-equal")
-                elem.querySelector(".fertility-week.week-comparison").classList.remove("fa-equals")
+            if(elem.classList.contains("relationship")){
+                elem.closest("p").querySelector(".month-week").innerHTML = month_week.toString()
+                if(fertility_week === month_week){
+                    elem.parentElement.classList.remove("bg-red-800")
+                    elem.parentElement.classList.add("bg-green-600")
+                    elem.closest("p").querySelector(".week-comparison").classList.add("fa-equals", "text-white")
+                    elem.closest("p").querySelector(".week-comparison").classList.remove("fa-not-equal", "text-white")
+                    elem.closest("p").querySelector(".week-comparison").classList.add("text-green-500")
+                    elem.closest("p").querySelector(".week-comparison").classList.remove("text-red-400")
+                    elem.closest("p").querySelector(".month-week").parentElement.classList.add("bg-green-600")
+                    elem.closest("p").querySelector(".month-week").parentElement.classList.remove("bg-red-800")
+                    elem.closest("p").querySelector(".fertility-situation").innerHTML = translate(language, "She's fertile this week")
+                    elem.closest("p").querySelector(".fertility-situation").parentElement.classList.add("bg-green-600")
+                    elem.closest("p").querySelector(".fertility-situation").parentElement.classList.remove("bg-red-800")
+                } else {
+                    elem.parentElement.classList.remove("bg-green-800")
+                    elem.parentElement.classList.add("bg-red-800")
+                    elem.closest("p").querySelector(".week-comparison").classList.add("fa-not-equal", "text-white")
+                    elem.closest("p").querySelector(".week-comparison").classList.remove("fa-equals", "text-white")
+                    elem.closest("p").querySelector(".week-comparison").classList.add("text-red-400")
+                    elem.closest("p").querySelector(".week-comparison").classList.remove("text-green-500")
+                    elem.closest("p").querySelector(".month-week").parentElement.classList.add("bg-red-800")
+                    elem.closest("p").querySelector(".month-week").parentElement.classList.remove("bg-green-600")
+                    elem.closest("p").querySelector(".fertility-situation").innerHTML = translate(language, "She's not fertile this week")
+                    elem.closest("p").querySelector(".fertility-situation").parentElement.classList.add("bg-red-800")
+                    elem.closest("p").querySelector(".fertility-situation").parentElement.classList.remove("bg-green-600")
+                }
             }
         })
     }
+    //Unnecessary
     const close_breeding_panels = () => {
         document.querySelectorAll(".tryBreeding").forEach((elem) => {
             //Get relationship index from id.
@@ -430,6 +392,7 @@ const life_interval = setInterval(() => {
             document.querySelector(`#relationship-${relationship_id}-actions-title`).classList.remove("hidden")
         })
     }
+    //Update citizen's age Ok
     const update_all_citizens_age = () => {
         //Update citizens age
         document.querySelectorAll("#accordion-citizens .citizen-properties").forEach((value) => {
@@ -450,12 +413,16 @@ const life_interval = setInterval(() => {
         })
     }
     //Year passed
+    //Decrease all citizens fertility Ok
     const decrease_all_citizens_fertility = () => {
         //Decrease all citizen's fertility if aged >= 21
         citizens.forEach((citizen) => {
-            citizen.fertility = citizen.ageYears >= 21 ? Math.max(citizen.fertility - 1, 0) : citizen.fertility
-            document.getElementById(`citizen-${citizen.id}-fertility`).innerHTML = citizen.fertility
-            if(!citizen.fertility) document.getElementById(`citizen-${citizen.id}-fertility`).classList.add("text-red-500")
+            let citizen_alive = citizen.status != "deceased"
+            if(citizen_alive){
+                citizen.fertility = citizen.ageYears >= 21 ? Math.max(citizen.fertility - 1, 0) : citizen.fertility
+                document.getElementById(`citizen-${citizen.id}-fertility`).innerHTML = citizen.fertility
+                if(!citizen.fertility) document.getElementById(`citizen-${citizen.id}-fertility`).classList.add("text-red-500")
+            }
         })
     }
 
@@ -470,7 +437,7 @@ const life_interval = setInterval(() => {
             processCountdowns()
         //End hourly events
         
-        //Zone searched flag
+        //Zone searched flag Ok
         zoneSearched = currentYear === 1 && currentWeek === 1 && currentDay === 1 && currentHour*1 === zoneSearchHoursNeeded
 
         
@@ -484,22 +451,19 @@ const life_interval = setInterval(() => {
 
         if(dayPassed){
             
-            //Update citizens xp
+            //Update citizens xp Ok
             update_all_citizens_xp()
             
-            //Update permanently assigned water bearers or fishermen
-            update_fish_and_water_assigned_workers()
-            
-            //Update resource extractions
+            //Update resource extractions Ok
             update_daily_resource_extractions()
 
-            //Check daily critical events like vital resources lack of income, shortage, or life quality low. 
+            //Check daily critical events like vital resources lack of income, shortage, or low life quality. Ok
             check_critical_events("daily")
         }
 
         if(weekPassed){
             
-            //Update citizens age
+            //Update citizens age Ok
             update_all_citizens_age()
 
             //If Try breeding panels are open, close them.
@@ -510,23 +474,71 @@ const life_interval = setInterval(() => {
             //Update month week in every breeding attempt panel (also fertility week color)
             update_month_week()
             
-            //Update pregnancy remaining weeks for all pregnancies.
+            //Update pregnancy remaining weeks for all pregnancies. Ok
             update_pregnacies_remaining_weeks()
 
-            //Check daily critical events like vital resources lack of income, shortage, or life quality low. 
+            //Check daily critical events like vital resources lack of income, shortage, or low life quality. Ok
             check_critical_events("weekly")
 
         }
 
         if(yearPassed){
 
-            //Decrease all citizen's fertility if aged >= 21
+            //Decrease all citizen's fertility if aged >= 21 Ok
             decrease_all_citizens_fertility()
 
         }
     }
 }, 1790);
 
+//Check critical events that may cause population loss Ok.
+const check_critical_events = (frequency = "daily", time_lapse = 0) => {
+    Object.keys(population_loss_events[frequency]).forEach((critical_event_name) => {
+        let critical_event = population_loss_events[frequency][critical_event_name]
+        if(critical_event.status === "active"){
+            let result_type = critical_event.result.type
+            let result_quantity = critical_event.result.quantity
+            let threshold = critical_event.threshold
+            let living_citizens = citizens.filter(citizen => citizen.status != "deceased")
+            for(time_count = 0; time_count < time_lapse && living_citizens.length; time_count++){
+                critical_event.ellapsed_time++
+                let threshold_reached = threshold && critical_event.ellapsed_time >= threshold
+                if(threshold_reached){
+                    //Critical event has reached needed time, so take actions required...
+                    for(i=0; i<result_quantity && living_citizens.length; i++){
+                        //Pick a candidate to be exiled from colony or die in colony.
+                        let random_citizen = get_random_citizen_to_remove()
+                        if(result_type === "exiled_citizens"){
+                            living_citizens = living_citizens.filter(citizen => Number(citizen.id) != random_citizen)
+                            console.log("")
+                        } else {
+                            if(result_type === "dead_citizens"){
+                                citizens[random_citizen.id].status = "deceased"
+                                //TODO: If graveyards are built and there is enough room in any of them, add the deceased citizen to any of them.
+                            }
+                        }
+                    }
+                    critical_event.ellapsed_time = 0
+                }
+                //Build citizens array again after possible deaths or exiles.
+                let dead_citizens = citizens.filter(citizen => citizen.status === "deceased")
+                citizens = get_non_zero_index_array(dead_citizens.concat(living_citizens))
+                //Update citizens panel
+                document.getElementById("accordion-citizens").innerHTML = ""
+                citizens.forEach((citizen) => {
+                    build_citizen(false, citizen.id, citizen)
+                })
+            }
+            //Check end of game.
+            if(!living_citizens.length){
+                modal_popup("Oh no!", "GameOver")
+                modal.show()
+                game_is_over = true
+                clearInterval(life_interval)
+            }
+        }
+    })
+}
 const processCountdowns = () => {
     const remove_countdown = (elem) => {
         //Remove countdown

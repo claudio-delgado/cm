@@ -1,0 +1,48 @@
+<p data-i18n="" class="mb-2 text-gray-200">Welcome to Medieval Colonies!</p>
+<p data-i18n="" class="mb-2 text-gray-200">Great news come from a very distant land in which your people has found a place to build up your new colony.</p>
+<p class="mb-2 text-gray-200">
+    <span data-i18n="">Your status is this</span>:
+</p>
+<p class="mb-2 text-gray-200">
+    <span data-i18n="">You have</span>
+    <span class="font-bold">{{citizens}}</span>
+    <span data-i18n="">citizens</span>: 
+    <span class="font-bold">{{men_quantity}}</span>
+    <span data-i18n="">men</span>
+    <span data-i18n="">and</span>
+    <span class="font-bold">{{women_quantity}}</span>
+    <span data-i18n="">women</span>.
+</p>
+<p class="mb-2 text-gray-200">
+    <span data-i18n="">You have</span>
+    <span data-i18n="" class="font-bold">{{water_reservoir_type}}</span>
+    <span data-i18n="" gender="*">nearby</span>.
+</p>
+<p class="mb-2 text-gray-200">
+    <span data-i18n="">You have</span>
+    <span class="font-bold">{{wagons_quantity}}</span>
+    <span data-i18n="" class="font-bold">wagons</span>
+    <span data-i18n="" gender="f">full of resources and products.</span>
+</p>
+<p class="mb-2 text-gray-200">
+    <span data-i18n="">You have</span>
+    <span class="font-bold">{{horses_quantity}}</span>
+    <span data-i18n="" class="font-bold">horses</span>, 
+    <span data-i18n="">two for each wagon.</span>
+</p>
+<p class="mb-2 text-gray-200">
+    <span data-i18n="" class="font-bold">Each wagon</span>
+    <span data-i18n="">has the following things</span>:
+</p>
+<div class="ms-2 text-gray-200">
+    <div data-collection="goods" class="text-gray-200">
+        <li class="ms-2 p-0">
+            <span class="font-bold">{{#goods.quantity}}</span>
+            <span data-i18n="">units of</span>
+            <span data-i18n="" class="font-bold">{{#goods.name}}</span>
+        </li>
+    </div>
+</div>
+<p id="searchZoneWarning" class="{{visibility}}mt-2 p-2 px-3 rounded font-bold text-white border border-white bg-red-900">
+    <span data-i18n="" class="me-1">Warning! Time is stopped. Search the zone in the Colony panel to start your game.</span>
+</p>

@@ -521,7 +521,7 @@ class Colony {
   search_zone = () => {
     this.searching_zone = true
     document.querySelector("#search_zone i").classList.add("fa-beat")
-    document.querySelector("#search_zone span").innerText = translate(language, "Your citizens are searching the zone...")
+    document.querySelector("#search_zone span").innerText = translate(language, "Searching the zone...")
     this.time_interval.start()
   }
   zone_searched_actions = () => {
@@ -717,7 +717,7 @@ class Colony {
   }
   add_citizen = (citizen) => {
     this.citizens.set(citizen.id, citizen);
-    this.population++
+    this.population = this.citizens.size
   }
   add_pregnancy = (pregnancy) => {
     this.pregnancies.set(pregnancy.id, pregnancy);
@@ -1502,13 +1502,46 @@ class Colony {
       let str_current_water_daily_revenue = (current_water_daily_revenue >= 0 ? "+" : "") + current_water_daily_revenue
       let current_food_daily_revenue = current_food_daily_income - current_food_daily_consumption
       let str_current_food_daily_revenue = (current_food_daily_revenue >= 0 ? "+" : "") + current_food_daily_revenue
+      let water_crisis = current_water_daily_revenue < 0 && this.time_started
+      let water_dangerous_crisis = water_crisis && current_water_stock <= this.population
+      let water_stock_icon_class = water_dangerous_crisis ? "" : "hidden"
+      let water_icon_class = water_crisis ? "" : "hidden"
+      let water_class = current_water_daily_revenue > 0 ? "bg-green-700" : (water_crisis ? "bg-red-800" : "bg-yellow-600")
+      let water_stock_class = current_water_daily_revenue > 0 ? "bg-green-700" : (water_dangerous_crisis ? "bg-red-800" : "bg-yellow-600")
+      let food_crisis = current_food_daily_revenue < 0 && this.time_started
+      let food_dangerous_crisis = food_crisis && current_food_stock <= this.population
+      let food_stock_icon_class = food_dangerous_crisis ? "" : "hidden"
+      let food_icon_class = food_crisis ? "" : "hidden"
+      let food_class = current_food_daily_revenue > 0 ? "bg-green-700" : (food_crisis ? "bg-red-800" : "bg-yellow-600")
+      let food_stock_class = current_food_daily_revenue > 0 ? "bg-green-700" : (food_crisis && current_food_stock <= this.population ? "bg-red-800" : "bg-yellow-600")
       const draw_resources_daily_consumption = (d1) => {
-        let p, s, s1, s2, i
-        //Water consumption
+        let d, p, s, s1, s2, i
+        d = new DOMElement({
+          tagName: "div",
+          classes: "p-0 w-100 border border-gray-800 bg-gray-400",
+          parentElement: d1.getNode()
+        })
         p = new DOMElement({
           tagName: "p",
           classes: "w-100 flex gap-1 text-xs",
-          parentElement: d1.getNode()
+          parentElement: d.getNode()
+        })
+        s = new DOMElement({
+          tagName: "span",
+          classes: "flex gap-1 w-100",
+          parentElement: p.getNode()
+        })
+        s1 = new DOMElement({
+          tagName: "span",
+          classes: "w-100 flex items-center p-0.5 px-1 bg-gray-600 border-b border-gray-800 text-white",
+          parentElement: s.getNode(),
+          text: translate(language, "Daily consumptions")
+        })
+        //Water consumption
+        p = new DOMElement({
+          tagName: "p",
+          classes: "grow m-1 flex gap-1 text-xs",
+          parentElement: d.getNode()
         })
         s = new DOMElement({
           tagName: "span",
@@ -1522,7 +1555,7 @@ class Colony {
         })
         i = new DOMElement({
           tagName: "i",
-          classes: `me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
+          classes: `${water_icon_class} me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
           parentElement: s1.getNode(),
           id: "accordion-water-consumption-icon"
         })
@@ -1530,7 +1563,7 @@ class Colony {
           tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "Water consumption")
+          text: translate(language, "Water", "", "capitalized")
         })
         s2 = new DOMElement({
           tagName: "span", 
@@ -1539,10 +1572,10 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span",
-          classes: `flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
+          classes: `${water_class} flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
           parentElement: s.getNode()
         })
-        //current_water_daily_consumption
+        //Current daily water consumption
         s2 = new DOMElement({
           tagName: "span",
           classes: "font-bold flex-none",
@@ -1554,7 +1587,7 @@ class Colony {
           tagName: "span",
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "units per day")
+          text: translate(language, "units")
         })
         //Food consumption
         s = new DOMElement({
@@ -1569,7 +1602,7 @@ class Colony {
         })
         i = new DOMElement({
           tagName: "i",
-          classes: `me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
+          classes: `${food_icon_class} me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
           parentElement: s1.getNode(),
           id: "accordion-food-consumption-icon"
         })
@@ -1577,7 +1610,7 @@ class Colony {
           tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "Food consumption")
+          text: translate(language, "Food", "", "capitalized")
         })
         s2 = new DOMElement({
           tagName: "span", 
@@ -1586,7 +1619,7 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span",
-          classes: `flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
+          classes: `${food_class} flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
           parentElement: s.getNode()
         })
         //current_food_daily_consumption
@@ -1601,16 +1634,37 @@ class Colony {
           tagName: "span",
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "units per day")
+          text: translate(language, "units")
         })
       }
       const draw_resources_daily_income = (d1) => {
-        let p, s, s1, s2, i
-        //Water daily income
+        let d, p, s, s1, s2, i
+        d = new DOMElement({
+          tagName: "div",
+          classes: "p-0 w-100 border border-gray-800 bg-gray-400",
+          parentElement: d1.getNode()
+        })
         p = new DOMElement({
           tagName: "p",
           classes: "w-100 flex gap-1 text-xs",
-          parentElement: d1.getNode()
+          parentElement: d.getNode()
+        })
+        s = new DOMElement({
+          tagName: "span",
+          classes: "flex gap-1 w-100",
+          parentElement: p.getNode()
+        })
+        s1 = new DOMElement({
+          tagName: "span",
+          classes: "w-100 flex items-center p-0.5 px-1 bg-gray-600 border-b border-gray-800 text-white",
+          parentElement: s.getNode(),
+          text: translate(language, "Daily income")
+        })
+        //Water income
+        p = new DOMElement({
+          tagName: "p",
+          classes: "grow m-1 flex gap-1 text-xs",
+          parentElement: d.getNode()
         })
         s = new DOMElement({
           tagName: "span",
@@ -1624,7 +1678,7 @@ class Colony {
         })
         i = new DOMElement({
           tagName: "i",
-          classes: `me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
+          classes: `${water_icon_class} me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
           parentElement: s1.getNode(),
           id: "accordion-water-income-icon"
         })
@@ -1632,7 +1686,7 @@ class Colony {
           tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "Water income")
+          text: translate(language, "Water", "", "capitalized")
         })
         s2 = new DOMElement({
           tagName: "span", 
@@ -1641,9 +1695,10 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span",
-          classes: `flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
+          classes: `${water_class} flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
           parentElement: s.getNode()
         })
+        //Current water daily income
         s2 = new DOMElement({
           tagName: "span",
           classes: "font-bold flex-none",
@@ -1655,7 +1710,7 @@ class Colony {
           tagName: "span",
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "units per day")
+          text: translate(language, "units")
         })
         //Food income
         s = new DOMElement({
@@ -1670,7 +1725,7 @@ class Colony {
         })
         i = new DOMElement({
           tagName: "i",
-          classes: `me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
+          classes: `${food_icon_class} me-1 text-xs fa fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
           parentElement: s1.getNode(),
           id: "accordion-food-income-icon"
         })
@@ -1678,7 +1733,7 @@ class Colony {
           tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "Food income")
+          text: translate(language, "Food", "", "capitalized")
         })
         s2 = new DOMElement({
           tagName: "span", 
@@ -1687,9 +1742,10 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span",
-          classes: `flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
+          classes: `${food_class} flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
           parentElement: s.getNode()
         })
+        //Current daily food income
         s2 = new DOMElement({
           tagName: "span",
           classes: "font-bold flex-none",
@@ -1701,16 +1757,37 @@ class Colony {
           tagName: "span",
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "units per day")
+          text: translate(language, "units")
         })
       }
       const draw_resources_stock = (d1) => {
-        let p, s, s1, s2, i
-        //Water stock
+        let d, p, s, s1, s2, i
+        d = new DOMElement({
+          tagName: "div",
+          classes: "p-0 w-100 border border-gray-800 bg-gray-400",
+          parentElement: d1.getNode()
+        })
         p = new DOMElement({
           tagName: "p",
           classes: "w-100 flex gap-1 text-xs",
-          parentElement: d1.getNode()
+          parentElement: d.getNode()
+        })
+        s = new DOMElement({
+          tagName: "span",
+          classes: "flex gap-1 w-100",
+          parentElement: p.getNode()
+        })
+        s1 = new DOMElement({
+          tagName: "span",
+          classes: "w-100 flex items-center p-0.5 px-1 bg-gray-600 border-b border-gray-800 text-white",
+          parentElement: s.getNode(),
+          text: translate(language, "Stock")
+        })
+        //Water stock
+        p = new DOMElement({
+          tagName: "p",
+          classes: "grow m-1 flex gap-1 text-xs",
+          parentElement: d.getNode()
         })
         s = new DOMElement({
           tagName: "span",
@@ -1722,35 +1799,32 @@ class Colony {
           classes: "flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white",
           parentElement: s.getNode()
         })
-        let water_crisis = current_water_daily_revenue < 0 && this.time_started
-        let water_stock_icon_class = water_crisis ? "" : "hidden"
         i = new DOMElement({
           tagName: "i",
-          classes: `${water_stock_icon_class} me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
+          classes: `${water_stock_icon_class} me-1 text-xs fa  fa-exclamation px-1 bg-red-900 text-white border border-white rounded`,
           parentElement: s1.getNode(),
           id: "accordion-water-stock-icon"
         })
         s2 = new DOMElement({
-          tagName: "span",
+          tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "Water stock")
+          text: translate(language, "Water", "", "capitalized")
         })
         s2 = new DOMElement({
-          tagName: "span",
+          tagName: "span", 
           parentElement: s1.getNode(),
           text: ":"
         })
-        let water_income_class = current_water_daily_revenue > 0 ? "bg-green-700" : (water_crisis && current_water_stock == 0 ? "bg-red-800" : "bg-yellow-600")
         s1 = new DOMElement({
           tagName: "span",
-          classes: `flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 ${water_income_class} text-white`,
+          classes: `${water_stock_class} flex gap-1 grow items-center bg-gray-600 border border-gray-800 p-0.5 px-1 text-white`,
           parentElement: s.getNode()
         })
         //current_water_stock
         s2 = new DOMElement({
           tagName: "span",
-          classes: "font-bold flex-none",
+          classes: `font-bold flex-none`,
           parentElement: s1.getNode(),
           id: "colony-water-stock",
           text: current_water_stock.toString()
@@ -1761,13 +1835,7 @@ class Colony {
           parentElement: s1.getNode(),
           text: translate(language, "units")
         })
-        let revenue_arrow = current_water_daily_revenue > 0 ? "fa-arrow-up" : (water_crisis ? "fa-arrow-down" : "hidden")
-        i = new DOMElement({
-          tagName: "i",
-          classes: `ms-1 fa ${revenue_arrow}`,
-          parentElement: s1.getNode(),
-          id:  "colony-water-stock-icon"
-        })
+        //Water revenue
         s = new DOMElement({
           tagName: "span",
           parentElement: s1.getNode(),
@@ -1796,29 +1864,26 @@ class Colony {
           classes: "flex items-center border border-gray-800 p-0.5 px-1 bg-gray-600 border border-gray-500 text-white",
           parentElement: s.getNode()
         })
-        let food_crisis = current_food_daily_revenue < 0 && this.time_started
-        let food_stock_icon_class = food_crisis ? "" : "hidden"
         i = new DOMElement({
           tagName: "i",
-          classes: `${food_stock_icon_class} me-1 text-xs fa  fa-exclamation p-0.5 px-1 bg-red-900 text-white border border-white rounded`,
+          classes: `${food_stock_icon_class} me-1 text-xs fa fa-exclamation px-1 bg-red-900 text-white border border-white rounded`,
           parentElement: s1.getNode(),
           id: "accordion-food-stock-icon"
         })
         s2 = new DOMElement({
-          tagName: "span",
+          tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}],
           parentElement: s1.getNode(),
-          text: translate(language, "Food stock")
+          text: translate(language, "Food", "", "capitalized")
         })
         s2 = new DOMElement({
-          tagName: "span",
+          tagName: "span", 
           parentElement: s1.getNode(),
           text: ":"
         })
-        let food_income_class = current_food_daily_revenue > 0 ? "bg-green-700" : (food_crisis && current_food_stock == 0 ? "bg-red-800" : "bg-yellow-600")
         s1 = new DOMElement({
           tagName: "span",
-          classes: `flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 ${food_income_class} text-white`,
+          classes: `${food_stock_class} flex gap-1 grow items-center border border-gray-800 p-0.5 px-1 text-white`,
           parentElement: s.getNode()
         })
         //current_food_stock
@@ -1835,19 +1900,12 @@ class Colony {
           parentElement: s1.getNode(),
           text: translate(language, "units")
         })
-        revenue_arrow = current_food_daily_revenue > 0 ? "fa-arrow-up" : (food_crisis ? "fa-arrow-down" : "hidden")
-        i = new DOMElement({
-          tagName: "i",
-          classes: `ms-1 fa ${revenue_arrow}`,
-          parentElement: s1.getNode(),
-          id:  "colony-food-stock-icon"
-        })
+        //Food revenue
         s = new DOMElement({
           tagName: "span",
           parentElement: s1.getNode(),
           text: "("
         })
-        //Food revenue
         s2 = new DOMElement({
           tagName: "span",
           classes: "font-bold",
@@ -2350,7 +2408,7 @@ class Colony {
                     classes: `font-bold ms-1 px-1 bg-red-900 text-white border border-gray-400`,
                     parentElement: s1.getNode(),
                     id: "colony-"+formated_good+"-stock-warning",
-                    text: translate(language, "Storage full. You cannot obtain this resource for now.")
+                    text: translate(language, "Storage full")
                   })
                 }
               }
@@ -2543,6 +2601,7 @@ class Colony {
           //Expand buildings accordion and automatically close colony accordion
           document.querySelector("#accordion-menu-buildings button").click()
         })
+        /*
         //Display "Visit surroundings" button
         b = new DOMElement({
           tagName: "button",
@@ -2565,6 +2624,7 @@ class Colony {
           //Expand expeditions accordion and automatically close colony accordion
           document.querySelector("#accordion-menu-expeditions button").click()
         })
+        */
       }
       //Display "Abandon colony" button
       b = new DOMElement({

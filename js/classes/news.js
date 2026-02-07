@@ -27,7 +27,7 @@ class News {
                 }
                 break;
             case "zone_searched":
-                this.title = "Terrain recognition"
+                this.title = "Recognition"
                 this.category = "enhancement"
                 this.data = {
                     "values": [{"var":"campaign_tents", "val":colony.buildings.get("shelters").size}, {"var":"stone", "val":colony.zone_loot["stone"]}, {"var":"gravel", "val":colony.zone_loot["gravel"]}, 

@@ -1441,7 +1441,7 @@ class Citizen {
                     tagName: "span",
                     attributes: [{"key":"data-i18n", "value":""}],
                     parentElement: b.getNode(),
-                    text: translate(language, "Exile citizen")
+                    text: translate(language, "Exile")
                 })
                 b.getNode().addEventListener("click", function(e){
                     let popup_modal = new ModalBox(e, "modalExileCitizen", b.getNode())

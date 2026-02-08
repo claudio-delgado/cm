@@ -1604,7 +1604,7 @@ class Citizen {
         //Selection remains on screen for half a second before disappearing.
         setTimeout(() => {
             let couple_id = Number(e.target.closest(".selectable-couple").getAttribute("data-citizen-id"))
-            this.couple = colony.get_citizen_by_id(couple_id)
+            this.couple = colony.citizens.get(couple_id)
             this.couple.couple = this
             //Build relationship.
             let couple_relationship = colony.add_couple(this, this.couple)
@@ -1618,7 +1618,7 @@ class Citizen {
     cancel_relationship_event = (e) => {
         //let couple_id = Number((e.target.closest("button") ? e.target.closest("button") : e.target).getAttribute("data-citizen-id"))
         let couple_relationship = colony.get_couple_by_members(this, this.couple)
-        let couple = colony.get_citizen_by_id(this.couple.id)
+        let couple = colony.citizens.get(this.couple.id)
         //Remove couple citizens from each other.
         this.couple = null
         couple.couple = null

@@ -8,6 +8,54 @@ class Building{
         "mansion": 80,
         "graveyard": 15
     }
+    static category = {
+        "shelter_related": {
+            "campaign_tent": { "name": "campaign tent", "plural": "campaign tents", "risk": {"fire hazard": 0.5}, "last_id": 0, "building_list":[] }, //tienda de campaña
+            "cottage": { "name": "cottage", "plural": "cottages", "risk": {"fire hazard": 0.2}, "last_id": 0, "building_list":[]}, //cabaña de madera
+            "stone_house": { "name": "stone house", "plural": "stone houses", "last_id": 0, "building_list":[]}, //casa de piedra
+            "brick_house": { "name": "brick house", "plural": "brick houses", "last_id": 0, "building_list":[]}, //casa de ladrillos
+            "manor": { "name": "manor", "plural": "manors", "last_id": 0, "building_list":[]}, //casona
+            "mansion": { "name": "mansion", "plural": "mansions", "last_id": 0, "building_list":[]}, //mansión
+            "graveyard": { "name": "graveyard", "plural": "graveyards", "last_id": 0, "building_list":[]}, //cementerio*/
+        },
+        "mounts_related":{
+            "quarry" : { "name": "quarry", "plural": "quarries", "last_id": 0, "building_list":[]}, //pedregal (stonesmith)
+            "clay_quarry" : { "name": "clay quarry", "plural": "clay quarries", "last_id": 0, "building_list":[]}, //terrario
+            "lumberjack's_hut" : { "name": "lumberjack's hut", "plural": "lumberjack's huts", "last_id": 0, "building_list":[]}, //puesto de leñador
+            "mine" : { "name": "mine", "plural": "mines", "last_id": 0, "building_list":[]}, //mina
+            /* For future versions...
+            "hunting post" : 0, //puesto de cazador
+            */
+        },
+        "production_related": {
+            /* For future versions...
+            "water well" : 0, //pozo de agua
+            */
+            "farm": { "name": "farm", "plural": "farms", "last_id": 0, "building_list":[]}, //granja
+            "barnyard": { "name": "barnyard", "plural": "barn yards", "last_id": 0, "building_list":[]}, //corral
+            "mill": { "name": "mill", "plural": "mills", "last_id": 0, "building_list":[]}, //molino
+            "slaughterhouse": { "name": "slaughterhouse", "plural": "slaughterhouses", "last_id": 0, "building_list":[]}, //matadero
+            "furnaces": { "name": "furnaces", "plural": "furnaces", "last_id": 0, "building_list":[]}, //hornos
+            "textile": { "name": "textile", "plural": "textiles", "last_id": 0, "building_list":[]}, //textil
+            "blacksmith": { "name": "blacksmith", "plural": "blacksmiths", "last_id": 0, "building_list":[]}, //herrería
+            "sawmill": { "name": "sawmill", "plural": "sawmills", "last_id": 0, "building_list":[]}, //aserradero
+            "workshop": { "name": "workshop", "plural": "workshops", "last_id": 0, "building_list":[]}, //talle
+            "woodsmith": { "name": "woodsmith", "plural": "woodsmiths", "last_id": 0, "building_list":[]}, //carpintería (carpentry)
+        },
+        "training_related": {
+            "academy": { "name": "academy", "plural": "academies", "last_id": 0, "building_list":[]}, //academia
+            "barracks": { "name": "barracks", "plural": "barracks", "last_id": 0, "building_list":[]}, //cuartel
+            /* For future versions...
+            "archery range": 0, //campo de arquería
+            */
+        },
+        "exchange_related": {
+            "market": { "name": "market", "plural": "markets", "last_id": 0, "building_list":[]}, //mercado
+            "fair": { "name": "fair", "plural": "fairs", "last_id": 0, "building_list":[]}, //feria
+            "bank": { "name": "bank", "plural": "banks", "last_id": 0, "building_list":[]}, //banco
+            "tavern": { "name": "tavern", "plural": "taverns", "last_id": 0, "building_list":[]}, //taberna
+        }
+    }
     constructor(type, subtype, template = null){
         this.id = colony.get_next_building_id()
         this.new = true //Turns false after first building accordion click. Used to show or hide "new unread building" badge.

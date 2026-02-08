@@ -104,6 +104,7 @@ class Colony {
   static well_water_income = 20
   static citizens_assigned_names = {"Femenine": [], "Masculine": []}
   static zone_search_hours_needed = 1
+  
   static add_citizen_assigned_name = (gender, name) => {
     if(gender && name){
       if(gender === "Femenine" || gender === "Masculine"){
@@ -3295,9 +3296,9 @@ class Colony {
           const draw_content_building = (d1) => {
             let d, p, s, s1, s2
             let building_id = Number(d1.getNode().dataset.buildingId)
-            let building = this.buildings.get(building_id)
+            let a_building = this.buildings.get(building_id)
             //After clicking the building accordion (and having allowed player to see building details), it is not a new building anymore.
-            building.new = false
+            a_building.new = false
             p = new DOMElement({
               tagName: "p",
               classes: "w-100 flex gap-1 p-0 text-xs text-gray-200",
@@ -3329,6 +3330,7 @@ class Colony {
               classes: "flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900",
               parentElement: p.getNode(),
             })
+            //Year
             s1 = new DOMElement({
               tagName: "span",
               classes: "flex-none",
@@ -3341,8 +3343,9 @@ class Colony {
               classes: "font-bold flex-none ms-1",
               parentElement: s.getNode(),
               id: `accordion-buildings-list-${d1.getNode().dataset.type}-${d1.getNode().dataset.subtype}-${building_id}-built-year`,
-              text: building.date_built.year.toString()
+              text: a_building.date_built.year.toString()
             })
+            //Week
             s1 = new DOMElement({
               tagName: "span",
               classes: "flex-none ms-1",
@@ -3355,8 +3358,9 @@ class Colony {
               classes: "font-bold flex-none ms-1",
               parentElement: s.getNode(),
               id: `accordion-buildings-list-${d1.getNode().dataset.type}-${d1.getNode().dataset.subtype}-${building_id}-built-week`,
-              text: building.date_built.week.toString()
+              text: a_building.date_built.week.toString()
             })
+            //Day
             s1 = new DOMElement({
               tagName: "span",
               classes: "flex-none ms-1",
@@ -3369,20 +3373,27 @@ class Colony {
               classes: "font-bold flex-none ms-1",
               parentElement: s.getNode(),
               id: `accordion-buildings-list-${d1.getNode().dataset.type}-${d1.getNode().dataset.subtype}-${building_id}-built-day`,
-              text: building.date_built.day.toString()
+              text: a_building.date_built.day.toString()
             })
+            //Hour
             s1 = new DOMElement({
               tagName: "span",
               classes: "font-bold flex-none ms-1",
               parentElement: s.getNode(),
               id: `accordion-buildings-list-${d1.getNode().dataset.type}-${d1.getNode().dataset.subtype}-${building_id}-built-hour`,
-              text: building.date_built.hour.toString().padStart(2, "0")
+              text: a_building.date_built.hour.toString().padStart(2, "0")
             })
             s1 = new DOMElement({
               tagName: "span",
               classes: "flex-none ms-1",
               parentElement: s.getNode(),
               text: "hs."
+            })
+            //Fire hazard
+            p = new DOMElement({
+              tagName: "p",
+              classes: "w-100 flex gap-1 p-0 text-xs text-gray-200",
+              parentElement: d1.getNode(),
             })
             s = new DOMElement({
               tagName: "span",
@@ -3403,12 +3414,17 @@ class Colony {
               parentElement: s.getNode(),
               text: ":"
             })
+            let building_category_type = ["shelter", "mount", "production", "training", "exchange"].includes(a_building.type) ? `${a_building.type}_related` : ""
+            let building_subtype = a_building.subtype.replaceAll(" ", "_")
+            let building_fire_hazard = Building.category[building_category_type][building_subtype].risk["fire hazard"] * 100
+            building_fire_hazard = building_fire_hazard ? building_fire_hazard+"%" : translate(language, "Unknown")
             s1 = new DOMElement({
               tagName: "span",
               classes: "flex-none ms-1",
               parentElement: s.getNode(),
-              text: "50%"
+              text: building_fire_hazard
             })
+            //Status & integrity
             p = new DOMElement({
               tagName: "p",
               classes: "w-100 flex gap-1 p-0 text-xs text-gray-200",
@@ -3445,11 +3461,11 @@ class Colony {
               classes: "font-bold",
               attributes: [{"key":"data-i18n","value":""}],
               parentElement: s.getNode(),
-              text: translate(language, "Ended", "f")
+              text: translate(language, a_building.state, "f", "capitalized")
             })
             s = new DOMElement({
               tagName: "span",
-              classes: "flex border border-gray-900 p-0.5 px-1 bg-gray-700 text-white",
+              classes: "grow flex border border-gray-900 p-0.5 px-1 bg-gray-700 text-white",
               parentElement: p.getNode(),
             })
             s1 = new DOMElement({
@@ -3466,25 +3482,34 @@ class Colony {
             })
             s = new DOMElement({
               tagName: "span",
-              classes: "flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900",
+              classes: "grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900",
               parentElement: p.getNode(),
             })
             s1 = new DOMElement({
               tagName: "span",
               classes: "flex-none font-bold",
               parentElement: s.getNode(),
-              text: building.integrity.toString()+"%"
+              text: a_building.integrity.toString()+"%"
+            })
+            //Capacity
+            p = new DOMElement({
+              tagName: "p",
+              classes: "w-100 flex gap-1 p-0 text-xs text-gray-200",
+              parentElement: d1.getNode(),
             })
             s = new DOMElement({
               tagName: "span",
               classes: "flex border border-gray-900 p-0.5 px-1 bg-gray-700 text-white",
               parentElement: p.getNode(),
             })
+            let building_capacity_text = ["shelter", "mount"].includes(a_building.type) 
+                                                              ? a_building.type + " capacity"
+                                                              : ["production", "training", "exchange"].includes(a_building.type) ? `${a_building.type} building capacity` : "unknown"
             s1 = new DOMElement({
               tagName: "span",
               attributes: [{"key":"data-i18n","value":""}],
               parentElement: s.getNode(),
-              text: translate(language, "Shelter capacity")
+              text: translate(language, building_capacity_text)
             })
             s1 = new DOMElement({
               tagName: "span",

@@ -3177,6 +3177,7 @@ class Colony {
   }
   //Show "No relationships" paragraph.
   draw_no_relationships = () => {
+    let p, s, i, s1
     let relationships_div = document.querySelector("#couple-relationships")
     relationships_div.innerHTML = ""  //Clear previous content
     p = new DOMElement({

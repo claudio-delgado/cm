@@ -147,7 +147,7 @@ class Relationship {
                 let month_week = colony.time_interval.get_month_week()
                 s0 = new DOMElement({
                     tagName: "span", 
-                    classes: "flex", 
+                    classes: "flex grow", 
                     parentElement: p.getNode()
                 })
                 s1 = new DOMElement({
@@ -192,7 +192,7 @@ class Relationship {
                 })
                 s0 = new DOMElement({
                     tagName: "span", 
-                    classes: "flex", 
+                    classes: "flex grow", 
                     parentElement: p.getNode()
                 })
                 s1 = new DOMElement({
@@ -223,6 +223,11 @@ class Relationship {
                     parentElement: s0.getNode(), 
                     id: `month-week`,
                     text: month_week.toString()
+                })
+                p = new DOMElement({
+                    tagName: "p", 
+                    classes: "w-100 flex items-center gap-1 p-0 mb-1 text-xs text-gray-200", 
+                    parentElement: d2.getNode()
                 })
                 s0 = new DOMElement({
                     tagName: "span", 
@@ -558,9 +563,10 @@ class Relationship {
         ga = new GenerativeAccordion({title_id: `accordion-relationship-${this.id}-title`, callback: this.draw_couple_relationship_content, parms: d1 })
     }
     undraw = () => {
+        let p, s, i, s1
         let relationship_div = document.querySelector(`#accordion-relationship-${this.id}-title`).parentElement
         relationship_div.remove()
-        if(!colony.couples.size){
+        if(!colony.couples.length){
             //Add "empty" text.
             let parent_div = document.getElementById("couple-relationships")
             //Relationships area
@@ -593,8 +599,8 @@ class Relationship {
             //Finish relationship from relationships panel.
             colony.remove_couple(this.id)
             //Also remove couple from citizens panel and viceversa.
-            colony.get_citizen_by_id(this.citizen.id).couple = null
-            colony.get_citizen_by_id(this.related_citizen.id).couple = null
+            colony.citizens.get(this.citizen.id).couple = null
+            colony.citizens.get(this.related_citizen.id).couple = null
         })
     }
     //Show all content information for current breeding attempt
@@ -1635,7 +1641,7 @@ class Relationship {
                 })
                 i = new DOMElement({
                     tagName: "i",
-                    classes: "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold",
+                    classes: "collapsable mt-0 text-sm fa fa-chevron-down font-bold",
                     parentElement: p.getNode(),
                 })
                 //body
@@ -1842,7 +1848,7 @@ class Relationship {
             })
             i = new DOMElement({
                 tagName: "i",
-                classes: "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold",
+                classes: "collapsable mt-0 text-sm fa fa-chevron-down font-bold",
                 parentElement: p.getNode(),
             })
 
@@ -1919,7 +1925,7 @@ class Relationship {
             })
             i = new DOMElement({
                 tagName: "i",
-                classes: "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold",
+                classes: "collapsable mt-0 text-sm fa fa-chevron-down font-bold",
                 parentElement: p.getNode(),
             })
 
@@ -2281,7 +2287,7 @@ class Relationship {
             })
             i = new DOMElement({
                 tagName: "i",
-                classes: "collapsable mt-0 me-2 text-sm fa fa-chevron-down font-bold",
+                classes: "collapsable mt-0 text-sm fa fa-chevron-down font-bold",
                 parentElement: p.getNode(),
             })
 

@@ -200,14 +200,20 @@ class Landform {
         })
       }
       const draw_available = (p) => {
+        d2 = new DOMElement({
+          tagName: "div",
+          classes: "bg-gray-800 mt-1 p-1 px-2 w-100",
+          parentElement: p.getNode().parentElement,
+          text: translate(language, "Water and food reserves")
+        })
         let d = new DOMElement({
           tagName: "div",
-          classes: "flex justify-between gap-1 w-100",
+          classes: "w-100",
           parentElement: p.getNode().parentElement
         })
         let d1 = new DOMElement({
           tagName: "div",
-          classes: "border border-gray-800 bg-gray-600 mt-1 p-1 px-2 w-100",
+          classes: "border-s border-t border-e border-gray-800 bg-gray-600 pt-1 px-2 w-100",
           parentElement: d.getNode()
         })
         s = new DOMElement({
@@ -247,7 +253,7 @@ class Landform {
         })
         d1 = new DOMElement({
           tagName: "div",
-          classes: "border border-gray-800 bg-gray-600 mt-1 p-1 px-2 w-100",
+          classes: "border-s border-e border-b border-gray-800 bg-gray-600 pb-1 px-2 w-100",
           parentElement: d.getNode()
         })
         s = new DOMElement({
@@ -551,32 +557,27 @@ class Landform {
       }
       const draw_water_reservoir = (p) => {
         const draw_income = (p) => {
+          //Water production information
           d = new DOMElement({
             tagName: "div",
-            classes: "flex justify-between gap-1 mt-1 w-100",
+            classes: "mt-1 w-100 border border-gray-900",
             parentElement: p.getNode().parentElement
           })
-          //Water production information
           d1 = new DOMElement({
             tagName: "div",
-            classes: "border border-gray-800 bg-gray-600 w-100",
-            parentElement: d.getNode()
-          })
-          d2 = new DOMElement({
-            tagName: "div",
-            classes: "bg-gray-800 p-1 px-2 w-100",
-            parentElement: d1.getNode(),
+            classes: "w-100 bg-gray-800 p-1 px-2 w-100",
+            parentElement: d.getNode(),
             text: translate(language, "Daily water production")
           })
-          d2 = new DOMElement({
+          d1 = new DOMElement({
             tagName: "div",
-            classes: "bg-gray-600 p-1 px-2 w-100",
-            parentElement: d1.getNode()
+            classes: "w-100 bg-gray-600 p-1 px-2 w-100",
+            parentElement: d.getNode()
           })
           p1 = new DOMElement({
             tagName: "p",
             classes: "flex p-0 m-0",
-            parentElement: d2.getNode()
+            parentElement: d1.getNode()
           })
           s = new DOMElement({
             tagName: "span",
@@ -598,7 +599,7 @@ class Landform {
           })
           s = new DOMElement({
             tagName: "span",
-            classes: "ms-1 font-bold", 
+            classes: "grow ms-1 font-bold", 
             attributes: [{"key":"data-i18n", "value":""}], 
             parentElement: p1.getNode(),
             text: translate(language, "per water bearer")
@@ -606,10 +607,11 @@ class Landform {
           p1 = new DOMElement({
             tagName: "p",
             classes: "flex p-0 m-0",
-            parentElement: d2.getNode()
+            parentElement: d1.getNode()
           })
           s = new DOMElement({
             tagName: "span",
+            classes: "",
             attributes: [{"key":"data-i18n", "value":""}], 
             parentElement: p1.getNode(),
             text: translate(language, "Current income")
@@ -624,7 +626,6 @@ class Landform {
             tagName: "span",
             classes: "ms-1 font-bold", 
             parentElement: p1.getNode(),
-            id: "current-daily-water-income",
             text: (this.income.water * this.get_assigned("waterbearing").size).toString()
           })
           s = new DOMElement({
@@ -634,7 +635,13 @@ class Landform {
             parentElement: p1.getNode(),
             text: translate(language, "units")
           })
+          
           //Food production information
+          d = new DOMElement({
+            tagName: "div",
+            classes: "flex justify-between gap-1 mt-1 w-100",
+            parentElement: p.getNode().parentElement
+          })
           d1 = new DOMElement({
             tagName: "div",
             classes: "border border-gray-800 bg-gray-600 w-100",
@@ -716,7 +723,7 @@ class Landform {
 
         let s = new DOMElement({
           tagName: "span",
-          classes: "ms-2",
+          classes: "ms-1",
           parentElement: p.getNode()
         })
         //First row

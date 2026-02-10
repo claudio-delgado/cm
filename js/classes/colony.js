@@ -1,5 +1,5 @@
 class Colony {
-
+  static get ALLOW_ZONE_SEARCH_MODAL() { return false}
   static initial_wagons_amount = 3
   static initial_life_quality = 10
   static goods_info = {
@@ -536,14 +536,21 @@ class Colony {
       ]
     }
     let button_modal = document.querySelector("#search_zone")
-    let alert_modal = new ModalBox(button_modal, "modalZoneSearched", null, modal_data)
-    alert_modal.build("alert_zone_searched").show()
-    //Remove search zone button from Colony's available actions
-    button_modal.remove()
+    if(Colony.ALLOW_ZONE_SEARCH_MODAL){
+      let alert_modal = new ModalBox(button_modal, "modalZoneSearched", null, modal_data)
+      alert_modal.build("alert_zone_searched").show()
+      //Remove search zone button from Colony's available actions
+      button_modal.remove()
+    }
     //Remove warnings 
     document.querySelectorAll("#searchZoneWarning").forEach((element) => { element.remove() })
     //Collapse colony available actions generative accordion if exists.
-    if(this.active_accordion) this.active_accordion.collapse()
+    if(this.active_accordion) {
+      let active_accordion = this.active_accordion
+      this.active_accordion.collapse()
+      active_accordion.expand()
+      active_accordion = null
+    }
     //Calculate goods and resources found in the zone and surroundings.
     let strong_citizens = this.get_population({"attributes":[translate(language, "Strength")]})
     //Goods found depends on strong citizens plus a random factor.
@@ -591,7 +598,6 @@ class Colony {
     })
     welcome_news_message.news_content = welcome_news_message.parse(welcome_news_message.template_string, welcome_news_message.data)
     this.news.set(1, welcome_news_message)
-    //document.querySelectorAll("#zoneSearchWarning").forEach((element) => { element.remove() })
   }
   //Setters (Set private values and draw them in the HTML)
   set_income = (resource_value, resource_type = "water") => {
@@ -3328,7 +3334,7 @@ class Colony {
             })
             s = new DOMElement({
               tagName: "span",
-              classes: "flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900",
+              classes: "flex grow border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900",
               parentElement: p.getNode(),
             })
             //Year
@@ -3536,21 +3542,6 @@ class Colony {
               parentElement: s.getNode(),
               text: translate(language, "citizens")
             })
-            /*
-              <div id="" class="flex flex-wrap gap-1 p-1 border border-gray-800 bg-gray-600 text-xs">
-                <p id="" class="w-100 flex gap-1 p-0 text-xs text-gray-200">
-                  <span id="" class="flex">
-                    <span id="" class="w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-700 border border-gray-500 text-white">
-                      <span id="" data-i18n="" class="">Capacidad de albergue</span>: 
-                    </span>
-                  </span>
-                  <span id="" class="grow flex border border-gray-900 p-0.5 px-1 bg-gray-400 text-gray-900">
-                    <span id="building-group-shelter_related-building-campaign_tent-1-capacity" class="font-bold flex-none">3</span>
-                    <span id="" data-i18n="" class="ms-1">Habitantes</span>
-                  </span>
-                </p>
-              </div>
-            */
           }
           //Draw building accordion container
           let d0, d1, p, s, s1, i, ga
@@ -4010,43 +4001,19 @@ class Colony {
     //b.getNode().addEventListener("click", new_building)
   }
   draw_expeditions = (e) => {
-    let h2, b, s, s1, s2, s3, d1, d2, d, p, p1, i
+    let h2, b, s, s1, s2, d1, d2, d3, d4, d, p, p1, i
     const draw_finished_expeditions = (parent_div) => {
-        //Draw finished expeditions title
-        d = new DOMElement({
+      const draw_resources_expeditions = () => {
+        d3 = new DOMElement({
           tagName: "div",
-          classes: "w-100",
-          parentElement: parent_div
-        })
-        d1 = new DOMElement({
-          tagName: "div",
-          classes: "border border-gray-800 bg-gray-800 text-xs",
-          parentElement: d.getNode(),
-          id: "expeditions-history-title"
-        })
-        p = new DOMElement({
-          tagName: "p",
-          classes: "text-xs flex justify-between p-1 px-2 text-gray-200",
+          classes: "w-100 flex-none border border-gray-800 bg-gray-500 text-white",
           parentElement: d1.getNode()
-        })
-        s = new DOMElement({
-          tagName: "span",
-          attributes: [{"key":"data-i18n","value":""}],
-          parentElement: p.getNode(),
-          text: "History"
-        })
-        //Draw finished expeditions area
-        d1 = new DOMElement({
-          tagName: "div",
-          classes: "activeExpeditions p-1 flex flex-wrap gap-1 border border-gray-800 bg-gray-600 text-xs",
-          parentElement: d.getNode(),
-          id: "expeditions-history-area"
         })
         //Resources expeditions
         p = new DOMElement({
           tagName: "p", 
-          classes: "w-100 flex gap-1 text-xs text-gray-400", 
-          parentElement: d1.getNode()
+          classes: "w-100 flex gap-1 text-xs p-0.5 px-1 border-b border-gray-800 bg-green-800 text-gray-400", 
+          parentElement: d3.getNode()
         })
         s = new DOMElement({
           tagName: "span", 
@@ -4055,7 +4022,7 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-green-800 border border-gray-500 text-white", 
+          classes: "w-100 flex-none p-0.5 px-1 text-white", 
           parentElement: s.getNode()
         })
         s2 = new DOMElement({
@@ -4064,9 +4031,20 @@ class Colony {
           parentElement: s1.getNode(),
           text: translate(language, "Resources expeditions")
         })
+        //Resources expeditions information
+        d4 = new DOMElement({
+          tagName: "div",
+          classes: "grow m-1 flex-none text-white",
+          parentElement: d3.getNode()
+        })
+        p = new DOMElement({
+          tagName: "p", 
+          classes: "w-100 flex gap-1 text-xs text-gray-400", 
+          parentElement: d4.getNode()
+        })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow ", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4087,12 +4065,12 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 border border-gray-500 text-black font-bold", 
           parentElement: s.getNode()
         })
         let total_finished_resource_expeditions = this.statistics.expeditions.resources.successful + this.statistics.expeditions.resources.missed
@@ -4105,7 +4083,7 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4126,12 +4104,12 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 text-black font-bold", 
           parentElement: s.getNode()
         })
         s2 = new DOMElement({
@@ -4143,7 +4121,7 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4164,12 +4142,12 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 text-black font-bold", 
           parentElement: s.getNode()
         })
         let percent_resource_expeditions = total_finished_resource_expeditions ? Math.round(100 * this.statistics.expeditions.resources.successful / total_finished_resource_expeditions) : 0
@@ -4180,11 +4158,18 @@ class Colony {
           id: "resources_expeditions_productivity",
           text: percent_resource_expeditions.toString()+"%"
         })
+      }
+      const draw_ruins_expeditions = () => {
+        d3 = new DOMElement({
+          tagName: "div",
+          classes: "w-100 flex-none border border-gray-800 bg-gray-500 text-white",
+          parentElement: d1.getNode()
+        })
         //Ruins expeditions
         p = new DOMElement({
           tagName: "p", 
-          classes: "w-100 flex gap-1 text-xs text-gray-400", 
-          parentElement: d1.getNode()
+          classes: "w-100 flex gap-1 text-xs p-0.5 px-1 border-b border-gray-800 bg-sky-800 text-gray-400", 
+          parentElement: d3.getNode()
         })
         s = new DOMElement({
           tagName: "span", 
@@ -4193,7 +4178,7 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-sky-800 border border-gray-500 text-white", 
+          classes: "w-100 flex-none p-0.5 px-1 text-white", 
           parentElement: s.getNode()
         })
         s2 = new DOMElement({
@@ -4202,9 +4187,20 @@ class Colony {
           parentElement: s1.getNode(),
           text: translate(language, "Ruins expeditions")
         })
+        //Ruins expeditions information
+        d4 = new DOMElement({
+          tagName: "div",
+          classes: "grow m-1 flex-none text-white",
+          parentElement: d3.getNode()
+        })
+        p = new DOMElement({
+          tagName: "p", 
+          classes: "w-100 flex gap-1 text-xs text-gray-400", 
+          parentElement: d4.getNode()
+        })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4225,25 +4221,25 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 border border-gray-500 text-black font-bold", 
           parentElement: s.getNode()
         })
-        let total_finished_ruins_expeditions = this.statistics.expeditions.ruins.successful + this.statistics.expeditions.ruins.missed
+        let total_finished_ruin_expeditions = this.statistics.expeditions.ruins.successful + this.statistics.expeditions.ruins.missed
         s2 = new DOMElement({
           tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}], 
           parentElement: s1.getNode(),
-          id: "ruins_expeditions_attempts",
-          text: total_finished_ruins_expeditions.toString()
+          id: "Ruins_expeditions_attempts",
+          text: total_finished_ruin_expeditions.toString()
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4264,12 +4260,12 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 text-black font-bold", 
           parentElement: s.getNode()
         })
         s2 = new DOMElement({
@@ -4281,7 +4277,7 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4302,27 +4298,34 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 text-black font-bold", 
           parentElement: s.getNode()
         })
-        let percent_ruins_expeditions = total_finished_ruins_expeditions ? Math.round(100 * this.statistics.expeditions.ruins.successful / total_finished_ruins_expeditions) : 0
+        let percent_ruin_expeditions = total_finished_ruin_expeditions ? Math.round(100 * this.statistics.expeditions.ruins.successful / total_finished_ruin_expeditions) : 0
         s2 = new DOMElement({
-          tagName: "span", 
+          tagName: "span",
           attributes: [{"key":"data-i18n","value":""}], 
           parentElement: s1.getNode(),
           id: "ruins_expeditions_productivity",
-          text: percent_ruins_expeditions.toString()+"%"
+          text: percent_ruin_expeditions.toString()+"%"
+        })
+      }
+      const draw_combat_expeditions = () => {
+        d3 = new DOMElement({
+          tagName: "div",
+          classes: "w-100 flex-none border border-gray-800 bg-gray-500 text-white",
+          parentElement: d1.getNode()
         })
         //Combat expeditions
         p = new DOMElement({
           tagName: "p", 
-          classes: "w-100 flex gap-1 text-xs text-gray-400", 
-          parentElement: d1.getNode()
+          classes: "w-100 flex gap-1 text-xs p-0.5 px-1 border-b border-gray-800 bg-red-800 text-gray-400", 
+          parentElement: d3.getNode()
         })
         s = new DOMElement({
           tagName: "span", 
@@ -4331,7 +4334,7 @@ class Colony {
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-red-800 border border-gray-500 text-white", 
+          classes: "w-100 flex-none p-0.5 px-1 text-white", 
           parentElement: s.getNode()
         })
         s2 = new DOMElement({
@@ -4340,9 +4343,20 @@ class Colony {
           parentElement: s1.getNode(),
           text: translate(language, "Combat expeditions")
         })
+        //Combat expeditions information
+        d4 = new DOMElement({
+          tagName: "div",
+          classes: "grow m-1 flex-none text-white",
+          parentElement: d3.getNode()
+        })
+        p = new DOMElement({
+          tagName: "p", 
+          classes: "w-100 flex gap-1 text-xs text-gray-400", 
+          parentElement: d4.getNode()
+        })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4363,12 +4377,12 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 border border-gray-500 text-black font-bold", 
           parentElement: s.getNode()
         })
         let total_finished_combat_expeditions = this.statistics.expeditions.combat.won + this.statistics.expeditions.combat.lost
@@ -4381,7 +4395,7 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4402,24 +4416,24 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 text-black font-bold", 
           parentElement: s.getNode()
         })
         s2 = new DOMElement({
           tagName: "span", 
           attributes: [{"key":"data-i18n","value":""}], 
           parentElement: s1.getNode(),
-          id: "combat_expeditions_successful",
+          id: "combat_expeditions_won",
           text: this.statistics.expeditions.combat.won.toString()
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
@@ -4440,22 +4454,57 @@ class Colony {
         })
         s = new DOMElement({
           tagName: "span", 
-          classes: "flex", 
+          classes: "flex grow", 
           parentElement: p.getNode()
         })
         s1 = new DOMElement({
           tagName: "span", 
-          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-500 border border-gray-500 text-black font-bold", 
+          classes: "w-100 flex-none border border-gray-800 p-0.5 px-1 bg-gray-400 text-black font-bold", 
           parentElement: s.getNode()
         })
-        let percent_combat_expeditions = total_finished_combat_expeditions ? Math.round(100 * this.statistics.expeditions.combat.successful / total_finished_combat_expeditions) : 0
+        let percent_combat_expeditions = total_finished_combat_expeditions ? Math.round(100 * this.statistics.expeditions.combat.won / total_finished_combat_expeditions) : 0
         s2 = new DOMElement({
-          tagName: "span", 
+          tagName: "span",
           attributes: [{"key":"data-i18n","value":""}], 
           parentElement: s1.getNode(),
           id: "combat_expeditions_productivity",
           text: percent_combat_expeditions.toString()+"%"
         })
+      }
+      //Draw finished expeditions title
+      d = new DOMElement({
+        tagName: "div",
+        classes: "w-100",
+        parentElement: parent_div
+      })
+      d1 = new DOMElement({
+        tagName: "div",
+        classes: "border border-gray-800 bg-gray-800 text-xs",
+        parentElement: d.getNode(),
+        id: "expeditions-history-title"
+      })
+      p = new DOMElement({
+        tagName: "p",
+        classes: "text-xs flex justify-between p-1 px-2 text-gray-200",
+        parentElement: d1.getNode()
+      })
+      s = new DOMElement({
+        tagName: "span",
+        attributes: [{"key":"data-i18n","value":""}],
+        parentElement: p.getNode(),
+        text: "History"
+      })
+      //Draw finished expeditions area
+      d1 = new DOMElement({
+        tagName: "div",
+        classes: "activeExpeditions p-1 flex flex-wrap gap-1 border border-gray-800 bg-gray-600 text-xs",
+        parentElement: d.getNode(),
+        id: "expeditions-history-area"
+      })
+      
+      draw_resources_expeditions()
+      draw_ruins_expeditions()
+      draw_combat_expeditions()      
     }
     const draw_active_expeditions = (parent_div) => {
         //Draw active expeditions title

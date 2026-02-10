@@ -1,5 +1,5 @@
 class News {
-    constructor(type, content) {
+    constructor(type, content, additional_data = {}) {
         this.id = colony.get_next_news_id()
         this.type = type
         this.new = true //Turns false after first news accordion click. Used to show or hide "new unread news" badge.
@@ -7,6 +7,7 @@ class News {
         this.template_string = content
         this.date = {"hour": colony.time_interval.current_hour, "day": colony.time_interval.current_day, "week": colony.time_interval.current_week, "year": colony.time_interval.current_year}
         this.category = "" //info, warning, enhancement, danger
+        this.additional_data = additional_data //Additional necessary data
         switch(type){
             case "welcome":
                 this.title = "Welcome!"
@@ -43,24 +44,41 @@ class News {
                     ]
                 }
                 break;
+            case "resources_expedition_failure":
+                this.title = "Expedition"
+                this.category = "danger"
+                this.data = {
+                    "values": [], 
+                    "collections": []
+                }
+                break;
+            case "resources_expedition_success":
+                this.title = "Expedition"
+                this.category = "enhancement"
+                this.data = {
+                    "values": [{"var":"discovered_mount", "val":translate(language, this.additional_data.expedition &&
+                                                                                    this.additional_data.expedition.result.mount ? Landform.fromCamelCase[this.additional_data.expedition.result.mount] : "unknown")}], 
+                    "collections": []
+                }
+                break;
         }
         this.news_content = this.parse(this.template_string, this.data)
     }
 
-    static async create(type, url) {
+    static async create(type, url, additional_data = {}) {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Error al cargar el archivo: ${response.status}`);
         }
 
         const text = await response.text();
-        return new News(type, text);
+        return new News(type, text, additional_data);
     }
 
-    static async load_message(type = "welcome") {
+    static async load_message(type = "welcome", additional_data = {}) {
         let url = `js/templates/news_${type}.html`
         try {
-            const loaded_news_message = await News.create(type, url);
+            const loaded_news_message = await News.create(type, url, additional_data);
             //Before adding current news to colony, clear unnessesary internal data.
             if(type !== "welcome"){ 
                 delete(loaded_news_message.template_string)

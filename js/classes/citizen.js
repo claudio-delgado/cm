@@ -893,7 +893,7 @@ class Citizen {
             //Citizen's couple body
             d1 = new DOMElement({
                 tagName: "div",
-                classes: "mx-1 p-1 px-2 flex justify-between text-xs text-gray-200 bg-gray-500 border border-gray-800",
+                classes: "mx-1 p-1 flex justify-between text-xs text-gray-200 bg-gray-500 border border-gray-800",
                 id: `${this.drawing_data.id}-couple`,
                 parentElement: d.getNode()
             })

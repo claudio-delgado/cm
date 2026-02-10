@@ -295,9 +295,13 @@ class Expedition {
         new_landform.draw()
         colony.statistics.expeditions.resources.successful++
         colony.add_score(Number(Landform.descriptions[Landform.fromCamelCase[this.result.mount]].score))
+        //Add successful expedition news.
+        News.load_message("resources_expedition_success", {"expedition": this})
       } else {
         this.result.success = false
         colony.statistics.expeditions.resources.missed++
+        //Add misssed expedition news.
+        News.load_message("resources_expedition_failure")
       }
       let assigned_expeditionaries = this.get_assigned_expeditionaries()
       //Change crew expeditionaires status from "travelling" to "idle" and increase their XP.
@@ -1322,6 +1326,7 @@ class Expedition {
         classes: "w-100 border border-gray-800 p-0.5 px-1 bg-gray-400 text-gray-800",
         parentElement: s.getNode()
       })
+      //Departure year
       s2 = new DOMElement({
         tagName: "span",
         attributes: [{"key":"data-i18n","value":""}],
@@ -1335,6 +1340,7 @@ class Expedition {
         id: `expedition-${this.id}-departed-year`,
         text: this.departed_in.year.toString()
       })
+      //Departure week
       s2 = new DOMElement({
         tagName: "span",
         attributes: [{"key":"data-i18n","value":""}],
@@ -1348,6 +1354,7 @@ class Expedition {
         id: `expedition-${this.id}-departed-week`,
         text: this.departed_in.week.toString()
       })
+      //Departure day
       s2 = new DOMElement({
         tagName: "span",
         attributes: [{"key":"data-i18n","value":""}],
@@ -1362,6 +1369,7 @@ class Expedition {
         id: `expedition-${this.id}-departed-day`,
         text: this.departed_in.day.toString()
       })
+      //Departure hour
       s2 = new DOMElement({
         tagName: "span",
         attributes: [{"key":"data-i18n","value":""}],
@@ -1374,6 +1382,11 @@ class Expedition {
         attributes: [{"key":"data-i18n","value":""}],
         parentElement: s1.getNode(),
         text: "hs."
+      })
+      p = new DOMElement({
+        tagName: "p",
+        classes: "w-100 flex gap-1 text-xs text-gray-200",
+        parentElement: d2.getNode()
       })
       //Arriving date...
       s = new DOMElement({
@@ -1476,6 +1489,14 @@ class Expedition {
         text: hoursText
       })
       //Probability
+      if(this.arrives_in.weeks || this.arrives_in.years){
+        //Adds a paragraph to locate probability in different line.
+        p = new DOMElement({
+          tagName: "p",
+          classes: "w-100 flex gap-1 text-xs text-gray-200",
+          parentElement: d2.getNode()
+        })
+      }
       s = new DOMElement({
         tagName: "span",
         classes: "flex border border-gray-800 p-0.5 px-1 bg-gray-600 text-white",
@@ -1494,7 +1515,7 @@ class Expedition {
       })
       s = new DOMElement({
         tagName: "span",
-        classes: "grow p-1 py-0.5 border border-gray-800 bg-gray-400 text-gray-800",
+        classes: "p-1 py-0.5 border border-gray-800 bg-gray-400 text-gray-800",
         parentElement: p.getNode()
       })
       s1 = new DOMElement({

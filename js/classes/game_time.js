@@ -23,12 +23,8 @@ class GameTime {
         // fallback to setInterval if Worker not available
         if (this._worker) {
             this._worker.postMessage({ cmd: 'start', ms: GameTime.game_hour_real_duration });
-            //Show notice on screen.
-            document.getElementById("game_version").innerHTML = "1.0 (worker started)"
         } else {
             this.time = setInterval(() => this._onTick(), GameTime.game_hour_real_duration);
-            //Show notice on screen.
-            document.getElementById("game_version").innerHTML = "1.0 (no worker started)"
         }
         GameTime.started = true;
     }
@@ -45,8 +41,6 @@ class GameTime {
 
     // internal tick handler called on each interval (worker or setInterval)
     _onTick = () => {
-        //Show notice on screen.
-        document.getElementById("game_version").innerHTML = "1.0 (onTick "+this.current_hour+")"
         //Main time interval loop.
         this.move()
         //Zone searching time is always less than 23 hours of the first day of the colony.
@@ -78,8 +72,6 @@ class GameTime {
     }
 
     move = (hours = 1) => {
-        //Show notice on screen.
-        document.getElementById("game_version").innerHTML = "1.0 (move "+this.current_hour+")"
         //Update hours. (turns 0 next time hour 23 is passed)
         this.current_hour += this.current_hour < 23 ? 1 : -this.current_hour
         colony.redraw_colony_hour(this.current_hour)

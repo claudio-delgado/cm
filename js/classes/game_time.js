@@ -1,6 +1,6 @@
 class GameTime {
     static started = false
-    static game_hour_real_duration = 1790 //real seconds
+    static game_hour_real_duration = 1790 //real miliseconds
     constructor(template = false) {
         this.year_passed = false
         this.weeks_passed = template && template["weeks passed"] ? template["weeks passed"] : 0
@@ -11,6 +11,66 @@ class GameTime {
         this.days_passed = this.weeks_passed * 7 + this.current_day - 1
         this.current_hour = template && template["current hour"] ? template["current hour"] : 0
     }
+
+    start = () => {
+        // create worker if not present
+        if (!this._worker && window.Worker) {
+            this._worker = new Worker('js/classes/webworker/time_worker.js')
+            this._worker.onmessage = (e) => {
+                if (e.data && e.data.type === 'tick') this._onTick()
+            }
+        }
+        // fallback to setInterval if Worker not available
+        if (this._worker) {
+            this._worker.postMessage({ cmd: 'start', ms: GameTime.game_hour_real_duration });
+        } else {
+            this.time = setInterval(() => this._onTick(), GameTime.game_hour_real_duration);
+        }
+        GameTime.started = true;
+    }
+
+    stop = () => {
+        if (this._worker) {
+            this._worker.postMessage({ cmd: 'stop' });
+        } else {
+            clearInterval(this.time);
+            this.time = null;
+        }
+        GameTime.started = false;
+    }
+
+    // internal tick handler called on each interval (worker or setInterval)
+    _onTick = () => {
+        //Main time interval loop.
+        this.move()
+        //Zone searching time is always less than 23 hours of the first day of the colony.
+        colony.zone_searched = this.current_year === 1 && this.current_week === 1 && this.current_day === 1 && this.current_hour === Colony.zone_search_hours_needed
+        if(colony.zone_searched){
+            colony.zone_searched_actions()
+        }
+        //An hour passed, update what's necessary
+        //Remove expeditions already finished from screen.
+        this.remove_finished_expeditions()
+        this.run_countdowns()
+        //If a day has passed, update what's necessary
+        if(this.day_passed){
+            this.update_all_citizens_xp()
+            this.update_resource_extractions()
+            this.check_critical_events("daily", 1)
+            this.check_critical_events("weekly", 1)
+        }
+        //If a week has passed, update what's necessary
+        if(this.week_passed){
+            this.update_pregnancies()
+            this.update_fertility_weeks()
+            this.update_all_citizens_age()
+        }
+        //If a year has passed, update what's necessary
+        if(this.year_passed){
+            this.decrease_all_citizens_fertility()
+        }
+    }
+
     move = (hours = 1) => {
         //Update hours. (turns 0 next time hour 23 is passed)
         this.current_hour += this.current_hour < 23 ? 1 : -this.current_hour
@@ -359,40 +419,5 @@ class GameTime {
                 citizen.redraw_citizen_fertility()
             }
         })
-    }
-    //Main time interval loop.
-    start = () => {
-        this.time = setInterval(() => {
-            this.move()
-            //Zone searching time is always less than 23 hours of the first day of the colony.
-            colony.zone_searched = this.current_year === 1 && this.current_week === 1 && this.current_day === 1 && this.current_hour === Colony.zone_search_hours_needed
-            if(colony.zone_searched){
-                colony.zone_searched_actions()
-            }
-            //An hour passed, update what's necessary
-            //Remove expeditions already finished from screen.
-            this.remove_finished_expeditions()
-            this.run_countdowns()
-            //If a day has passed, update what's necessary
-            if(this.day_passed){
-                this.update_all_citizens_xp()
-                this.update_resource_extractions()
-                this.check_critical_events("daily", 1)
-                this.check_critical_events("weekly", 1)
-            }
-            //If a week has passed, update what's necessary
-            if(this.week_passed){
-                this.update_pregnancies()
-                this.update_fertility_weeks()
-                this.update_all_citizens_age()
-            }
-            //If a year has passed, update what's necessary
-            if(this.year_passed){
-                this.decrease_all_citizens_fertility()
-            }
-        }, GameTime.game_hour_real_duration)
-    }
-    stop = () => {
-        clearInterval(this.time)
     }
 }

@@ -24,9 +24,11 @@ class GameTime {
         if (this._worker) {
             this._worker.postMessage({ cmd: 'start', ms: GameTime.game_hour_real_duration });
             //Show notice on screen.
-            document.getElementById("game_version").innerHTML = "1.0 build 0001 (worker started)"
+            document.getElementById("game_version").innerHTML = "1.0 (worker started)"
         } else {
             this.time = setInterval(() => this._onTick(), GameTime.game_hour_real_duration);
+            //Show notice on screen.
+            document.getElementById("game_version").innerHTML = "1.0 (no worker started)"
         }
         GameTime.started = true;
     }
@@ -76,6 +78,8 @@ class GameTime {
     }
 
     move = (hours = 1) => {
+        //Show notice on screen.
+        document.getElementById("game_version").innerHTML = "1.0 (move "+this.current_hour+")"
         //Update hours. (turns 0 next time hour 23 is passed)
         this.current_hour += this.current_hour < 23 ? 1 : -this.current_hour
         colony.redraw_colony_hour(this.current_hour)

@@ -1538,6 +1538,8 @@ const translation_object = {
     "Your status is this":{"ES":"Tu situación es la siguiente"},
     "zanahoria":{"EN":"carrot"},
     "¡Zona investigada!":{"EN":"Zone researched!"},
+    "Zona":{"EN":"Zone"},
+    "Zone":{"ES":"Zona"},
     "Zone researched!":{"ES":"¡Zona investigada!"},
 }
 

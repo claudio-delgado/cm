@@ -1,6 +1,8 @@
 //Main time loop.
 var currentYear = currentWeek = currentDay = currentHour = 0
 const life_interval = setInterval(() => {
+    //Show notice on screen.
+    document.getElementById("game_version").innerHTML = "1.0 (time_process)"
     //Actions to perform after zone was searched Ok
     const zone_searched_actions = () => {
         searchingZone = false
